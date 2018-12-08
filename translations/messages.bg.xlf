@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="bg" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="form.edit">
+                <source>form.edit</source>
+                <target>Редактиране</target>
+            </trans-unit>
+            <trans-unit id="form.add">
+                <source>form.add</source>
+                <target>Добавяне</target>
+            </trans-unit>
+            <trans-unit id="button.cancel">
+                <source>button.cancel</source>
+                <target>Откажи</target>
+            </trans-unit>
+            <trans-unit id="button.delete">
+                <source>button.delete</source>
+                <target>Изтрии</target>
+            </trans-unit>
+            <trans-unit id="button.add">
+                <source>button.cancel</source>
+                <target>Добави</target>
+            </trans-unit>
+            <trans-unit id="button.save">
+                <source>button.save</source>
+                <target>Запази</target>
+            </trans-unit>
+            <trans-unit id="survey">
+                <source>survey</source>
+                <target>{1}Анкета|[0,+Inf[Анкети</target>
+            </trans-unit>
+            <trans-unit id="question">
+                <source>question</source>
+                <target>{1}Въпрос|[0,+Inf[Въпроси</target>
+            </trans-unit>
+            <trans-unit id="answer">
+                <source>answer</source>
+                <target>{1}Отговор|[0,+Inf[Отговори</target>
+            </trans-unit>
+            <trans-unit id="flash.edit.success">
+                <source>flash.edit.success</source>
+                <target>Записът е променен успешно</target>
+            </trans-unit>
+            <trans-unit id="flash.add.success">
+                <source>flash.add.success</source>
+                <target>Записът е добавен успешно</target>
+            </trans-unit>
+            <trans-unit id="flash.delete.success">
+                <source>flash.delete.success</source>
+                <target>Записът е изтрит успешно</target>
+            </trans-unit>
+            <trans-unit id="flash.csrf-token.invalid">
+                <source>flash.csrf-token.invalid</source>
+                <target>Невалидна форма. Опитайте пак</target>
+            </trans-unit>
+            <trans-unit id="alert.delete.confirm">
+                <source>alert.delete.confirm</source>
+                <target>Потвърдете изтриването</target>
+            </trans-unit>
+            <trans-unit id="question.has-multiple-answers">
+                <source>question.has-multiple-answers</source>
+                <target>Повече от един възможни отговори</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

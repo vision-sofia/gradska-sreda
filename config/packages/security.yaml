@@ -1,0 +1,36 @@
+security:
+    encoders:
+        App\AppMain\Entity\User\User:
+            algorithm: argon2i
+            memory_cost: 2048
+            time_cost: 2
+            threads: 2
+
+    providers:
+        db_provider:
+            entity:
+                class: App\AppMain\Entity\User\User
+                property: username
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            context: main
+            anonymous: ~
+            provider: db_provider
+            form_login:
+                login_path: app.login
+                check_path: app.login
+                csrf_token_generator: security.csrf.token_manager
+            logout:
+                path:   /logout
+                target: /
+
+    access_control:
+        - { path: ^/manage, roles: ROLE_USER }

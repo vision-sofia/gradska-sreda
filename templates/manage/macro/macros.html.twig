@@ -1,0 +1,23 @@
+{% macro checkmark(value) %}
+    {% if value == true %}<i class="fa fa-check text-navy"></i>{% else %}{% endif %}
+{% endmacro %}
+
+{% macro delete_form(entity, action) %}
+    <div class="card-header-actions">
+        <form method="post" id="form{{ entity.uuid }}" action="{{ action }}" onsubmit="return confirm('{{ 'alert.delete.confirm'|trans }}');">
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.uuid) }}">
+        </form>
+    </div>
+{% endmacro %}
+
+{% macro form_error_label(element) %}
+    {% if element.vars.errors|length > 0 %}
+        <label class="error">{{ form_errors(element) }}</label>
+    {% endif %}
+{% endmacro %}
+
+{% macro form_has_error(element) %}
+    {{ element.vars.errors|length > 0 ? 'has-error' : '' }}
+{% endmacro %}
+

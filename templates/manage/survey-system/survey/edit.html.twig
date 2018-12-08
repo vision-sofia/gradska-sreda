@@ -1,0 +1,31 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-6">
+            {% include 'manage/survey-system/survey/paritial/main_form.html.twig' %}
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    Критерии и индикатори
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for criterion in criteria %}
+                            <li>
+                                {{ criterion.name }}
+
+                                <ul>
+                                    {% for indicator in criterion.indicators %}
+                                        <li>{{ indicator.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

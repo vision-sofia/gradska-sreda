@@ -1,0 +1,7 @@
+public:
+  resource: '../src/AppAdmin/Controller/'
+  type:     annotation
+  prefix: /manage
+
+logout:
+  path: /logout

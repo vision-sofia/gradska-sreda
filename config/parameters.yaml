@@ -1,0 +1,3 @@
+parameters:
+    locale: 'bg'
+    session_save_path: '%env(SESSION_SAVE_PATH)%'

@@ -1,0 +1,38 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <a href="{{ path('manage.survey-system.survey.new') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Нова анкета</a>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    Анкети
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Анкета</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for survey in surveys %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('manage.survey-system.survey.edit', {'survey': survey.uuid}) }}" class="btn btn-white btn-xs"><i class="fa fa-pencil"></i></a>
+                                </td>
+                                <td>{{ survey.name }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

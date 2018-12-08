@@ -1,0 +1,36 @@
+{% extends 'front/base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="section">
+            <h1 class="title">Регистрация</h1>
+
+            {{ form_start(form, {'attr': {'class': 'register-form', 'novalidate': 'novalidate'}}) }}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="field">
+                    <p class="control has-icons-left has-icons-right">
+                        {{ form_widget(form.username, {'attr': {'placeholder': 'Потребителско име', 'class': 'form-control input'}}) }}
+                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control has-icons-left">
+                        {{ form_widget(form.plainPassword.first, {'attr': {'placeholder': 'Парола', 'class': 'form-control input'}}) }}
+                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control has-icons-left">
+                        {{ form_widget(form.plainPassword.second, {'attr': {'placeholder': 'Повторете паролата', 'class': 'form-control input'}}) }}
+                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                    </p>
+                </div>
+
+                <button type="submit">Регистрирай ме</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}

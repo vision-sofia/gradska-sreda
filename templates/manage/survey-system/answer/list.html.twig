@@ -1,0 +1,38 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <a href="{{ path('manage.survey-system.questions.new') }}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Нов въпрос</a>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    {{ 'question'|trans({'%count%': 2}) }}
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{{ 'question'|trans({'%count%': 1}) }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for question in questions %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('manage.survey-system.questions.edit', {'question': question.uuid}) }}" class="btn btn-white btn-xs"><i class="fa fa-pencil"></i></a>
+                                </td>
+                                <td>{{ question.title }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

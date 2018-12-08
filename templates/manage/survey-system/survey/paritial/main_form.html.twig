@@ -1,0 +1,44 @@
+{% import 'manage/macro/macros.html.twig' as macros %}
+
+<div class="card">
+    <div class="card-header">
+        <strong>Анкета</strong>
+        <small>{{ item is defined ? 'form.edit'|trans : 'form.add'|trans }}</small>
+    </div>
+    {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+    <div class="card-body">
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label" for="password-input">Име</label>
+            <div class="col-md-9">
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+            <div>
+                <button class="btn btn-sm btn-primary" type="submit">
+                    <i class="fa fa-dot-circle-o"></i> {{ item is defined ? 'button.save'|trans : 'form.add'|trans }}
+                </button>
+                <a class="btn btn-sm btn-danger" href="{{ path('manage.survey-system.survey.index') }}">
+                    <i class="fa fa-ban"></i> Откажи
+                </a>
+            </div>
+            <div>
+                {% if item is defined %}
+                    <button class="btn btn-sm btn-danger" form="form{{ item.uuid }}" type="submit">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    {{ form_end(form) }}
+
+    {% if item is defined %}
+        {{ macros.delete_form(item, path('manage.survey-system.survey.delete', {'survey': item.uuid})) }}
+    {% endif %}
+</div>
+

@@ -1,0 +1,38 @@
+imports:
+    - { resource: parameters.yaml }
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\AppMain\Controller\:
+        resource: '../src/AppMain/Controller'
+        tags: ['controller.service_arguments']
+
+    App\AppAdmin\Controller\:
+        resource: '../src/AppAdmin/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Session\Storage\Handler\NativeRedisSessionHandler:
+        public: true
+        arguments:
+            $sessionSavePath: '%session_save_path%'
+
+    doctrineMigrationDiffListener:
+        class: App\Doctrine\MigrationEventSubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
+    App\EventListener\Doctrine\UUIDSetter:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }

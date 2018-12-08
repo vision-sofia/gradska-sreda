@@ -1,0 +1,9 @@
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+    <a href="{{ path('manage.index') }}">Контролеп панел</a>
+    <a href="{{ path('logout') }}">Изход</a>
+{% else %}
+    <a href="{{ path('app.login') }}">Вход</a>
+    <a href="{{ path('app.register') }}">Регистрация</a>
+{% endif %}
+
+

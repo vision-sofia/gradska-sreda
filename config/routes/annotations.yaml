@@ -1,0 +1,7 @@
+controllers_main:
+    resource: ../../src/AppMain/Controller/
+    type: annotation
+
+controllers_admin:
+    resource: ../../src/AppAdmin/Controller/
+    type: annotation
