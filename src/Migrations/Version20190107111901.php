@@ -35,28 +35,28 @@ final class Version20190107111901 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN x_geometry.geometry_base.coordinates IS \'(DC2Type:geography)\'');
         $this->addSql('COMMENT ON COLUMN x_geometry.geometry_base.metadata IS \'(DC2Type:json_array)\'');
 
-        $this->addSql('CREATE TABLE x_geometry.point (CONSTRAINT geom_point_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
+        $this->addSql('CREATE TABLE x_geometry.point (id INT GENERATED ALWAYS AS IDENTITY, CONSTRAINT geom_point_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
         $this->addSql('CREATE INDEX IDX_E0B01AC9EA6EFDCD ON x_geometry.point (layer_id)');
         $this->addSql('CREATE INDEX IDX_E0B01AC9C4C51E68 ON x_geometry.point (spatial_object_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_B8D4B651D17F50A2 ON x_geometry.point (uuid)');
         $this->addSql('COMMENT ON COLUMN x_geometry.point.coordinates IS \'(DC2Type:geography)\'');
         $this->addSql('COMMENT ON COLUMN x_geometry.point.metadata IS \'(DC2Type:json_array)\'');
 
-        $this->addSql('CREATE TABLE x_geometry.multiline (CONSTRAINT geom_multiline_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
+        $this->addSql('CREATE TABLE x_geometry.multiline (id INT GENERATED ALWAYS AS IDENTITY, CONSTRAINT geom_multiline_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
         $this->addSql('CREATE INDEX IDX_57DEAAB0EA6EFDCD ON x_geometry.multiline (layer_id)');
         $this->addSql('CREATE INDEX IDX_57DEAAB0C4C51E68 ON x_geometry.multiline (spatial_object_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_B8D4B651D17F50A3 ON x_geometry.multiline (uuid)');
         $this->addSql('COMMENT ON COLUMN x_geometry.multiline.coordinates IS \'(DC2Type:geography)\'');
         $this->addSql('COMMENT ON COLUMN x_geometry.multiline.metadata IS \'(DC2Type:json_array)\'');
 
-        $this->addSql('CREATE TABLE x_geometry.line (CONSTRAINT geom_line_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
+        $this->addSql('CREATE TABLE x_geometry.line (id INT GENERATED ALWAYS AS IDENTITY, CONSTRAINT geom_line_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
         $this->addSql('CREATE INDEX IDX_AC487C82EA6EFDCD ON x_geometry.line (layer_id)');
         $this->addSql('CREATE INDEX IDX_AC487C82C4C51E68 ON x_geometry.line (spatial_object_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_B8D4B651D17F50A4 ON x_geometry.line (uuid)');
         $this->addSql('COMMENT ON COLUMN x_geometry.line.coordinates IS \'(DC2Type:geography)\'');
         $this->addSql('COMMENT ON COLUMN x_geometry.line.metadata IS \'(DC2Type:json_array)\'');
 
-        $this->addSql('CREATE TABLE x_geometry.polygon (CONSTRAINT geom_polygon_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
+        $this->addSql('CREATE TABLE x_geometry.polygon (id INT GENERATED ALWAYS AS IDENTITY, CONSTRAINT geom_polygon_pk PRIMARY KEY (id)) INHERITS (x_geometry.geometry_base)');
         $this->addSql('CREATE INDEX IDX_F5A2A17AEA6EFDCD ON x_geometry.polygon (layer_id)');
         $this->addSql('CREATE INDEX IDX_F5A2A17AC4C51E68 ON x_geometry.polygon (spatial_object_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_B8D4B651D17F50A1 ON x_geometry.polygon (uuid)');
