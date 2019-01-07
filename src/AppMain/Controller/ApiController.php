@@ -26,22 +26,42 @@ class ApiController extends AbstractController
 
         $stmt = $conn->prepare('
             SELECT 
-                st_asgeojson(geography) as geo, 
-                uuid 
+                g.uuid as id,
+                st_asgeojson(m.coordinates) as geo,
+                g.attributes 
             FROM 
-                 x_geography.type_multiline
-            LIMIT 100
-');
+                x_geometry.multiline m
+                    INNER JOIN
+                x_geospatial.geospatial_object g ON m.spatial_object_id = g.id
+            WHERE
+                g.attributes->>\'type\' = \'Тротоар\' 
+            LIMIT 500
+        ');
 
         $stmt->execute();
 
-
         $result = [];
+
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $result[$row['uuid']] = json_decode($row['geo'], true)['coordinates'];
+            $attributes = json_decode($row['attributes'], true);
+
+            $properties = [];
+
+            if(!empty(trim($attributes['name']))) {
+                $properties['name'] = $attributes['name'];
+            }
+
+            if(!empty(trim($attributes['type']))) {
+                $properties['type'] = $attributes['type'];
+            }
+
+            $result[] = [
+                'id' => $row['id'],
+                'properties' => $properties,
+                'geometry' => json_decode($row['geo'], true)
+            ];
         }
 
         return new JsonResponse($result);
-
     }
 }
