@@ -27,6 +27,12 @@ class Question implements UuidInterface
     private $title;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
+     */
+    private $category;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Question\Answer", mappedBy="question")
      */
     private $answers;
@@ -76,4 +82,14 @@ class Question implements UuidInterface
     }
 
 
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+
+    public function setCategory($category): void
+    {
+        $this->category = $category;
+    }
 }

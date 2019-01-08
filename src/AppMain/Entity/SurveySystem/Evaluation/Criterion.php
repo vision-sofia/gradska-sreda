@@ -2,6 +2,7 @@
 
 namespace App\AppMain\Entity\SurveySystem\Evaluation;
 
+use App\AppMain\Entity\SurveySystem\Survey\Category;
 use App\AppMain\Entity\SurveySystem\Survey\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
@@ -9,7 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ed_criterion", schema="x_survey")
+ * @ORM\Table(name="ev_criterion", schema="x_survey")
  * @ORM\Entity()
  */
 class Criterion implements UuidInterface
@@ -29,11 +30,10 @@ class Criterion implements UuidInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Survey")
-     * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", inversedBy="criteria")
+     * @ORM\JoinColumn(referencedColumnName="id", name="category_id", nullable=false)
      */
-    private $survey;
-
+    private $category;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Evaluation\Indicator", mappedBy="criterion")
@@ -55,14 +55,14 @@ class Criterion implements UuidInterface
         return $this->name;
     }
 
-    public function getSurvey(): ?Survey
+    public function getGroup(): ?Survey
     {
-        return $this->survey;
+        return $this->category;
     }
 
-    public function setSurvey(Survey $survey): void
+    public function setGroup(Category $survey): void
     {
-        $this->survey = $survey;
+        $this->category = $survey;
     }
 
     /**

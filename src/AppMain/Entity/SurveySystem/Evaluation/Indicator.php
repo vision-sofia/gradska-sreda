@@ -8,7 +8,7 @@ use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ed_indicator", schema="x_survey")
+ * @ORM\Table(name="ev_indicator", schema="x_survey")
  * @ORM\Entity()
  */
 class Indicator implements UuidInterface

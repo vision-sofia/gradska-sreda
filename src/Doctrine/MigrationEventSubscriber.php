@@ -22,7 +22,7 @@ class MigrationEventSubscriber implements EventSubscriber
 
         foreach ($schema->getTables() as $table) {
             foreach ($table->getColumns() as $column) {
-                $column->setAutoincrement(false);
+                #$column->setAutoincrement(false);
             }
         }
 

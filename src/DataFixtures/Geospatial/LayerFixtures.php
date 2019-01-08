@@ -1,31 +1,30 @@
 <?php
 
-namespace App\DataFixtures\Geography;
+namespace App\DataFixtures\Geospatial;
 
-use App\AppMain\Entity\SurveySystem\Evaluation\Context;
+use App\AppMain\Entity\Geospatial\Layer;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class CategoryFixtures extends Fixture
+class LayerFixtures extends Fixture
 {
     public function load(ObjectManager $manager):void
     {
-        /*
         foreach ($this->data() as $item) {
-            $object = new Context();
+            $object = new Layer();
             $object->setName($item);
 
             $manager->persist($object);
         }
 
         $manager->flush();
-        */
     }
 
     private function data():array {
         return [
-            'Пресичания',
-            'Пешеходни отсечки',
+            'Тротоар',
+            'Алея',
+            'Пресичане',
         ];
     }
 }

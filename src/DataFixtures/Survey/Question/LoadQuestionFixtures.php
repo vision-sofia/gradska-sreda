@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures\Poll\Question;
+namespace App\DataFixtures\Survey\Question;
 
 use App\AppMain\Entity\SurveySystem\Question\Answer;
 use App\AppMain\Entity\SurveySystem\Question\Question;
@@ -39,15 +39,9 @@ class LoadQuestionFixtures extends Fixture
                 'question'             => 'Какъв е автомобилният трафик в момента?',
                 'has_multiple_answers' => false,
                 'answers'              => [
-                    [
-                        'title' => 'Интензивен',
-                    ],
-                    [
-                        'title' => 'Умерен',
-                    ],
-                    [
-                        'title' => 'Спокоен',
-                    ],
+                    ['title' => 'Интензивен',],
+                    ['title' => 'Умерен',],
+                    ['title' => 'Спокоен',],
                 ],
             ],
 
@@ -61,6 +55,17 @@ class LoadQuestionFixtures extends Fixture
                     ['title' => 'Пешеходен мост / надлез'],
                     ['title' => 'Нерегулирано (квартални улици)'],
                     ['title' => 'Несъществуващо(!)'],
+                ],
+            ],
+
+            [
+                'question'             => 'Осветено ли е?',
+                'category'             => 'алея',
+                'has_multiple_answers' => false,
+                'answers'              => [
+                    ['title' => 'Да, достатъчно'],
+                    ['title' => 'Да, но недостатъчно'],
+                    ['title' => 'Не'],
                 ],
             ],
 

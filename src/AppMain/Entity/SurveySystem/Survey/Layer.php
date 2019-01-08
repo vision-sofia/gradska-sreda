@@ -1,17 +1,17 @@
 <?php
 
-
-namespace App\AppMain\Entity\SurveySystem\Evaluation;
+namespace App\AppMain\Entity\SurveySystem\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * #@ORM\Table(name="ed_context", schema="x_survey")
- * #@ORM\Entity()
+ * @ORM\Table(name="layer", schema="x_survey")
+ * @ORM\Entity()
  */
-class Context implements UuidInterface
+class Layer implements UuidInterface
 {
     use UUIDableTrait;
 
@@ -26,6 +26,7 @@ class Context implements UuidInterface
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
 
     public function getId(): int
     {

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\DataFixtures\Poll\Poll;
+namespace App\DataFixtures\Survey\Survey;
 
 
 use App\AppMain\Entity\SurveySystem\Survey\Survey;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class LoadPollFixtures extends Fixture
+class LoadSurveyFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
