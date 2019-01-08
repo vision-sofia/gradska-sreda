@@ -24,8 +24,13 @@ class Category implements UuidInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", inversedBy="children")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id", nullable=true)
      */
     private $parent;
 
@@ -48,6 +53,16 @@ class Category implements UuidInterface
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function setChildren($children): void
+    {
+        $this->children = $children;
     }
 
     public function getParent()

@@ -36,4 +36,45 @@ class GeospatialObject implements UuidInterface
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\Layer")
      */
     private $layer;
+
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    public function setAttributes($attributes): void
+    {
+        $this->attributes = $attributes;
+    }
+
+    public function getGeography()
+    {
+        return $this->geography;
+    }
+
+    public function setGeography($geography): void
+    {
+        $this->geography = $geography;
+    }
+
+    public function getLayer()
+    {
+        return $this->layer;
+    }
+
+    public function setLayer($layer): void
+    {
+        $this->layer = $layer;
+    }
 }

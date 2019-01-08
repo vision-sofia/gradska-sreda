@@ -4,11 +4,10 @@ namespace App\AppMain\Entity\SurveySystem\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="layer", schema="x_survey")
+ * @ORM\Table(name="object_layer", schema="x_survey")
  * @ORM\Entity()
  */
 class Layer implements UuidInterface
@@ -23,9 +22,16 @@ class Layer implements UuidInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $name;
+    private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\Layer")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $layer;
 
 
     public function getId(): int
@@ -33,13 +39,23 @@ class Layer implements UuidInterface
         return $this->id;
     }
 
-    public function setName(string $name): void
+    public function getCategory()
     {
-        $this->name = $name;
+        return $this->category;
     }
 
-    public function getName(): string
+    public function setCategory($category): void
     {
-        return $this->name;
+        $this->category = $category;
+    }
+
+    public function getLayer()
+    {
+        return $this->layer;
+    }
+
+    public function setLayer($layer): void
+    {
+        $this->layer = $layer;
     }
 }

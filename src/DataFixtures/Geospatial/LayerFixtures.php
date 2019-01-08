@@ -11,20 +11,19 @@ class LayerFixtures extends Fixture
     public function load(ObjectManager $manager):void
     {
         foreach ($this->data() as $item) {
-            $object = new Layer();
-            $object->setName($item);
+            $layer = new Layer();
+            $layer->setName($item);
 
-            $manager->persist($object);
+            $manager->persist($layer);
+            $manager->flush();
         }
-
-        $manager->flush();
     }
 
     private function data():array {
         return [
-            'Тротоар',
-            'Алея',
-            'Пресичане',
+            'тротоар',
+            'алея',
+            'пресичане',
         ];
     }
 }

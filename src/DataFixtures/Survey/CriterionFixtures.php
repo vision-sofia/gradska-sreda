@@ -1,12 +1,14 @@
 <?php
 
-namespace App\DataFixtures\Survey\EvaluationDefinition;
+namespace App\DataFixtures\Survey;
 
+use App\AppMain\Entity\Geospatial\Layer;
 use App\AppMain\Entity\SurveySystem\Evaluation\Criterion;
 use App\AppMain\Entity\SurveySystem\Evaluation\Indicator;
 use App\AppMain\Entity\SurveySystem\Survey\Category;
+
 use App\AppMain\Entity\SurveySystem\Survey\Survey;
-use App\DataFixtures\Survey\Survey\LoadSurveyFixtures;
+use App\DataFixtures\Geospatial\LayerFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -16,7 +18,8 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            LoadSurveyFixtures::class,
+            LayerFixtures::class,
+            SurveyFixtures::class,
         ];
     }
 
@@ -33,7 +36,8 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                     $categoryObject->setSurvey($survey);
 
                     $parent = $manager->getRepository(Category::class)
-                                      ->findOneBy(['name' => $category['parent']]);
+                                      ->findOneBy(['name' => $category['parent']])
+                    ;
 
                     $categoryObject->setParent($parent);
 
@@ -58,11 +62,24 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         }
 
                     }
+
+                    foreach ($category['layers'] as $name) {
+
+                        $layer = $manager->getRepository(Layer::class)
+                                         ->findOneBy(['name' => $name])
+                        ;
+
+                        $surveyLayer = new \App\AppMain\Entity\SurveySystem\Survey\Layer();
+                        $surveyLayer->setCategory($categoryObject);
+                        $surveyLayer->setLayer($layer);
+
+                        $manager->persist($surveyLayer);
+                        $manager->flush();
+
+                    }
                 }
             }
         }
-
-        $manager->flush();
     }
 
     private function data(): array
@@ -72,10 +89,11 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                 'survey'   => 'Анкета',
                 'category' => [
                     [
-                        'name' => 'Пешеходни отсечки',
-                        'parent' => null,
-                        'layers' => [
-                            'тротар',
+                        'name'     => 'пешеходна отсечка',
+                        'parent'   => null,
+                        'layers'   => [
+                            'тротоар',
+                            'алея',
                         ],
                         'criteria' => [
                             [
@@ -116,22 +134,30 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'name' => 'Алеи',
-                        'parent' => 'Пешеходни отсечки',
-                        'layers' => [
+                        'name'     => 'Тротоари',
+                        'parent'   => 'пешеходна отсечка',
+                        'layers'   => [
+                            'тротоар',
+                        ],
+                        'criteria' => [],
+                    ],
+                    [
+                        'name'     => 'Алеи',
+                        'parent'   => 'пешеходна отсечка',
+                        'layers'   => [
                             'алея',
                         ],
                         'criteria' => [],
                     ],
                     [
-                        'name' => 'Пресичания',
-                        'parent' => null,
-                        'layers' => [
-                            'Пресичане'
+                        'name'     => 'Пресичания',
+                        'parent'   => null,
+                        'layers'   => [
+                            'пресичане',
                         ],
                         'criteria' => [
                             [
-                                'title' => 'Достъпност и проходимост',
+                                'title'      => 'Достъпност и проходимост',
                                 'indicators' => [
                                     'Ясно регулирано пресичане (наличие на пешеходна пътека или светофар)',
                                     'Удобства за хора със затруднено придвижване (скосени бордюри, тактилни плочки, звукова сигнализация)',
@@ -139,7 +165,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                                 ],
                             ],
                             [
-                                'title' => 'Сигурност',
+                                'title'      => 'Сигурност',
                                 'indicators' => [
                                     'Ясно регулирано пресичане (наличие на пешеходна пътека или светофар)',
                                     'Физически препятствия (паркирани коли, маси на заведения, спирки, кофи за боклук и други',
@@ -147,9 +173,9 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                                     'Добра обозначеност и осветеност',
                                 ],
                             ],
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ],
         ];
     }

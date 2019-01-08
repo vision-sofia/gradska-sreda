@@ -40,9 +40,8 @@ class Answer implements UuidInterface
     private $children;
 
     /**
-     * Many Categories have One Category.
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Question\Answer", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id", nullable=true)
      */
     private $parent;
 
