@@ -3,7 +3,7 @@
 namespace App\AppAdmin\Form\Survey;
 
 
-use App\AppMain\Entity\SurveySystem\Question\Question;
+use App\AppMain\Entity\Survey\Question\Question;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

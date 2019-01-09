@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\AppMain\Entity\SurveySystem\Evaluation;
+namespace App\AppMain\Entity\Survey\Evaluation;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
@@ -28,13 +28,13 @@ class Point implements UuidInterface
     private $value;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Question\Answer")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Answer")
      * @ORM\JoinColumn(referencedColumnName="id", name="answer_id", nullable=false)
      */
     private $answer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Evaluation\Indicator")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Indicator")
      * @ORM\JoinColumn(referencedColumnName="id", name="indicator_id", nullable=false)
      */
     private $indicator;

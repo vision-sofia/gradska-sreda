@@ -3,7 +3,7 @@
 namespace App\DataFixtures\Survey;
 
 
-use App\AppMain\Entity\SurveySystem\Survey\Survey;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 

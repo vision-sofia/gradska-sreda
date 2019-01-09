@@ -37,7 +37,7 @@ abstract class AbstractGeometry implements UuidInterface
     protected $metadata;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeospatialObject", inversedBy="geography")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject", inversedBy="geography")
      */
     protected $spatialObject;
 }

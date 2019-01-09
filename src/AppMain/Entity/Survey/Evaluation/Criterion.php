@@ -1,9 +1,9 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem\Evaluation;
+namespace App\AppMain\Entity\Survey\Evaluation;
 
-use App\AppMain\Entity\SurveySystem\Survey\Category;
-use App\AppMain\Entity\SurveySystem\Survey\Survey;
+use App\AppMain\Entity\Survey\Survey\Category;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
@@ -30,13 +30,13 @@ class Criterion implements UuidInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", inversedBy="criteria")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category", inversedBy="criteria")
      * @ORM\JoinColumn(referencedColumnName="id", name="category_id", nullable=false)
      */
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Evaluation\Indicator", mappedBy="criterion")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Indicator", mappedBy="criterion")
      */
     private $indicators;
 

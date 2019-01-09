@@ -3,7 +3,7 @@
 namespace App\AppAdmin\Controller\Survey;
 
 use App\AppAdmin\Form\Survey\QuestionType;
-use App\AppMain\Entity\SurveySystem\Question\Question;
+use App\AppMain\Entity\Survey\Question\Question;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -77,7 +77,7 @@ class QuestionController extends AbstractController
 
     /**
      * @Route("/{question}/edit", name="edit", methods="GET|POST")
-     * @ParamConverter("question", class="App\AppMain\Entity\SurveySystem\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
      */
     public function edit(Request $request, Question $question): Response
     {
@@ -107,7 +107,7 @@ class QuestionController extends AbstractController
 
     /**
      * @Route("/{question}", name="delete", methods="DELETE")
-     * @ParamConverter("question", class="App\AppMain\Entity\SurveySystem\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
      */
     public function delete(Question $question): Response
     {

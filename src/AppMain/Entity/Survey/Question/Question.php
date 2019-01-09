@@ -1,13 +1,13 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem\Question;
+namespace App\AppMain\Entity\Survey\Question;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="question", schema="x_survey")
+ * @ORM\Table(name="q_question", schema="x_survey")
  * @ORM\Entity()
  */
 class Question implements UuidInterface
@@ -27,13 +27,13 @@ class Question implements UuidInterface
     private $title;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
      */
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Question\Answer", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Question\Answer", mappedBy="question")
      */
     private $answers;
 

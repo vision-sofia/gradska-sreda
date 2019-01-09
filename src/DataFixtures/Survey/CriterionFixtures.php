@@ -3,11 +3,11 @@
 namespace App\DataFixtures\Survey;
 
 use App\AppMain\Entity\Geospatial\Layer;
-use App\AppMain\Entity\SurveySystem\Evaluation\Criterion;
-use App\AppMain\Entity\SurveySystem\Evaluation\Indicator;
-use App\AppMain\Entity\SurveySystem\Survey\Category;
+use App\AppMain\Entity\Survey\Evaluation\Criterion;
+use App\AppMain\Entity\Survey\Evaluation\Indicator;
+use App\AppMain\Entity\Survey\Survey\Category;
 
-use App\AppMain\Entity\SurveySystem\Survey\Survey;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\DataFixtures\Geospatial\LayerFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -69,7 +69,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                                          ->findOneBy(['name' => $name])
                         ;
 
-                        $surveyLayer = new \App\AppMain\Entity\SurveySystem\Survey\Layer();
+                        $surveyLayer = new \App\AppMain\Entity\Survey\Survey\Layer();
                         $surveyLayer->setCategory($categoryObject);
                         $surveyLayer->setLayer($layer);
 
@@ -99,6 +99,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                             [
                                 'title'      => 'Достъпност и проходимост',
                                 'indicators' => [
+                                    'Основен',
                                     'Удобства за хора със затруднено придвижване (скосени бордюри, тактилни плочки, звукова сигнализация за пресечки)',
                                     'Физически препятствия (паркирали коли, маси на заведения, кофи за боклук, спирки и други.)',
                                     'Наличие на достатъчно пешеходно пространство спрямо наличните пешеходни потоци',

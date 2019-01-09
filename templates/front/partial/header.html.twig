@@ -1,3 +1,4 @@
+<a href="{{ path('app.index') }}">Начало</a>
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <a href="{{ path('manage.index') }}">Контролеп панел</a>
     <a href="{{ path('logout') }}">Изход</a>

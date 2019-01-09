@@ -3,8 +3,8 @@
 namespace App\AppAdmin\Controller\Survey;
 
 use App\AppAdmin\Form\Survey\SurveyType;
-use App\AppMain\Entity\SurveySystem\Evaluation\Criterion;
-use App\AppMain\Entity\SurveySystem\Survey\Survey;
+use App\AppMain\Entity\Survey\Evaluation\Criterion;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -78,7 +78,7 @@ class SurveyController extends AbstractController
 
     /**
      * @Route("/{survey}/edit", name="edit", methods="GET|POST")
-     * @ParamConverter("survey", class="App\AppMain\Entity\SurveySystem\Survey\Survey", options={"mapping": {"survey": "uuid"}})
+     * @ParamConverter("survey", class="App\AppMain\Entity\Survey\Survey\Survey", options={"mapping": {"survey": "uuid"}})
      */
     public function edit(Request $request, Survey $survey): Response
     {
@@ -111,7 +111,7 @@ class SurveyController extends AbstractController
 
     /**
      * @Route("/{survey}", name="delete", methods="DELETE")
-     * @ParamConverter("survey", class="App\AppMain\Entity\SurveySystem\Survey\Survey", options={"mapping": {"survey": "uuid"}})
+     * @ParamConverter("survey", class="App\AppMain\Entity\Survey\Survey\Survey", options={"mapping": {"survey": "uuid"}})
      */
     public function delete(Survey $survey): Response
     {

@@ -2,9 +2,9 @@
 
 namespace App\DataFixtures\Survey;
 
-use App\AppMain\Entity\SurveySystem\Question\Answer;
-use App\AppMain\Entity\SurveySystem\Question\Question;
-use App\AppMain\Entity\SurveySystem\Survey\Category;
+use App\AppMain\Entity\Survey\Question\Answer;
+use App\AppMain\Entity\Survey\Question\Question;
+use App\AppMain\Entity\Survey\Survey\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;

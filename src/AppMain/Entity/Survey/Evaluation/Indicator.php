@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\AppMain\Entity\SurveySystem\Evaluation;
+namespace App\AppMain\Entity\Survey\Evaluation;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
@@ -28,7 +28,7 @@ class Indicator implements UuidInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Evaluation\Criterion", inversedBy="indicators")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Criterion", inversedBy="indicators")
      */
     private $criterion;
 

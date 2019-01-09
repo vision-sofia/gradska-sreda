@@ -1,8 +1,8 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem\Survey;
+namespace App\AppMain\Entity\Survey\Survey;
 
-use App\AppMain\Entity\SurveySystem\Evaluation\Indicator;
+use App\AppMain\Entity\Survey\Evaluation\Indicator;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
@@ -24,12 +24,12 @@ class Category implements UuidInterface
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Survey\Category", mappedBy="parent")
      */
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category", inversedBy="children")
      * @ORM\JoinColumn(name="parent", referencedColumnName="id", nullable=true)
      */
     private $parent;
@@ -40,13 +40,13 @@ class Category implements UuidInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Survey")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Survey")
      * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
      */
     private $survey;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\SurveySystem\Evaluation\Criterion", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Criterion", mappedBy="category")
      */
     private $criteria;
 

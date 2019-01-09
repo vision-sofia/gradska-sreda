@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem\Survey;
+namespace App\AppMain\Entity\Survey\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
@@ -22,7 +22,7 @@ class Layer implements UuidInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\SurveySystem\Survey\Category")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
      * @ORM\JoinColumn(nullable=false)
      */
     private $category;

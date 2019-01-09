@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="geospatial_object", schema="x_geospatial")
  * @ORM\Entity()
  */
-class GeospatialObject implements UuidInterface
+class GeoObject implements UuidInterface
 {
     use UUIDableTrait;
 

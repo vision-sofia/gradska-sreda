@@ -3,7 +3,7 @@
 namespace App\AppAdmin\Form\Survey;
 
 
-use App\AppMain\Entity\SurveySystem\Question\Answer;
+use App\AppMain\Entity\Survey\Question\Answer;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

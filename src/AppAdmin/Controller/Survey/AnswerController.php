@@ -4,8 +4,8 @@ namespace App\AppAdmin\Controller\Survey;
 
 use App\AppAdmin\Form\Survey\AnswerType;
 use App\AppAdmin\Form\Survey\QuestionType;
-use App\AppMain\Entity\SurveySystem\Question\Answer;
-use App\AppMain\Entity\SurveySystem\Question\Question;
+use App\AppMain\Entity\Survey\Question\Answer;
+use App\AppMain\Entity\Survey\Question\Question;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -36,7 +36,7 @@ class AnswerController extends AbstractController
 
     /**
      * @Route("/{question}/answers/new", name="new", methods="GET|POST")
-     * @ParamConverter("question", class="App\AppMain\Entity\SurveySystem\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
      */
     public function new(Request $request, Question $question): Response
     {
@@ -67,8 +67,8 @@ class AnswerController extends AbstractController
 
     /**
      * @Route("/{question}/answers/{answer}/edit", name="edit", methods="GET|POST")
-     * @ParamConverter("question", class="App\AppMain\Entity\SurveySystem\Question\Question", options={"mapping": {"question": "uuid"}})
-     * @ParamConverter("answer", class="App\AppMain\Entity\SurveySystem\Question\Answer", options={"mapping": {"answer": "uuid"}})
+     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @ParamConverter("answer", class="App\AppMain\Entity\Survey\Question\Answer", options={"mapping": {"answer": "uuid"}})
      */
     public function edit(Request $request, Question $question, Answer $answer): Response
     {

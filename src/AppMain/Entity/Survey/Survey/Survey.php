@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem\Survey;
+namespace App\AppMain\Entity\Survey\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;

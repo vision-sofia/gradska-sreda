@@ -3,7 +3,7 @@
 namespace App\AppAdmin\Form\Survey;
 
 
-use App\AppMain\Entity\SurveySystem\Survey\Survey;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

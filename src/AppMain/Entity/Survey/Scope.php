@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Entity\SurveySystem;
+namespace App\AppMain\Entity\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
@@ -22,13 +22,13 @@ class Scope implements UuidInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\SurveySystem\Survey\Survey")
+     * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Survey\Survey\Survey")
      * @ORM\JoinColumn(referencedColumnName="id", name="survey_id")
      */
     private $survey;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeospatialObject")
+     * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geospatial_object_id")
      */
     private $geospatialObject;

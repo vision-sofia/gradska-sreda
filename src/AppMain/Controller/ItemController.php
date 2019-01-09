@@ -2,12 +2,16 @@
 
 namespace App\AppMain\Controller;
 
-use App\AppMain\Entity\Geospatial\GeospatialObject;
+use App\AppMain\Entity\Geospatial\GeoObject;
+use App\AppMain\Entity\Survey\Question\Answer;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
+
 
 class ItemController extends AbstractController
 {
@@ -20,18 +24,110 @@ class ItemController extends AbstractController
 
     /**
      * @Route("geo/{id}", name="app.geospatial_object.details")
-     * @ParamConverter("geospatialObject", class="App\AppMain\Entity\Geospatial\GeospatialObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geospatialObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
-    public function details(GeospatialObject $geospatialObject): Response
+    public function details(GeoObject $geospatialObject): Response
     {
         $type = $geospatialObject->getAttributes()['type'];
 
+        $conn = $this->entityManager->getConnection();
 
+        $stmt = $conn->prepare('
+            SELECT
+                q.*
+            FROM
+                x_survey.object_layer l
+                    INNER JOIN
+                x_geospatial.layer gl ON gl.id = l.layer_id
+                    INNER JOIN
+                x_survey.category c ON l.category_id = c.id
+                    INNER JOIN
+                x_survey.q_question q ON q.category_id = c.id
+            WHERE
+                gl.name = :name
+            LIMIT 1        
+        ');
 
+        $stmt->bindValue('name', 'тротоар');
+        $stmt->execute();
+
+        $question = $stmt->fetch();
+
+        $answers = $this->getDoctrine()
+                        ->getRepository(Answer::class)
+                        ->findByQuestion($question['id']);
 
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geospatialObject,
+            'answers' => $answers
+        ]);
+    }
+
+    /**
+     * @Route("geo/{id}/result", name="app.geospatial_object.result")
+     * @ParamConverter("geospatialObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     */
+    public function result(Request $request, GeoObject $geospatialObject): Response
+    {
+
+        $answerUuid = $request->get('parent');
+        $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
+            'uuid' =>  $answerUuid
+        ]);
+
+        dump($answer, $request->get('child'));
+
+
+        $responseQuestion = new \App\AppMain\Entity\Survey\Response\Question();
+        $responseQuestion->setUser($this->getUser());
+        $responseQuestion->setGeoObject($geospatialObject);
+        $responseQuestion->setQuestion($answer->getQuestion());
+
+
+        $responseAnswer = new \App\AppMain\Entity\Survey\Response\Answer();
+        $responseAnswer->setAnswer($answer);
+
+        $responseQuestion->addAnswer($responseAnswer);
+
+        $this->entityManager->persist($responseQuestion);
+        $this->entityManager->flush();
+
+
+        $type = $geospatialObject->getAttributes()['type'];
+
+
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                q.*
+            FROM
+                x_survey.object_layer l
+                    INNER JOIN
+                x_geospatial.layer gl ON gl.id = l.layer_id
+                    INNER JOIN
+                x_survey.category c ON l.category_id = c.id
+                    INNER JOIN
+                x_survey.q_question q ON q.category_id = c.id
+            WHERE
+                gl.name = :name
+            LIMIT 1        
+        ');
+
+        $stmt->bindValue('name', 'тротоар');
+        $stmt->execute();
+
+        $question = $stmt->fetch();
+
+        $answers = $this->getDoctrine()
+                        ->getRepository(Answer::class)
+                        ->findByQuestion($question['id']);
+
+
+        return $this->render('front/geo-object/details.html.twig', [
+            'geo_object' => $geospatialObject,
+            'answers' => $answers
         ]);
     }
 }
