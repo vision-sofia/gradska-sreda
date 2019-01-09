@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\AppMain\Entity\Survey;
 
 
 
@@ -70,22 +71,37 @@ class ItemController extends AbstractController
      */
     public function result(Request $request, GeoObject $geospatialObject): Response
     {
-
         $answerUuid = $request->get('parent');
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
             'uuid' =>  $answerUuid
         ]);
 
-        dump($answer, $request->get('child'));
 
+        // BEFORE INSERT trigger simulation
+        $conn = $this->entityManager->getConnection();
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_question
+            SET
+                is_latest = false
+            WHERE
+                user_id = :user_id
+                AND question_id = :question_id
+                AND geo_object_id = :geo_object_id
+        ');
 
-        $responseQuestion = new \App\AppMain\Entity\Survey\Response\Question();
+        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('question_id', $answer->getQuestion()->getId());
+        $stmt->bindValue('geo_object_id', $geospatialObject->getId());
+        $stmt->execute();
+
+        $responseQuestion = new Survey\Response\Question();
         $responseQuestion->setUser($this->getUser());
         $responseQuestion->setGeoObject($geospatialObject);
         $responseQuestion->setQuestion($answer->getQuestion());
+        $responseQuestion->setIsLatest(true);
 
-
-        $responseAnswer = new \App\AppMain\Entity\Survey\Response\Answer();
+        $responseAnswer = new Survey\Response\Answer();
         $responseAnswer->setAnswer($answer);
 
         $responseQuestion->addAnswer($responseAnswer);
@@ -93,9 +109,7 @@ class ItemController extends AbstractController
         $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
 
-
         $type = $geospatialObject->getAttributes()['type'];
-
 
         $conn = $this->entityManager->getConnection();
 

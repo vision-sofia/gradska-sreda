@@ -26,7 +26,8 @@ class AnswerRepository extends EntityRepository
                     uuid, 
                     question_id, 
                     parent,
-                    title, id AS parent_order, 
+                    title, 
+                    id AS parent_order, 
                     null::int as child_order
                 FROM 
                     x_survey.q_answer

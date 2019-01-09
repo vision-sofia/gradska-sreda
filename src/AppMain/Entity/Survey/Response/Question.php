@@ -121,8 +121,6 @@ class Question implements UuidInterface
         $this->geoObject = $geoObject;
     }
 
-
-
     public function getAnsweredAt()
     {
         return $this->answeredAt;
@@ -133,11 +131,15 @@ class Question implements UuidInterface
         return $this->updatedAt;
     }
 
-    public function getIsLatest()
+    public function getIsLatest():bool
     {
         return $this->isLatest;
     }
 
+    public function setIsLatest(bool $isLatest): void
+    {
+        $this->isLatest = $isLatest;
+    }
 
     /**
      * @ORM\PrePersist()
