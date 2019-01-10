@@ -3,10 +3,9 @@
 namespace App\DataFixtures\Survey;
 
 use App\AppMain\Entity\Geospatial\Layer;
-use App\AppMain\Entity\Survey\Evaluation\Criterion;
-use App\AppMain\Entity\Survey\Evaluation\Indicator;
+use App\AppMain\Entity\Survey\Evaluation;
+use App\AppMain\Entity\Survey\Evaluation\Subject;
 use App\AppMain\Entity\Survey\Survey\Category;
-
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\DataFixtures\Geospatial\LayerFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -45,7 +44,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                     $manager->flush();
 
                     foreach ($category['criteria'] as $criterion) {
-                        $criterionObject = new Criterion();
+                        $criterionObject = new Subject\Criterion();
                         $criterionObject->setName($criterion['title']);
                         $criterionObject->setGroup($categoryObject);
 
@@ -53,7 +52,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         $manager->flush();
 
                         foreach ($criterion['indicators'] as $indicator) {
-                            $indicatorObject = new Indicator();
+                            $indicatorObject = new Subject\Indicator();
                             $indicatorObject->setName($indicator);
                             $indicatorObject->setCriterion($criterionObject);
 

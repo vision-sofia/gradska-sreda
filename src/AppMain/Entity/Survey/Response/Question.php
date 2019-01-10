@@ -19,7 +19,7 @@ use App\AppMain\Entity\Survey;
  *     uniqueConstraints={@ORM\UniqueConstraint(
  *          name="survey_response_question",
  *          columns={"user_id", "question_id", "geo_object_id"},
- *          options={"where": "is_latest IS TRUE"})})
+ *          options={"where": "(is_latest IS TRUE)"})})
  *     }
  * )
  * @ORM\Entity()

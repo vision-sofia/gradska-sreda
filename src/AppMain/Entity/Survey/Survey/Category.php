@@ -2,7 +2,7 @@
 
 namespace App\AppMain\Entity\Survey\Survey;
 
-use App\AppMain\Entity\Survey\Evaluation\Indicator;
+use App\AppMain\Entity\Survey\EvaluationDefinition\Indicator;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
@@ -46,13 +46,29 @@ class Category implements UuidInterface
     private $survey;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Criterion", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion", mappedBy="category")
      */
     private $criteria;
 
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * @param mixed $criteria
+     */
+    public function setCriteria($criteria): void
+    {
+        $this->criteria = $criteria;
     }
 
     public function getChildren()

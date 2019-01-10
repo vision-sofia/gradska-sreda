@@ -1,14 +1,14 @@
 <?php
 
 
-namespace App\AppMain\Entity\Survey\Evaluation;
+namespace App\AppMain\Entity\Survey\Evaluation\Subject;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ev_indicator", schema="x_survey")
+ * @ORM\Table(name="ev_indicator_subject", schema="x_survey")
  * @ORM\Entity()
  */
 class Indicator implements UuidInterface
@@ -28,7 +28,8 @@ class Indicator implements UuidInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Criterion", inversedBy="indicators")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion", inversedBy="indicators")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $criterion;
 
@@ -47,14 +48,12 @@ class Indicator implements UuidInterface
         return $this->name;
     }
 
-
-    public function getCriterion()
+    public function getCriterion():? Criterion
     {
         return $this->criterion;
     }
 
-
-    public function setCriterion($criterion): void
+    public function setCriterion(Criterion $criterion): void
     {
         $this->criterion = $criterion;
     }

@@ -46,21 +46,37 @@ class ItemController extends AbstractController
                 x_survey.q_question q ON q.category_id = c.id
             WHERE
                 gl.name = :name
-            LIMIT 1        
+                AND NOT EXISTS(
+                    SELECT
+                        *
+                    FROM
+                        x_survey.response_question rq
+                    WHERE
+                        user_id = :user_id 
+                        AND rq.question_id = q.id
+                        AND rq.geo_object_id = :geo_object_id
+                )                
+            LIMIT 1
         ');
 
-        $stmt->bindValue('name', 'тротоар');
+        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('geo_object_id', $geospatialObject->getId());
+        $stmt->bindValue('name', 'пресичане');
         $stmt->execute();
 
         $question = $stmt->fetch();
 
-        $answers = $this->getDoctrine()
-                        ->getRepository(Answer::class)
-                        ->findByQuestion($question['id']);
+        $answers = [];
 
+        if($question) {
+            $answers = $this->getDoctrine()
+                            ->getRepository(Answer::class)
+                            ->findByQuestion($question['id']);
+        }
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geospatialObject,
+            'question' => $question === false ? null : $question,
             'answers' => $answers
         ]);
     }
@@ -71,10 +87,24 @@ class ItemController extends AbstractController
      */
     public function result(Request $request, GeoObject $geospatialObject): Response
     {
-        $answerUuid = $request->get('parent');
+        $parent = $request->get('parent');
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
-            'uuid' =>  $answerUuid
+            'uuid' =>  $parent
         ]);
+dump($parent);
+        $child = $request->get('child');
+
+        $childAnswers = [];
+
+        if(!empty($child)) {
+            foreach ($child as $item) {
+                $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
+                    'uuid' =>  $item
+                ]);
+
+                $childAnswers[] = $answer;
+            }
+        }
 
 
         // BEFORE INSERT trigger simulation
@@ -89,6 +119,7 @@ class ItemController extends AbstractController
                 AND question_id = :question_id
                 AND geo_object_id = :geo_object_id
         ');
+
 
         $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('question_id', $answer->getQuestion()->getId());
@@ -109,39 +140,8 @@ class ItemController extends AbstractController
         $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
 
-        $type = $geospatialObject->getAttributes()['type'];
-
-        $conn = $this->entityManager->getConnection();
-
-        $stmt = $conn->prepare('
-            SELECT
-                q.*
-            FROM
-                x_survey.object_layer l
-                    INNER JOIN
-                x_geospatial.layer gl ON gl.id = l.layer_id
-                    INNER JOIN
-                x_survey.category c ON l.category_id = c.id
-                    INNER JOIN
-                x_survey.q_question q ON q.category_id = c.id
-            WHERE
-                gl.name = :name
-            LIMIT 1        
-        ');
-
-        $stmt->bindValue('name', 'тротоар');
-        $stmt->execute();
-
-        $question = $stmt->fetch();
-
-        $answers = $this->getDoctrine()
-                        ->getRepository(Answer::class)
-                        ->findByQuestion($question['id']);
-
-
-        return $this->render('front/geo-object/details.html.twig', [
-            'geo_object' => $geospatialObject,
-            'answers' => $answers
+        return $this->redirectToRoute('app.geospatial_object.details', [
+            'id' => $geospatialObject->getUuid()
         ]);
     }
 }

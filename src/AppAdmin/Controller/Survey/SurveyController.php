@@ -3,7 +3,7 @@
 namespace App\AppAdmin\Controller\Survey;
 
 use App\AppAdmin\Form\Survey\SurveyType;
-use App\AppMain\Entity\Survey\Evaluation\Criterion;
+use App\AppMain\Entity\Survey\EvaluationDefinition\Criterion;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;

@@ -2,12 +2,14 @@
 
 namespace App\DataFixtures\Survey;
 
+use App\AppMain\Entity\Survey\Evaluation\Definition;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Question;
 use App\AppMain\Entity\Survey\Survey\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use App\AppMain\Entity\Survey\Evaluation\Subject;
 
 class QuestionFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -55,6 +57,22 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         $manager->flush();
                     }
                 }
+
+                if(isset($answer['evaluation'])) {
+                    foreach ($answer['evaluation'] as $item) {
+                        $criterionSubject = $manager->getRepository(Subject\Criterion::class)->findOneBy([
+                            'name' => $item['criterion'],
+                            'category' => $category
+                        ]);
+                        $criterionDefinition = new Definition\Criterion();
+                        $criterionDefinition->setValue($item['point']);
+                        $criterionDefinition->setSubject($criterionSubject);
+                        $criterionDefinition->setAnswer($answerObject);
+
+                        $manager->persist($criterionDefinition);
+                        $manager->flush();
+                    }
+                }
             }
         }
     }
@@ -64,39 +82,121 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-                'category' => 'пресичане',
+                'category' => 'Пресичания',
                 'question' => 'Какъв е автомобилният трафик в момента?',
                 'has_multiple_answers' => false,
                 'answers' => [
-                    ['title' => 'Интензивен',],
-                    ['title' => 'Умерен',],
-                    ['title' => 'Спокоен',],
+                    [
+                        'title' => 'Интензивен',
+                    ],
+                    [
+                        'title' => 'Умерен',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ]
+                    ],
+                    [
+                        'title' => 'Спокоен',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ]
+                    ],
                 ],
             ],
             [
-                'category' => 'пресичане',
+                'category' => 'Пресичания',
                 'question' => 'Какъв вид е пресичането?',
                 'has_multiple_answers' => true,
                 'answers' => [
-                    ['title' => 'Светофар'],
-                    ['title' => 'Пешеходна пътека'],
-                    ['title' => 'Пешеходен подлез'],
-                    ['title' => 'Пешеходен мост / надлез'],
-                    ['title' => 'Нерегулирано (квартални улици)'],
-                    ['title' => 'Несъществуващо(!)'],
+                    [
+                        'title' => 'Светофар',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'Пешеходна пътека',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'Пешеходен подлез',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'Пешеходен мост / надлез',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'Нерегулирано (квартални улици)'
+                    ],
+                    [
+                        'title' => 'Несъществуващо(!)'
+                    ],
                 ],
             ],
             [
-                'category' => 'пресичане',
+                'category' => 'Пресичания',
                 'question' => 'Помислено ли е за лица с намалена подвижност, незрящи, детски колички и др?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
                         'title' => 'Да',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
                         'child' => [
-                            ['title' => 'Скосени бордюри / повдигната пешеходна повърхност'],
-                            ['title' => 'Тактилни (релефни) плочки'],
-                            ['title' => 'Звукова сигнализация'],
+                            [
+                                'title' => 'Скосени бордюри / повдигната пешеходна повърхност'
+                            ],
+                            [
+                                'title' => 'Тактилни (релефни) плочки'
+                            ],
+                            [
+                                'title' => 'Звукова сигнализация'
+                            ],
                         ]
                     ],
                     [
@@ -105,93 +205,58 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
             [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли някакви препятствия в тази отсечка?',
+                'category' => 'Пресичания',
+                'question' => 'Има ли нещо, което в момента да затруднява видимостта или пресичането? (да не се появява при отговор “нерегулирано” на въпрос 2)',
                 'has_multiple_answers' => false,
                 'answers' => [
-                    [
-                        'title' => 'Да, по цялото продължение на отсечката',
-                        'child' => [
-                            ['title' => 'Паркирани коли'],
-                            ['title' => 'Кофи за боклук'],
-                            ['title' => 'Маси на заведения'],
-                            ['title' => 'Спирки на МГТ'],
-                            ['title' => 'Несъобразено поставени осветителни стълбове и реклами'],
-                            ['title' => 'Антипаркинг колчета'],
-                            ['title' => 'Други', 'is_free_answer' => true],
-                        ]
-                    ],
-                    ['title' => 'Да, епизодично'],
-                    ['title' => 'Не, никакви'],
-                ],
-            ],
-            [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли сериозен конфликт с велосипедисти, товарни дейности, скутери, скейтборд или други?',
-                'has_multiple_answers' => false,
-                'answers' => [
-                    ['title' => 'Да'],
-                    ['title' => 'Не'],
-                ],
-            ],
-            [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли проблеми с настилката в момента?',
-                'has_multiple_answers' => false,
-                'answers' => [
-                    [
-                        'title' => 'Не, никакви'
-                    ],
                     [
                         'title' => 'Да',
                         'child' => [
-                            ['title' => 'Има много неравности'],
-                            ['title' => 'Липса на настилка'],
-                            ['title' => 'Хлъзгаво е'],
-                            ['title' => 'Има наводнени участъци'],
-                            ['title' => 'Друго', 'is_free_answer' => true],
+                            [
+                                'title' => 'Паркирани коли'
+                            ],
+                            [
+                                'title' => 'Кофи за боклук'
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true
+                            ],
                         ]
+                    ],
+                    [
+                        'title' => 'Не',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],  [
+                                'point' => 1,
+                                'criterion' => 'Сигурност'
+                            ],
+                        ],
                     ],
                 ],
             ],
             [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли ‘светли’ и активни партерни етажи (наличие на търговски обекти)?',
+                'category' => 'Пресичания',
+                'question' => 'Осветено ли е добре пресичането вечерно време?',
                 'has_multiple_answers' => false,
                 'answers' => [
-                    ['title' => 'Да'],
-                    ['title' => 'Не'],
+                    [
+                        'title' => 'Да',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Сигурност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
                 ],
             ],
-            [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли денонощни обекти като магазини, аптеки, заведения, бензиностанции?',
-                'has_multiple_answers' => false,
-                'answers' => [
-                    ['title' => 'Да'],
-                    ['title' => 'Не'],
-                ],
-            ],
-            [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Осветено ли е',
-                'has_multiple_answers' => false,
-                'answers' => [
-                    ['title' => 'Да, достатъчно'],
-                    ['title' => 'Да, но недостатъчно'],
-                    ['title' => 'Не'],
-                ],
-            ],
-            [
-                'category' => 'пешеходна отсечка',
-                'question' => 'Има ли изоставени сгради',
-                'has_multiple_answers' => false,
-                'answers' => [
-                    ['title' => 'Да'],
-                    ['title' => 'Не'],
-                ],
-            ],
-
         ];
     }
 }

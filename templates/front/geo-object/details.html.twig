@@ -5,14 +5,20 @@
     <p>{{ geo_object.uuid }}</p>
     <p>{{ geo_object.attributes.type }}</p>
 
-    <form method="post" action="{{ path('app.geospatial_object.result', {'id': geo_object.uuid}) }}">
-    {% for answer in answers %}
-        {% if answer.parent is null %}
-            <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><input type="radio" name="parent" value="{{ answer.uuid }}">{{ answer.title }}</p>
-        {% else %}
-            <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><input type="checkbox" name="child[]" value="{{ answer.uuid }}">{{ answer.title }}</p>
-        {% endif %}
-    {% endfor %}
-        <button type="submit">Изпрати</button>
-    </form>
+    {% if question is null %}
+        Няма повече въпроси
+    {% else %}
+        <strong>{{ question.title }}</strong>
+
+        <form method="post" action="{{ path('app.geospatial_object.result', {'id': geo_object.uuid}) }}">
+        {% for answer in answers %}
+            {% if answer.parent is null %}
+                <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><input type="radio" name="parent" value="{{ answer.uuid }}">{{ answer.title }}</p>
+            {% else %}
+                <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><input type="checkbox" name="child[]" value="{{ answer.uuid }}">{{ answer.title }}</p>
+            {% endif %}
+        {% endfor %}
+            <button type="submit">Изпрати</button>
+        </form>
+    {% endif %}
 {% endblock %}

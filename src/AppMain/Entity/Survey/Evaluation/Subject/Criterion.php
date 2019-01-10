@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Entity\Survey\Evaluation;
+namespace App\AppMain\Entity\Survey\Evaluation\Subject;
 
 use App\AppMain\Entity\Survey\Survey\Category;
 use App\AppMain\Entity\Survey\Survey\Survey;
@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ev_criterion", schema="x_survey")
+ * @ORM\Table(name="ev_criterion_subject", schema="x_survey")
  * @ORM\Entity()
  */
 class Criterion implements UuidInterface
@@ -36,7 +36,7 @@ class Criterion implements UuidInterface
     private $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Indicator", mappedBy="criterion")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Indicator", mappedBy="criterion")
      */
     private $indicators;
 
@@ -64,6 +64,20 @@ class Criterion implements UuidInterface
     {
         $this->category = $survey;
     }
+
+
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+
+    public function setCategory($category): void
+    {
+        $this->category = $category;
+    }
+
+
 
     /**
      * @return Collection|Indicator[]
