@@ -34,8 +34,8 @@ class ApiController extends AbstractController
                     INNER JOIN
                 x_geospatial.geospatial_object g ON m.spatial_object_id = g.id
             WHERE
-                g.attributes->>\'type\' = \'Тротоар\' 
-            LIMIT 500
+                g.attributes->>\'type\' IN(\'Пешеходна пътека\', \'Алея\', \'Тротоар\') 
+            LIMIT 1500
         ');
 
         $stmt->execute();
