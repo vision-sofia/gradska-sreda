@@ -55,7 +55,21 @@ class ItemController extends AbstractController
                         user_id = :user_id 
                         AND rq.question_id = q.id
                         AND rq.geo_object_id = :geo_object_id
-                )                
+                ) 
+                AND NOT EXISTS(
+                    SELECT
+                        *
+                    FROM
+                        x_survey.flow f
+                            INNER JOIN
+                        x_survey.response_answer a ON f.answer_id = a.answer_id
+                            INNER JOIN
+                        x_survey.response_question rq ON a.question_id = rq.id
+                    WHERE
+                        rq.user_id = :user_id 
+                        AND rq.geo_object_id = :geo_object_id
+                        AND f.question_id = q.id
+                )                               
             LIMIT 1
         ');
 
@@ -91,7 +105,7 @@ class ItemController extends AbstractController
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
             'uuid' =>  $parent
         ]);
-dump($parent);
+
         $child = $request->get('child');
 
         $childAnswers = [];

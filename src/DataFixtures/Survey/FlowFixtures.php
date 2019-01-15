@@ -58,7 +58,6 @@ class FlowFixtures extends Fixture implements DependentFixtureInterface
         return [
             [
                 'answers'  => [
-                    'Умерен',
                     'Спокоен',
                 ],
                 'question' => 'Какъв вид е пресичането?',
