@@ -28,16 +28,24 @@ class IndexController extends AbstractController
             SELECT 
                 g.uuid as id,
                 st_asgeojson(m.coordinates) as geo,
-                g.attributes 
+                g.attributes,
+                u.data
             FROM 
                 x_geometry.multiline m
                     INNER JOIN
                 x_geospatial.geospatial_object g ON m.spatial_object_id = g.id
+                    LEFT JOIN
+                x_survey.result_user_completion u ON g.id = u.geo_object_id AND u.user_id = :user_id                
             WHERE
                 g.attributes->>\'type\' = \'Тротоар\' 
             LIMIT 3
         ');
 
+        if($this->getUser()) {
+            $userId =  $this->getUser()->getId();
+        }
+
+        $stmt->bindValue('user_id', $userId ?? null);
         $stmt->execute();
 
         $result = [];
@@ -58,14 +66,14 @@ class IndexController extends AbstractController
             $result[] = [
                 'id' => $row['id'],
                 'properties' => $properties,
-                'geometry' => json_decode($row['geo'], true)
+                'geometry' => json_decode($row['geo'], true),
+                'data' => json_decode($row['data'], true)
             ];
 
-          #  yield
         }
 
         return $this->render('front/index/index.html.twig', [
-            'items' => $resdult
+            'items' => $result
         ]);
     }
 }
