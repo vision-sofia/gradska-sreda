@@ -30,7 +30,7 @@ class CriterionCompletion
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion", inversedBy="indicators")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion")
      * @ORM\JoinColumn(referencedColumnName="id", name="subject_id", nullable=false)
      */
     private $subject;

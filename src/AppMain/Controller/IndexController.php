@@ -60,10 +60,12 @@ class IndexController extends AbstractController
                 'properties' => $properties,
                 'geometry' => json_decode($row['geo'], true)
             ];
+
+          #  yield
         }
 
         return $this->render('front/index/index.html.twig', [
-            'items' => $result
+            'items' => $resdult
         ]);
     }
 }

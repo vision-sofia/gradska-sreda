@@ -7,7 +7,7 @@ use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="object_layer", schema="x_survey")
+ * @ORM\Table(name="survey_category_layer", schema="x_survey")
  * @ORM\Entity()
  */
 class Layer implements UuidInterface

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\AppMain\Entity\Survey;
+namespace App\AppMain\Entity\Survey\Survey;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="scope", schema="x_survey")
+ * @ORM\Table(name="survey_scope", schema="x_survey")
  * @ORM\Entity()
  */
 class Scope implements UuidInterface

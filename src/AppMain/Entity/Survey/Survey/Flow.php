@@ -2,16 +2,14 @@
 
 namespace App\AppMain\Entity\Survey\Survey;
 
-use App\AppMain\Entity\Survey\EvaluationDefinition\Indicator;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Question;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="flow", schema="x_survey")
+ * @ORM\Table(name="survey_flow", schema="x_survey")
  * @ORM\Entity()
  */
 class Flow implements UuidInterface

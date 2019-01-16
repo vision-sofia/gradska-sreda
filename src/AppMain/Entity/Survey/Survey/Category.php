@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="category", schema="x_survey")
+ * @ORM\Table(name="survey_category", schema="x_survey")
  * @ORM\Entity()
  */
 class Category implements UuidInterface

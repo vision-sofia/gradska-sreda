@@ -37,11 +37,11 @@ class ItemController extends AbstractController
             SELECT
                 q.*
             FROM
-                x_survey.object_layer l
+                x_survey.survey_category_layer l
                     INNER JOIN
                 x_geospatial.layer gl ON gl.id = l.layer_id
                     INNER JOIN
-                x_survey.category c ON l.category_id = c.id
+                x_survey.survey_category c ON l.category_id = c.id
                     INNER JOIN
                 x_survey.q_question q ON q.category_id = c.id
             WHERE
@@ -60,7 +60,7 @@ class ItemController extends AbstractController
                     SELECT
                         *
                     FROM
-                        x_survey.flow f
+                        x_survey.survey_flow f
                             INNER JOIN
                         x_survey.response_answer a ON f.answer_id = a.answer_id
                             INNER JOIN

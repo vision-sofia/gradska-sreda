@@ -23,7 +23,7 @@ class Criterion implements UuidInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion", inversedBy="indicators")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion")
      */
     private $subject;
 

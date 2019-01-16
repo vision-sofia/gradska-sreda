@@ -28,5 +28,15 @@ class UserFixtures extends Fixture
 
         $manager->persist($entity);
         $manager->flush();
+
+        $entity = new User();
+        $entity->setEmail('foo@localhost');
+        $entity->setIsActive(true);
+        $entity->setUsername('foo');
+        $entity->setPassword('$argon2i$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$BjWlpk8/CC9Ei/G14zrVbgwBLK8Nq1e9bk2Bk1LOqGc'); // 123@
+        $entity->addRole('ROLE_USER');
+
+        $manager->persist($entity);
+        $manager->flush();
     }
 }
