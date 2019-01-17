@@ -22,6 +22,18 @@ class IndexController extends AbstractController
      */
     public function index(): Response
     {
+        $resultTypeA = $this->findByType('Тротоар');
+        $resultTypeB = $this->findByType('Алея');
+
+        $result = array_merge($resultTypeA, $resultTypeB);
+
+        return $this->render('front/index/index.html.twig', [
+            'items' => $result
+        ]);
+    }
+
+
+    private function findByType(string $type): array {
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
@@ -37,15 +49,14 @@ class IndexController extends AbstractController
                     LEFT JOIN
                 x_survey.result_user_completion u ON g.id = u.geo_object_id AND u.user_id = :user_id                
             WHERE
-                g.attributes->>\'type\' = \'Тротоар\' 
+                g.attributes->>\'type\' = :type
             LIMIT 3
         ');
 
-        if($this->getUser()) {
-            $userId =  $this->getUser()->getId();
-        }
+        $userId =  $this->getUser() !== null ? $this->getUser()->getId() : null;
 
-        $stmt->bindValue('user_id', $userId ?? null);
+        $stmt->bindValue('type', $type);
+        $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
         $result = [];
@@ -69,11 +80,8 @@ class IndexController extends AbstractController
                 'geometry' => json_decode($row['geo'], true),
                 'data' => json_decode($row['data'], true)
             ];
-
         }
 
-        return $this->render('front/index/index.html.twig', [
-            'items' => $result
-        ]);
+        return $result;
     }
 }

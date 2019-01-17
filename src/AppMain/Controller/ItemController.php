@@ -5,8 +5,6 @@ namespace App\AppMain\Controller;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\Event\GeoObjectSurveyTouch;
-use App\Services\Survey\Result\CriterionCompletion;
-use App\Services\Survey\Result\UserCompletion;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -54,7 +52,7 @@ class ItemController extends AbstractController
                     INNER JOIN
                 x_survey.q_question q ON q.category_id = c.id
             WHERE
-                gl.name = :name
+                gl.name = :layer_name
                 AND NOT EXISTS(
                     SELECT
                         *
@@ -82,9 +80,15 @@ class ItemController extends AbstractController
             LIMIT 1
         ');
 
+
+        $map = [
+            'Алея' => 'алея',
+            'Тротоар' => 'пресичане'
+        ];
+
         $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('geo_object_id', $geospatialObject->getId());
-        $stmt->bindValue('name', 'пресичане');
+        $stmt->bindValue('layer_name', $map[strtolower($type)]);
         $stmt->execute();
 
         $question = $stmt->fetch();
