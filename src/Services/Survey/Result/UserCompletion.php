@@ -15,15 +15,15 @@ class UserCompletion
         $this->em = $entityManager;
     }
 
-    public function update(int $userId, int $geoObjectId):void
+    public function update(int $geoObjectId, int $userId):void
     {
         $conn = $this->em->getConnection();
 
         $stmt = $conn->prepare('
             INSERT INTO x_survey.result_user_completion(user_id, geo_object_id, data)
             SELECT
-                wz.user_id,
-                wz.geo_object_id,
+                cc.user_id,
+                cc.geo_object_id,
                 (
                     SELECT
                         to_json(t)
@@ -38,16 +38,19 @@ class UserCompletion
                             FROM
                                 x_survey.result_criterion_completion w
                             WHERE
-                                w.user_id = :user_id
-                                AND w.geo_object_id = wz.geo_object_id
+                                w.user_id = cc.user_id
+                                AND w.geo_object_id = cc.geo_object_id
                         ) t
                 )
             FROM
-                x_survey.result_criterion_completion wz
+                x_survey.result_criterion_completion cc
             WHERE
-                wz.geo_object_id = :geo_object_id                
+                cc.geo_object_id = :geo_object_id
+                AND cc.user_id = :user_id
             GROUP BY
-                wz.geo_object_id, wz.user_id         
+                cc.geo_object_id, cc.user_id
+            ON CONFLICT (geo_object_id, user_id) DO UPDATE SET
+                data = excluded.data    
         ');
 
         $stmt->bindValue('user_id', $userId);

@@ -4,9 +4,13 @@ namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey\Question\Answer;
+use App\Event\GeoObjectSurveyTouch;
+use App\Services\Survey\Result\CriterionCompletion;
+use App\Services\Survey\Result\UserCompletion;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,10 +21,15 @@ use App\AppMain\Entity\Survey;
 class ItemController extends AbstractController
 {
     protected $entityManager;
+    protected $eventDispatcher;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $eventDispatcher
+    )
     {
         $this->entityManager = $entityManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -127,11 +136,12 @@ class ItemController extends AbstractController
             UPDATE
                 x_survey.response_question
             SET
-                is_latest = false
+                is_latest = FALSE
             WHERE
                 user_id = :user_id
                 AND question_id = :question_id
                 AND geo_object_id = :geo_object_id
+                AND is_latest = TRUE
         ');
 
 
@@ -153,6 +163,9 @@ class ItemController extends AbstractController
 
         $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
+
+        $event = new GeoObjectSurveyTouch($geospatialObject, $this->getUser());
+        $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
         return $this->redirectToRoute('app.geospatial_object.details', [
             'id' => $geospatialObject->getUuid()
