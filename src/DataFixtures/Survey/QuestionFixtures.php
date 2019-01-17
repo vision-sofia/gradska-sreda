@@ -112,7 +112,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             [
                 'category' => 'Пресичания',
                 'question' => 'Какъв вид е пресичането?',
-                'has_multiple_answers' => true,
+                'has_multiple_answers' => false,
                 'answers' => [
                     [
                         'title' => 'Светофар',
@@ -254,6 +254,155 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Алеи',
+                'question' => 'Има ли проблеми с настилката в момента?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Не, никакви',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да',
+                        'child' => [
+                            [
+                                'title' => 'Има много неравности'
+                            ],
+                            [
+                                'title' => 'Липса на настилка'
+                            ],
+                            [
+                                'title' => 'Хлъзгаво е'
+                            ],
+                            [
+                                'title' => 'Има наводнени участъци'
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true
+                            ],
+                        ]
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Алеи',
+                'question' => 'Осветено ли е?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, достатъчно',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, но недостатъчно',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Сигурност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Алеи',
+                'question' => 'Хората само преминават или има и стоящи/седящи хора наоколо в момента?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, сами',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в група от двама или повече',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Алеи',
+                'question' => 'Има ли озеленяване?  (дървета, храсти, тревни площи и др.)?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, в добро състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в лошо състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, няма',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Алеи',
+                'question' => 'Има ли градско обзавеждане (пейки, кошчета и др.)?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, в добро състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в лошо състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, няма',
                     ],
                 ],
             ],

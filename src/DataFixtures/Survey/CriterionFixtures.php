@@ -51,13 +51,15 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         $manager->persist($criterionObject);
                         $manager->flush();
 
-                        foreach ($criterion['indicators'] as $indicator) {
-                            $indicatorObject = new Subject\Indicator();
-                            $indicatorObject->setName($indicator);
-                            $indicatorObject->setCriterion($criterionObject);
+                        if(isset($criterion['indicators'])) {
+                            foreach ($criterion['indicators'] as $indicator) {
+                                $indicatorObject = new Subject\Indicator();
+                                $indicatorObject->setName($indicator);
+                                $indicatorObject->setCriterion($criterionObject);
 
-                            $manager->persist($indicatorObject);
-                            $manager->flush();
+                                $manager->persist($indicatorObject);
+                                $manager->flush();
+                            }
                         }
 
                     }
@@ -88,11 +90,10 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                 'survey'   => 'Анкета',
                 'category' => [
                     [
-                        'name'     => 'пешеходна отсечка',
+                        'name'     => 'Пешеходни отсечки',
                         'parent'   => null,
                         'layers'   => [
                             'тротоар',
-                            'алея',
                         ],
                         'criteria' => [
                             [
@@ -134,20 +135,22 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'name'     => 'Тротоари',
-                        'parent'   => 'пешеходна отсечка',
-                        'layers'   => [
-                            'тротоар',
-                        ],
-                        'criteria' => [],
-                    ],
-                    [
                         'name'     => 'Алеи',
-                        'parent'   => 'пешеходна отсечка',
+                        'parent'   => null,
                         'layers'   => [
                             'алея',
                         ],
-                        'criteria' => [],
+                        'criteria' => [
+                            [
+                                'title' => 'Достъпност и проходимост',
+                            ],
+                            [
+                                'title' => 'Сигурност',
+                            ],
+                            [
+                                'title' => 'Комфорт и привлекателност',
+                            ],
+                        ],
                     ],
                     [
                         'name'     => 'Пресичания',
