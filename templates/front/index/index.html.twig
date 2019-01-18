@@ -5,7 +5,7 @@
 
     <ul>
         {% for item in items %}
-            <li>{{ item.properties.type }} - <a href="{{ path('app.geospatial_object.details', {'id': item.id}) }}">{{ item.id }}</a> {{ dump(item.data) }}</li>
+            <li>{{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geospatial_object.details', {'id': item.id}) }}">{{ item.id }}</a> {{ dump(item.data) }}</li>
         {% endfor %}
     </ul>
 {% endblock %}

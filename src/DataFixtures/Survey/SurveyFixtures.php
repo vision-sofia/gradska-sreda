@@ -13,7 +13,10 @@ class SurveyFixtures extends Fixture
     {
         foreach ($this->data() as $item) {
             $object = new Survey();
-            $object->setName($item);
+            $object->setName($item['name']);
+            $object->setIsActive($item['is_active']);
+            $object->setStartDate(new \DateTime($item['start_date']));
+            $object->setEndDate(new \DateTime($item['end_date']));
 
             $manager->persist($object);
         }
@@ -25,7 +28,12 @@ class SurveyFixtures extends Fixture
     private function data(): array
     {
         return [
-            'Анкета',
+            [
+                'name' => 'Анкета',
+                'is_active' => true,
+                'start_date' => '2019-01-01',
+                'end_date' => '2019-06-01',
+            ]
         ];
     }
 }

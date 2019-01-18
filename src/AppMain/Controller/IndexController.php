@@ -22,18 +22,25 @@ class IndexController extends AbstractController
      */
     public function index(): Response
     {
-        $resultTypeA = $this->findByType('Тротоар');
-        $resultTypeB = $this->findByType('Алея');
+        $conn = $this->entityManager->getConnection();
 
-        $result = array_merge($resultTypeA, $resultTypeB);
+        $stmt = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
+        $stmt->execute(['Нерегулирано']);
+
+        $resultTypeA = $this->findByType($stmt->fetchColumn());
+
+        $stmt = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
+        $stmt->execute(['Алея']);
+
+        $resultTypeB = $this->findByType($stmt->fetchColumn());
 
         return $this->render('front/index/index.html.twig', [
-            'items' => $result
+            'items' => array_merge($resultTypeA, $resultTypeB)
         ]);
     }
 
 
-    private function findByType(string $type): array {
+    private function findByType(int $objectTypeId): array {
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
@@ -41,21 +48,27 @@ class IndexController extends AbstractController
                 g.uuid as id,
                 st_asgeojson(m.coordinates) as geo,
                 g.attributes,
-                u.data
+                u.data,
+                g.name as object_name,
+                t.name as object_type
             FROM 
                 x_geometry.multiline m
                     INNER JOIN
-                x_geospatial.geospatial_object g ON m.spatial_object_id = g.id
+                x_geospatial.geo_object g ON m.geo_object_id = g.id
                     LEFT JOIN
                 x_survey.result_user_completion u ON g.id = u.geo_object_id AND u.user_id = :user_id                
+                    LEFT JOIN
+                x_geospatial.object_type t ON g.object_type_id = t.id
             WHERE
-                g.attributes->>\'type\' = :type
+                g.object_type_id = :object_type_id
+            ORDER BY 
+                g.id DESC
             LIMIT 3
         ');
 
         $userId =  $this->getUser() !== null ? $this->getUser()->getId() : null;
 
-        $stmt->bindValue('type', $type);
+        $stmt->bindValue('object_type_id', $objectTypeId);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
@@ -77,6 +90,8 @@ class IndexController extends AbstractController
             $result[] = [
                 'id' => $row['id'],
                 'properties' => $properties,
+                'type' => $row['object_type'],
+                'name' => $row['object_name'],
                 'geometry' => json_decode($row['geo'], true),
                 'data' => json_decode($row['data'], true)
             ];

@@ -29,7 +29,7 @@ class GeoObject implements UuidInterface
     private $attributes;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Geometry\GeometryBase", mappedBy="spatialObject")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Geometry\GeometryBase", mappedBy="geoObject")
      */
     private $geography;
 

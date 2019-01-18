@@ -36,23 +36,19 @@ class ItemController extends AbstractController
      */
     public function details(GeoObject $geospatialObject): Response
     {
-        $type = $geospatialObject->getAttributes()['type'];
-
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
             SELECT
                 q.*
             FROM
-                x_survey.survey_category_layer l
-                    INNER JOIN
-                x_geospatial.layer gl ON gl.id = l.layer_id
+                x_survey.survey_element l
                     INNER JOIN
                 x_survey.survey_category c ON l.category_id = c.id
                     INNER JOIN
                 x_survey.q_question q ON q.category_id = c.id
             WHERE
-                gl.name = :layer_name
+                l.object_type_id = :object_type_id
                 AND NOT EXISTS(
                     SELECT
                         *
@@ -67,7 +63,7 @@ class ItemController extends AbstractController
                     SELECT
                         *
                     FROM
-                        x_survey.survey_flow f
+                        x_survey.q_flow f
                             INNER JOIN
                         x_survey.response_answer a ON f.answer_id = a.answer_id
                             INNER JOIN
@@ -76,19 +72,14 @@ class ItemController extends AbstractController
                         rq.user_id = :user_id 
                         AND rq.geo_object_id = :geo_object_id
                         AND f.question_id = q.id
-                )                               
+                )
+            ORDER BY q.id ASC                               
             LIMIT 1
         ');
 
-
-        $map = [
-            'Алея' => 'алея',
-            'Тротоар' => 'пресичане'
-        ];
-
         $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('geo_object_id', $geospatialObject->getId());
-        $stmt->bindValue('layer_name', $map[strtolower($type)]);
+        $stmt->bindValue('object_type_id', $geospatialObject->getType()->getId());
         $stmt->execute();
 
         $question = $stmt->fetch();

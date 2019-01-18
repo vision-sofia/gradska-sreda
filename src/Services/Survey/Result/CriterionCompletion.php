@@ -39,7 +39,7 @@ class CriterionCompletion
                             SELECT
                                 f.question_id, rq.user_id, rq.geo_object_id
                             FROM
-                                x_survey.survey_flow f
+                                x_survey.q_flow f
                                     INNER JOIN
                                 x_survey.response_answer ra ON ra.answer_id = f.answer_id
                                     INNER JOIN
