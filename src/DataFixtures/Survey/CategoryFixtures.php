@@ -66,20 +66,16 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
                     }
 
                     foreach ($category['object_types'] as $name) {
-
                         $objectType = $manager->getRepository(ObjectType::class)
-                                         ->findOneBy(['name' => $name])
+                                              ->findOneBy(['name' => $name])
                         ;
 
-                        if ($objectType) {
-                            $element = new Element();
-                            $element->setCategory($categoryObject);
-                            $element->setObjectType($objectType);
+                        $element = new Element();
+                        $element->setCategory($categoryObject);
+                        $element->setObjectType($objectType);
 
-                            $manager->persist($element);
-                            $manager->flush();
-                        }
-
+                        $manager->persist($element);
+                        $manager->flush();
                     }
                 }
             }

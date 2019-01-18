@@ -258,6 +258,351 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
             [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли някакви препятствия в тази отсечка?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, по цялото продължение на отсечката',
+                        'child' => [
+                            [
+                                'title' => 'Паркирани коли'
+                            ],
+                            [
+                                'title' => 'Кофи за боклук'
+                            ],
+                            [
+                                'title' => 'Маси на заведения'
+                            ],
+                            [
+                                'title' => 'Спирки на МГТ'
+                            ],
+                            [
+                                'title' => 'Несъобразено поставени осветителни стълбове и реклами'
+                            ],
+                            [
+                                'title' => 'Антипаркинг колчета'
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true
+                            ],
+                        ]
+                    ],
+                    [
+                        'title' => 'Да, епизодично',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, никакви',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли сериозен конфликт с велосипедисти, товарни дейности, скутери, скейтборд или други?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да',
+                    ],
+                    [
+                        'title' => 'Не',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли проблеми с настилката в момента?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Не, никакви',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Да',
+                        'child' => [
+                            [
+                                'title' => 'Има много неравности'
+                            ],
+                            [
+                                'title' => 'Липса на настилка'
+                            ],
+                            [
+                                'title' => 'Хлъзгаво е'
+                            ],
+                            [
+                                'title' => 'Има наводнени участъци'
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true
+                            ],
+                        ]
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли ‘светли’ и активни партерни етажи (наличие на търговски обекти)?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Сигурност'
+                            ],
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли денонощни обекти като магазини, аптеки, заведения, бензиностанции?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Сигурност'
+                            ],
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Осветено ли е?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, достатъчно',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, но недостатъчно',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Не',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли изоставени сгради?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да',
+                    ],
+                    [
+                        'title' => 'Не',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Сигурност'
+                            ]
+                        ],
+                    ]
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Хората само преминават или има и стоящи/седящи хора в момента?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, сами',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в група от двама или повече',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Не'
+                    ]
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Какъв е автомобилният трафик в момента?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Интензивен'
+                    ],
+                    [
+                        'title' => 'Умерен',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Спокоен',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ]
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли озеленяване?  (дървета, храсти, тревни площи и др.)',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, в добро състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в лошо състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, няма'
+                    ]
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли градско обзавеждане (пейки, кошчета и др.)?',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Да, в добро състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Да, в лошо състояние',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, няма'
+                    ]
+                ],
+            ],
+            [
+                'category' => 'Пешеходни отсечки',
+                'question' => 'Има ли неподдържани фасади? (ронеща се мазилка и др.)',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Много',
+                        'is_free_answer' => true
+                    ],
+                    [
+                        'title' => 'Малко',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, няма',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност'
+                            ]
+                        ],
+                    ],
+                    [
+                        'title' => 'Няма сгради'
+                    ]
+                ],
+            ],
+            [
                 'category' => 'Алеи',
                 'question' => 'Има ли проблеми с настилката в момента?',
                 'has_multiple_answers' => false,
