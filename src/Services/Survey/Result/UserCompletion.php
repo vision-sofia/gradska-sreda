@@ -35,7 +35,8 @@ class UserCompletion
                         SELECT
                             cast(
                                 CASE WHEN (
-                                    bool_and(is_complete) = (COUNT(*) = (
+                                    bool_and(is_complete) = TRUE
+                                    AND (COUNT(*) = (
                                         SELECT
                                             COUNT(*)
                                         FROM
@@ -45,7 +46,7 @@ class UserCompletion
                                         WHERE
                                             c.id = MAX(w.subject_id)
                                         )
-                                    )
+                                    ) = TRUE
                                 ) = TRUE
                                 THEN 1 ELSE 0 END AS INTEGER
                             ) as is_complete
