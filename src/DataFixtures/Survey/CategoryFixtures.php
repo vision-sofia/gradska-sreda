@@ -2,22 +2,23 @@
 
 namespace App\DataFixtures\Survey;
 
-use App\AppMain\Entity\Geospatial\Layer;
+use App\AppMain\Entity\Geospatial\ObjectType;
 use App\AppMain\Entity\Survey\Evaluation;
 use App\AppMain\Entity\Survey\Evaluation\Subject;
 use App\AppMain\Entity\Survey\Survey\Category;
+use App\AppMain\Entity\Survey\Survey\Element;
 use App\AppMain\Entity\Survey\Survey\Survey;
-use App\DataFixtures\Geospatial\LayerFixtures;
+use App\DataFixtures\Geospatial\ObjectTypeFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class CriterionFixtures extends Fixture implements DependentFixtureInterface
+class CategoryFixtures extends Fixture implements DependentFixtureInterface
 {
     public function getDependencies(): array
     {
         return [
-            LayerFixtures::class,
+            ObjectTypeFixtures::class,
             SurveyFixtures::class,
         ];
     }
@@ -51,7 +52,7 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                         $manager->persist($criterionObject);
                         $manager->flush();
 
-                        if(isset($criterion['indicators'])) {
+                        if (isset($criterion['indicators'])) {
                             foreach ($criterion['indicators'] as $indicator) {
                                 $indicatorObject = new Subject\Indicator();
                                 $indicatorObject->setName($indicator);
@@ -64,18 +65,20 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
 
                     }
 
-                    foreach ($category['layers'] as $name) {
+                    foreach ($category['object_types'] as $name) {
 
-                        $layer = $manager->getRepository(Layer::class)
+                        $objectType = $manager->getRepository(ObjectType::class)
                                          ->findOneBy(['name' => $name])
                         ;
 
-                        $surveyLayer = new \App\AppMain\Entity\Survey\Survey\Layer();
-                        $surveyLayer->setCategory($categoryObject);
-                        $surveyLayer->setLayer($layer);
+                        if ($objectType) {
+                            $element = new Element();
+                            $element->setCategory($categoryObject);
+                            $element->setObjectType($objectType);
 
-                        $manager->persist($surveyLayer);
-                        $manager->flush();
+                            $manager->persist($element);
+                            $manager->flush();
+                        }
 
                     }
                 }
@@ -92,8 +95,8 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'name'     => 'Пешеходни отсечки',
                         'parent'   => null,
-                        'layers'   => [
-                            'тротоар',
+                        'object_types'   => [
+                            'Тротоар',
                         ],
                         'criteria' => [
                             [
@@ -137,8 +140,10 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'name'     => 'Алеи',
                         'parent'   => null,
-                        'layers'   => [
-                            'алея',
+                        'object_types'   => [
+                            'Алея с настилка',
+                            'Алея без настилка',
+                            'Алея',
                         ],
                         'criteria' => [
                             [
@@ -155,8 +160,12 @@ class CriterionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'name'     => 'Пресичания',
                         'parent'   => null,
-                        'layers'   => [
-                            'пресичане',
+                        'object_types'   => [
+                            'Нерегулирано',
+                            'Пешеходна пътека',
+                            'Светофар',
+                            'Подлез',
+                            'Стълбище',
                         ],
                         'criteria' => [
                             [

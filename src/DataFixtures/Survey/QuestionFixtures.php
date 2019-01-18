@@ -16,7 +16,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            CriterionFixtures::class,
+            CategoryFixtures::class,
         ];
     }
 

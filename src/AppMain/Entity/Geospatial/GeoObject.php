@@ -3,12 +3,13 @@
 
 namespace App\AppMain\Entity\Geospatial;
 
+use App\AppMain\Entity\Geometry\GeometryBase;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="geospatial_object", schema="x_geospatial")
+ * @ORM\Table(name="geo_object", schema="x_geospatial")
  * @ORM\Entity()
  */
 class GeoObject implements UuidInterface
@@ -33,19 +34,29 @@ class GeoObject implements UuidInterface
     private $geography;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\Layer")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType")
+     * @ORM\JoinColumn(referencedColumnName="id", name="object_type_id", nullable=true)
      */
-    private $layer;
+    private $objectType;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $name = '';
 
-    public function getId()
+    public function getId():?int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function getName(): ?string
     {
-        $this->id = $id;
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     public function getAttributes()
@@ -58,23 +69,23 @@ class GeoObject implements UuidInterface
         $this->attributes = $attributes;
     }
 
-    public function getGeography()
+    public function getGeography(): ?GeometryBase
     {
         return $this->geography;
     }
 
-    public function setGeography($geography): void
+    public function setGeography(GeometryBase $geography): void
     {
         $this->geography = $geography;
     }
 
-    public function getLayer()
+    public function getType(): ?ObjectType
     {
-        return $this->layer;
+        return $this->objectType;
     }
 
-    public function setLayer($layer): void
+    public function setType(?ObjectType $objectType): void
     {
-        $this->layer = $layer;
+        $this->objectType = $objectType;
     }
 }

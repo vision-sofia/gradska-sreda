@@ -45,9 +45,18 @@ class ImportCommand extends Command
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SELECT * FROM x_geospatial.object_type');
+        $stmt->execute();
+
+        $objectTypes = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $objectTypes[$row['name']] = $row['id'];
+        }
+
         $stmt = $conn->prepare('
             INSERT INTO x_geometry.multiline (
-                spatial_object_id,
+                geo_object_id,
                 coordinates, 
                 metadata, 
                 uuid
@@ -60,20 +69,21 @@ class ImportCommand extends Command
         ');
 
         $stmtSPO = $conn->prepare('
-            INSERT INTO x_geospatial.geospatial_object (
+            INSERT INTO x_geospatial.geo_object (
                 attributes,
-                uuid
+                uuid,
+                object_type_id,
+                name
             ) VALUES (
                 :attr,        
-                :uuid                      
+                :uuid,
+                :object_type_id,
+                :name                 
             )
         ');
 
-
         foreach ($json_a as $item) {
             if (is_array($item)) {
-             #   print_r($item);
-
                 foreach ($item as $s) {
                     if (isset($s['geometry'])) {
                         $p = [];
@@ -83,8 +93,21 @@ class ImportCommand extends Command
 
                         $im = implode(',', $p);
 
+                        $name = '';
+                        $objectTypeId = null;
+
+                        if (isset($s['properties']['type'], $objectTypes[$s['properties']['type']])) {
+                            $objectTypeId = $objectTypes[$s['properties']['type']];
+                        }
+
+                        if (isset($s['properties']['name'])) {
+                            $name = $s['properties']['name'];
+                        }
+
                         $stmtSPO->bindValue('attr', json_encode($s['properties']));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
+                        $stmtSPO->bindValue('name', $name);
+                        $stmtSPO->bindValue('object_type_id', $objectTypeId);
                         $stmtSPO->execute();
 
                         $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
@@ -95,5 +118,7 @@ class ImportCommand extends Command
                 }
             }
         }
+
+        echo "Done\n";
     }
 }

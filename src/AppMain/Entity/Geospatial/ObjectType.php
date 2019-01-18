@@ -8,10 +8,10 @@ use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="layer", schema="x_geospatial")
+ * @ORM\Table(name="object_type", schema="x_geospatial")
  * @ORM\Entity()
  */
-class Layer implements UuidInterface
+class ObjectType implements UuidInterface
 {
     use UUIDableTrait;
 

@@ -14,9 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  *     name="result_criterion_completion",
  *     schema="x_survey",
  *     uniqueConstraints={
- *          @ORM\UniqueConstraint(name="uniq_result_criterion_completion", columns={"subject_id", "user_id", "geo_object_id"})
+ *          @ORM\UniqueConstraint(columns={"subject_id", "user_id", "geo_object_id"})
  *     },
- *     indexes={@ORM\Index(name="idx_result_criterion_completion_subject", columns={"subject_id"})}
+ *     indexes={@ORM\Index(columns={"subject_id"})}
  * )
  * @ORM\Entity(readOnly=true)
  */

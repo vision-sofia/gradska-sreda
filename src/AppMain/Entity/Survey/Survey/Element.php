@@ -2,15 +2,16 @@
 
 namespace App\AppMain\Entity\Survey\Survey;
 
+use App\AppMain\Entity\Geospatial\ObjectType;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="survey_category_layer", schema="x_survey")
+ * @ORM\Table(name="survey_element", schema="x_survey")
  * @ORM\Entity()
  */
-class Layer implements UuidInterface
+class Element implements UuidInterface
 {
     use UUIDableTrait;
 
@@ -28,34 +29,33 @@ class Layer implements UuidInterface
     private $category;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\Layer")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType")
+     * @ORM\JoinColumn(referencedColumnName="id", name="object_type_id", nullable=false)
      */
-    private $layer;
-
+    private $objectType;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCategory()
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory($category): void
+    public function setCategory(Category $category): void
     {
         $this->category = $category;
     }
 
-    public function getLayer()
+    public function getObjectType(): ?ObjectType
     {
-        return $this->layer;
+        return $this->objectType;
     }
 
-    public function setLayer($layer): void
+    public function setObjectType(ObjectType $objectType): void
     {
-        $this->layer = $layer;
+        $this->objectType = $objectType;
     }
 }

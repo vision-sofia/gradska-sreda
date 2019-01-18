@@ -1,15 +1,13 @@
 <?php
 
-namespace App\AppMain\Entity\Survey\Survey;
+namespace App\AppMain\Entity\Survey\Question;
 
-use App\AppMain\Entity\Survey\Question\Answer;
-use App\AppMain\Entity\Survey\Question\Question;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="survey_flow", schema="x_survey")
+ * @ORM\Table(name="q_flow", schema="x_survey")
  * @ORM\Entity()
  */
 class Flow implements UuidInterface
@@ -33,12 +31,17 @@ class Flow implements UuidInterface
      */
     private $answer;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $action;
+
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getQuestion()
+    public function getQuestion(): ?Question
     {
         return $this->question;
     }
@@ -48,7 +51,7 @@ class Flow implements UuidInterface
         $this->question = $question;
     }
 
-    public function getAnswer()
+    public function getAnswer(): Answer
     {
         return $this->answer;
     }
@@ -56,5 +59,15 @@ class Flow implements UuidInterface
     public function setAnswer(Answer $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function getAction(): ?string
+    {
+        return $this->action;
+    }
+
+    public function setAction(string $action): void
+    {
+        $this->action = $action;
     }
 }

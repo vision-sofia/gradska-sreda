@@ -27,11 +27,6 @@ abstract class AbstractGeometry implements UuidInterface
     protected $coordinates;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\Layer")
-     */
-    protected $layer;
-
-    /**
      * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
      */
     protected $metadata;
@@ -39,5 +34,5 @@ abstract class AbstractGeometry implements UuidInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject", inversedBy="geography")
      */
-    protected $spatialObject;
+    protected $geoObject;
 }
