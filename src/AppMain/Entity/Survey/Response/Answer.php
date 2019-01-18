@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(
  *     name="response_answer",
  *     schema="x_survey",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="survey_response_answer", columns={"question_id", "answer_id"})}
+ *     uniqueConstraints={@ORM\UniqueConstraint(columns={"question_id", "answer_id"})}
  * )
  * @ORM\Entity()
  */

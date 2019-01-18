@@ -17,7 +17,6 @@ use App\AppMain\Entity\Survey;
  *     name="response_question",
  *     schema="x_survey",
  *     uniqueConstraints={@ORM\UniqueConstraint(
- *          name="survey_response_question",
  *          columns={"user_id", "question_id", "geo_object_id"},
  *          options={"where": "(is_latest IS TRUE)"})})
  *     }
@@ -41,6 +40,12 @@ class Question implements UuidInterface
      * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Response\Location", cascade={"persist"})
+     * @ORM\JoinColumn(referencedColumnName="id", name="location_id", nullable=true)
+     */
+    private $location;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Question")
@@ -139,6 +144,16 @@ class Question implements UuidInterface
     public function setIsLatest(bool $isLatest): void
     {
         $this->isLatest = $isLatest;
+    }
+
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    public function setLocation($location): void
+    {
+        $this->location = $location;
     }
 
     /**

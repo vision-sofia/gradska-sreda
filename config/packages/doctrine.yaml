@@ -13,6 +13,7 @@ doctrine:
         types:
             geography:  CrEOF\Spatial\DBAL\Types\GeographyType
             polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
+            point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
 
     orm:
         auto_generate_proxy_classes: true

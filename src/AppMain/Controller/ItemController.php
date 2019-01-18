@@ -154,11 +154,26 @@ class ItemController extends AbstractController
         $stmt->bindValue('geo_object_id', $geospatialObject->getId());
         $stmt->execute();
 
+        $location = $this->getDoctrine()
+                         ->getRepository(Survey\Response\Location::class)
+                         ->findOneBy([
+                            'geoObject' => $geospatialObject,
+                            'user' => $this->getUser(),
+                            'coordinates' => null
+                         ]);
+
+        if($location === null) {
+            $location = new Survey\Response\Location();
+            $location->setGeoObject($geospatialObject);
+            $location->setUser($this->getUser());
+        }
+
         $responseQuestion = new Survey\Response\Question();
         $responseQuestion->setUser($this->getUser());
         $responseQuestion->setGeoObject($geospatialObject);
         $responseQuestion->setQuestion($answer->getQuestion());
         $responseQuestion->setIsLatest(true);
+        $responseQuestion->setLocation($location);
 
         $responseAnswer = new Survey\Response\Answer();
         $responseAnswer->setAnswer($answer);
