@@ -119,6 +119,20 @@ class ImportCommand extends Command
             }
         }
 
+        $stmt = $conn->prepare('
+            INSERT INTO x_survey.survey_scope (
+                geo_object_id,
+                survey_id
+            )
+            SELECT
+                id,
+                (SELECT id FROM x_survey.survey WHERE is_active = TRUE LIMIT 1)
+            FROM
+                x_geospatial.geo_object
+        ');
+
+        $stmt->execute();
+
         echo "Done\n";
     }
 }
