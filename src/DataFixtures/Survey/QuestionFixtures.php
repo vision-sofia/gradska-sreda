@@ -751,6 +751,69 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            [
+                'category' => 'Категория-1',
+                'question' => 'Въпрос-1',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Отг.1',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Критерии-1'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Отг.2',
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Категория-1',
+                'question' => 'Въпрос-2',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Отг.1',
+                    ],
+                    [
+                        'title' => 'Отг.2',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Критерии-2'
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Категория-1',
+                'question' => 'Въпрос-3',
+                'has_multiple_answers' => false,
+                'answers' => [
+                    [
+                        'title' => 'Отг.1',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Критерии-1'
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Отг.2',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Критерии-2'
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

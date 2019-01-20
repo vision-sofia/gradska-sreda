@@ -47,8 +47,11 @@ class ItemController extends AbstractController
                 x_survey.survey_category c ON l.category_id = c.id
                     INNER JOIN
                 x_survey.q_question q ON q.category_id = c.id
+                    INNER JOIN
+                x_survey.survey s ON c.survey_id = s.id
             WHERE
                 l.object_type_id = :object_type_id
+                AND s.is_active = TRUE
                 AND NOT EXISTS(
                     SELECT
                         *
@@ -73,7 +76,9 @@ class ItemController extends AbstractController
                         AND rq.geo_object_id = :geo_object_id
                         AND f.question_id = q.id
                 )
-            ORDER BY q.id ASC                               
+            ORDER BY 
+                survey_id ASC, 
+                q.id ASC                               
             LIMIT 1
         ');
 

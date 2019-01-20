@@ -33,6 +33,12 @@ class SurveyFixtures extends Fixture
                 'is_active' => true,
                 'start_date' => '2019-01-01',
                 'end_date' => '2019-06-01',
+            ],
+            [
+                'name' => 'Анкета-2',
+                'is_active' => false,
+                'start_date' => '2019-06-02',
+                'end_date' => '2019-09-01',
             ]
         ];
     }

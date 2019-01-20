@@ -185,6 +185,28 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            [
+                'survey'   => 'Анкета-2',
+                'category' => [
+                    [
+                        'name'     => 'Категория-1',
+                        'parent'   => null,
+                        'object_types'   => [
+                            'Алея с настилка',
+                            'Алея без настилка',
+                            'Алея',
+                        ],
+                        'criteria' => [
+                            [
+                                'title'      => 'Критерии-1',
+                            ],
+                            [
+                                'title'      => 'Критерии-2',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

@@ -126,11 +126,15 @@ class ImportCommand extends Command
             )
             SELECT
                 id,
-                (SELECT id FROM x_survey.survey WHERE is_active = TRUE LIMIT 1)
+                (SELECT id FROM x_survey.survey WHERE name = :name)
             FROM
                 x_geospatial.geo_object
         ');
 
+        $stmt->bindValue('name', 'Анкета');
+        $stmt->execute();
+
+        $stmt->bindValue('name', 'Анкета-2');
         $stmt->execute();
 
         echo "Done\n";
