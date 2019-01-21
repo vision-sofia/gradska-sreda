@@ -23,11 +23,6 @@ services:
         resource: '../src/AppAdmin/Controller'
         tags: ['controller.service_arguments']
 
-    App\Session\Storage\Handler\NativeRedisSessionHandler:
-        public: true
-        arguments:
-            $sessionSavePath: '%session_save_path%'
-
     doctrineMigrationDiffListener:
         class: App\Doctrine\MigrationEventSubscriber
         tags:

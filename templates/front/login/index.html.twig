@@ -5,26 +5,22 @@
         <div class="section">
             <h1 class="title">Вход в профила</h1>
 
-            <form action="{{ path('app.login') }}" method="post" class="login-form">
+            <form action="{{ path('app.login') }}" method="post">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                <div class="field">
-                    <p class="control has-icons-left has-icons-right">
-                        <input name="_username" class="input" type="text" placeholder="Име">
-                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
-                    </p>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Потребителско име</label>
+                    <div class="col-sm-10">
+                    <input type="text" name="_username" class="form-control" placeholder="Потребителско име">
+                    </div>
                 </div>
-                <div class="field">
-                    <p class="control has-icons-left">
-                        <input name="_password" class="input" type="password" placeholder="Парола">
-                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
-                    </p>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Парола</label>
+                    <div class="col-sm-10">
+                    <input type="password" name="_password" class="form-control" placeholder="Парола">
+                    </div>
                 </div>
-
-                <button type="submit">Влез</button>
-
+                <button type="submit" class="btn btn-primary">Влез</button>
             </form>
         </div>
     </div>
-
 {% endblock %}

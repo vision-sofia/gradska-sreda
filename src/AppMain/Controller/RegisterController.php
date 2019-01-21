@@ -4,7 +4,8 @@ namespace App\AppMain\Controller;
 
 
 use App\AppMain\Entity\User\User;
-use App\Form\UserRegisterType;
+
+use App\AppMain\Form\UserRegisterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,8 +44,7 @@ class RegisterController extends AbstractController
 
             $this->addFlash('success', 'Регистрацията е успешна!');
 
-            return $this->redirectToRoute('app.index');
-
+            return $this->redirectToRoute('app.homepage');
         }
 
         return $this->render('front/register/index.html.twig', [

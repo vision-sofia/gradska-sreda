@@ -4,19 +4,14 @@ framework:
     csrf_protection: true
     #http_method_override: true
 
-    session:
-        handler_id: App\Session\Storage\Handler\NativeRedisSessionHandler
-        save_path: '%env(SESSION_SAVE_PATH)%'
-        gc_maxlifetime: 3600
-        cookie_httponly: true
+    session: ~
 
     assets:
         packages:
             admin:
-                base_urls: '%env(ASSETS_ADMIN_URL)%'
+                base_path: 'assets/core-ui'
             main:
-                base_urls: '%env(ASSETS_MAIN_URL)%'
-
+                base_path: 'assets/front'
 
     #esi: true
     #fragments: true
