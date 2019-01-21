@@ -6,6 +6,7 @@ namespace App\AppMain\Entity\Survey\Result;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Evaluation\Subject;
+use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -70,7 +71,7 @@ class GeoObjectRating
         $this->criterionSubject = $criterionSubject;
     }
 
-    public function getGeoObject(): ? GeoObject
+    public function getGeoObject(): ?GeoObject
     {
         return $this->geoObject;
     }
@@ -80,12 +81,12 @@ class GeoObjectRating
         $this->geoObject = $geoObject;
     }
 
-    public function getUser()
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser($user): void
+    public function setUser(UserInterface $user): void
     {
         $this->user = $user;
     }
