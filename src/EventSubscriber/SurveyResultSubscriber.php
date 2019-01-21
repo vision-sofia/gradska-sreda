@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Result\CriterionCompletion;
+use App\Services\Survey\Result\GeoObjectRating;
 use App\Services\Survey\Result\UserCompletion;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -13,21 +14,25 @@ class SurveyResultSubscriber implements EventSubscriberInterface
 {
     protected $criterionCompletion;
     protected $userCompletion;
+    protected $geoObjectRating;
 
     public function __construct(
         CriterionCompletion $criterionCompletion,
-        UserCompletion $userCompletion
+        UserCompletion $userCompletion,
+        GeoObjectRating $geoObjectRating
     ) {
         $this->criterionCompletion = $criterionCompletion;
         $this->userCompletion = $userCompletion;
+        $this->geoObjectRating = $geoObjectRating;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
             GeoObjectSurveyTouch::NAME => [
-                ['criterionCompletionUpdate', 20],
-                ['userCompletionUpdate', 10],
+                ['criterionCompletionUpdate', 30],
+                ['userCompletionUpdate', 20],
+                ['geoObjectRatingUpdate', 10],
             ],
         ];
     }
@@ -46,6 +51,13 @@ class SurveyResultSubscriber implements EventSubscriberInterface
         $geoObjectId = $event->getGeoObject()->getId();
 
         $this->userCompletion->update($geoObjectId, $userId);
+    }
+
+    public function geoObjectRatingUpdate(GeoObjectSurveyTouch $event): void
+    {
+        $geoObjectId = $event->getGeoObject()->getId();
+
+        $this->geoObjectRating->update($geoObjectId);
     }
 
 }

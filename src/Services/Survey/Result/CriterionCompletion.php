@@ -28,7 +28,7 @@ class CriterionCompletion
                 is_complete
             )
             SELECT
-            re.subject_id,
+                re.subject_id,
                 re.user_id,
                 re.geo_object_id,
                 (SUM(a) = m.count) AS is_complete
