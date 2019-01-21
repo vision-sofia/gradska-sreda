@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     name="result_geo_object_rating",
  *     schema="x_survey",
  *     uniqueConstraints={
- *          @ORM\UniqueConstraint(columns={"criterion_subject_id", "geo_object_id"})
+ *          @ORM\UniqueConstraint(columns={"criterion_subject_id", "geo_object_id", "user_id"})
  *     }
  * )
  * @ORM\Entity()
@@ -40,10 +40,15 @@ class GeoObjectRating
     private $geoObject;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
+     * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
+     */
+    private $user;
+
+    /**
      * @ORM\Column(type="decimal", scale=2, precision=4)
      */
     private $rating;
-
 
     public function getId(): ?int
     {
@@ -73,5 +78,15 @@ class GeoObjectRating
     public function setGeoObject(GeoObject $geoObject): void
     {
         $this->geoObject = $geoObject;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setUser($user): void
+    {
+        $this->user = $user;
     }
 }
