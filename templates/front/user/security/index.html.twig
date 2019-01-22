@@ -1,0 +1,22 @@
+{% extends 'front/user/layout.html.twig' %}
+
+{% block content %}
+    <h2>Сигурност</h2>
+    <div>
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Парола</label>
+            <div class="col-sm-10">
+                {{ form_widget(form.plainPassword.first, {'attr': {'placeholder': 'Парола', 'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Повторете паролата</label>
+            <div class="col-sm-10">
+                {{ form_widget(form.plainPassword.second, {'attr': {'placeholder': 'Повторете паролата', 'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Промени</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

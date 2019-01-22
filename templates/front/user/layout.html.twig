@@ -1,0 +1,9 @@
+{% extends 'front/base.html.twig' %}
+
+{% block body %}
+    <ul>
+        <li><a href="{{ path('app.user.settings.profile') }}">Профил</a></li>
+        <li><a href="{{ path('app.user.settings.security') }}">Сигурност</a></li>
+    </ul>
+    {% block content %}{% endblock %}
+{% endblock %}

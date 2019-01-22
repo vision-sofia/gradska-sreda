@@ -22,7 +22,7 @@
                 {% endif %}
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app.user.profile') }}">Профил</a>
+                        <a class="nav-link" href="{{ path('app.user.settings.profile') }}">Настройки</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('logout') }}">Изход</a>
@@ -39,7 +39,3 @@
         </div>
     </nav>
 </div>
-
-
-
-
