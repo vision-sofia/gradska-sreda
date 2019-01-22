@@ -36,71 +36,17 @@ class ItemController extends AbstractController
      */
     public function details(GeoObject $geoObject): Response
     {
-        $conn = $this->entityManager->getConnection();
-
-        $stmt = $conn->prepare('
-            SELECT
-                q.*
-            FROM
-                x_survey.survey_element l
-                    INNER JOIN
-                x_survey.survey_category c ON l.category_id = c.id
-                    INNER JOIN
-                x_survey.q_question q ON q.category_id = c.id
-                    INNER JOIN
-                x_survey.survey s ON c.survey_id = s.id
-            WHERE
-                l.object_type_id = :object_type_id
-                AND s.is_active = TRUE
-                AND NOT EXISTS(
-                    SELECT
-                        *
-                    FROM
-                        x_survey.response_question rq
-                    WHERE
-                        user_id = :user_id 
-                        AND rq.question_id = q.id
-                        AND rq.geo_object_id = :geo_object_id
-                ) 
-                AND NOT EXISTS(
-                    SELECT
-                        *
-                    FROM
-                        x_survey.q_flow f
-                            INNER JOIN
-                        x_survey.response_answer a ON f.answer_id = a.answer_id
-                            INNER JOIN
-                        x_survey.response_question rq ON a.question_id = rq.id
-                    WHERE
-                        rq.user_id = :user_id 
-                        AND rq.geo_object_id = :geo_object_id
-                        AND f.question_id = q.id
-                )
-            ORDER BY 
-                survey_id ASC, 
-                q.id ASC                               
-            LIMIT 1
-        ');
-
-        $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->bindValue('geo_object_id', $geoObject->getId());
-        $stmt->bindValue('object_type_id', $geoObject->getType()->getId());
-        $stmt->execute();
-
-        $question = $stmt->fetch();
-
-        $answers = [];
-
-        if($question) {
-            $answers = $this->getDoctrine()
-                            ->getRepository(Answer::class)
-                            ->findByQuestion($question['id']);
-        }
+        $question = $this->getDoctrine()
+                  ->getRepository(Survey\Question\Question::class)
+                  ->findNextQuestion(
+                      $this->getUser(),
+                      $geoObject
+                  )
+        ;
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
-            'question' => $question === false ? null : $question,
-            'answers' => $answers
+            'question' => $question,
         ]);
     }
 
@@ -182,7 +128,7 @@ class ItemController extends AbstractController
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
-        return $this->redirectToRoute('app.geospatial_object.details', [
+        return $this->redirectToRoute('app.geo-object.details', [
             'id' => $geoObject->getUuid()
         ]);
     }

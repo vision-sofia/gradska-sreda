@@ -2,13 +2,16 @@
 
 namespace App\AppMain\Entity\Survey\Question;
 
+use App\AppMain\Entity\Survey\Survey\Category;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="q_question", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\Question\QuestionRepository")
  */
 class Question implements UuidInterface
 {
@@ -24,7 +27,7 @@ class Question implements UuidInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title;
+    private $title = '';
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
@@ -42,12 +45,17 @@ class Question implements UuidInterface
      */
     private $hasMultipleAnswers;
 
+    public function __construct()
+    {
+        $this->answers = new ArrayCollection();
+    }
+
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -57,38 +65,37 @@ class Question implements UuidInterface
         $this->title = $title;
     }
 
-
-    public function getAnswers()
+    /**
+     * @return Collection|Answer[]
+     */
+    public function getAnswers(): Collection
     {
         return $this->answers;
     }
 
-
-    public function setAnswers($answers): void
+    public function addAnswer(Answer $answer): void
     {
-        $this->answers = $answers;
+        $answer->setQuestion($this);
+
+        $this->answers[] = $answer;
     }
 
-
-    public function getHasMultipleAnswers()
+    public function getHasMultipleAnswers(): bool
     {
         return $this->hasMultipleAnswers;
     }
 
-
-    public function setHasMultipleAnswers($hasMultipleAnswers): void
+    public function setHasMultipleAnswers(bool $hasMultipleAnswers): void
     {
         $this->hasMultipleAnswers = $hasMultipleAnswers;
     }
 
-
-    public function getCategory()
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-
-    public function setCategory($category): void
+    public function setCategory(Category $category): void
     {
         $this->category = $category;
     }
