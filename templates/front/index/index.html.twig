@@ -1,11 +1,10 @@
 {% extends 'front/base.html.twig' %}
 
 {% block body %}
-    <h2>Items</h2>
-
+    <h2>Начало</h2>
     <ul>
         {% for item in items %}
-            <li>{{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geospatial_object.details', {'id': item.id}) }}">{{ item.id }}</a> {{ dump(item.data) }}</li>
+            <li>{{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a> {{ dump(item.data) }}</li>
         {% endfor %}
     </ul>
 {% endblock %}

@@ -10,14 +10,19 @@
                     <a class="nav-link" href="{{ path('app.homepage') }}">Начало</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Карта</a>
+                    <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Информация</a>
+                    <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
                 </li>
-                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                {% if is_granted('ROLE_MANAGE') %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('manage.index') }}">Контролеп панел</a>
+                    </li>
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app.user.profile') }}">Профил</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('logout') }}">Изход</a>

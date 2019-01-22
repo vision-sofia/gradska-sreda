@@ -13,7 +13,8 @@ security:
                 property: username
 
     role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
+        ROLE_ADMIN: ROLE_MANAGE
+        ROLE_MANAGE: ROLE_USER
 
     firewalls:
         dev:

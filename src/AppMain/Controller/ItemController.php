@@ -31,10 +31,10 @@ class ItemController extends AbstractController
     }
 
     /**
-     * @Route("geo/{id}", name="app.geospatial_object.details")
-     * @ParamConverter("geospatialObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @Route("geo/{id}", name="app.geo-object.details")
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
-    public function details(GeoObject $geospatialObject): Response
+    public function details(GeoObject $geoObject): Response
     {
         $conn = $this->entityManager->getConnection();
 
@@ -83,8 +83,8 @@ class ItemController extends AbstractController
         ');
 
         $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->bindValue('geo_object_id', $geospatialObject->getId());
-        $stmt->bindValue('object_type_id', $geospatialObject->getType()->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->bindValue('object_type_id', $geoObject->getType()->getId());
         $stmt->execute();
 
         $question = $stmt->fetch();
@@ -98,17 +98,17 @@ class ItemController extends AbstractController
         }
 
         return $this->render('front/geo-object/details.html.twig', [
-            'geo_object' => $geospatialObject,
+            'geo_object' => $geoObject,
             'question' => $question === false ? null : $question,
             'answers' => $answers
         ]);
     }
 
     /**
-     * @Route("geo/{id}/result", name="app.geospatial_object.result")
-     * @ParamConverter("geospatialObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @Route("geo/{id}/result", name="app.geo-object.result")
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
-    public function result(Request $request, GeoObject $geospatialObject): Response
+    public function result(Request $request, GeoObject $geoObject): Response
     {
         $parent = $request->get('parent');
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
@@ -147,26 +147,26 @@ class ItemController extends AbstractController
 
         $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('question_id', $answer->getQuestion()->getId());
-        $stmt->bindValue('geo_object_id', $geospatialObject->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
 
         $location = $this->getDoctrine()
                          ->getRepository(Survey\Response\Location::class)
                          ->findOneBy([
-                            'geoObject' => $geospatialObject,
+                            'geoObject' => $geoObject,
                             'user' => $this->getUser(),
                             'coordinates' => null
                          ]);
 
         if($location === null) {
             $location = new Survey\Response\Location();
-            $location->setGeoObject($geospatialObject);
+            $location->setGeoObject($geoObject);
             $location->setUser($this->getUser());
         }
 
         $responseQuestion = new Survey\Response\Question();
         $responseQuestion->setUser($this->getUser());
-        $responseQuestion->setGeoObject($geospatialObject);
+        $responseQuestion->setGeoObject($geoObject);
         $responseQuestion->setQuestion($answer->getQuestion());
         $responseQuestion->setIsLatest(true);
         $responseQuestion->setLocation($location);
@@ -179,11 +179,11 @@ class ItemController extends AbstractController
         $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
 
-        $event = new GeoObjectSurveyTouch($geospatialObject, $this->getUser());
+        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
         return $this->redirectToRoute('app.geospatial_object.details', [
-            'id' => $geospatialObject->getUuid()
+            'id' => $geoObject->getUuid()
         ]);
     }
 }
