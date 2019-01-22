@@ -24,7 +24,7 @@ class UserFixtures extends Fixture
         $entity->setIsActive(true);
         $entity->setUsername('test');
         $entity->setPassword('$argon2i$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$BjWlpk8/CC9Ei/G14zrVbgwBLK8Nq1e9bk2Bk1LOqGc'); // 123@
-        $entity->addRole('ROLE_USER');
+        $entity->addRole('ROLE_MANAGE');
 
         $manager->persist($entity);
         $manager->flush();

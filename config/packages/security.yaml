@@ -34,4 +34,4 @@ security:
                 target: /
 
     access_control:
-        - { path: ^/manage, roles: ROLE_USER }
+        - { path: ^/manage, roles: ROLE_MANAGE }
