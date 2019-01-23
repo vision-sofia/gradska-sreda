@@ -36,6 +36,10 @@ class ItemController extends AbstractController
      */
     public function details(GeoObject $geoObject): Response
     {
+        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+           return $this->redirectToRoute('app.login');
+        }
+
         $question = $this->getDoctrine()
                   ->getRepository(Survey\Question\Question::class)
                   ->findNextQuestion(
@@ -56,6 +60,10 @@ class ItemController extends AbstractController
      */
     public function result(Request $request, GeoObject $geoObject): Response
     {
+        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return $this->redirectToRoute('app.login');
+        }
+
         $parent = $request->get('parent');
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
             'uuid' =>  $parent
