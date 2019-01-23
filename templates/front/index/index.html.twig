@@ -26,7 +26,17 @@
     <div class="container">
         <ul>
             {% for item in items %}
-                <li>{{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a> {{ dump(item.data) }}</li>
+                <li>
+                    {{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a>
+
+                    {% for survey_id, data in item.data %}
+                        <p>
+                        {% for key, value in data %}
+                            {{ key }}: {{ value }}<br />
+                        {% endfor %}
+                        </p>
+                    {% endfor %}
+                </li>
             {% endfor %}
         </ul>
     </div>
