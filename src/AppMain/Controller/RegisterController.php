@@ -5,7 +5,7 @@ namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\User\User;
 
-use App\AppMain\Form\UserRegisterType;
+use App\AppMain\Form\Type\UserRegisterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
