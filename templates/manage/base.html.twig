@@ -5,20 +5,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
-    <meta name="author" content="Łukasz Holeczek">
-    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <meta name="description" content="">
     <title>Градска среда</title>
     <!-- Icons-->
-    <link href="{{ asset('vendors/@coreui/icons/css/coreui-icons.min.css', 'admin') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/flag-icon-css/css/flag-icon.min.css', 'admin') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/font-awesome/css/font-awesome.min.css', 'admin') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/simple-line-icons/css/simple-line-icons.css', 'admin') }}" rel="stylesheet">
+    <link href="{{ asset('vendors/@coreui/icons/css/coreui-icons.min.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('vendors/flag-icon-css/css/flag-icon.min.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('vendors/font-awesome/css/font-awesome.min.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('vendors/simple-line-icons/css/simple-line-icons.css', 'manage') }}" rel="stylesheet">
     <!-- Main styles for this application-->
-    <link href="{{ asset('css/style.css', 'admin') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/pace-progress/css/pace.min.css', 'admin') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('vendors/pace-progress/css/pace.min.css', 'manage') }}" rel="stylesheet">
 
-    <link href="{{ asset('plugins/toastr/toastr.min.css', 'main') }}" rel="stylesheet" />
+    <link href="{{ asset('plugins/toastr/toastr.min.css', 'front') }}" rel="stylesheet" />
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
 {% include 'manage/partial/header.html.twig' %}
@@ -54,24 +52,22 @@
     {#{% include 'manage/partial/asside.html.twig' %}#}
 </div>
 {% include 'manage/partial/footer.html.twig' %}
+
 <!-- CoreUI and necessary plugins-->
-
-
-<script src="{{ asset('vendors/jquery/js/jquery.min.js', 'admin') }}"></script>
-<script src="{{ asset('plugins/toastr/toastr.min.js', 'main') }}"></script>
-<script src="{{ asset('vendors/popper.js/js/popper.min.js', 'admin') }}"></script>
-<script src="{{ asset('vendors/bootstrap/js/bootstrap.min.js', 'admin') }}"></script>
-<script src="{{ asset('vendors/pace-progress/js/pace.min.js', 'admin') }}"></script>
-<script src="{{ asset('vendors/perfect-scrollbar/js/perfect-scrollbar.min.js', 'admin') }}"></script>
-<script src="{{ asset('vendors/@coreui/coreui/js/coreui.min.js', 'admin') }}"></script>
+<script src="{{ asset('vendors/jquery/js/jquery.min.js', 'manage') }}"></script>
+<script src="{{ asset('plugins/toastr/toastr.min.js', 'front') }}"></script>
+<script src="{{ asset('vendors/popper.js/js/popper.min.js', 'manage') }}"></script>
+<script src="{{ asset('vendors/bootstrap/js/bootstrap.min.js', 'manage') }}"></script>
+<script src="{{ asset('vendors/pace-progress/js/pace.min.js', 'manage') }}"></script>
+<script src="{{ asset('vendors/perfect-scrollbar/js/perfect-scrollbar.min.js', 'manage') }}"></script>
+<script src="{{ asset('vendors/@coreui/coreui/js/coreui.min.js', 'manage') }}"></script>
 <!-- Plugins and scripts required by this view-->
-<script src="{{ asset('vendors/chart.js/js/Chart.min.js', 'admin') }}"></script>
-<script src="{{ asset('vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js', 'admin') }}"></script>
-<script src="{{ asset('js/main.js', 'admin') }}"></script>
+<script src="{{ asset('vendors/chart.js/js/Chart.min.js', 'manage') }}"></script>
+<script src="{{ asset('vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js', 'manage') }}"></script>
+<script src="{{ asset('js/main.js', 'manage') }}"></script>
 
 <script type="text/javascript">
     $(function () {
-
         toastr.options = {
             "closeButton": false,
             "debug": false,
@@ -89,7 +85,6 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-
 
         {% for v, flashMessage in app.session.flashbag.all %}
             {% for messagee in flashMessage %}

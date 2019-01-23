@@ -8,9 +8,9 @@ framework:
 
     assets:
         packages:
-            admin:
+            manage:
                 base_path: 'assets/core-ui'
-            main:
+            front:
                 base_path: 'assets/front'
 
     #esi: true

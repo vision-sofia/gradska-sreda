@@ -1,8 +1,25 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'front/map/layout.html.twig' %}
 
-{% block body %}
-    <h2>Карта</h2>
-    <div>
-        map
+{% block content %}
+    <div class="container">
+        <h2>Карта</h2>
+    </div>
+
+    <div class="container-fluid">
+        <div id="map" class="map"></div>
+        <script type="text/javascript">
+            var map = new ol.Map({
+                target: 'map',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([23.3197423, 42.696717]),
+                    zoom: 15
+                })
+            });
+        </script>
     </div>
 {% endblock %}
