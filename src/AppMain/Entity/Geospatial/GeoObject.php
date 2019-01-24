@@ -44,7 +44,12 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      */
     private $name = '';
 
-    public function getId():?int
+    /**
+     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     */
+    private $metadata;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -87,5 +92,10 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     public function setType(?ObjectType $objectType): void
     {
         $this->objectType = $objectType;
+    }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
     }
 }
