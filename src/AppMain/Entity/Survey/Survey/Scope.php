@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="survey_scope", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\ScopeRepository")
  */
 class Scope
 {

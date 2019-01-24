@@ -3,6 +3,7 @@
 namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
+use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\Event\GeoObjectSurveyTouch;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,8 +13,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\AppMain\Entity\Survey;
-
 
 
 class ItemController extends AbstractController
@@ -24,8 +23,7 @@ class ItemController extends AbstractController
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -36,21 +34,29 @@ class ItemController extends AbstractController
      */
     public function details(GeoObject $geoObject): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-           return $this->redirectToRoute('app.login');
+        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return $this->redirectToRoute('app.login');
         }
 
-        $question = $this->getDoctrine()
-                  ->getRepository(Survey\Question\Question::class)
-                  ->findNextQuestion(
-                      $this->getUser(),
-                      $geoObject
-                  )
+        $isAvailableForSurvey = $this->getDoctrine()
+                                     ->getRepository(GeoObject::class)
+                                     ->isAvailableForSurvey($geoObject)
         ;
+
+        if ($isAvailableForSurvey) {
+            $question = $this->getDoctrine()
+                             ->getRepository(Survey\Question\Question::class)
+                             ->findNextQuestion(
+                                 $this->getUser(),
+                                 $geoObject
+                             )
+            ;
+        }
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
-            'question' => $question,
+            'question'   => $question ?? null,
+            'is_available_for_survey' => $isAvailableForSurvey
         ]);
     }
 
@@ -60,24 +66,26 @@ class ItemController extends AbstractController
      */
     public function result(Request $request, GeoObject $geoObject): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return $this->redirectToRoute('app.login');
         }
 
         $parent = $request->get('parent');
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
-            'uuid' =>  $parent
-        ]);
+            'uuid' => $parent,
+        ])
+        ;
 
         $child = $request->get('child');
 
         $childAnswers = [];
 
-        if(!empty($child)) {
+        if (!empty($child)) {
             foreach ($child as $item) {
                 $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
-                    'uuid' =>  $item
-                ]);
+                    'uuid' => $item,
+                ])
+                ;
 
                 $childAnswers[] = $answer;
             }
@@ -107,12 +115,13 @@ class ItemController extends AbstractController
         $location = $this->getDoctrine()
                          ->getRepository(Survey\Response\Location::class)
                          ->findOneBy([
-                            'geoObject' => $geoObject,
-                            'user' => $this->getUser(),
-                            'coordinates' => null
-                         ]);
+                             'geoObject'   => $geoObject,
+                             'user'        => $this->getUser(),
+                             'coordinates' => null,
+                         ])
+        ;
 
-        if($location === null) {
+        if ($location === null) {
             $location = new Survey\Response\Location();
             $location->setGeoObject($geoObject);
             $location->setUser($this->getUser());
@@ -137,7 +146,7 @@ class ItemController extends AbstractController
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
         return $this->redirectToRoute('app.geo-object.details', [
-            'id' => $geoObject->getUuid()
+            'id' => $geoObject->getUuid(),
         ]);
     }
 }

@@ -21,20 +21,22 @@
 
     <p>{{ geo_object.attributes.type }}</p>
 
-    {% if question is null %}
-        Няма повече въпроси
-    {% else %}
-        <strong>{{ question.title }}</strong>
+    {% if is_available_for_survey == true %}
+        {% if question is null %}
+            Няма повече въпроси
+        {% else %}
+            <strong>{{ question.title }}</strong>
 
-        <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
-            {% for answer in question.answers %}
-                {% if answer.parent is null %}
-                    <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="radio" name="parent" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
-                {% else %}
-                    <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="checkbox" name="child[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
-                {% endif %}
-            {% endfor %}
-            <button type="submit">Изпрати</button>
-        </form>
+            <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
+                {% for answer in question.answers %}
+                    {% if answer.parent is null %}
+                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="radio" name="parent" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                    {% else %}
+                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="checkbox" name="child[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                    {% endif %}
+                {% endfor %}
+                <button type="submit">Изпрати</button>
+            </form>
+        {% endif %}
     {% endif %}
 {% endblock %}

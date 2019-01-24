@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="survey", schema="x_survey")
  * @ORM\Entity()
  */
-class Survey implements UuidInterface
+class Survey implements UuidInterface, SurveyInterface
 {
     use UUIDableTrait;
 
