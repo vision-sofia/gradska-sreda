@@ -6,6 +6,7 @@ use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface as UserSecurityInterface;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -25,7 +26,7 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
 
     /**
      * @ORM\Column(length=255, unique=true)
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"profile"})
      */
     protected $username;
 
@@ -41,12 +42,14 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
 
     /**
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
-     * @Assert\Email()
+     * @Assert\NotBlank(groups={"profile"})
+     * @Assert\Email(groups={"profile"})
      */
     protected $email;
 
     /**
      * @Assert\Length(max=4096)
+     * @Assert\NotBlank(groups={"plain_password"})
      */
     protected $plainPassword;
 
@@ -64,6 +67,11 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
      * @ORM\Column(name="is_active", type="boolean")
      */
     protected $isActive = true;
+
+    /**
+     * @SecurityAssert\UserPassword(groups={"current_password"})
+     */
+    protected $currentPassword;
 
     public function getUsername(): ?string
     {
@@ -176,6 +184,7 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
     {
         $this->lastLogin = $lastLogin;
     }
+
     public function getName(): string
     {
         return $this->name;
@@ -184,5 +193,15 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
     public function setName(string $profileName): void
     {
         $this->name = $profileName;
+    }
+
+    public function getCurrentPassword():?string
+    {
+        return $this->currentPassword;
+    }
+
+    public function setCurrentPassword(string $password): void
+    {
+        $this->currentPassword = $password;
     }
 }
