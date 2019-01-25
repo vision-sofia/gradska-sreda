@@ -73,12 +73,12 @@ class Answer implements UuidInterface
         $this->title = $title;
     }
 
-    public function getQuestion()
+    public function getQuestion(): ?Question
     {
         return $this->question;
     }
 
-    public function setQuestion($question): void
+    public function setQuestion(Question $question): void
     {
         $this->question = $question;
     }
@@ -93,22 +93,22 @@ class Answer implements UuidInterface
         $this->children = $children;
     }
 
-    public function getParent()
+    public function getParent(): ?Answer
     {
         return $this->parent;
     }
 
-    public function setParent($parent): void
+    public function setParent(?Answer $parent): void
     {
         $this->parent = $parent;
     }
 
-    public function getIsFreeAnswer()
+    public function getIsFreeAnswer(): bool
     {
         return $this->isFreeAnswer;
     }
 
-    public function setIsFreeAnswer($isFreeAnswer): void
+    public function setIsFreeAnswer(bool $isFreeAnswer): void
     {
         $this->isFreeAnswer = $isFreeAnswer;
     }
