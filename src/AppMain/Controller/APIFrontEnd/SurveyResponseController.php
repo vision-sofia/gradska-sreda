@@ -36,7 +36,7 @@ class SurveyResponseController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/survey", name="question", methods="GET")
+     * @Route("/{id}/survey", name="question.load", methods="GET")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
     public function getAnswer(GeoObject $geoObject): Response
@@ -95,7 +95,7 @@ class SurveyResponseController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/survey", name="question", methods="POST")
+     * @Route("/{id}/survey", name="question.response", methods="POST")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
     public function result(Request $request, GeoObject $geoObject): Response
