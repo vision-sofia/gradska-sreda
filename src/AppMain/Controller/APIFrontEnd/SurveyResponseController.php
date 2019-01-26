@@ -16,7 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * @Route("geo-object", name="geo-object.survey.")
+ */
 class SurveyResponseController extends AbstractController
 {
     protected $entityManager;
@@ -34,7 +36,7 @@ class SurveyResponseController extends AbstractController
     }
 
     /**
-     * @Route("geo-object/{id}/survey", name="app.api-front-end.geo-object.survey", methods="GET")
+     * @Route("/{id}/survey", name="question", methods="GET")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
     public function getAnswer(GeoObject $geoObject): Response
@@ -93,7 +95,7 @@ class SurveyResponseController extends AbstractController
     }
 
     /**
-     * @Route("geo/{id}/result", name="app.geo-object.result", methods="POST")
+     * @Route("/{id}/survey", name="question", methods="POST")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
     public function result(Request $request, GeoObject $geoObject): Response
