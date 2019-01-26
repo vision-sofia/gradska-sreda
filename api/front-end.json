@@ -1,0 +1,90 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "1.0.0",
+    "title" : "Internal Ajax API"
+  },
+  "paths" : {
+    "/backend/geo-object/{id}/survey" : {
+      "get" : {
+        "summary" : "",
+        "operationId" : "",
+        "description" : "",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "required" : true,
+          "description" : "geo-object id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Question"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : ""
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Question" : {
+        "type" : "object",
+        "required" : [ "question", "has_multiple_answers", "answers" ],
+        "properties" : {
+          "question" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "Какъв е автомобилният трафик в момента?"
+          },
+          "has_multiple_answers" : {
+            "type" : "boolean",
+            "example" : false
+          },
+          "answers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Answer"
+            }
+          }
+        }
+      },
+      "Answer" : {
+        "required" : [ "id", "title", "is_free_answer", "parent" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "title" : {
+            "type" : "string",
+            "format" : "text",
+            "example" : "Интензивен"
+          },
+          "is_free_answer" : {
+            "type" : "boolean",
+            "example" : false
+          },
+          "parent" : {
+            "type" : "string",
+            "nullable" : true,
+            "format" : "uuid"
+          }
+        },
+        "type" : "object"
+      }
+    }
+  }
+}

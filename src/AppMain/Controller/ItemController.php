@@ -105,13 +105,6 @@ class ItemController extends AbstractController
         // Check 4: Is single answer question have one input answer
 
 
-
-
-
-
-
-
-
         $child = $request->get('child');
 
         $childAnswers = [];
@@ -176,14 +169,14 @@ class ItemController extends AbstractController
         $responseQuestion->addAnswer($responseAnswer);
 
         $this->entityManager->persist($responseQuestion);
-    #    $this->entityManager->flush();
+        $this->entityManager->flush();
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
-/*
+
         return $this->redirectToRoute('app.geo-object.details', [
             'id' => $geoObject->getUuid(),
         ]);
-*/
+
     }
 }

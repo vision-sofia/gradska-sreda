@@ -3,5 +3,10 @@ public:
   type:     annotation
   prefix: /manage
 
+api-front-end:
+  resource: '../src/AppMain/Controller/APIFrontEnd'
+  type:     annotation
+  prefix: /front-end
+
 logout:
   path: /logout

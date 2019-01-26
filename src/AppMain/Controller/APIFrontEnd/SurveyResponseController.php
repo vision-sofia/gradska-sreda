@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Controller\API;
+namespace App\AppMain\Controller\APIFrontEnd;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
@@ -26,15 +26,15 @@ class SurveyResponseController extends AbstractController
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
-        SurveyResponseQuestionService $responseQuestionServicestion
+        SurveyResponseQuestionService $responseQuestionService
     ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->responseQuestionService = $responseQuestionServicestion;
+        $this->responseQuestionService = $responseQuestionService;
     }
 
     /**
-     * @Route("api/geo/{id}", name="api.geo-object.details", methods="GET")
+     * @Route("geo-object/{id}/survey", name="app.api-front-end.geo-object.survey", methods="GET")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
     public function getAnswer(GeoObject $geoObject): Response
