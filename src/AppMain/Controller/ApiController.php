@@ -40,7 +40,7 @@ class ApiController extends AbstractController
                 FROM 
                     x_geometry.multiline m
                         INNER JOIN
-                    x_geospatial.geo_object g ON m.spatial_object_id = g.id
+                    x_geospatial.geo_object g ON m.geo_object_id = g.id
                 WHERE
                     ST_Distance(coordinates, ST_MakePoint(:center_lon,:center_lat)) <= :distance
             ');

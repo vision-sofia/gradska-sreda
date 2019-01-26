@@ -62,32 +62,29 @@ class SurveyResponseController extends AbstractController
 
         foreach ($question->getAnswers() as $answer) {
             $data = [];
+            $data['id'] = $answer->getUuid();
+            $data['title'] = $answer->getTitle();
+            $data['is_free_answer'] = $answer->getIsFreeAnswer();
 
-            if($answer->getParent() instanceof Answer) {
+            if ($answer->getParent() instanceof Answer) {
                 $data['parent'] = $answer->getParent()->getUuid();
+            } else {
+                $data['parent'] = null;
             }
 
-            if($answer->getIsFreeAnswer() === true) {
-                $data['is_free_answer'] = 1;
-            }
-
-            $answers[] = [
-                'uuid'     => $answer->getUuid(),
-                'title'    => $answer->getTitle(),
-            ] + $data;
+            $answers[] = $data;
         }
 
         $response = [
-            'question' => [
-                'title'   => $question->getTitle(),
-                'answers' => $answers,
-            ],
+            'question'             => $question->getTitle(),
+            'has_multiple_answers' => $question->getHasMultipleAnswers(),
+            'answers'              => $answers,
         ];
 
         return new JsonResponse($response);
     }
 
-    public function ans(Answer $answer):array
+    public function ans(Answer $answer): array
     {
         return [
             'uuid'  => $answer->getUuid(),

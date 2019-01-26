@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,11 +71,46 @@ class ItemController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        $parent = $request->get('parent');
+        $answers = $request->get('answer');
+
+        // Check: Is answer exists
+        if(!isset($answers[0])) {
+            return new JsonResponse(['error']);
+        }
+
         $answer = $this->getDoctrine()->getRepository(Answer::class)->findOneBy([
-            'uuid' => $parent,
+            'uuid' => $answers[0],
         ])
         ;
+
+        /** @var Survey\Question\Question $question */
+        $question = $answer->getQuestion();
+
+        // Check: Is question are available for this geo-object
+        // TODO: Survey scope check (geo-object, question)
+        // TODO: Redis cache
+
+
+        $countAnswers= $question->getAnswers()->count();
+
+        // Check: Is number of input answers fit in number of question answers
+        if(\count($answers) > $countAnswers) {
+            return new JsonResponse(['error']);
+        }
+
+        // Check: Is all input answers are from one questions
+        // TODO: WHERE id IN (:answers) GROUP BY question_ID
+        // TODO: Redis cache
+
+        // Check 4: Is single answer question have one input answer
+
+
+
+
+
+
+
+
 
         $child = $request->get('child');
 
@@ -140,13 +176,14 @@ class ItemController extends AbstractController
         $responseQuestion->addAnswer($responseAnswer);
 
         $this->entityManager->persist($responseQuestion);
-        $this->entityManager->flush();
+    #    $this->entityManager->flush();
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
-
+/*
         return $this->redirectToRoute('app.geo-object.details', [
             'id' => $geoObject->getUuid(),
         ]);
+*/
     }
 }
