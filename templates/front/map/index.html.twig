@@ -1,25 +1,8 @@
 {% extends 'front/map/layout.html.twig' %}
-
+{% block title %}Карта{% endblock %}
 {% block content %}
-    <div class="container">
-        <h2>Карта</h2>
-    </div>
-
-    <div class="container-fluid">
-        <div id="map" class="map"></div>
-        <script type="text/javascript">
-            var map = new ol.Map({
-                target: 'map',
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
-                view: new ol.View({
-                    center: ol.proj.fromLonLat([23.3197423, 42.696717]),
-                    zoom: 15
-                })
-            });
-        </script>
-    </div>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="">
+    <div id="map"></div>
+	<script type="text/javascript" src="{{ asset('javascript/leaflet.js', 'front') }}"></script>
+	<script type="text/javascript" srcx="{{ asset('javascript/map.min.js', 'front') }}?{{ "now"|date("U") }}"></script>
 {% endblock %}
