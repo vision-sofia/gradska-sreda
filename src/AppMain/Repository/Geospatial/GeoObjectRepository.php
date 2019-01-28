@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityRepository;
 
 class GeoObjectRepository extends EntityRepository
 {
-    public function isAvailableForSurvey(GeoObjectInterface $geoObject): ?bool
+    public function isAvailableForSurvey(GeoObjectInterface $geoObject): bool
     {
         $conn = $this->_em->getConnection();
 
