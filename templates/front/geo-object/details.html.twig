@@ -30,9 +30,9 @@
             <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
                 {% for answer in question.answers %}
                     {% if answer.parent is null %}
-                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="radio" name="answer[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="radio" name="answers[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
                     {% else %}
-                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="checkbox" name="answer[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="checkbox" name="answers[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
                     {% endif %}
                 {% endfor %}
                 <button type="submit">Изпрати</button>

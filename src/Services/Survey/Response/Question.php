@@ -23,8 +23,6 @@ class Question
 
     public function response(array $answers, GeoObjectInterface $geoObject, UserInterface $user) {
 
-        $answers = $answers['answers'];
-
         // Check: Is answer exists
         if(!isset($answers[0])) {
             return new JsonResponse(['error']);
