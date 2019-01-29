@@ -72,7 +72,7 @@ class ItemController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        $answers = $request->get('answer');
+        $answers = $request->get('answers');
 
         $question->response($answers, $geoObject, $this->getUser());
 

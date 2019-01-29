@@ -106,7 +106,7 @@ class SurveyResponseController extends AbstractController
         $answers = $request->getContent();
         $answers = json_decode($answers, true);
 
-        $question->response($answers, $geoObject, $this->getUser());
+        $question->response($answers['answers'], $geoObject, $this->getUser());
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);

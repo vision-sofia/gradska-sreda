@@ -24,28 +24,34 @@ class IndexController extends AbstractController
     {
         $conn = $this->entityManager->getConnection();
 
-        $stmt = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
-        $stmt->execute(['Нерегулирано']);
+        $stmt = $conn->prepare('SELECT id FROM x_survey.survey_category WHERE name = ?');
+        $stmt->execute(['Пешеходни отсечки']);
 
         $resultTypeA = $this->findByType($stmt->fetchColumn());
 
-        $stmt = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
-        $stmt->execute(['Алея']);
+        $stmt = $conn->prepare('SELECT id FROM x_survey.survey_category WHERE name = ?');
+        $stmt->execute(['Алеи']);
 
         $resultTypeB = $this->findByType($stmt->fetchColumn());
 
+        $stmt = $conn->prepare('SELECT id FROM x_survey.survey_category WHERE name = ?');
+        $stmt->execute(['Пресичания']);
+
+        $resultTypeC = $this->findByType($stmt->fetchColumn());
+
         return $this->render('front/index/index.html.twig', [
-            'items' => array_merge($resultTypeA, $resultTypeB)
+            'items' => array_merge($resultTypeA, $resultTypeB, $resultTypeC)
         ]);
     }
 
 
-    private function findByType(int $objectTypeId): array {
+    private function findByType(int $categoryId): array {
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
             SELECT 
                 g.uuid as id,
+                c.name as category_name,                
                 st_asgeojson(m.coordinates) as geo,
                 g.attributes,
                 u.data,
@@ -59,8 +65,12 @@ class IndexController extends AbstractController
                 x_survey.result_user_completion u ON g.id = u.geo_object_id AND u.user_id = :user_id                
                     LEFT JOIN
                 x_geospatial.object_type t ON g.object_type_id = t.id
+                    LEFT JOIN
+                x_survey.survey_element e ON g.object_type_id = e.object_type_id
+                    LEFT JOIN
+                x_survey.survey_category c ON e.category_id = c.id
             WHERE
-                g.object_type_id = :object_type_id
+                c.id = :category_id
             ORDER BY 
                 g.id DESC
             LIMIT 3
@@ -68,7 +78,7 @@ class IndexController extends AbstractController
 
         $userId =  $this->getUser() !== null ? $this->getUser()->getId() : null;
 
-        $stmt->bindValue('object_type_id', $objectTypeId);
+        $stmt->bindValue('category_id', $categoryId);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
@@ -92,6 +102,7 @@ class IndexController extends AbstractController
                 'properties' => $properties,
                 'type' => $row['object_type'],
                 'name' => $row['object_name'],
+                'category_name' => $row['category_name'],
                 'geometry' => json_decode($row['geo'], true),
                 'data' => json_decode($row['data'], true)
             ];
