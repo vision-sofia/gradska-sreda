@@ -27,7 +27,7 @@
         <ul>
             {% for item in items %}
                 <li>
-                    {{ item.type }} ({{ item.name }}) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a>
+                    {{ item.category_name }} ({{ item.type }} ) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a>
 
                     {% for survey_id, data in item.data %}
                         <p>
