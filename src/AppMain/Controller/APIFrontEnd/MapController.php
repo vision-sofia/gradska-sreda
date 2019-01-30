@@ -49,7 +49,6 @@ class MapController extends AbstractController
                     x_survey.survey_category c ON e.category_id = c.id
                 WHERE
                     ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:text, 4326))) = TRUE
-                LIMIT 5
             ');
 
             $stmt->bindValue('text', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
