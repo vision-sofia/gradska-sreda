@@ -55,7 +55,7 @@ class ImportCommand extends Command
         }
 
         $stmt = $conn->prepare('
-            INSERT INTO x_geometry.multiline (
+            INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
                 metadata, 
