@@ -2,6 +2,7 @@
 
 namespace App\AppMain\Controller\APIFrontEnd;
 
+use App\Services\Geometry\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,10 +13,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class MapController extends AbstractController
 {
     protected $entityManager;
+    protected $utils;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, Utils $utils)
     {
         $this->entityManager = $entityManager;
+        $this->utils = $utils;
     }
 
     /**
@@ -23,15 +26,11 @@ class MapController extends AbstractController
      */
     public function index(Request $request): Response
     {
-        $center = $request->query->get('center');
-
-        $distance = $request->query->get('distance');
+        $in = $request->query->get('in');
 
         $conn = $this->entityManager->getConnection();
 
-        if (null !== $center && null !== $distance) {
-            [$lat, $lon] = explode(',', $center);
-
+        if (null !== $in) {
             $stmt = $conn->prepare('
                 SELECT 
                     g.uuid AS id,
@@ -49,13 +48,13 @@ class MapController extends AbstractController
                         INNER JOIN
                     x_survey.survey_category c ON e.category_id = c.id
                 WHERE
-                    ST_Distance(coordinates, ST_MakePoint(:center_lon,:center_lat)) <= :distance
+                    ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:text, 4326))) = TRUE
+                LIMIT 5
             ');
 
-            $stmt->bindValue('center_lat', $lat);
-            $stmt->bindValue('center_lon', $lon);
-            $stmt->bindValue('distance', $distance);
+            $stmt->bindValue('text', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
             $stmt->execute();
+
         } else {
             $stmt = $conn->prepare('
                 SELECT 
