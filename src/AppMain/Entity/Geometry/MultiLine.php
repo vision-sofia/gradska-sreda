@@ -5,6 +5,7 @@ namespace App\AppMain\Entity\Geometry;
 
 use Doctrine\ORM\Mapping as ORM;
 
+# indexes={@ORM\Index(columns={"coordinates"})},
 /**
  * @ORM\Table(
  *     name="multiline",
