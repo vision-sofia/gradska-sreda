@@ -4,18 +4,15 @@ namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
-use App\AppMain\Entity\Survey\Question\Answer;
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Response\Question;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class ItemController extends AbstractController
 {
@@ -41,24 +38,21 @@ class ItemController extends AbstractController
         }
 
         $isAvailableForSurvey = $this->getDoctrine()
-                                     ->getRepository(GeoObject::class)
-                                     ->isAvailableForSurvey($geoObject)
+            ->getRepository(GeoObject::class)
+            ->isAvailableForSurvey($geoObject)
         ;
 
         if ($isAvailableForSurvey) {
             $question = $this->getDoctrine()
-                             ->getRepository(Survey\Question\Question::class)
-                             ->findNextQuestion(
-                                 $this->getUser(),
-                                 $geoObject
-                             )
+                ->getRepository(Survey\Question\Question::class)
+                ->findNextQuestion($this->getUser(), $geoObject)
             ;
         }
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
-            'question'   => $question ?? null,
-            'is_available_for_survey' => $isAvailableForSurvey
+            'question' => $question ?? null,
+            'is_available_for_survey' => $isAvailableForSurvey,
         ]);
     }
 
@@ -74,6 +68,12 @@ class ItemController extends AbstractController
 
         $answers = $request->get('answers');
 
+        if (!\is_array($answers)) {
+            return $this->redirectToRoute('app.geo-object.details', [
+                'id' => $geoObject->getUuid(),
+            ]);
+        }
+
         $question->response($answers, $geoObject, $this->getUser());
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
@@ -82,6 +82,5 @@ class ItemController extends AbstractController
         return $this->redirectToRoute('app.geo-object.details', [
             'id' => $geoObject->getUuid(),
         ]);
-
     }
 }
