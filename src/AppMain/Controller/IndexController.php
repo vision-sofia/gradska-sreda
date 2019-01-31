@@ -18,7 +18,7 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route("", name="app.homepage")
+     * @Route("/plan", name="app.homepage")
      */
     public function index(): Response
     {

@@ -1,17 +1,20 @@
 <header>
-	<a class="logo" href="{{ path('app.homepage') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
+	<a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
 	<div class="nav">
 	<button class="navToggle"><i class="fas fa-bars"></i></button>
     <nav class="main">
 		<ul>
-			<li class="nav-item{{ app.request.get('_route') == 'app.homepage' ? ' active' }}">
+			{#<li class="nav-item{{ app.request.get('_route') == 'app.homepage' ? ' active' }}">
 				<a class=" " href="{{ path('app.homepage') }}"><i class="fas fa-home"></i>Начало</a>
-			</li>
+			</li>#}
 			<li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
 				<a class="" href="{{ path('app.map') }}"><i class="fas fa-map-marked-alt"></i>Карта</a>
 			</li>
 			<li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
 				<a class="" href="{{ path('app.info') }}"><i class="fas fa-info"></i>Информация</a>
+			</li>
+			<li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
+				<a class="" href="{{ path('app.about') }}"><i class="fas fa-info"></i>За платформата</a>
 			</li>
 		</ul>
 	</nav>

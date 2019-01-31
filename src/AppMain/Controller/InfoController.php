@@ -19,4 +19,14 @@ class InfoController extends AbstractController
 
         ]);
     }
+
+    /**
+     * @Route("about", name="app.about")
+     */
+    public function about(): Response
+    {
+        return $this->render('front/info/index.html.twig', [
+
+        ]);
+    }
 }

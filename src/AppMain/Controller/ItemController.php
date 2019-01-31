@@ -6,6 +6,7 @@ use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Response\Question;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,10 +50,64 @@ class ItemController extends AbstractController
             ;
         }
 
+        /** @var Connection $conn */
+        $conn = $this->getDoctrine()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                cr.name as name, 
+                round(AVG(rating), 1) as rating
+            FROM
+                x_survey.result_geo_object_rating gr
+                    INNER JOIN
+                x_survey.ev_criterion_subject cr ON gr.criterion_subject_id = cr.id
+            WHERE
+                gr.geo_object_id = :geo_object_id
+            GROUP BY
+                cr.id');
+
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->execute();
+
+
+        $result = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $result[] = $row;
+        }
+
+        $stmt = $conn->prepare('
+            SELECT
+                u.username as user_username, 
+                cr.name as criterion_name, 
+                round(AVG(rating), 2) as rating
+            FROM
+                x_survey.result_geo_object_rating gr
+                    INNER JOIN
+                x_survey.ev_criterion_subject cr ON gr.criterion_subject_id = cr.id
+                    INNER JOIN
+                x_main.user_base u ON gr.user_id = u.id
+            WHERE
+                gr.geo_object_id = :geo_object_id
+                            
+            GROUP BY
+                cr.id, u.id
+            ORDER BY u.username                ');
+
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->execute();
+
+
+        $resultByUsers = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $resultByUsers[] = $row;
+        }
+
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
             'question' => $question ?? null,
             'is_available_for_survey' => $isAvailableForSurvey,
+            'result' => $result,
+            'resultByUsers' => $resultByUsers,
         ]);
     }
 
