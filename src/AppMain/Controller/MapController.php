@@ -12,6 +12,7 @@ class MapController extends AbstractController
 {
     /**
      * @Route("", name="app.map")
+     * @Route("/map", name="app.map-e")
      */
     public function index(): Response
     {
