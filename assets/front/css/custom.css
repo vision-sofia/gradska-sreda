@@ -140,6 +140,14 @@ main > .container {
 	width: 100%;
 	padding: 0 15px 0 15px;
 }
+.mainMarker {
+	background-color: white;
+	padding: 5px;
+	position: absolute;
+	min-width: 120px;
+	min-height: 75px;
+	transform: translate(0,-110%);
+}
 @media (max-width: 990px) {
 	header a.logo {
 		left: 70px;
