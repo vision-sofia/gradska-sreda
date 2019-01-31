@@ -40,7 +40,7 @@ class ImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . DIRECTORY_SEPARATOR . 'DataFixtures/LULIN_TEST_WGS84.json');
+        $string = file_get_contents('/var/www/data.json');
         $json_a = json_decode($string, true);
 
         /** @var Connection $conn */
@@ -82,12 +82,14 @@ class ImportCommand extends Command
             )
         ');
 
+        $j = $i = 0;
+
         foreach ($json_a as $item) {
             if (is_array($item)) {
                 foreach ($item as $s) {
-                    if (isset($s['geometry'])) {
+                    if (isset($s['geometry']['paths'][0])) {
                         $p = [];
-                        foreach ($s['geometry']['coordinates'] as $points) {
+                        foreach ($s['geometry']['paths'][0] as $points) {
                             $p[] = implode(' ', $points);
                         }
 
@@ -104,7 +106,12 @@ class ImportCommand extends Command
                             $name = $s['properties']['name'];
                         }
 
-                        $stmtSPO->bindValue('attr', json_encode($s['properties']));
+                        if(isset($s['properties'])) {
+                            $stmtSPO->bindValue('attr', json_encode($s['properties']));
+                        } else {
+                            $stmtSPO->bindValue('attr', '{}');
+                        }
+
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
                         $stmtSPO->bindValue('name', $name);
                         $stmtSPO->bindValue('object_type_id', $objectTypeId);
@@ -114,6 +121,11 @@ class ImportCommand extends Command
                         $stmt->bindValue('geography', 'MULTILINESTRING((' . $im . '))');
                         $stmt->bindValue('uuid', Uuid::uuid4());
                         $stmt->execute();
+                        $i++;
+                    } else {
+                        $j++;
+
+                        echo $j . ' skip' . PHP_EOL;
                     }
                 }
             }
@@ -137,6 +149,6 @@ class ImportCommand extends Command
         $stmt->bindValue('name', 'Анкета-2');
         $stmt->execute();
 
-        echo "Done\n";
+        echo "Done {$j}/{$i}\n";
     }
 }
