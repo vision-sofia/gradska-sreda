@@ -98,20 +98,15 @@ class ImportCommand extends Command
                         $name = '';
                         $objectTypeId = null;
 
-                        if (isset($s['properties']['type'], $objectTypes[$s['properties']['type']])) {
-                            $objectTypeId = $objectTypes[$s['properties']['type']];
+                        if (isset($s['attributes']['type'], $objectTypes[$s['attributes']['type']])) {
+                            $objectTypeId = $objectTypes[$s['attributes']['type']];
                         }
 
-                        if (isset($s['properties']['name'])) {
-                            $name = $s['properties']['name'];
+                        if (isset($s['attributes']['name'])) {
+                            $name = $s['attributes']['name'];
                         }
 
-                        if(isset($s['properties'])) {
-                            $stmtSPO->bindValue('attr', json_encode($s['properties']));
-                        } else {
-                            $stmtSPO->bindValue('attr', '{}');
-                        }
-
+                        $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
                         $stmtSPO->bindValue('name', $name);
                         $stmtSPO->bindValue('object_type_id', $objectTypeId);
