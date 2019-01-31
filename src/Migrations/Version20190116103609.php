@@ -14,7 +14,7 @@ final class Version20190116103609 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'CREATE MATERIALIZED VIEW x_survey.ev_criterion_question';
+        return 'Create materialized view x_survey.ev_criterion_question and refresh trigger';
     }
 
     public function up(Schema $schema) : void
