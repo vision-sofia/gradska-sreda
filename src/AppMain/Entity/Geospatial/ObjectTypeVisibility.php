@@ -28,9 +28,14 @@ class ObjectTypeVisibility implements UuidInterface
     private $objectType;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="decimal", precision=4, scale=2)
      */
-    private $zoomThreshold;
+    private $minZoom;
+
+    /**
+     * @ORM\Column(type="decimal", precision=4, scale=2)
+     */
+    private $maxZoom;
 
     public function getId(): ?int
     {
@@ -47,13 +52,23 @@ class ObjectTypeVisibility implements UuidInterface
         $this->objectType = $objectType;
     }
 
-    public function getZoomThreshold(): ?int
+    public function getMinZoom(): ?float
     {
-        return $this->zoomThreshold;
+        return $this->minZoom;
     }
 
-    public function setZoomThreshold(int $zoomThreshold): void
+    public function setMinZoom(float $minZoom): void
     {
-        $this->zoomThreshold = $zoomThreshold;
+        $this->minZoom = $minZoom;
+    }
+
+    public function getMaxZoom(): ?float
+    {
+        return $this->maxZoom;
+    }
+
+    public function setMaxZoom(float $maxZoom): void
+    {
+        $this->maxZoom = $maxZoom;
     }
 }
