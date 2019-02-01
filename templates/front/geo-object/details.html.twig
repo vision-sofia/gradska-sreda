@@ -1,8 +1,6 @@
 {% extends 'front/geo-object/layout.html.twig' %}
 
 {% block content %}
-    <h2>Обект</h2>
-
     <div id="map" class="map" style="height: 200px;"></div>
 
     <script type="text/javascript">
@@ -26,6 +24,7 @@
 	<h5>{{ geo_object.attributes.type }}</h5>
 
 
+
     {% if is_available_for_survey == true %}
         {% if question is null %}
             Няма повече въпроси
@@ -44,6 +43,41 @@
             </form>
         {% endif %}
     {% endif %}
+
+    <div>
+        {% if result|length > 0 %}
+        <h3>Среден резултат</h3>
+        <table cellpadding="5">
+            <tr>
+                <th style="text-align: left;">Критерии</th>
+                <th style="text-align: left;">Точки</th>
+            </tr>
+            {% for criterion in result %}
+                <tr>
+                    <td>{{ criterion.name }}</td>
+                    <td>{{ criterion.rating }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+        <h3>Оценки на хора</h3>
+        <table cellpadding="5">
+            <tr>
+                <th style="text-align: left;">Потребител</th>
+                <th style="text-align: left;">Критерии</th>
+                <th style="text-align: left;">Точки</th>
+            </tr>
+            {% for result in resultByUsers %}
+                <tr>
+                    <td>{{ result.user_username }}</td>
+                    <td>{{ result.criterion_name }}</td>
+                    <td>{{ result.rating }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="">
 	<script type="text/javascript" src="{{ asset('javascript/leaflet.js', 'front') }}"></script>
