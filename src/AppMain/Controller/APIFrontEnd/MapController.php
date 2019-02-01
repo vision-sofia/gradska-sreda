@@ -27,6 +27,7 @@ class MapController extends AbstractController
     public function index(Request $request): Response
     {
         $in = $request->query->get('in');
+        $zoom = (int)$request->query->get('zoom');
 
         $conn = $this->entityManager->getConnection();
 
@@ -47,11 +48,15 @@ class MapController extends AbstractController
                     x_survey.survey_element e ON g.object_type_id = e.object_type_id
                         INNER JOIN
                     x_survey.survey_category c ON e.category_id = c.id
+                        INNER JOIN
+                    x_geospatial.object_type_visibility v ON t.id = v.object_type_id
                 WHERE
                     ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:text, 4326))) = TRUE
+                    AND v.zoom_threshold >= :zoom_threshold
             ');
 
             $stmt->bindValue('text', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
+            $stmt->bindValue('zoom_threshold', $zoom);
             $stmt->execute();
 
         } else {
