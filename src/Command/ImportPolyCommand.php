@@ -6,9 +6,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,19 +20,17 @@ class ImportPolyCommand extends Command
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-
     ) {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $string = file_get_contents('/var/www/GR_Units_FullExtend.json');
         $json_a = json_decode($string, true);
@@ -81,9 +77,8 @@ class ImportPolyCommand extends Command
         $j = $i = 0;
 
         foreach ($json_a as $item) {
-            if (is_array($item)) {
+            if (\is_array($item)) {
                 foreach ($item as $s) {
-
                     if (isset($s['geometry']['rings'][0])) {
                         $p = [];
                         foreach ($s['geometry']['rings'][0] as $points) {
@@ -93,16 +88,12 @@ class ImportPolyCommand extends Command
                         $im = implode(',', $p);
 
                         $name = '';
-                        $objectTypeId = null;
 
-                        if (isset($s['attributes']['type'], $objectTypes[$s['attributes']['type']])) {
-                            $objectTypeId = $objectTypes[$s['attributes']['type']];
-                        }
+                        $objectTypeId = $objectTypes['Градоустройствена единица'];
 
                         if (isset($s['attributes']['Rajon'])) {
                             $name = $s['attributes']['Rajon'];
                         }
-
 
                         $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
@@ -114,9 +105,9 @@ class ImportPolyCommand extends Command
                         $stmt->bindValue('geography', 'POLYGON((' . $im . '))');
                         $stmt->bindValue('uuid', Uuid::uuid4());
                         $stmt->execute();
-                        $i++;
+                        ++$i;
                     } else {
-                        $j++;
+                        ++$j;
 
                         echo $j . ' skip' . PHP_EOL;
                     }
