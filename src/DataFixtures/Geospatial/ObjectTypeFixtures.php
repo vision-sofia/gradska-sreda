@@ -79,6 +79,10 @@ class ObjectTypeFixtures extends Fixture
                 'name' => 'Градоустройствена единица',
                 'min_zoom' => 16,
                 'max_zoom' => 10,
+            ], [
+                'name' => 'Район',
+                'min_zoom' => 10,
+                'max_zoom' => 5,
             ],
         ];
     }
