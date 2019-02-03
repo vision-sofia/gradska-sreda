@@ -34,37 +34,13 @@ class MapController extends AbstractController
         if (null === $in || $zoom === null) {
             return new JsonResponse(['Missing parameters'],400);
         }
-/*
-            $stmt = $conn->prepare('
-                SELECT
-                    g.uuid AS id,
-                    st_asgeojson(m.coordinates) AS geo,
-                    g.attributes,
-                    c.name AS category_name
-                FROM
-                    x_geometry.multiline m
-                        INNER JOIN
-                    x_geospatial.geo_object g ON m.geo_object_id = g.id
-                        INNER JOIN
-                    x_geospatial.object_type t ON g.object_type_id = t.id
-                        INNER JOIN
-                    x_survey.survey_element e ON g.object_type_id = e.object_type_id
-                        INNER JOIN
-                    x_survey.survey_category c ON e.category_id = c.id
-                        INNER JOIN
-                    x_geospatial.object_type_visibility v ON t.id = v.object_type_id
-                WHERE
-                    ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:text, 4326))) = TRUE
-                    AND :zoom BETWEEN max_zoom AND min_zoom
-            ');
-*/
 
         $stmt = $conn->prepare('
             SELECT
                 id,
                 geometry,
                 name,
-                attributes
+                jsonb_strip_nulls(attributes) as attributes
             FROM
                  (
                     SELECT
@@ -72,7 +48,8 @@ class MapController extends AbstractController
                         st_asgeojson(m.coordinates) AS geometry,
                         g.name as name,
                         jsonb_build_object(
-                            \'_sca\', c.name
+                            \'_sca\', c.name,
+                            \'behavior\', \'survey\'
                         ) as attributes
                     FROM
                         x_geometry.geometry_base m
@@ -117,7 +94,7 @@ class MapController extends AbstractController
             ');
 
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
-            $stmt->bindValue('zoom', (int)$zoom);
+        $stmt->bindValue('zoom', (int)$zoom);
         $stmt->execute();
 
         $style = [
