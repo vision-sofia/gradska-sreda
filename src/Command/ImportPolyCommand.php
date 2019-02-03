@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\AppMain\Entity\Geospatial\ObjectType;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -35,16 +36,12 @@ class ImportPolyCommand extends Command
         $string = file_get_contents('/var/www/GR_Units_FullExtend.json');
         $json_a = json_decode($string, true);
 
+        $objectType = $this->entityManager
+            ->getRepository(ObjectType::class)
+            ->findOneBy(['name' => 'Градоустройствена единица']);
+
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
-
-        $stmt = $conn->prepare('SELECT * FROM x_geospatial.object_type');
-        $stmt->execute();
-
-        $objectTypes = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $objectTypes[$row['name']] = $row['id'];
-        }
 
         $stmt = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
@@ -89,8 +86,6 @@ class ImportPolyCommand extends Command
 
                         $name = '';
 
-                        $objectTypeId = $objectTypes['Градоустройствена единица'];
-
                         if (isset($s['attributes']['Rajon'])) {
                             $name = $s['attributes']['Rajon'];
                         }
@@ -98,7 +93,7 @@ class ImportPolyCommand extends Command
                         $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
                         $stmtSPO->bindValue('name', $name);
-                        $stmtSPO->bindValue('object_type_id', $objectTypeId);
+                        $stmtSPO->bindValue('object_type_id', $objectType->getId());
                         $stmtSPO->execute();
 
                         $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
