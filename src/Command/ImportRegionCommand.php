@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ImportRegionCommand extends Command
 {
-    protected static $defaultName = 'app:import-reg';
+    protected static $defaultName = 'app:import-r';
 
     protected $entityManager;
     protected $container;

@@ -77,15 +77,15 @@ class ImportMetroPointCommand extends Command
         foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
-                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
-                        ++$j;
+                    ++$i;
 
+                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
                         echo sprintf("Skip: %d\n", $j);
 
                         continue;
                     }
 
-                    ++$i;
+                    ++$j;
 
                     $name = '';
 
