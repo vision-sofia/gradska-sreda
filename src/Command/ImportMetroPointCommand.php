@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ImportGTPointCommand extends Command
+class ImportMetroPointCommand extends Command
 {
-    protected static $defaultName = 'app:import-gt';
+    protected static $defaultName = 'app:import-metro';
 
     protected $entityManager;
     protected $container;
@@ -33,12 +33,12 @@ class ImportGTPointCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/gt.json');
-        $json_a = json_decode($string, true);
+        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/metro.json');
+        $content = json_decode($string, true);
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Спирка на градски транспорт'])
+            ->findOneBy(['name' => 'Спирка на метро'])
         ;
 
         /** @var Connection $conn */
@@ -74,13 +74,13 @@ class ImportGTPointCommand extends Command
 
         $j = $i = 0;
 
-        foreach ($json_a as $item) {
+        foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
                     if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
                         ++$j;
 
-                        echo $j . ' skip' . PHP_EOL;
+                        echo sprintf("Skip: %d\n", $j);
 
                         continue;
                     }
@@ -103,6 +103,6 @@ class ImportGTPointCommand extends Command
             }
         }
 
-        echo "Done {$j}/{$i}\n";
+        echo sprintf("Done: %d/%d\n", $j, $i);
     }
 }

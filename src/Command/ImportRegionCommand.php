@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ImportGTPointCommand extends Command
+class ImportRegionCommand extends Command
 {
-    protected static $defaultName = 'app:import-gt';
+    protected static $defaultName = 'app:import-reg';
 
     protected $entityManager;
     protected $container;
@@ -33,12 +33,12 @@ class ImportGTPointCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/gt.json');
+        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/regions.json');
         $content = json_decode($string, true);
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Спирка на градски транспорт'])
+            ->findOneBy(['name' => 'Административен райони'])
         ;
 
         /** @var Connection $conn */
@@ -77,15 +77,26 @@ class ImportGTPointCommand extends Command
         foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
-                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
-                        ++$j;
+                    ++$i;
 
-                        echo sprintf("Skip: %d\n", $j);
-
+                    if (!isset($s['geometry']['coordinates'])) {
                         continue;
                     }
 
-                    ++$i;
+                    $p = [];
+                    foreach ($s['geometry']['coordinates'] as $points) {
+                        foreach ($points as $point) {
+                            if (empty($point[0]) || empty($point[1])) {
+                                continue;
+                            }
+
+                            $p[] = implode(' ', $point);
+                        }
+                    }
+
+                    $im = implode(',', $p);
+
+                    ++$j;
 
                     $name = '';
 
@@ -96,7 +107,7 @@ class ImportGTPointCommand extends Command
                     $stmtSPO->execute();
 
                     $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmt->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
+                    $stmt->bindValue('geography', 'POLYGON((' . $im . '))');
                     $stmt->bindValue('uuid', Uuid::uuid4());
                     $stmt->execute();
                 }

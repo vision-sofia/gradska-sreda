@@ -76,11 +76,19 @@ class ObjectTypeFixtures extends Fixture
                 'min_zoom' => 20,
                 'max_zoom' => 16,
             ], [
+                'name' => 'Спирка на градски транспорт',
+                'min_zoom' => 20,
+                'max_zoom' => 16,
+            ], [
+                'name' => 'Спирка на метро',
+                'min_zoom' => 20,
+                'max_zoom' => 10,
+            ], [
                 'name' => 'Градоустройствена единица',
                 'min_zoom' => 16,
                 'max_zoom' => 10,
             ], [
-                'name' => 'Район',
+                'name' => 'Административен райони',
                 'min_zoom' => 10,
                 'max_zoom' => 5,
             ],

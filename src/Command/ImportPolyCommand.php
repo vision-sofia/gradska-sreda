@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ImportPolyCommand extends Command
 {
-    protected static $defaultName = 'app:importp';
+    protected static $defaultName = 'app:import-r';
 
     protected $entityManager;
     protected $container;
