@@ -13,6 +13,10 @@ BEGIN
         INSERT INTO x_geometry.polygon(geo_object_id, uuid, coordinates, metadata)
         SELECT geo_object_id, uuid, coordinates, metadata FROM (SELECT NEW.*) As foo;
 
+    ELSEIF geometry_type = 'POINT' THEN
+        INSERT INTO x_geometry.point(geo_object_id, uuid, coordinates, metadata)
+        SELECT geo_object_id, uuid, coordinates, metadata FROM (SELECT NEW.*) As foo;
+
     END IF;
 
     RETURN NULL;

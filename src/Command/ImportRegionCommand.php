@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ImportPolyCommand extends Command
+class ImportRegionCommand extends Command
 {
-    protected static $defaultName = 'app:import-r';
+    protected static $defaultName = 'app:import-reg';
 
     protected $entityManager;
     protected $container;
@@ -33,12 +33,13 @@ class ImportPolyCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents('/var/www/GR_Units_FullExtend.json');
-        $json_a = json_decode($string, true);
+        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/regions.json');
+        $content = json_decode($string, true);
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Градоустройствена единица']);
+            ->findOneBy(['name' => 'Административен райони'])
+        ;
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
@@ -73,43 +74,46 @@ class ImportPolyCommand extends Command
 
         $j = $i = 0;
 
-        foreach ($json_a as $item) {
+        foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
-                    if (isset($s['geometry']['rings'][0])) {
-                        $p = [];
-                        foreach ($s['geometry']['rings'][0] as $points) {
-                            $p[] = implode(' ', $points);
-                        }
+                    ++$i;
 
-                        $im = implode(',', $p);
-
-                        $name = '';
-
-                        if (isset($s['attributes']['Rajon'])) {
-                            $name = $s['attributes']['Rajon'];
-                        }
-
-                        $stmtSPO->bindValue('attr', json_encode($s['attributes']));
-                        $stmtSPO->bindValue('uuid', Uuid::uuid4());
-                        $stmtSPO->bindValue('name', $name);
-                        $stmtSPO->bindValue('object_type_id', $objectType->getId());
-                        $stmtSPO->execute();
-
-                        $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
-                        $stmt->bindValue('geography', 'POLYGON((' . $im . '))');
-                        $stmt->bindValue('uuid', Uuid::uuid4());
-                        $stmt->execute();
-                        ++$i;
-                    } else {
-                        ++$j;
-
-                        echo $j . ' skip' . PHP_EOL;
+                    if (!isset($s['geometry']['coordinates'])) {
+                        continue;
                     }
+
+                    $p = [];
+                    foreach ($s['geometry']['coordinates'] as $points) {
+                        foreach ($points as $point) {
+                            if (empty($point[0]) || empty($point[1])) {
+                                continue;
+                            }
+
+                            $p[] = implode(' ', $point);
+                        }
+                    }
+
+                    $im = implode(',', $p);
+
+                    ++$j;
+
+                    $name = '';
+
+                    $stmtSPO->bindValue('attr', json_encode($s['properties']));
+                    $stmtSPO->bindValue('uuid', Uuid::uuid4());
+                    $stmtSPO->bindValue('name', $name);
+                    $stmtSPO->bindValue('object_type_id', $objectType->getId());
+                    $stmtSPO->execute();
+
+                    $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
+                    $stmt->bindValue('geography', 'POLYGON((' . $im . '))');
+                    $stmt->bindValue('uuid', Uuid::uuid4());
+                    $stmt->execute();
                 }
             }
         }
 
-        echo "Done {$j}/{$i}\n";
+        echo sprintf("Done: %d/%d\n", $j, $i);
     }
 }
