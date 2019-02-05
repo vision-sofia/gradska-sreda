@@ -6,9 +6,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,26 +20,20 @@ class ImportCommand extends Command
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-
     ) {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Add a short description for your command')
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-        ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents('/var/www/data.json');
-        $json_a = json_decode($string, true);
+        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/network.json');
+        $content = json_decode($string, true);
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
@@ -86,8 +78,8 @@ class ImportCommand extends Command
 
         $j = $i = 0;
 
-        foreach ($json_a as $item) {
-            if (is_array($item)) {
+        foreach ($content as $item) {
+            if (\is_array($item)) {
                 foreach ($item as $s) {
                     if (isset($s['geometry']['paths'][0])) {
                         $p = [];
@@ -118,9 +110,9 @@ class ImportCommand extends Command
                         $stmt->bindValue('geography', 'MULTILINESTRING((' . $im . '))');
                         $stmt->bindValue('uuid', Uuid::uuid4());
                         $stmt->execute();
-                        $i++;
+                        ++$i;
                     } else {
-                        $j++;
+                        ++$j;
 
                         echo $j . ' skip' . PHP_EOL;
                     }

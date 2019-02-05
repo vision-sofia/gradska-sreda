@@ -11,9 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ImportPolyCommand extends Command
+class ImportGRCommand extends Command
 {
-    protected static $defaultName = 'app:import-r';
+    protected static $defaultName = 'app:import-gr';
 
     protected $entityManager;
     protected $container;
@@ -33,8 +33,8 @@ class ImportPolyCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents('/var/www/GR_Units_FullExtend.json');
-        $json_a = json_decode($string, true);
+        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/gr_units.json');
+        $content = json_decode($string, true);
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
@@ -73,7 +73,7 @@ class ImportPolyCommand extends Command
 
         $j = $i = 0;
 
-        foreach ($json_a as $item) {
+        foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
                     if (isset($s['geometry']['rings'][0])) {
@@ -110,6 +110,6 @@ class ImportPolyCommand extends Command
             }
         }
 
-        echo "Done {$j}/{$i}\n";
+        echo sprintf("Done: %d/%d\n", $j, $i);
     }
 }
