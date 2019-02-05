@@ -72,20 +72,20 @@ class ImportGTPointCommand extends Command
             )
         ');
 
-        $j = $i = 0;
+        $sc = $j = $i = 0;
 
         foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
-                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
-                        ++$j;
+                    ++$i;
 
-                        echo sprintf("Skip: %d\n", $j);
+                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
+                        echo sprintf("Skip: %d\n", $sc++);
 
                         continue;
                     }
 
-                    ++$i;
+                    ++$j;
 
                     $name = '';
 

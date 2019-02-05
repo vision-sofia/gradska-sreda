@@ -72,7 +72,7 @@ class ImportRegionCommand extends Command
             )
         ');
 
-        $j = $i = 0;
+        $sc = $j = $i = 0;
 
         foreach ($content as $item) {
             if (\is_array($item)) {
@@ -80,8 +80,12 @@ class ImportRegionCommand extends Command
                     ++$i;
 
                     if (!isset($s['geometry']['coordinates'])) {
+                        echo sprintf("Skip: %d\n", $sc++);
+
                         continue;
                     }
+
+                    ++$j;
 
                     $p = [];
                     foreach ($s['geometry']['coordinates'] as $points) {
@@ -95,8 +99,6 @@ class ImportRegionCommand extends Command
                     }
 
                     $im = implode(',', $p);
-
-                    ++$j;
 
                     $name = '';
 

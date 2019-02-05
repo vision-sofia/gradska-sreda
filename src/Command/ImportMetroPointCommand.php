@@ -72,7 +72,7 @@ class ImportMetroPointCommand extends Command
             )
         ');
 
-        $j = $i = 0;
+        $sc = $j = $i = 0;
 
         foreach ($content as $item) {
             if (\is_array($item)) {
@@ -80,7 +80,7 @@ class ImportMetroPointCommand extends Command
                     ++$i;
 
                     if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
-                        echo sprintf("Skip: %d\n", $j);
+                        echo sprintf("Skip: %d\n", $sc++);
 
                         continue;
                     }
