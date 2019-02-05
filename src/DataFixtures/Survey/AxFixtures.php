@@ -24,7 +24,7 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
     {
         foreach ($this->data() as $value) {
             $survey = $manager->getRepository(Survey::class)
-                              ->findOneBy(['name' => $value['survey']])
+                ->findOneBy(['name' => $value['survey']])
             ;
 
             if (null === $survey) {
@@ -33,7 +33,7 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
 
             foreach ($value['auxiliary_object'] as $item) {
                 $geoObjectType = $manager->getRepository(ObjectType::class)
-                                         ->findOneBy(['name' => $item['object_type_name']])
+                    ->findOneBy(['name' => $item['object_type_name']])
                 ;
 
                 if (null === $geoObjectType) {
@@ -44,7 +44,7 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
                 $auxiliaryObjectType->setGeoObjectType($geoObjectType);
                 $auxiliaryObjectType->setBehavior($item['behavior']);
 
-                if ($item['behavior'] === 'info') {
+                if ('info' === $item['behavior']) {
                     $auxiliaryObjectType->setSurvey($survey);
                 }
 
@@ -58,29 +58,35 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-                'survey'           => 'Анкета',
+                'survey' => 'Анкета',
                 'auxiliary_object' => [
                     [
                         'object_type_name' => 'Подлез',
-                        'behavior'         => 'info',
+                        'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Стълбище',
-                        'behavior'         => 'info',
+                        'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Паркинг',
-                        'behavior'         => 'info',
+                        'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Пътно платно',
-                        'behavior'         => 'info',
+                        'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Подлез',
-                        'behavior'         => 'info',
+                        'behavior' => 'info',
+                    ], [
+                        'object_type_name' => 'Спирка на метро',
+                        'behavior' => 'info',
+                    ], [
+                        'object_type_name' => 'Спирка на градски транспорт',
+                        'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Градоустройствена единица',
-                        'behavior'         => 'navigation',
+                        'behavior' => 'navigation',
                     ], [
-                        'object_type_name' => 'Район',
-                        'behavior'         => 'navigation',
+                        'object_type_name' => 'Административен райони',
+                        'behavior' => 'navigation',
                     ],
                 ],
             ],
