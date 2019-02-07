@@ -4,6 +4,7 @@ namespace App\AppMain\Controller\APIFrontEnd;
 
 use App\Services\Geometry\Utils;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,11 +15,17 @@ class MapController extends AbstractController
 {
     protected $entityManager;
     protected $utils;
+    protected $logger;
 
-    public function __construct(EntityManagerInterface $entityManager, Utils $utils)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Utils $utils,
+        LoggerInterface $logger
+    )
     {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
+        $this->logger = $logger;
     }
 
     /**
@@ -116,9 +123,13 @@ class MapController extends AbstractController
             ],
         ];
 
+        $i = 0;
+
         $result = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $i++;
+
             $attributes = json_decode($row['attributes'], true);
 
             $properties = [];
@@ -139,6 +150,8 @@ class MapController extends AbstractController
                 'geometry'   => json_decode($row['geo'], true),
             ];
         }
+
+        $this->logger->info($i);
 
         return new JsonResponse([
             'settings' => [
