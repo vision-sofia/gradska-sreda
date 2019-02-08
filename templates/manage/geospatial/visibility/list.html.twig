@@ -1,0 +1,13 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    {% for visibility in list %}
+        {% set margin = 100 - (visibility.minZoom / 20) * 100 %}
+        {% set width = ((visibility.minZoom - visibility.maxZoom) / 20) * 100 %}
+        <div class="progress mb-1" style="height: 25px;">
+            <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
+                {{ visibility.objectType.name }}, {{ visibility.minZoom }}-{{ visibility.maxZoom }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
