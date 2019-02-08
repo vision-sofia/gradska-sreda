@@ -1,4 +1,4 @@
-public:
+manage:
   resource: '../src/AppManage/Controller/'
   type:     annotation
   prefix: /manage
