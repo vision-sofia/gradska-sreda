@@ -19,8 +19,8 @@ services:
         resource: '../src/AppMain/Controller'
         tags: ['controller.service_arguments']
 
-    App\AppAdmin\Controller\:
-        resource: '../src/AppAdmin/Controller'
+    App\AppManage\Controller\:
+        resource: '../src/AppManage/Controller'
         tags: ['controller.service_arguments']
 
     doctrineMigrationDiffListener:

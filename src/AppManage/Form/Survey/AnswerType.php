@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppAdmin\Form\Survey;
+namespace App\AppManage\Form\Survey;
 
 
 use App\AppMain\Entity\Survey\Question\Answer;

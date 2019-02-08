@@ -3,5 +3,5 @@ controllers_main:
     type: annotation
 
 controllers_admin:
-    resource: ../../src/AppAdmin/Controller/
+    resource: ../../src/AppManage/Controller/
     type: annotation

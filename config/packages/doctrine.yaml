@@ -29,6 +29,6 @@ doctrine:
             Admin:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/AppAdmin/Entity'
-                prefix: 'App\AppAdmin\Entity'
+                dir: '%kernel.project_dir%/src/AppManage/Entity'
+                prefix: 'App\AppManage\Entity'
                 alias: App

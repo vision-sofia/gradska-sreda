@@ -1,9 +1,9 @@
 <?php
 
-namespace App\AppAdmin\Controller\Survey;
+namespace App\AppManage\Controller\Survey;
 
-use App\AppAdmin\Form\Survey\AnswerType;
-use App\AppAdmin\Form\Survey\QuestionType;
+use App\AppManage\Form\Survey\AnswerType;
+use App\AppManage\Form\Survey\QuestionType;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Question;
 use App\Services\FlashMessage\FlashMessage;
