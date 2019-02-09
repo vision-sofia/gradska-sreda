@@ -22,7 +22,7 @@ class ObjectTypeVisibility implements UuidInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType", fetch="EAGER")
      * @ORM\JoinColumn(referencedColumnName="id", name="object_type_id", nullable=false)
      */
     private $objectType;
