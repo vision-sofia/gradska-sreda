@@ -6,7 +6,7 @@
         {% set width = ((visibility.minZoom - visibility.maxZoom) / 20) * 100 %}
         <div class="progress mb-1" style="height: 25px;">
             <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
-                {{ visibility.objectType.name }}, {{ visibility.minZoom }}-{{ visibility.maxZoom }}
+                <a href="{{ path('manage.geospatial.object-type-visibility.edit', {'id': visibility.uuid}) }}" class="text-white">{{ visibility.objectType.name }}, {{ visibility.minZoom }}-{{ visibility.maxZoom }}</a>
             </div>
         </div>
     {% endfor %}

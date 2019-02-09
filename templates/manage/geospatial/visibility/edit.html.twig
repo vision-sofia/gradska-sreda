@@ -1,0 +1,56 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Видимост на тип географски обект</strong>
+                    <small>{{ 'form.edit'|trans }}</small>
+                </div>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+                <div class="card-body">
+                    <div class="form-group row ">
+                        <label class="col-md-3 col-form-label" for="password-input">Тип обект</label>
+                        <div class="col-md-3 form-control-plaintext">
+                            {{ visibility.objectType.name }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label" for="password-input">Минимален zoom</label>
+                        <div class="col-md-3">
+                            {{ form_widget(form.minZoom, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label" for="password-input">Максимален zoom</label>
+                        <div class="col-md-3">
+                            {{ form_widget(form.maxZoom, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div>
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                <i class="fa fa-dot-circle-o"></i> {{ 'button.save'|trans }}
+                            </button>
+                            <a class="btn btn-sm btn-danger" href="{{ path('manage.geospatial.object-type-visibility.list') }}">
+                                <i class="fa fa-ban"></i> Откажи
+                            </a>
+                        </div>
+                        <div>
+                            {% if item is defined %}
+                                <button class="btn btn-sm btn-danger" form="form{{ item.uuid }}" type="submit">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
