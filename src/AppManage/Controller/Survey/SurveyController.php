@@ -1,9 +1,10 @@
 <?php
 
-namespace App\AppAdmin\Controller\Survey;
+namespace App\AppManage\Controller\Survey;
 
-use App\AppAdmin\Form\Survey\QuestionType;
-use App\AppMain\Entity\Survey\Question\Question;
+use App\AppManage\Form\Survey\SurveyType;
+use App\AppMain\Entity\Survey\EvaluationDefinition\Criterion;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -14,9 +15,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @Route("/survey-system/questions", name="manage.survey-system.questions.")
+ * @Route("/survey-system/surveys", name="manage.survey-system.survey.")
  */
-class QuestionController extends AbstractController
+class SurveyController extends AbstractController
 {
     protected $flashMessage;
     protected $csrfTokenValidator;
@@ -37,13 +38,13 @@ class QuestionController extends AbstractController
      */
     public function index(): Response
     {
-        $questions = $this->getDoctrine()
-                        ->getRepository(Question::class)
-                        ->findBy([], ['title' => 'ASC'])
+        $surveys = $this->getDoctrine()
+                        ->getRepository(Survey::class)
+                        ->findBy([], ['name' => 'ASC'])
         ;
 
-        return $this->render('manage/survey-system/question/list.html.twig', [
-            'questions' => $questions,
+        return $this->render('manage/survey-system/survey/list.html.twig', [
+            'surveys' => $surveys,
         ]);
     }
 
@@ -52,9 +53,9 @@ class QuestionController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $field = new Question();
+        $field = new Survey();
 
-        $form = $this->createForm(QuestionType::class, $field);
+        $form = $this->createForm(SurveyType::class, $field);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -63,65 +64,68 @@ class QuestionController extends AbstractController
             $em->flush();
 
             $this->flashMessage->addSuccess(
-                $this->translator->trans('question', ['%count%' => 1]),
+                $this->translator->trans('survey', ['%count%' => 1]),
                 $this->translator->trans('flash.add.success')
             );
 
-            return $this->redirectToRoute('manage.survey-system.questions.index');
+            return $this->redirectToRoute('manage.survey-system.survey.index');
         }
 
-        return $this->render('manage/survey-system/question/new.html.twig', [
+        return $this->render('manage/survey-system/survey/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/{question}/edit", name="edit", methods="GET|POST")
-     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @Route("/{survey}/edit", name="edit", methods="GET|POST")
+     * @ParamConverter("survey", class="App\AppMain\Entity\Survey\Survey\Survey", options={"mapping": {"survey": "uuid"}})
      */
-    public function edit(Request $request, Question $question): Response
+    public function edit(Request $request, Survey $survey): Response
     {
-        $form = $this->createForm(QuestionType::class, $question);
+        $form = $this->createForm(SurveyType::class, $survey);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($question);
+            $em->persist($survey);
             $em->flush();
 
             $this->flashMessage->addSuccess(
-                $this->translator->trans('question', ['%count%' => 1]),
+                $this->translator->trans('survey', ['%count%' => 1]),
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.survey-system.questions.edit', ['question' => $question->getUuid()]);
+            return $this->redirectToRoute('manage.survey-system.survey.edit', ['survey' => $survey->getUuid()]);
         }
 
+        $criteria = $this->getDoctrine()->getRepository(Criterion::class)->findBy([
+            'survey' => $survey
+        ]);
 
-
-        return $this->render('manage/survey-system/question/edit.html.twig', [
+        return $this->render('manage/survey-system/survey/edit.html.twig', [
             'form'  => $form->createView(),
-            'item' => $question,
+            'item' => $survey,
+            'criteria' => $criteria
         ]);
     }
 
     /**
-     * @Route("/{question}", name="delete", methods="DELETE")
-     * @ParamConverter("question", class="App\AppMain\Entity\Survey\Question\Question", options={"mapping": {"question": "uuid"}})
+     * @Route("/{survey}", name="delete", methods="DELETE")
+     * @ParamConverter("survey", class="App\AppMain\Entity\Survey\Survey\Survey", options={"mapping": {"survey": "uuid"}})
      */
-    public function delete(Question $question): Response
+    public function delete(Survey $survey): Response
     {
-        if ($this->csrfTokenValidator->isCsrfTokenValid('delete' . $question->getUuid())) {
+        if ($this->csrfTokenValidator->isCsrfTokenValid('delete' . $survey->getUuid())) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($question);
+            $em->remove($survey);
             $em->flush();
 
             $this->flashMessage->addSuccess(
-                $this->translator->trans('question', ['%count%' => 1]),
+                $this->translator->trans('survey', ['%count%' => 1]),
                 $this->translator->trans('flash.delete.success')
             );
 
-            return $this->redirectToRoute('manage.survey-system.questions.index');
+            return $this->redirectToRoute('manage.survey-system.survey.index');
         }
 
         $this->flashMessage->addWarning(
@@ -129,6 +133,6 @@ class QuestionController extends AbstractController
             $this->translator->trans('flash.csrf-token.invalid')
         );
 
-        return $this->redirectToRoute('manage.survey-system.questions.index');
+        return $this->redirectToRoute('manage.survey-system.survey.index');
     }
 }

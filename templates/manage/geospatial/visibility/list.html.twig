@@ -1,0 +1,17 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="progress mb-1" style="height: 30px;">
+        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 0;">(20) Най-близко </div>
+        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 80%;">Най-далече (1)</div>
+    </div>
+    {% for visibility in list %}
+        {% set margin = 100 - (visibility.minZoom / 20) * 100 %}
+        {% set width = ((visibility.minZoom - visibility.maxZoom) / 20) * 100 %}
+        <div class="progress mb-1" style="height: 25px;">
+            <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
+                <a href="{{ path('manage.geospatial.object-type-visibility.edit', {'id': visibility.uuid}) }}" class="text-white">{{ visibility.objectType.name }}, {{ visibility.minZoom }}-{{ visibility.maxZoom }}</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
