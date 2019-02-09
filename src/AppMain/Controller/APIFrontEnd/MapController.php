@@ -21,8 +21,7 @@ class MapController extends AbstractController
         EntityManagerInterface $entityManager,
         Utils $utils,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
@@ -38,8 +37,8 @@ class MapController extends AbstractController
 
         $conn = $this->entityManager->getConnection();
 
-        if (null === $in || $zoom === null) {
-            return new JsonResponse(['Missing parameters'],400);
+        if (null === $in || null === $zoom) {
+            return new JsonResponse(['Missing parameters'], 400);
         }
 
         $stmt = $conn->prepare('
@@ -101,37 +100,37 @@ class MapController extends AbstractController
             ');
 
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
-        $stmt->bindValue('zoom', (int)$zoom);
+        $stmt->bindValue('zoom', (int) $zoom);
         $stmt->execute();
 
         $style = [
             [
-                'name'  => 'Пешеходни отсечки',
+                'name' => 'Пешеходни отсечки',
                 'style' => [
                     'stroke' => [
-                        'color'   => '#0099ff',
+                        'color' => '#0099ff',
                         'opacity' => 0.5,
-                        'width'   => 5,
+                        'width' => 5,
                     ],
                 ],
             ],
             [
-                'name'  => 'Алеи',
+                'name' => 'Алеи',
                 'style' => [
                     'stroke' => [
-                        'color'   => '#33cc33',
+                        'color' => '#33cc33',
                         'opacity' => 0.5,
-                        'width'   => 5,
+                        'width' => 5,
                     ],
                 ],
             ],
             [
-                'name'  => 'Пресичания',
+                'name' => 'Пресичания',
                 'style' => [
                     'stroke' => [
-                        'color'   => '#ff3300',
+                        'color' => '#ff3300',
                         'opacity' => 0.5,
-                        'width'   => 5,
+                        'width' => 5,
                     ],
                 ],
             ],
@@ -142,12 +141,12 @@ class MapController extends AbstractController
         $result = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $i++;
+            ++$i;
 
             $result[] = [
-                'id'         => $row['id'],
+                'id' => $row['id'],
                 'attributes' => json_decode($row['attributes'], true),
-                'geometry'   => json_decode($row['geometry'], true),
+                'geometry' => json_decode($row['geometry'], true),
             ];
         }
 
@@ -157,10 +156,7 @@ class MapController extends AbstractController
             'settings' => [
                 'category' => $style,
             ],
-            'objects'  => $result,
+            'objects' => $result,
         ]);
     }
 }
-
-
-
