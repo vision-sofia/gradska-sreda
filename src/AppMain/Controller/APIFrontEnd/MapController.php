@@ -42,97 +42,126 @@ class MapController extends AbstractController
         }
 
         $stmt = $conn->prepare('
+            WITH g AS (
+                SELECT
+                    id,
+                    uuid,
+                    name,
+                    object_type_id,
+                    geometry,
+                    jsonb_strip_nulls(attributes) as attributes
+                FROM
+                    (
+                        SELECT
+                            g.id,
+                            g.uuid,
+                            g.name,
+                            g.object_type_id,
+                            st_asgeojson(m.coordinates) AS geometry,
+                            jsonb_build_object(
+                                \'_sca\', c.name,
+                                \'_behavior\', \'survey\'
+                            ) as attributes
+                        FROM
+                            x_geometry.geometry_base m
+                                INNER JOIN
+                            x_geospatial.geo_object g ON m.geo_object_id = g.id
+                                INNER JOIN
+                            x_survey.survey_element e ON g.object_type_id = e.object_type_id
+                                INNER JOIN
+                            x_survey.survey_category c ON e.category_id = c.id
+                                INNER JOIN
+                            x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
+                                INNER JOIN
+                            x_survey.survey s ON c.survey_id = s.id
+                        WHERE
+                            s.is_active = TRUE
+                            AND ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            AND :zoom BETWEEN max_zoom AND min_zoom
+            
+                        UNION ALL
+            
+                        SELECT
+                            g.id,
+                            g.uuid,
+                            g.name,
+                            g.object_type_id,
+                            st_asgeojson(m.coordinates) AS geometry,
+                            jsonb_build_object(
+                                \'_behavior\', a.behavior
+                            ) as attributes
+                        FROM
+                            x_geometry.geometry_base m
+                                INNER JOIN
+                            x_geospatial.geo_object g ON m.geo_object_id = g.id
+                                INNER JOIN
+                            x_survey.survey_auxiliary_object_type a ON g.object_type_id = a.object_type_id
+                                LEFT JOIN
+                            x_survey.survey s ON a.survey_id = s.id AND s.is_active = TRUE
+                                INNER JOIN
+                            x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
+                        WHERE
+                            ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            AND :zoom BETWEEN max_zoom AND min_zoom
+                    ) as w
+            )
             SELECT
-                id,
-                geometry,
-                name,
-                jsonb_strip_nulls(attributes) as attributes
+                g.id,
+                g.uuid,
+                g.name as geo_name,
+                t.name as type_name,
+                g.attributes,
+                g.geometry
             FROM
-                 (
-                    SELECT
-                        g.uuid AS id,
-                        st_asgeojson(m.coordinates) AS geometry,
-                        g.name as name,
-                        jsonb_build_object(
-                            \'_sca\', c.name,
-                            \'behavior\', \'survey\'
-                        ) as attributes
-                    FROM
-                        x_geometry.geometry_base m
-                            INNER JOIN
-                        x_geospatial.geo_object g ON m.geo_object_id = g.id
-                            INNER JOIN
-                        x_survey.survey_element e ON g.object_type_id = e.object_type_id
-                            INNER JOIN
-                        x_survey.survey_category c ON e.category_id = c.id
-                            INNER JOIN
-                        x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
-                            INNER JOIN
-                        x_survey.survey s ON c.survey_id = s.id
-                    WHERE
-                        s.is_active = TRUE
-                        AND ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                        AND :zoom BETWEEN max_zoom AND min_zoom
-            
-                    UNION ALL
-            
-                    SELECT
-                        g.uuid AS id,
-                        st_asgeojson(m.coordinates) AS geometry,
-                        g.name as name,
-                        jsonb_build_object(
-                            \'behavior\', a.behavior
-                        ) as attributes
-                    FROM
-                        x_geometry.geometry_base m
-                            INNER JOIN
-                        x_geospatial.geo_object g ON m.geo_object_id = g.id
-                            INNER JOIN
-                        x_survey.survey_auxiliary_object_type a ON g.object_type_id = a.object_type_id
-                            LEFT JOIN
-                        x_survey.survey s ON a.survey_id = s.id AND s.is_active = TRUE
-                            INNER JOIN
-                        x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
-                    WHERE
-                        ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                        AND :zoom BETWEEN max_zoom AND min_zoom
-                 ) as w               
-            ');
+                g
+                    INNER JOIN
+                x_geospatial.object_type t ON t.id = g.object_type_id
+        ');
 
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
         $stmt->bindValue('zoom', (int) $zoom);
         $stmt->execute();
 
-        $style = [
-            [
-                'name' => 'Пешеходни отсечки',
-                'style' => [
-                    'stroke' => [
-                        'color' => '#0099ff',
-                        'opacity' => 0.5,
-                        'width' => 5,
-                    ],
-                ],
+        $styles = [
+            'cat1' => [
+                'color' => '#0099ff',
+                'opacity' => 0.5,
+                'width' => 5,
             ],
-            [
-                'name' => 'Алеи',
-                'style' => [
-                    'stroke' => [
-                        'color' => '#33cc33',
-                        'opacity' => 0.5,
-                        'width' => 5,
-                    ],
-                ],
+            'cat2' => [
+                'color' => '#33cc33',
+                'opacity' => 0.5,
+                'weight' => 5,
             ],
-            [
-                'name' => 'Пресичания',
-                'style' => [
-                    'stroke' => [
-                        'color' => '#ff3300',
-                        'opacity' => 0.5,
-                        'width' => 5,
-                    ],
-                ],
+            'cat3' => [
+                'color' => '#ff3300',
+                'opacity' => 0.5,
+                'weight' => 5,
+            ],
+            'poly' => [
+                'stroke' => '#ff3300',
+                'stroke-width' => 5,
+                'stroke-opacity' => 0.2,
+                'fill' => '#ff00ff',
+                'fill-opacity' => 0.5,
+            ],
+            'line_main' => [
+                'color' => '#ff99ff',
+                'opacity' => 0.5,
+                'width' => 3,
+            ],
+            'line_hover' => [
+                'opacity' => 0.8,
+            ],
+            'poly_main' => [
+                'stroke' => '#ff99ff',
+                'stroke-width' => 1,
+                'stroke-opacity' => 0.2,
+                'fill' => '#ff00ff',
+                'fill-opacity' => 0.5,
+            ],
+             'poly_hover' => [
+                'fill-opacity' => 0.8,
             ],
         ];
 
@@ -143,10 +172,37 @@ class MapController extends AbstractController
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             ++$i;
 
+            $geometry = json_decode($row['geometry'], true);
+            $attributes = json_decode($row['attributes'], true);
+
+            if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
+                $s1 = 'cat1';
+                $s2 = 'line_hover';
+            } elseif (isset($attributes['_sca']) && 'Алеи' === $attributes['_sca']) {
+                $s1 = 'cat2';
+                $s2 = 'line_hover';
+            } elseif (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+                $s1 = 'cat3';
+                $s2 = 'line_hover';
+            } elseif ('MultiLineString' === $geometry['type']) {
+                $s1 = 'line_main';
+                $s2 = 'line_hover';
+            } elseif ('Polygon' === $geometry['type']) {
+                $s1 = 'poly_main';
+                $s2 = 'poly_hover';
+            } else {
+                $s1 = '';
+                $s2 = '';
+            }
+
             $result[] = [
-                'id' => $row['id'],
-                'attributes' => json_decode($row['attributes'], true),
-                'geometry' => json_decode($row['geometry'], true),
+                '_s1' => $s1,
+                '_s2' => $s2,
+                'id' => $row['uuid'],
+                'name' => $row['geo_name'],
+                'type' => $row['type_name'],
+                'attributes' => $attributes,
+                'geometry' => $geometry,
             ];
         }
 
@@ -154,7 +210,7 @@ class MapController extends AbstractController
 
         return new JsonResponse([
             'settings' => [
-                'category' => $style,
+                'styles' => $styles,
             ],
             'objects' => $result,
         ]);
