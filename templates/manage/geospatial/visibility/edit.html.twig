@@ -12,20 +12,23 @@
                 <div class="card-body">
                     <div class="form-group row ">
                         <label class="col-md-3 col-form-label" for="password-input">Тип обект</label>
-                        <div class="col-md-3 form-control-plaintext">
+                        <div class="col-md-9 form-control-plaintext">
                             {{ visibility.objectType.name }}
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="password-input">Минимален zoom</label>
-                        <div class="col-md-3">
-                            {{ form_widget(form.minZoom, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="password-input">Максимален zoom</label>
-                        <div class="col-md-3">
-                            {{ form_widget(form.maxZoom, {'attr': {'class': 'form-control'}}) }}
+                        <label class="col-md-3 col-form-label" for="password-input">Zoom обхват</label>
+                        <div class="col-md-5">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    {{ form_widget(form.minZoom, {'attr': {'class': 'form-control'}}) }}
+                                    <p class="help-block">от zoom level</p>
+                                </div>
+                                <div class="col-lg-6">
+                                    {{ form_widget(form.maxZoom, {'attr': {'class': 'form-control'}}) }}
+                                    <p class="help-block">до zoom level</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
