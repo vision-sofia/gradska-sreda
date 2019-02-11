@@ -22,7 +22,7 @@ final class Version20190211154010 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('CREATE TABLE x_geospatial.simplify (id INT GENERATED ALWAYS AS IDENTITY, tolerance NUMERIC(10, 8) NOT NULL, min_zoom NUMERIC(4, 2) NOT NULL, max_zoom NUMERIC(4, 2) NOT NULL, uuid UUID NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE x_geospatial.simplify (id INT GENERATED ALWAYS AS IDENTITY, tolerance NUMERIC(10, 8) NOT NULL, min_zoom NUMERIC(3, 1) NOT NULL, max_zoom NUMERIC(3, 1) NOT NULL, uuid UUID NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_119BC836D17F50A6 ON x_geospatial.simplify (uuid)');
     }
 

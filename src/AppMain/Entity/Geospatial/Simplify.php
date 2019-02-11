@@ -27,12 +27,12 @@ class Simplify implements UuidInterface
     private $tolerance;
 
     /**
-     * @ORM\Column(type="decimal", precision=4, scale=2)
+     * @ORM\Column(type="decimal", precision=3, scale=1)
      */
     private $minZoom;
 
     /**
-     * @ORM\Column(type="decimal", precision=4, scale=2)
+     * @ORM\Column(type="decimal", precision=3, scale=1)
      */
     private $maxZoom;
 
