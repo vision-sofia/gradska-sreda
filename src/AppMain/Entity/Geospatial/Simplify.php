@@ -18,7 +18,7 @@ class Simplify
     private $id;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=8)
+     * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     private $tolerance;
 
