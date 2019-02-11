@@ -101,7 +101,7 @@ class ImportRegionCommand extends Command
 
                     $im = implode(',', $p);
 
-                    $name = '';
+                    $name = isset($s['attributes']['OBNS_LAT']) ? $s['attributes']['OBNS_LAT'] : '';
 
                     $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                     $stmtSPO->bindValue('uuid', Uuid::uuid4());

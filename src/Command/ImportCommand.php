@@ -89,16 +89,13 @@ class ImportCommand extends Command
 
                         $im = implode(',', $p);
 
-                        $name = '';
                         $objectTypeId = null;
 
                         if (isset($s['attributes']['type'], $objectTypes[$s['attributes']['type']])) {
                             $objectTypeId = $objectTypes[$s['attributes']['type']];
                         }
 
-                        if (isset($s['attributes']['name'])) {
-                            $name = $s['attributes']['name'];
-                        }
+                        $name = isset($s['attributes']['name']) ? $s['attributes']['name'] : '';
 
                         $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());

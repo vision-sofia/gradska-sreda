@@ -87,7 +87,7 @@ class ImportMetroPointCommand extends Command
 
                     ++$j;
 
-                    $name = '';
+                    $name = isset($s['properties']['Sub_stop']) ? $s['properties']['Sub_stop'] : '';
 
                     $stmtSPO->bindValue('attr', json_encode($s['properties']));
                     $stmtSPO->bindValue('uuid', Uuid::uuid4());
