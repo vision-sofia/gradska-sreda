@@ -79,16 +79,17 @@ class ImportRegionCommand extends Command
                 foreach ($item as $s) {
                     ++$i;
 
-                    if (!isset($s['geometry']['coordinates'])) {
+                    if (!isset($s['geometry']['rings'])) {
                         echo sprintf("Skip: %d\n", $sc++);
 
                         continue;
                     }
 
+
                     ++$j;
 
                     $p = [];
-                    foreach ($s['geometry']['coordinates'] as $points) {
+                    foreach ($s['geometry']['rings'] as $points) {
                         foreach ($points as $point) {
                             if (empty($point[0]) || empty($point[1])) {
                                 continue;
@@ -102,7 +103,7 @@ class ImportRegionCommand extends Command
 
                     $name = '';
 
-                    $stmtSPO->bindValue('attr', json_encode($s['properties']));
+                    $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                     $stmtSPO->bindValue('uuid', Uuid::uuid4());
                     $stmtSPO->bindValue('name', $name);
                     $stmtSPO->bindValue('object_type_id', $objectType->getId());
