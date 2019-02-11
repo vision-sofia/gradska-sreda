@@ -87,7 +87,7 @@ class ImportGTPointCommand extends Command
 
                     ++$j;
 
-                    $name = '';
+                    $name = isset($s['properties']['ИМЕ__1']) ? $s['properties']['ИМЕ__1'] : '';
 
                     $stmtSPO->bindValue('attr', json_encode($s['properties']));
                     $stmtSPO->bindValue('uuid', Uuid::uuid4());

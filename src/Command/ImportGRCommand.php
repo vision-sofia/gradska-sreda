@@ -93,11 +93,7 @@ class ImportGRCommand extends Command
 
                     $im = implode(',', $p);
 
-                    $name = '';
-
-                    if (isset($s['attributes']['Rajon'])) {
-                        $name = $s['attributes']['Rajon'];
-                    }
+                    $name = isset($s['attributes']['RegName']) ? $s['attributes']['RegName'] : '';
 
                     $stmtSPO->bindValue('attr', json_encode($s['attributes']));
                     $stmtSPO->bindValue('uuid', Uuid::uuid4());
