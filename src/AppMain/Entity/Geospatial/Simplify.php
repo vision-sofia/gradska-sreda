@@ -2,14 +2,18 @@
 
 namespace App\AppMain\Entity\Geospatial;
 
+use App\AppMain\Entity\Traits\UUIDableTrait;
+use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="simplify", schema="x_geospatial")
  * @ORM\Entity()
  */
-class Simplify
+class Simplify implements UuidInterface
 {
+    use UUIDableTrait;
+
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
