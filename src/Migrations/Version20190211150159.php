@@ -22,7 +22,7 @@ final class Version20190211150159 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('CREATE TABLE x_geospatial.simplify (id INT GENERATED ALWAYS AS IDENTITY, tolerance NUMERIC(10, 2) NOT NULL, min_zoom NUMERIC(4, 2) NOT NULL, max_zoom NUMERIC(4, 2) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE x_geospatial.simplify (id INT GENERATED ALWAYS AS IDENTITY, tolerance NUMERIC(10, 8) NOT NULL, min_zoom NUMERIC(4, 2) NOT NULL, max_zoom NUMERIC(4, 2) NOT NULL, PRIMARY KEY(id))');
     }
 
     public function down(Schema $schema) : void
