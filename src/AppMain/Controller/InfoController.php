@@ -2,11 +2,10 @@
 
 namespace App\AppMain\Controller;
 
-use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\User\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class InfoController extends AbstractController
 {
@@ -15,8 +14,12 @@ class InfoController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('front/info/index.html.twig', [
+        $users = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->findAll();
 
+        return $this->render('front/info/index.html.twig', [
+            'users' => $users
         ]);
     }
 
@@ -25,8 +28,7 @@ class InfoController extends AbstractController
      */
     public function about(): Response
     {
-        return $this->render('front/info/index.html.twig', [
-
+        return $this->render('front/about/index.html.twig', [
         ]);
     }
 }
