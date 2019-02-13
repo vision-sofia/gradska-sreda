@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services\Geometry;
-
 
 class Utils
 {
@@ -15,11 +13,11 @@ class Utils
         $i = 0;
 
         foreach ($explode as $item) {
-            $i++;
+            ++$i;
 
             $pieces[] = $item;
 
-            if ($i % 2 === 0) {
+            if (0 === $i % 2) {
                 $pieces[] = ',';
             }
         }
@@ -27,5 +25,17 @@ class Utils
         array_pop($pieces);
 
         return implode(' ', $pieces);
+    }
+
+    public function findTolerance(array $array, float $zoom): ?float
+    {
+        foreach ($array as $item) {
+            if ($zoom <= (float) $item['min_zoom']
+                && $zoom >= $item['max_zoom']) {
+                return $item['tolerance'];
+            }
+        }
+
+        return null;
     }
 }
