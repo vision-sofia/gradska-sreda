@@ -31,19 +31,26 @@
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700&amp;subset=cyrillic-ext" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 	<!-- Core CSS -->
+	<link rel="stylesheet" href="{{ asset('css/vendor.css', 'front') }}?{{ "now"|date("U") }}" type="text/css">
+	<link rel="stylesheet" href="{{ asset('css/style.css', 'front') }}?{{ "now"|date("U") }}" type="text/css">
 	<link rel="stylesheet" href="{{ asset('css/custom.css', 'front') }}?{{ "now"|date("U") }}" type="text/css">
 </head>
 <body>
-{% include 'front/partial/header.html.twig' %}
-<h1 class="pageTitle">Как да изкарам заглавието на страницата тук?!</h1>
-<main>
-{% block body %}{% endblock %}
-{% if app.request.get('_route') != 'app.map' %}
-{% include 'front/partial/footer.html.twig' %}
-{% endif %}
-</main>
+	{% include 'front/partial/header.html.twig' %}
+	<h1 class="pageTitle">Как да изкарам заглавието на страницата тук?!</h1>
+	<main>
+	{% block body %}{% endblock %}
+	{% if app.request.get('_route') != 'app.map' %}
+	{% include 'front/partial/footer.html.twig' %}
+	{% endif %}
+	</main>
+	{# remove var path from here #}
 	<script type="text/javascript">var path = '/geo/'; </script>
-	<script type="text/javascript" src="{{ asset('javascript/jquery.min.js', 'front') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/vendor.js', 'front') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/bundle.js', 'front') }}"></script>
 	<script type="text/javascript" src="{{ asset('javascript/main.min.js', 'front') }}"></script>
+	{% if app.debug %}
+	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
+	{% endif %}
 </body>
 </html>
