@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5fe858ef185027231955128a92b57a97",
+    "content-hash": "aa2d4e14f4f160914e706556f53a48a8",
     "packages": [
         {
             "name": "creof/doctrine2-spatial",
@@ -6685,7 +6685,6 @@
         "php": "^7.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "ext-igbinary": "*",
         "ext-json": "*",
         "ext-curl": "*",
         "ext-mbstring": "*"

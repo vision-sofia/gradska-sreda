@@ -1,0 +1,32 @@
+# Global options for all sources
+options:
+    livereloadPort: 35729 # Don't forget to change the port in the HTML if you change it here
+    babelPolyfill: true
+    autoprefixer:
+        browsers:
+            - last 2 versions
+    svgInline: false
+    watch:
+        - templates/**/*.twig:
+            - reload
+
+# Sources section defines all source directories and their settings.
+# By default a regular site needs only one style and script file,
+# but more complicated sites could benefit of multiple sources.
+# For example if you have an admin panel and you want to separate the
+# styles and scripts from the front part of the website this is a perfect
+# case for multiple sources.
+sources:
+    front:
+        src: assets-src/front
+        dest: assets/front
+        css:
+            main: main.scss
+            vendor:
+                - node_modules/leaflet/dist/leaflet.css
+        js:
+            main: main.js
+            vendor:
+                - node_modules/jquery/dist/jquery.min.js
+                - node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
+                - node_modules/leaflet/dist/leaflet.js

@@ -57,7 +57,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(m.coordinates) AS geometry,
+                            st_asgeojson(ST_FlipCoordinates(m.coordinates::geometry)) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -86,7 +86,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(m.coordinates) AS geometry,
+                            st_asgeojson(ST_FlipCoordinates(m.coordinates::geometry)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior
                             ) as attributes
