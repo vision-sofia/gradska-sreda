@@ -160,10 +160,10 @@ class MapController extends AbstractController
             ],
             'poly' => [
                 'stroke' => '#ff3300',
-                'stroke-width' => 5,
-                'stroke-opacity' => 0.2,
+                'strokeWidth' => 5,
+                'strokeOpacity' => 0.2,
                 'fill' => '#ff00ff',
-                'fill-opacity' => 0.5,
+                'fillOpacity' => 0.5,
             ],
             'line_main' => [
                 'color' => '#ff99ff',
@@ -175,13 +175,13 @@ class MapController extends AbstractController
             ],
             'poly_main' => [
                 'stroke' => '#ff99ff',
-                'stroke-width' => 1,
-                'stroke-opacity' => 0.2,
+                'strokeWidth' => 1,
+                'strokeOpacity' => 0.2,
                 'fill' => '#ff00ff',
-                'fill-opacity' => 0.5,
+                'fillOpacity' => 0.5,
             ],
              'poly_hover' => [
-                'fill-opacity' => 0.8,
+                'fillOpacity' => 0.8,
             ],
         ];
 
