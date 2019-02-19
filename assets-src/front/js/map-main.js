@@ -1,16 +1,14 @@
 const mapBoxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const mapBoxAttribution = `&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`;
 const mapCenter = [42.697664,23.3166103];
-const defaultStyle = {
+const defaultObjectStyle = {
     color: "#ff9710",
     opacity: 0.5,
     width: 5
 };
-let layerStyles = {};
+let objectStyles = {};
 
 let map = new L.map('mapMain', {
-    center: mapCenter,
-    zoom: 17,
     updateWhenZooming: false
 });
 
@@ -21,16 +19,18 @@ let mapStyle = L.tileLayer(mapBoxUrl, {
     minZoom: 12,
     updateWhenZooming: false
 });
-
 mapStyle.addTo(map);
-// updateMap();
+
+let allObjectsLayer = L.layerGroup([]);
+allObjectsLayer.addTo(map);
 
 let updateMapThrottle;
-
-map.on('dragend', updateMap).on('zoomend', function() {
+map.on('load dragend zoomend', function() {
     clearTimeout(updateMapThrottle);
-    updateMapThrottle = setTimeout(updateMap, 500);
+    updateMapThrottle = setTimeout(updateMap, 200);
 });
+
+map.setView(mapCenter, 15);
 
 function updateMap() {
     let zoom = map.getZoom();
@@ -52,18 +52,17 @@ function updateMap() {
         },
         url: "/front-end/map?",
         success: function (results) {
-            layerStyles = results.settings.styles;
-            // console.log(layerStyles);
+            objectStyles = results.settings.styles;
+            console.log(results.settings.styles);
+            allObjectsLayer.clearLayers();
             drawLayers(results.objects);
         }
     });
 }
 
 function drawLayers(objects) {
-
-    objects.forEach((el) => {
-        // Get object styles if any or set default styles
-        let options = layerStyles[el._s1] ? {...layerStyles[el._s1]} : {...defaultStyle};
+    objects.forEach(el => {
+        let options = objectStyles[el._s1] ? {...objectStyles[el._s1]} : {...defaultObjectStyle};
         options.label = el.name || '';
         options.id = el.id;
         options.behavior = el.attributes._behavior;
@@ -72,16 +71,16 @@ function drawLayers(objects) {
 
         switch(el.geometry.type) {
             case "MultiLineString":
-                L.polyline(el.geometry.coordinates[0], options)
+                allObjectsLayer.addLayer(new L.polyline(el.geometry.coordinates[0], options)
                     .on('click', clickObject)
                     .on('mouseover', mouseEnter)
-                    .on('mouseout', mouseLeave)
-                    .addTo(map);
+                    .on('mouseout', mouseLeave));
             break;
             case "Polygon":
-                L.polygon(el.geometry.coordinates[0], options)
+                allObjectsLayer.addLayer(new L.polygon(el.geometry.coordinates[0], options)
                     .on('click', clickObject)
-                    .addTo(map);
+                    .on('mouseover', mouseEnter)
+                    .on('mouseout', mouseLeave));
             break;
         }
     });
@@ -92,13 +91,14 @@ function clickObject(event) {
 }
 
 function mouseEnter(event) {
-    if (layerStyles[event.target.options._s2]) {
-        event.sourceTarget.setStyle(layerStyles[event.target.options._s2]);
+    objectStyles[event.target.options._s2].fill = '#000000';
+    if (objectStyles[event.target.options._s2]) {
+        event.sourceTarget.setStyle(objectStyles[event.target.options._s2]);
     }
 }
 
 function mouseLeave(event) {
-    if (layerStyles[event.target.options._s2]) {
-        event.sourceTarget.setStyle(layerStyles[event.target.options._s1] || defaultStyle);
+    if (objectStyles[event.target.options._s2]) {
+        event.sourceTarget.setStyle(objectStyles[event.target.options._s1] || defaultObjectStyle);
     }
 }
