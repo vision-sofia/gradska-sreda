@@ -2,6 +2,7 @@
 
 namespace App\AppMain\Controller\APIFrontEnd;
 
+use App\AppMain\Entity\Geospatial\Simplify;
 use App\Services\Geometry\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -41,6 +42,17 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
+        $simplify = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
+
+        $simplifyRanges = [];
+        foreach ($simplify as $item) {
+            $simplifyRanges[] = [
+                'min_zoom' => $item->getMinZoom(),
+                'max_zoom' => $item->getMaxZoom(),
+                'tolerance' => $item->getTolerance(),
+            ];
+        }
+
         $stmt = $conn->prepare('
             WITH g AS (
                 SELECT
@@ -57,7 +69,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(m.coordinates::geometry)) AS geometry,
+                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -86,7 +98,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(m.coordinates::geometry)) AS geometry,
+                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior
                             ) as attributes
@@ -118,9 +130,17 @@ class MapController extends AbstractController
                 x_geospatial.object_type t ON t.id = g.object_type_id
         ');
 
+        $zoom = (float)$zoom;
+        $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
+
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
-        $stmt->bindValue('zoom', (int) $zoom);
+        $stmt->bindValue('zoom', $zoom);
+        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
+
+
+
+
 
         $styles = [
             'cat1' => [
@@ -206,7 +226,11 @@ class MapController extends AbstractController
             ];
         }
 
-        $this->logger->info($i);
+        $this->logger->info('Map view', [
+            'zoom' => $zoom,
+            'simplify_tolerance'=> $simplifyTolerance,
+            'objects' => $i
+        ]);
 
         return new JsonResponse([
             'settings' => [
