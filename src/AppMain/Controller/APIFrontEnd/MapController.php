@@ -69,7 +69,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
+                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -98,7 +98,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
+                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior
                             ) as attributes
@@ -130,17 +130,13 @@ class MapController extends AbstractController
                 x_geospatial.object_type t ON t.id = g.object_type_id
         ');
 
-        $zoom = (float)$zoom;
+        $zoom = (float) $zoom;
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
 
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
-
-
-
-
 
         $styles = [
             'cat1' => [
@@ -172,6 +168,17 @@ class MapController extends AbstractController
             ],
             'line_hover' => [
                 'opacity' => 0.8,
+            ],
+            'point_default' => [
+                'radius' => 8,
+                'fillColor' => '#ff7800',
+                'color' => '#000',
+                'weight' => 1,
+                'opacity' => 1,
+                'fillOpacity' => 0.8,
+            ],
+            'point_hover' => [
+                'fillColor' => '#ff00ff',
             ],
             'poly_main' => [
                 'stroke' => '#ff99ff',
@@ -210,26 +217,31 @@ class MapController extends AbstractController
             } elseif ('Polygon' === $geometry['type']) {
                 $s1 = 'poly_main';
                 $s2 = 'poly_hover';
+            } elseif ('Point' === $geometry['type']) {
+                $s1 = 'point_default';
+                $s2 = 'point_hover';
             } else {
                 $s1 = '';
                 $s2 = '';
             }
 
             $result[] = [
-                '_s1' => $s1,
-                '_s2' => $s2,
-                'id' => $row['uuid'],
-                'name' => $row['geo_name'],
-                'type' => $row['type_name'],
-                'attributes' => $attributes,
+                'type' => 'Feature',
                 'geometry' => $geometry,
+                'properties' => [
+                    '_s1' => $s1,
+                    '_s2' => $s2,
+                    'id' => $row['uuid'],
+                    'name' => $row['geo_name'],
+                    'type' => $row['type_name'],
+                ] + $attributes,
             ];
         }
 
         $this->logger->info('Map view', [
             'zoom' => $zoom,
-            'simplify_tolerance'=> $simplifyTolerance,
-            'objects' => $i
+            'simplify_tolerance' => $simplifyTolerance,
+            'objects' => $i,
         ]);
 
         return new JsonResponse([
