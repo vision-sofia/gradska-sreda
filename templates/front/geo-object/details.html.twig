@@ -2,8 +2,7 @@
 
 {% block content %}
     <script>
-        window.geoObject = '{{ geo_object.geometry | json_encode | raw }}';
-        console.log(window.geoObject);
+        window.geoObject = '{{ geo_object.attributes | json_encode | raw }}';
     </script>
     <div id="mapMini"></div>
     <p>{{ geo_object.attributes.type }}</p>
