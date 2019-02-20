@@ -11,6 +11,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         width: 5
     };
     let objectStyles = {};
+    let dialogTitles = {};
 
     let map = new L.map('mapMain', {
         updateWhenZooming: false
@@ -39,11 +40,14 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             return objectStyles[feature.properties._s1] ? {...objectStyles[feature.properties._s1]} : {...defaultObjectStyle}
         },
         onEachFeature: function(feature, layer) {
-            if (feature.properties._behavior === 'info') {
+            if (feature.properties._behavior === 'info' || feature.properties._behavior === 'survey') {
                 let popupContent = `<p class="text-center">${feature.properties.type}<br />${feature.properties.name}</p>`;
                 layer.bindPopup(popupContent, {
                     closeButton: true,
                     offset: L.point(0, -20)
+                });
+                layer.getPopup().on('remove', function() {
+                    confirmPopup.addClass('d-none');
                 });
             }
             layer.on('click', function (ev) {
@@ -70,6 +74,11 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }
     }).addTo(map);
 
+    const confirmPopup = $('.confirm');
+    $(document).on('click', '[data-confirm-cancel]', function() {
+        map.closePopup();
+    });
+
     function updateMap() {
         let zoom = map.getZoom();
         let coords = map.getBounds();
@@ -91,6 +100,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             url: "/front-end/map?",
             success: function (results) {
                 objectStyles = results.settings.styles;
+                dialogTitles = results.settings.dialog;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
             }
@@ -101,7 +111,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         switch (layer.feature.properties._behavior) {
             case 'info':
                 layer.openPopup();
-                break;
+            break;
             case 'navigation':
                 if (layer.feature.properties._zoom) {
                     let coords = map.mouseEventToLatLng(ev.originalEvent);
@@ -109,10 +119,15 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 } else {
                     map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
                 }
-                break;
+            break;
             case 'survey':
-                window.location.href = '/geo/' + layer.feature.properties.id;
-                break;
+                layer.openPopup();
+                let dialogTitle = dialogTitles[layer.feature.properties._dtext] || 'Искате ли да оцените';
+                let dialogLink = '/geo/' + layer.feature.properties.id;
+                confirmPopup.removeClass('d-none');
+                confirmPopup.find('[data-confirm-title]').html(`${dialogTitle}?`);
+                confirmPopup.find('[data-confirm-link]').attr('href', dialogLink);
+            break;
         }
     }
 
