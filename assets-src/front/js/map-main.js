@@ -16,7 +16,7 @@ let mapStyle = L.tileLayer(mapBoxUrl, {
     attribution: mapBoxAttribution,
     maxNativeZoom: 19,
     maxZoom: 20,
-    minZoom: 4,
+    minZoom: 11,
     // detectRetina: true,
     updateWhenZooming: false
 });
@@ -28,7 +28,7 @@ map.on('load dragend zoomend', function() {
     updateMapThrottle = setTimeout(updateMap, 200);
 });
 
-map.setView(mapCenter, 15);
+map.setView(mapCenter, 17);
 
 let geoJsonLayer = L.geoJSON([], {
     style: function(feature) {
