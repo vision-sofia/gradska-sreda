@@ -69,7 +69,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
+                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -89,7 +89,7 @@ class MapController extends AbstractController
                         WHERE
                             s.is_active = TRUE
                             AND ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                            AND :zoom BETWEEN max_zoom AND min_zoom
+                            AND :zoom <= min_zoom AND :zoom > max_zoom
             
                         UNION ALL
             
@@ -98,7 +98,7 @@ class MapController extends AbstractController
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_FlipCoordinates(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true))) AS geometry,
+                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior
                             ) as attributes
@@ -114,7 +114,7 @@ class MapController extends AbstractController
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
                             ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                            AND :zoom BETWEEN max_zoom AND min_zoom
+                            AND :zoom <= min_zoom AND :zoom > max_zoom
                     ) as w
             )
             SELECT
@@ -130,17 +130,13 @@ class MapController extends AbstractController
                 x_geospatial.object_type t ON t.id = g.object_type_id
         ');
 
-        $zoom = (float)$zoom;
+        $zoom = (float) $zoom;
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
 
         $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
-
-
-
-
 
         $styles = [
             'cat1' => [
@@ -160,10 +156,10 @@ class MapController extends AbstractController
             ],
             'poly' => [
                 'stroke' => '#ff3300',
-                'stroke-width' => 5,
-                'stroke-opacity' => 0.2,
+                'strokeWidth' => 5,
+                'strokeOpacity' => 0.2,
                 'fill' => '#ff00ff',
-                'fill-opacity' => 0.5,
+                'fillOpacity' => 0.5,
             ],
             'line_main' => [
                 'color' => '#ff99ff',
@@ -173,15 +169,38 @@ class MapController extends AbstractController
             'line_hover' => [
                 'opacity' => 0.8,
             ],
+            'point_default' => [
+                'radius' => 8,
+                'fillColor' => '#ff7800',
+                'color' => '#000',
+                'weight' => 1,
+                'opacity' => 1,
+                'fillOpacity' => 0.8,
+            ],
+            'point_hover' => [
+                'fillColor' => '#ff00ff',
+            ],
             'poly_main' => [
                 'stroke' => '#ff99ff',
-                'stroke-width' => 1,
-                'stroke-opacity' => 0.2,
+                'strokeWidth' => 1,
+                'strokeOpacity' => 0.2,
                 'fill' => '#ff00ff',
-                'fill-opacity' => 0.5,
+                'fillOpacity' => 0.05,
             ],
-             'poly_hover' => [
-                'fill-opacity' => 0.8,
+            'poly_hover' => [
+                'fillOpacity' => 0.3,
+            ],
+            'on_dialog_line' => [
+                'color' => '#00ffff',
+                'opacity' => 0.5,
+            ],
+            'on_dialog_point' => [
+                'fillColor' => '#00ffff',
+                'opacity' => 0.5,
+            ],
+            'on_dialog_polygon' => [
+                'fillColor' => '#00ffff',
+                'opacity' => 0.5,
             ],
         ];
 
@@ -198,43 +217,61 @@ class MapController extends AbstractController
             if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
                 $s1 = 'cat1';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 2;
             } elseif (isset($attributes['_sca']) && 'Алеи' === $attributes['_sca']) {
                 $s1 = 'cat2';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 3;
             } elseif (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
                 $s1 = 'cat3';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 1;
             } elseif ('MultiLineString' === $geometry['type']) {
                 $s1 = 'line_main';
                 $s2 = 'line_hover';
             } elseif ('Polygon' === $geometry['type']) {
                 $s1 = 'poly_main';
                 $s2 = 'poly_hover';
+            } elseif ('Point' === $geometry['type']) {
+                $s1 = 'point_default';
+                $s2 = 'point_hover';
             } else {
                 $s1 = '';
                 $s2 = '';
             }
 
+            if($row['type_name'] === 'Градоустройствена единица') {
+                $attributes['_zoom'] = 17;
+            }
+
             $result[] = [
-                '_s1' => $s1,
-                '_s2' => $s2,
-                'id' => $row['uuid'],
-                'name' => $row['geo_name'],
-                'type' => $row['type_name'],
-                'attributes' => $attributes,
+                'type' => 'Feature',
                 'geometry' => $geometry,
+                'properties' => [
+                    '_s1' => $s1,
+                    '_s2' => $s2,
+                    'id' => $row['uuid'],
+                    'name' => $row['geo_name'],
+                    'type' => $row['type_name'],
+                ] + $attributes,
             ];
         }
 
         $this->logger->info('Map view', [
             'zoom' => $zoom,
-            'simplify_tolerance'=> $simplifyTolerance,
-            'objects' => $i
+            'simplify_tolerance' => $simplifyTolerance,
+            'objects' => $i,
         ]);
 
         return new JsonResponse([
             'settings' => [
+                'default_zoom' => 17,
                 'styles' => $styles,
+                'dialog' => [
+                    1 => 'Искате ли да оцените избраното пресичане',
+                    2 => 'Искате ли да оцените избрания тротоар',
+                    3 => 'Искате ли да оцените избраната алея',
+                ]
             ],
             'objects' => $result,
         ]);
