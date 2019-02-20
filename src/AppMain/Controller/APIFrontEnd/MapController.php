@@ -265,6 +265,7 @@ class MapController extends AbstractController
 
         return new JsonResponse([
             'settings' => [
+                'default_zoom' => 17,
                 'styles' => $styles,
                 'dialog' => [
                     1 => 'Искате ли да оцените избраното пресичане',
