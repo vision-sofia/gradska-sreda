@@ -2,16 +2,13 @@
 
 {% block content %}
     <script>
-        window.geoObject = '{{ geo_object.geometry | json_encode | raw }}';
-        console.log(window.geoObject);
+        window.geoObject = '{{ geo_object.attributes | json_encode | raw }}';
     </script>
     <div id="mapMini"></div>
     <p>{{ geo_object.attributes.type }}</p>
 
     <h4>{{ geo_object.attributes.name }}</h4>
 	<h5>{{ geo_object.attributes.type }}</h5>
-
-
 
     {% if is_available_for_survey == true %}
         {% if question is null %}

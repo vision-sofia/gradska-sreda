@@ -46,8 +46,8 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                     offset: L.point(0, -20)
                 });
             }
-            layer.on('click', function () {
-                takeAction(layer);
+            layer.on('click', function (ev) {
+                takeAction(layer, ev);
             });
             if (feature.geometry.type !== 'Point') {
                 layer.on('mouseover', function () {
@@ -97,14 +97,18 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         });
     }
 
-    function takeAction(layer) {
-        console.log(layer.feature.properties._behavior);
+    function takeAction(layer, ev) {
         switch (layer.feature.properties._behavior) {
             case 'info':
                 layer.openPopup();
                 break;
             case 'navigation':
-                map.fitBounds(layer.getBounds(), { padding: [0, 0] });
+                if (layer.feature.properties._zoom) {
+                    let coords = map.mouseEventToLatLng(ev.originalEvent);
+                    map.setView([coords.lat, coords.lng], layer.feature.properties._zoom);
+                } else {
+                    map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
+                }
                 break;
             case 'survey':
                 window.location.href = '/geo/' + layer.feature.properties.id;
