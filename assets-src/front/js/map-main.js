@@ -16,13 +16,11 @@ let mapStyle = L.tileLayer(mapBoxUrl, {
     attribution: mapBoxAttribution,
     maxNativeZoom: 19,
     maxZoom: 20,
-    minZoom: 12,
+    minZoom: 4,
+    // detectRetina: true,
     updateWhenZooming: false
 });
 mapStyle.addTo(map);
-
-let allObjectsLayer = L.layerGroup([]);
-allObjectsLayer.addTo(map);
 
 let updateMapThrottle;
 map.on('load dragend zoomend', function() {
@@ -31,6 +29,42 @@ map.on('load dragend zoomend', function() {
 });
 
 map.setView(mapCenter, 15);
+
+let geoJsonLayer = L.geoJSON([], {
+    style: function(feature) {
+        return objectStyles[feature.properties._s1] ? {...objectStyles[feature.properties._s1]} : {...defaultObjectStyle}
+    },
+    onEachFeature: function(feature, layer) {
+        if (feature.properties._behavior === 'info') {
+            let popupContent = `<p class="text-center">${feature.properties.type}<br />${feature.properties.name}</p>`;
+            layer.bindPopup(popupContent, {
+                closeButton: true,
+                offset: L.point(0, -20)
+            });
+        }
+        layer.on('click', function () {
+            takeAction(layer);
+        });
+        if (feature.geometry.type !== 'Point') {
+            layer.on('mouseover', function () {
+                mouseEnter(this)
+            });
+            layer.on('mouseout', function () {
+                mouseLeave(this)
+            });
+        }
+    },
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, {
+            radius : 8,
+            fillColor : "#ff7800",
+            color : "#000",
+            weight : 1,
+            opacity : 1,
+            fillOpacity : 0.8
+        });
+    }
+}).addTo(map);
 
 function updateMap() {
     let zoom = map.getZoom();
@@ -53,52 +87,28 @@ function updateMap() {
         url: "/front-end/map?",
         success: function (results) {
             objectStyles = results.settings.styles;
-            console.log(results.settings.styles);
-            allObjectsLayer.clearLayers();
-            drawLayers(results.objects);
+            geoJsonLayer.clearLayers();
+            geoJsonLayer.addData(results.objects);
         }
     });
 }
 
-function drawLayers(objects) {
-    objects.forEach(el => {
-        let options = objectStyles[el._s1] ? {...objectStyles[el._s1]} : {...defaultObjectStyle};
-        options.label = el.name || '';
-        options.id = el.id;
-        options.behavior = el.attributes._behavior;
-        options._s1 = el._s1;
-        options._s2 = el._s2;
-
-        switch(el.geometry.type) {
-            case "MultiLineString":
-                allObjectsLayer.addLayer(new L.polyline(el.geometry.coordinates[0], options)
-                    .on('click', clickObject)
-                    .on('mouseover', mouseEnter)
-                    .on('mouseout', mouseLeave));
-            break;
-            case "Polygon":
-                allObjectsLayer.addLayer(new L.polygon(el.geometry.coordinates[0], options)
-                    .on('click', clickObject)
-                    .on('mouseover', mouseEnter)
-                    .on('mouseout', mouseLeave));
-            break;
-        }
-    });
-}
-
-function clickObject(event) {
-    console.log(event.target.options.behavior);
-}
-
-function mouseEnter(event) {
-    objectStyles[event.target.options._s2].fill = '#000000';
-    if (objectStyles[event.target.options._s2]) {
-        event.sourceTarget.setStyle(objectStyles[event.target.options._s2]);
+function takeAction(layer) {
+    switch (layer.feature.properties._behavior) {
+        case 'info': layer.openPopup(); break;
+        case 'navigation': map.fitBounds(layer.getBounds(), { padding: [0, 0] }); break;
+        case 'survey': console.log('go to inner page'); break;
     }
 }
 
-function mouseLeave(event) {
-    if (objectStyles[event.target.options._s2]) {
-        event.sourceTarget.setStyle(objectStyles[event.target.options._s1] || defaultObjectStyle);
+function mouseEnter(layer) {
+    if (objectStyles[layer.feature.properties._s2]) {
+        layer.setStyle(objectStyles[layer.feature.properties._s2]);
+    }
+}
+
+function mouseLeave(layer) {
+    if (objectStyles[layer.feature.properties._s2]) {
+        layer.setStyle(objectStyles[layer.feature.properties._s1] || defaultObjectStyle);
     }
 }
