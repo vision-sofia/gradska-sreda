@@ -187,8 +187,20 @@ class MapController extends AbstractController
                 'fill' => '#ff00ff',
                 'fillOpacity' => 0.05,
             ],
-             'poly_hover' => [
+            'poly_hover' => [
                 'fillOpacity' => 0.3,
+            ],
+            'on_dialog_line' => [
+                'color' => '#00ffff',
+                'opacity' => 0.5,
+            ],
+            'on_dialog_point' => [
+                'fillColor' => '#00ffff',
+                'opacity' => 0.5,
+            ],
+            'on_dialog_polygon' => [
+                'fillColor' => '#00ffff',
+                'opacity' => 0.5,
             ],
         ];
 
