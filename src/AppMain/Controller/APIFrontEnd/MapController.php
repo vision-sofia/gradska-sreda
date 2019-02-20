@@ -225,6 +225,10 @@ class MapController extends AbstractController
                 $s2 = '';
             }
 
+            if($row['type_name'] === 'Градоустройствена единица') {
+                $attributes['_zoom'] = 17;
+            }
+
             $result[] = [
                 'type' => 'Feature',
                 'geometry' => $geometry,
