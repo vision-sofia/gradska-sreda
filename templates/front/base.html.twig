@@ -44,11 +44,8 @@
 	{% include 'front/partial/footer.html.twig' %}
 	{% endif %}
 	</main>
-	{# remove var path from here #}
-	<script type="text/javascript">var path = '/geo/'; </script>
 	<script type="text/javascript" src="{{ asset('js/vendor.js', 'front') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/bundle.js', 'front') }}"></script>
-	<script type="text/javascript" src="{{ asset('javascript/main.min.js', 'front') }}"></script>
 	{% if app.debug %}
 	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
 	{% endif %}
