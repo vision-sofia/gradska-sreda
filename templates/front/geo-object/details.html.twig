@@ -1,29 +1,14 @@
 {% extends 'front/geo-object/layout.html.twig' %}
 
 {% block content %}
-    <div id="map" class="map" style="height: 200px;"></div>
-
-    <script type="text/javascript">
-        var map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                })
-            ],
-            view: new ol.View({
-                center: ol.proj.fromLonLat([23.3197423, 42.696717]),
-                zoom: 15
-            })
-        });
+    <script>
+        window.geoObject = '{{ geo_object.attributes | json_encode | raw }}';
     </script>
-
+    <div id="mapMini"></div>
     <p>{{ geo_object.attributes.type }}</p>
 
     <h4>{{ geo_object.attributes.name }}</h4>
 	<h5>{{ geo_object.attributes.type }}</h5>
-
-
 
     {% if is_available_for_survey == true %}
         {% if question is null %}
@@ -78,8 +63,4 @@
         </table>
         {% endif %}
     </div>
-
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="">
-	<script type="text/javascript" src="{{ asset('javascript/leaflet.js', 'front') }}"></script>
-	<script type="text/javascript" srcx="{{ asset('javascript/map-mini.min.js', 'front') }}?{{ "now"|date("U") }}"></script>
 {% endblock %}

@@ -1,0 +1,15 @@
+.confirm {
+  position: absolute;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, .8);
+
+  &--debug {
+    bottom: 36px;
+  }
+}
