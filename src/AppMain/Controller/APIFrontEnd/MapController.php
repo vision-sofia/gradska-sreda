@@ -89,7 +89,7 @@ class MapController extends AbstractController
                         WHERE
                             s.is_active = TRUE
                             AND ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                            AND :zoom BETWEEN max_zoom AND min_zoom
+                            AND :zoom <= min_zoom AND :zoom > max_zoom
             
                         UNION ALL
             
@@ -114,7 +114,7 @@ class MapController extends AbstractController
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
                             ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
-                            AND :zoom BETWEEN max_zoom AND min_zoom
+                            AND :zoom <= min_zoom AND :zoom > max_zoom
                     ) as w
             )
             SELECT
