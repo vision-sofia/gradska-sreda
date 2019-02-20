@@ -20,3 +20,4 @@
 .idea
 .php_cs.cache
 src/DataFixtures/Raw
+node_modules
