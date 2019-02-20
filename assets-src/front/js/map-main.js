@@ -4,7 +4,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     if (!document.getElementById('mapMain')) {
         return;
     }
-    const mapCenter = [42.697664,23.3166103];
+    const mapCenter = [42.697664, 23.3166103];
     const defaultObjectStyle = {
         color: "#ff9710",
         opacity: 0.5,
@@ -28,7 +28,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     mapStyle.addTo(map);
 
     let updateMapThrottle;
-    map.on('load dragend zoomend', function() {
+    map.on('load dragend zoomend', function () {
         clearTimeout(updateMapThrottle);
         updateMapThrottle = setTimeout(updateMap, 200);
     });
@@ -36,46 +36,51 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     map.setView(mapCenter, 17);
 
     let geoJsonLayer = L.geoJSON([], {
-        style: function(feature) {
+        style: function (feature) {
             return objectStyles[feature.properties._s1] ? {...objectStyles[feature.properties._s1]} : {...defaultObjectStyle}
         },
-        onEachFeature: function(feature, layer) {
+        onEachFeature: function (feature, layer) {
             if (feature.properties._behavior === 'info' || feature.properties._behavior === 'survey') {
                 let popupContent = `<p class="text-center">${feature.properties.type}<br />${feature.properties.name}</p>`;
                 layer.bindPopup(popupContent, {
                     closeButton: true,
                     offset: L.point(0, -20)
                 });
-                layer.getPopup().on('remove', function() {
+                layer.on('popupclose', function () {
                     confirmPopup.addClass('d-none');
+                    setLayerDefaultStyle(layer);
+                });
+                layer.on('popupopen', function () {
+                    setLayerActiveStyle(layer);
                 });
             }
             layer.on('click', function (ev) {
                 takeAction(layer, ev);
             });
-            if (feature.geometry.type !== 'Point') {
-                layer.on('mouseover', function () {
-                    mouseEnter(this)
-                });
-                layer.on('mouseout', function () {
-                    mouseLeave(this)
-                });
-            }
+            layer.on('mouseover', function () {
+                if (layer._popup && layer._popup.isOpen()) {
+                    return;
+                }
+                if (objectStyles[feature.properties._s2]) {
+                    setLayerHoverStyle(layer);
+                }
+            });
+            layer.on('mouseout', function () {
+                if (layer._popup && layer._popup.isOpen()) {
+                    return;
+                }
+                if (objectStyles[feature.properties._s1]) {
+                    setLayerDefaultStyle(layer);
+                }
+            });
         },
         pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, {
-                radius : 8,
-                fillColor : "#ff7800",
-                color : "#000",
-                weight : 1,
-                opacity : 1,
-                fillOpacity : 0.8
-            });
+            return L.circleMarker(latlng, objectStyles[feature.properties._s1]);
         }
     }).addTo(map);
 
     const confirmPopup = $('.confirm');
-    $(document).on('click', '[data-confirm-cancel]', function() {
+    $(document).on('click', '[data-confirm-cancel]', function () {
         map.closePopup();
     });
 
@@ -111,7 +116,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         switch (layer.feature.properties._behavior) {
             case 'info':
                 layer.openPopup();
-            break;
+                break;
             case 'navigation':
                 if (layer.feature.properties._zoom) {
                     let coords = map.mouseEventToLatLng(ev.originalEvent);
@@ -119,7 +124,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 } else {
                     map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
                 }
-            break;
+                break;
             case 'survey':
                 layer.openPopup();
                 let dialogTitle = dialogTitles[layer.feature.properties._dtext] || 'Искате ли да оцените';
@@ -127,19 +132,29 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 confirmPopup.removeClass('d-none');
                 confirmPopup.find('[data-confirm-title]').html(`${dialogTitle}?`);
                 confirmPopup.find('[data-confirm-link]').attr('href', dialogLink);
-            break;
+                break;
         }
     }
 
-    function mouseEnter(layer) {
-        if (objectStyles[layer.feature.properties._s2]) {
-            layer.setStyle(objectStyles[layer.feature.properties._s2]);
-        }
+    function setLayerDefaultStyle(layer) {
+        layer.setStyle(objectStyles[layer.feature.properties._s1] || defaultObjectStyle)
     }
 
-    function mouseLeave(layer) {
-        if (objectStyles[layer.feature.properties._s2]) {
-            layer.setStyle(objectStyles[layer.feature.properties._s1] || defaultObjectStyle);
+    function setLayerHoverStyle(layer) {
+        layer.setStyle(objectStyles[layer.feature.properties._s2])
+    }
+
+    function setLayerActiveStyle(layer) {
+        switch (layer.feature.geometry.type) {
+            case "Point":
+                layer.setStyle(objectStyles['on_dialog_point']);
+                break;
+            case "MultiLineString":
+                layer.setStyle(objectStyles['on_dialog_line']);
+                break;
+            case "Polygon":
+                layer.setStyle(objectStyles['on_dialog_polygon']);
+                break;
         }
     }
 })();
