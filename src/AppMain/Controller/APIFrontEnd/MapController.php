@@ -185,10 +185,10 @@ class MapController extends AbstractController
                 'strokeWidth' => 1,
                 'strokeOpacity' => 0.2,
                 'fill' => '#ff00ff',
-                'fillOpacity' => 0.5,
+                'fillOpacity' => 0.05,
             ],
              'poly_hover' => [
-                'fillOpacity' => 0.8,
+                'fillOpacity' => 0.3,
             ],
         ];
 
@@ -205,12 +205,15 @@ class MapController extends AbstractController
             if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
                 $s1 = 'cat1';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 2;
             } elseif (isset($attributes['_sca']) && 'Алеи' === $attributes['_sca']) {
                 $s1 = 'cat2';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 3;
             } elseif (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
                 $s1 = 'cat3';
                 $s2 = 'line_hover';
+                $attributes['_dtext'] = 1;
             } elseif ('MultiLineString' === $geometry['type']) {
                 $s1 = 'line_main';
                 $s2 = 'line_hover';
@@ -251,6 +254,11 @@ class MapController extends AbstractController
         return new JsonResponse([
             'settings' => [
                 'styles' => $styles,
+                'dialog' => [
+                    1 => 'Искате ли да оцените избраното пресичане',
+                    2 => 'Искате ли да оцените избрания тротоар',
+                    3 => 'Искате ли да оцените избраната алея',
+                ]
             ],
             'objects' => $result,
         ]);
