@@ -3,6 +3,7 @@
 namespace App\AppMain\Controller\APIFrontEnd;
 
 use App\AppMain\Entity\Geospatial\Simplify;
+use App\AppManage\Entity\Settings;
 use App\Services\Geometry\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -138,71 +139,8 @@ class MapController extends AbstractController
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
 
-        $styles = [
-            'cat1' => [
-                'color' => '#0099ff',
-                'opacity' => 0.5,
-                'width' => 5,
-            ],
-            'cat2' => [
-                'color' => '#33cc33',
-                'opacity' => 0.5,
-                'weight' => 5,
-            ],
-            'cat3' => [
-                'color' => '#ff3300',
-                'opacity' => 0.5,
-                'weight' => 5,
-            ],
-            'poly' => [
-                'stroke' => '#ff3300',
-                'strokeWidth' => 5,
-                'strokeOpacity' => 0.2,
-                'fill' => '#ff00ff',
-                'fillOpacity' => 0.5,
-            ],
-            'line_main' => [
-                'color' => '#ff99ff',
-                'opacity' => 0.5,
-                'width' => 3,
-            ],
-            'line_hover' => [
-                'opacity' => 0.8,
-            ],
-            'point_default' => [
-                'radius' => 8,
-                'fillColor' => '#ff7800',
-                'color' => '#000',
-                'weight' => 1,
-                'opacity' => 1,
-                'fillOpacity' => 0.8,
-            ],
-            'point_hover' => [
-                'fillColor' => '#ff00ff',
-            ],
-            'poly_main' => [
-                'stroke' => '#ff99ff',
-                'strokeWidth' => 1,
-                'strokeOpacity' => 0.2,
-                'fill' => '#ff00ff',
-                'fillOpacity' => 0.05,
-            ],
-            'poly_hover' => [
-                'fillOpacity' => 0.3,
-            ],
-            'on_dialog_line' => [
-                'color' => '#00ffff',
-                'opacity' => 0.5,
-            ],
-            'on_dialog_point' => [
-                'fillColor' => '#00ffff',
-                'opacity' => 0.5,
-            ],
-            'on_dialog_polygon' => [
-                'fillColor' => '#00ffff',
-                'opacity' => 0.5,
-            ],
-        ];
+        $styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
+        $styles = json_decode($styles->getValue());
 
         $i = 0;
 
