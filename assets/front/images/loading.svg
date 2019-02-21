@@ -1,0 +1,90 @@
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 65 65" width="65" height="65" style="enable-background:new 0 0 65 65;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#5E6FA3;}
+</style>
+<g transform="rotate(0 50 50)">
+	<path class="st0" d="M32.5,0L32.5,0c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6V6C28.8,2.7,30.4,0,32.5,0z	
+		">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.9166666666666666s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(30 50 50)">
+	<path class="st0" d="M26.1,11.1L26.1,11.1c2.1,0,3.8,2.7,3.8,6l0,3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C22.3,13.8,24,11.1,26.1,11.1z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.8333333333333334s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(60 50 50)">
+	<path class="st0" d="M26.1,23.9L26.1,23.9c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C22.3,26.6,24,23.9,26.1,23.9z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.75s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(90 50 50)">
+	<path class="st0" d="M32.5,35L32.5,35c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C28.8,37.7,30.4,35,32.5,35z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.6666666666666666s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(120 50 50)">
+	<path class="st0" d="M43.6,41.4L43.6,41.4c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C39.8,44.1,41.5,41.4,43.6,41.4z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.5833333333333334s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(150 50 50)">
+	<path class="st0" d="M56.4,41.4L56.4,41.4c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C52.7,44.1,54.3,41.4,56.4,41.4z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.5s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(180 50 50)">
+	<path class="st0" d="M67.5,35L67.5,35c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C63.8,37.7,65.4,35,67.5,35z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.4166666666666667s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(210 50 50)">
+	<path class="st0" d="M73.9,23.9L73.9,23.9c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C70.2,26.6,71.8,23.9,73.9,23.9z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.3333333333333333s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(240 50 50)">
+	<path class="st0" d="M73.9,11.1L73.9,11.1c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C70.2,13.8,71.8,11.1,73.9,11.1z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.25s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(270 50 50)">
+	<path class="st0" d="M67.5,0L67.5,0c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6V6C63.8,2.7,65.4,0,67.5,0z	
+		">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.16666666666666666s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(300 50 50)">
+	<path class="st0" d="M56.4-6.4L56.4-6.4c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C52.7-3.7,54.3-6.4,56.4-6.4z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="-0.08333333333333333s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+<g transform="rotate(330 50 50)">
+	<path class="st0" d="M43.6-6.4L43.6-6.4c2.1,0,3.8,2.7,3.8,6v3c0,3.3-1.7,6-3.8,6l0,0c-2.1,0-3.8-2.7-3.8-6v-3
+		C39.8-3.7,41.5-6.4,43.6-6.4z	">
+<animate  accumulate="none" additive="replace" attributeName="opacity" begin="0s" calcMode="linear" dur="1s" fill="remove" keyTimes="0;1" repeatCount="indefinite" restart="always" values="1;0">
+			</animate>
+	</path>
+</g>
+</svg>
