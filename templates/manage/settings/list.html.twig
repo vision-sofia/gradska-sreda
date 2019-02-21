@@ -25,7 +25,7 @@
                                     <a href="{{ path('manage.settings.edit', {'key': item.key}) }}" class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
                                 </td>
                                 <td>{{ item.key }}</td>
-                                <td>{{ item.value }}</td>
+                                <td>{{ item.value|nl2br }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ item.type }}</td>
                             </tr>

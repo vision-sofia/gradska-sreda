@@ -78,7 +78,7 @@ class SettingsFixtures extends Fixture
 
         $entity = new Settings();
         $entity->setKey('map_style');
-        $entity->setValue(json_encode($styles));
+        $entity->setValue(json_encode($styles, JSON_PRETTY_PRINT));
         $entity->setType('json');
         $entity->setDescription('Map objects style');
 
