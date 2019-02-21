@@ -83,5 +83,6 @@ class SettingsFixtures extends Fixture
         $entity->setDescription('Map objects style');
 
         $manager->persist($entity);
+        $manager->flush();
     }
 }
