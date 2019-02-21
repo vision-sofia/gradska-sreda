@@ -1,0 +1,41 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    Типове обекти
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm table-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ключ</th>
+                            <th>Стойност</th>
+                            <th>Описание</th>
+                            <th>Тип</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in settings %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('manage.settings.edit', {'key': item.key}) }}" class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
+                                </td>
+                                <td>{{ item.key }}</td>
+                                <td>{{ item.value }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.type }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
