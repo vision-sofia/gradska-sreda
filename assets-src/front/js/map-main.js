@@ -4,6 +4,11 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     if (!document.getElementById('mapMain')) {
         return;
     }
+    const loading = $('.loading');
+    const confirmPopup = $('.confirm');
+    $(document).on('click', '[data-confirm-cancel]', function () {
+        map.closePopup();
+    });
     const mapCenter = [42.697664, 23.3166103];
     const defaultObjectStyle = {
         color: "#ff9710",
@@ -30,16 +35,31 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         clearTimeout(updateMapThrottle);
         updateMapThrottle = setTimeout(updateMap, 200);
     });
+
     map.on('load', function () {
-        clearTimeout(updateMapThrottle);
-        updateMapThrottle = setTimeout(() => {
-            updateMap(() => {
-                locate();
-            })
-        }, 200);
+        updateMap(() => {
+            locate();
+        });
     });
 
-    map.setView(mapCenter, 17);
+    let myLocationButton = L.Control.extend({
+        options: {
+            position: 'topleft'
+        },
+        onAdd: () => {
+            let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
+            container.type = "button";
+            container.onclick = function () {
+                locate();
+            };
+            return container;
+        }
+    });
+    map.addControl(new myLocationButton());
+
+    let myLocationLayerGroup = L.layerGroup();
+    myLocationLayerGroup.addTo(map);
+
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
 
@@ -87,11 +107,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }
     }).addTo(map);
 
-    const confirmPopup = $('.confirm');
-    $(document).on('click', '[data-confirm-cancel]', function () {
-        map.closePopup();
-    });
-    const loading = $('.loading');
+    map.setView(mapCenter, 17);
 
     function updateMap(fn = () => {}) {
         let zoom = map.getZoom();
@@ -114,7 +130,6 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             url: "/front-end/map?",
             success: function (results) {
                 objectsSettings = results.settings;
-                console.log(objectsSettings);
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
                 fn();
@@ -170,12 +185,19 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
     function locate() {
         loading.removeClass('d-none');
-        map.locate({setView: true});
+        map.locate({
+            setView: true,
+            maxZoom: objectsSettings.default_zoom
+        });
     }
 
     function onLocationFound(e) {
         loading.addClass('d-none');
         let radius = e.accuracy / 2;
+
+        myLocationLayerGroup.eachLayer((layer) => {
+            myLocationLayerGroup.removeLayer(layer);
+        });
 
         let center = L.circle(e.latlng, {
             color:       '#fff',
@@ -184,7 +206,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             weight:      4,
             opacity:     1,
             radius:      5
-        }).addTo(map);
+        }).addTo(myLocationLayerGroup);
 
         L.circle(e.latlng, {
             radius:      e.accuracy / 2,
@@ -192,14 +214,12 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             fillColor:   '#136AEC',
             fillOpacity: 0.15,
             weight:      0
-        }).addTo(map);
+        }).addTo(myLocationLayerGroup);
 
         center.bindPopup("Намирате се в радиус от " + radius + " метра от тази локация", {
                 offset: L.point(0, -10)
             });
         center.openPopup();
-
-        map.setZoom(objectsSettings.default_zoom);
     }
 
     function onLocationError() {
