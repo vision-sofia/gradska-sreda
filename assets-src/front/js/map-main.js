@@ -38,7 +38,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
     map.on('load', function () {
         updateMap(() => {
-            locate();
+            // locate();
         });
     });
 
@@ -60,8 +60,8 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     let myLocationLayerGroup = L.layerGroup();
     myLocationLayerGroup.addTo(map);
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
+    map.on('locationfound', setMapViewToMyLocation);
+    map.on('locationerror', setInitialMapView);
 
     let geoJsonLayer = L.geoJSON([], {
         style: function (feature) {
@@ -107,7 +107,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }
     }).addTo(map);
 
-    map.setView(mapCenter, 17);
+    setInitialMapView();
 
     function updateMap(fn = () => {}) {
         let zoom = map.getZoom();
@@ -140,23 +140,16 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     function takeAction(layer, ev) {
         switch (layer.feature.properties._behavior) {
             case 'info':
-                layer.openPopup();
+                // zoomToLayer(layer, ev);
+                openLayerPopup(layer, ev);
                 break;
             case 'navigation':
-                if (layer.feature.properties._zoom) {
-                    let coords = map.mouseEventToLatLng(ev.originalEvent);
-                    map.setView([coords.lat, coords.lng], layer.feature.properties._zoom);
-                } else {
-                    map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
-                }
+                zoomToLayer(layer, ev);
                 break;
             case 'survey':
-                layer.openPopup();
-                let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
-                let dialogLink = '/geo/' + layer.feature.properties.id;
-                confirmPopup.removeClass('d-none');
-                confirmPopup.find('[data-confirm-title]').html(`${dialogTitle}?`);
-                confirmPopup.find('[data-confirm-link]').attr('href', dialogLink);
+                // zoomToLayer(layer, ev);
+                openLayerPopup(layer, ev);
+                openConfirmPopup(layer);
                 break;
         }
     }
@@ -183,6 +176,32 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }
     }
 
+    function zoomToLayer(layer, ev) {
+        if (layer.feature.properties._zoom) {
+            map.setView(ev.latlng, layer.feature.properties._zoom);
+        } else {
+            if (layer.feature.geometry.type === "Point") {
+                let markerBounds = L.latLngBounds([layer.getLatLng()]);
+                map.fitBounds(markerBounds);
+            } else {
+                map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
+            }
+        }
+    }
+
+    function openLayerPopup(layer, ev) {
+        let popup = layer.getPopup();
+        popup.setLatLng(ev.latlng).openOn(map);
+    }
+
+    function openConfirmPopup(layer) {
+        let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
+        let dialogLink = '/geo/' + layer.feature.properties.id;
+        confirmPopup.removeClass('d-none');
+        confirmPopup.find('[data-confirm-title]').html(`${dialogTitle}?`);
+        confirmPopup.find('[data-confirm-link]').attr('href', dialogLink);
+    }
+
     function locate() {
         loading.removeClass('d-none');
         map.locate({
@@ -191,7 +210,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         });
     }
 
-    function onLocationFound(e) {
+    function setMapViewToMyLocation(e) {
         loading.addClass('d-none');
         let radius = e.accuracy / 2;
 
@@ -222,7 +241,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         center.openPopup();
     }
 
-    function onLocationError() {
+    function setInitialMapView() {
         loading.addClass('d-none');
         map.setView(mapCenter, 17)
     }
