@@ -13,18 +13,18 @@ class SettingsFixtures extends Fixture
         $styles = [
             'cat1' => [
                 'color' => '#0099ff',
-                'opacity' => 0.5,
-                'width' => 5,
+                'opacity' => 0.8,
+                'weight' => 7,
             ],
             'cat2' => [
                 'color' => '#33cc33',
-                'opacity' => 0.5,
-                'weight' => 5,
+                'opacity' => 0.8,
+                'weight' => 7,
             ],
             'cat3' => [
                 'color' => '#ff3300',
-                'opacity' => 0.5,
-                'weight' => 5,
+                'opacity' => 0.8,
+                'weight' => 7,
             ],
             'poly' => [
                 'stroke' => '#ff3300',
@@ -35,11 +35,11 @@ class SettingsFixtures extends Fixture
             ],
             'line_main' => [
                 'color' => '#ff99ff',
-                'opacity' => 0.5,
-                'width' => 3,
+                'opacity' => 0.6,
+                'weight' => 5,
             ],
             'line_hover' => [
-                'opacity' => 0.8,
+                'opacity' => 1,
             ],
             'point_default' => [
                 'radius' => 8,
