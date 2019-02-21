@@ -244,6 +244,10 @@ class MapController extends AbstractController
                 $attributes['_zoom'] = 17;
             }
 
+            if(isset($attributes['_sca']) && $attributes['_sca'] === 'Пресичания') {
+                $attributes['_zoom'] = 20;
+            }
+
             $result[] = [
                 'type' => 'Feature',
                 'geometry' => $geometry,
