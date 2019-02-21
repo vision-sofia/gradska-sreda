@@ -3,9 +3,14 @@
 namespace App\AppManage\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
- * @ORM\Table(name="settings", schema="x_main")
+ * @ORM\Table(
+ *     name="settings",
+ *     schema="x_main",
+ *     uniqueConstraints={@UniqueConstraint(columns={"key"})}
+ *     )
  * @ORM\Entity()
  */
 class Settings
@@ -28,13 +33,15 @@ class Settings
     private $value;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="text")
      */
     private $description;
 
     /**
-     * @return mixed
+     * @ORM\Column(type="string", length=32)
      */
+    private $type;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -68,5 +75,15 @@ class Settings
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 }
