@@ -16,6 +16,8 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         width: 5
     };
     let objectsSettings = {};
+    let selectedObject = {};
+    let initialLoad = false;
 
     let map = new L.map('mapMain', {
         updateWhenZooming: false
@@ -33,13 +35,14 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     let updateMapThrottle;
     map.on('dragend zoomend', function () {
         clearTimeout(updateMapThrottle);
-        updateMapThrottle = setTimeout(updateMap, 200);
-    });
-
-    map.on('load', function () {
-        updateMap(() => {
-            // locate();
-        });
+        updateMapThrottle = setTimeout(() => {
+            updateMap(() => {
+                if (!initialLoad) {
+                    initialLoad = true;
+                    // locate();
+                }
+            })
+        }, 200);
     });
 
     let myLocationButton = L.Control.extend({
@@ -77,13 +80,15 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 layer.on('popupclose', function () {
                     confirmPopup.addClass('d-none');
                     setLayerDefaultStyle(layer);
+                    selectedObject = {};
                 });
                 layer.on('popupopen', function () {
                     setLayerActiveStyle(layer);
                 });
             }
             layer.on('click', function (ev) {
-                takeAction(layer, ev);
+                map.closePopup();
+                zoomToLayer(layer, ev);
             });
             layer.on('mouseover', function () {
                 if (layer._popup && layer._popup.isOpen()) {
@@ -132,26 +137,13 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 objectsSettings = results.settings;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
+                if (Object.keys(selectedObject).length) {
+                    setLayerActiveStyle(selectedObject.layer);
+                    openLayerPopup(selectedObject.layer, selectedObject.event);
+                }
                 fn();
             }
         });
-    }
-
-    function takeAction(layer, ev) {
-        switch (layer.feature.properties._behavior) {
-            case 'info':
-                // zoomToLayer(layer, ev);
-                openLayerPopup(layer, ev);
-                break;
-            case 'navigation':
-                zoomToLayer(layer, ev);
-                break;
-            case 'survey':
-                // zoomToLayer(layer, ev);
-                openLayerPopup(layer, ev);
-                openConfirmPopup(layer);
-                break;
-        }
     }
 
     function setLayerDefaultStyle(layer) {
@@ -177,21 +169,25 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     }
 
     function zoomToLayer(layer, ev) {
-        if (layer.feature.properties._zoom) {
+        selectedObject.layer = layer;
+        selectedObject.event = ev;
+
+        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== map.getZoom()) {
             map.setView(ev.latlng, layer.feature.properties._zoom);
         } else {
-            if (layer.feature.geometry.type === "Point") {
-                let markerBounds = L.latLngBounds([layer.getLatLng()]);
-                map.fitBounds(markerBounds);
-            } else {
-                map.fitBounds(layer.getBounds(), {maxZoom: [0, 0]});
-            }
+            map.setView(ev.latlng);
+            openLayerPopup(layer, ev);
         }
     }
 
     function openLayerPopup(layer, ev) {
-        let popup = layer.getPopup();
-        popup.setLatLng(ev.latlng).openOn(map);
+        if (!layer.getPopup()) {
+            return;
+        }
+        layer.getPopup().setLatLng(ev.latlng).openOn(map);
+        if (layer.feature.properties._behavior === 'survey') {
+            openConfirmPopup(layer);
+        }
     }
 
     function openConfirmPopup(layer) {
