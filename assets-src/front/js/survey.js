@@ -36,26 +36,16 @@
 
     $(document).on('submit', '#surveyForm', function (e) {
         e.preventDefault();
-        getNewQuestion();
+        postForm();
     });
 
     const objectId = $('#surveyForm').data('objectId');
     const surveyFormHolder = $('#surveyFormContent');
 
-    $.ajax({
-        url: `/front-end/geo-object/${objectId}/survey`,
-        success: function (results) {
-            console.log(results);
-            if (Object.keys(results).length !== 0) {
-                questionPrinter(results);
-            }
-        }
-    });
+    getNewQuestion();
 
     function getNewQuestion() {
         $.ajax({
-            method: 'POST',
-            data: $('#surveyForm').serialize(),
             url: `/front-end/geo-object/${objectId}/survey`,
             success: function (results) {
                 console.log(results);
@@ -64,6 +54,34 @@
                 }
             }
         });
+    }
+
+    function postForm() {
+        let answers = getFormData($('#surveyForm'))
+        console.log(answers);
+        $.ajax({
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(answers),
+            url: `/front-end/geo-object/${objectId}/survey`,
+            success: function () {
+                getNewQuestion();
+            }
+        });
+    }
+
+    function getFormData(form){
+        let data = form.serializeArray();
+        let answers = [];
+
+        $.map(data, function(n, i) {
+            answers.push(n['value']);
+        });
+
+        return {
+            answers: answers
+        };
     }
 
     function questionPrinter(results) {
