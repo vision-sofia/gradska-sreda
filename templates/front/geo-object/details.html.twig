@@ -1,10 +1,6 @@
 {% extends 'front/geo-object/layout.html.twig' %}
 
 {% block content %}
-    <script>
-        window.geoObject = '{{ geo_object | json_encode | raw }}';
-    </script>
-
     <div class="container mb-4">
         <div class="row">
             <div class="col">
@@ -19,39 +15,39 @@
         </div>
     </div>
 
-    <div class="container" id="surveyForm">
     {% if is_available_for_survey == true %}
         {% if question is null and result|length > 0 %}
-            <div class="row mb-3">
-                <div class="col">
-                    <h3>Среден резултат</h3>
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col">
+                        <h3>Среден резултат</h3>
+                    </div>
                 </div>
-            </div>
 
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Критерии</th>
-                        <th class="text-center" width="40">Точки</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for criterion in result %}
-                    <tr>
-                        <td>{{ criterion.name }}</td>
-                        <td class="text-center" width="40">{{ criterion.rating }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Критерии</th>
+                            <th class="text-center" width="40">Точки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for criterion in result %}
+                        <tr>
+                            <td>{{ criterion.name }}</td>
+                            <td class="text-center" width="40">{{ criterion.rating }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-            <div class="row mb-3">
-                <div class="col">
-                    <h3>Оценки на хора</h3>
+                <div class="row mb-3">
+                    <div class="col">
+                        <h3>Оценки на хора</h3>
+                    </div>
                 </div>
-            </div>
 
-            <table class="table table-hover">
+                <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>Потребител</th>
@@ -69,40 +65,14 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
         {% else %}
-            <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
-                <div class="form-group">
-                    <h5 class="font-weight-bold m-0">{{ question.title }}</h5>
-                </div>
-                <div class="py-3">
-                {% for answer in question.answers %}
-                    {% if answer.parent is null %}
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="{{ answer.uuid }}" data-parent="{{ answer.uuid }}" name="answers[]" value="{{ answer.uuid }}" class="custom-control-input">
-                                <label class="custom-control-label" for="{{ answer.uuid }}">{{ answer.title }}</label>
-                            </div>
-                        </div>
-                    {% else %}
-                        {% if answer.isFreeAnswer == true %}
-                            <div class="form-group pl-4">
-                                <label for="{{ answer.uuid }}">{{ answer.title }}</label>
-                                <textarea name="answers[]" id="{{ answer.uuid }}" data-txt-parent="{{ answer.parent.uuid }}" rows="3" class="form-control w-100"></textarea>
-                            </div>
-                        {% else %}
-                            <div class="form-group pl-4">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" id="{{ answer.uuid }}" data-parent="{{ answer.parent.uuid }}" name="answers[]" value="{{ answer.uuid }}" class="custom-control-input">
-                                    <label class="custom-control-label" for="{{ answer.uuid }}">{{ answer.title }}</label>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                </div>
-                <button class="btn btn-success" type="submit">Изпрати</button>
-            </form>
+            <div class="container">
+                <form method="post" id="surveyForm" data-object-id="{{ geo_object.uuid }}">
+                    <div id="surveyFormContent"></div>
+                    <button class="btn btn-success" type="submit">Изпрати</button>
+                </form>
+            </div>
         {% endif %}
     {% endif %}
-    </div>
 {% endblock %}
