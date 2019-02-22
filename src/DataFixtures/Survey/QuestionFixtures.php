@@ -53,6 +53,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         $answerChild->setQuestion($questionObject);
                         $answerChild->setParent($answerObject);
                         $answerChild->setIsFreeAnswer(isset($item['is_free_answer']) && $item['is_free_answer'] === true);
+                        $answerChild->setIsPhotoEnabled(isset($answer['is_photo_enabled']) ? $answer['is_photo_enabled'] : false);
 
                         $manager->persist($answerChild);
                         $manager->flush();
