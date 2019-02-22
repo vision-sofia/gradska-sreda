@@ -41,6 +41,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 $answerObject->setTitle($answer['title']);
                 $answerObject->setQuestion($questionObject);
                 $answerObject->setIsFreeAnswer(false);
+                $answerObject->setIsPhotoEnabled(isset($answer['is_photo_enabled']) ? $answer['is_photo_enabled'] : false);
 
                 $manager->persist($answerObject);
                 $manager->flush();
@@ -211,6 +212,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Да',
+                        'is_photo_enabled' => true,
                         'child' => [
                             [
                                 'title' => 'Паркирани коли'
@@ -264,6 +266,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Да, по цялото продължение на отсечката',
+                        'is_photo_enabled' => true,
                         'child' => [
                             [
                                 'title' => 'Паркирани коли'
@@ -316,6 +319,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Да',
+                        'is_photo_enabled' => true,
                     ],
                     [
                         'title' => 'Не',
@@ -344,6 +348,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да',
+                        'is_photo_enabled' => true,
                         'child' => [
                             [
                                 'title' => 'Има много неравности'
@@ -446,6 +451,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Да',
+                        'is_photo_enabled' => true,
                     ],
                     [
                         'title' => 'Не',
@@ -530,6 +536,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да, в лошо състояние',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -538,7 +545,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не, няма'
+                        'title' => 'Не, няма',
                     ]
                 ],
             ],
@@ -558,6 +565,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да, в лошо състояние',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -577,10 +585,12 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Много',
+                        'is_photo_enabled' => true,
                         'is_free_answer' => true
                     ],
                     [
                         'title' => 'Малко',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -618,6 +628,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да',
+                        'is_photo_enabled' => true,
                         'child' => [
                             [
                                 'title' => 'Има много неравности'
@@ -711,6 +722,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да, в лошо състояние',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -739,6 +751,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да, в лошо състояние',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -758,6 +771,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'answers' => [
                     [
                         'title' => 'Отг.1',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -780,6 +794,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Отг.2',
+                        'is_photo_enabled' => true,
                         'evaluation' => [
                             [
                                 'point' => 1,

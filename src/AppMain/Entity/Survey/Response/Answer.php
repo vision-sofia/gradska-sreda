@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Response;
 
 use App\AppMain\Entity\Survey;
@@ -8,6 +7,7 @@ use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(
@@ -40,6 +40,17 @@ class Answer implements UuidInterface
      */
     private $answer;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $explanation = '';
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\File(mimeTypes={ "image/jpeg" })
+     */
+    private $photo;
+
     public function getId(): int
     {
         return $this->id;
@@ -63,5 +74,25 @@ class Answer implements UuidInterface
     public function setAnswer(Survey\Question\Answer $answer): void
     {
         $this->answer = $answer;
+    }
+
+    public function getExplanation(): string
+    {
+        return $this->explanation;
+    }
+
+    public function setExplanation(string $explanation): void
+    {
+        $this->explanation = $explanation;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): void
+    {
+        $this->photo = $photo;
     }
 }
