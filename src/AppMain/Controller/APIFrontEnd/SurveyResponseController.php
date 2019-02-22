@@ -64,7 +64,7 @@ class SurveyResponseController extends AbstractController
         ;
 
         if ($question === null) {
-            return new JsonResponse(['status' => 'no_question'], 20);
+            return new JsonResponse(['status' => 'no_question'], 200);
         }
 
         $answers = [];
