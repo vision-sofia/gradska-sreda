@@ -5,9 +5,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         return;
     }
     const loading = $('.loading');
-    const confirmPopup = $('.confirm');
+    const confirmModal = $('.confirm');
     $(document).on('click', '[data-confirm-cancel]', function () {
-        map.closePopup();
+        removeAllPopups();
     });
     const mapCenter = [42.697664, 23.3166103];
     const defaultObjectStyle = {
@@ -16,7 +16,6 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         width: 5
     };
     let objectsSettings = {};
-    let selectedObject = {};
     let initialLoad = false;
 
     let map = new L.map('mapMain', {
@@ -31,19 +30,6 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         updateWhenZooming: false
     });
     mapStyle.addTo(map);
-
-    let updateMapThrottle;
-    map.on('dragend zoomend', function () {
-        clearTimeout(updateMapThrottle);
-        updateMapThrottle = setTimeout(() => {
-            updateMap(() => {
-                if (!initialLoad) {
-                    initialLoad = true;
-                    // locate();
-                }
-            })
-        }, 200);
-    });
 
     let myLocationButton = L.Control.extend({
         options: {
@@ -63,6 +49,22 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     let myLocationLayerGroup = L.layerGroup();
     myLocationLayerGroup.addTo(map);
 
+    let popusLayerGroup = L.layerGroup();
+    popusLayerGroup.addTo(map);
+
+    let updateMapThrottle;
+    map.on('dragend zoomend', function () {
+        clearTimeout(updateMapThrottle);
+        updateMapThrottle = setTimeout(() => {
+            updateMap(() => {
+                if (!initialLoad) {
+                    initialLoad = true;
+                    // locate();
+                }
+            })
+        }, 200);
+    });
+
     map.on('locationfound', setMapViewToMyLocation);
     map.on('locationerror', setInitialMapView);
 
@@ -71,27 +73,18 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             return objectsSettings.styles[feature.properties._s1] ? {...objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle}
         },
         onEachFeature: function (feature, layer) {
-            if (feature.properties._behavior === 'info' || feature.properties._behavior === 'survey') {
-                let popupContent = `<p class="text-center">${feature.properties.type}<br />${feature.properties.name}</p>`;
-                layer.bindPopup(popupContent, {
-                    closeButton: true,
-                    offset: L.point(0, -20)
-                });
-                layer.on('popupclose', function () {
-                    confirmPopup.addClass('d-none');
-                    setLayerDefaultStyle(layer);
-                    selectedObject = {};
-                });
-                layer.on('popupopen', function () {
-                    setLayerActiveStyle(layer);
-                });
-            }
             layer.on('click', function (ev) {
-                map.closePopup();
-                zoomToLayer(layer, ev);
+                switch (feature.properties._behavior) {
+                    case "navigation": zoomToLayer(layer, ev);
+                    break;
+                    default:
+                        openLayerPopup(layer, ev);
+                        zoomToLayer(layer, ev);
+                    break;
+                }
             });
             layer.on('mouseover', function () {
-                if (layer._popup && layer._popup.isOpen()) {
+                if (layer.feature.properties.activePopup) {
                     return;
                 }
                 if (objectsSettings.styles[feature.properties._s2]) {
@@ -99,7 +92,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 }
             });
             layer.on('mouseout', function () {
-                if (layer._popup && layer._popup.isOpen()) {
+                if (layer.feature.properties.activePopup) {
                     return;
                 }
                 if (objectsSettings.styles[feature.properties._s1]) {
@@ -137,65 +130,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
                 objectsSettings = results.settings;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
-                if (Object.keys(selectedObject).length) {
-                    setLayerActiveStyle(selectedObject.layer);
-                    openLayerPopup(selectedObject.layer, selectedObject.event);
-                }
                 fn();
             }
         });
-    }
-
-    function setLayerDefaultStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
-    }
-
-    function setLayerHoverStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s2])
-    }
-
-    function setLayerActiveStyle(layer) {
-        switch (layer.feature.geometry.type) {
-            case "Point":
-                layer.setStyle(objectsSettings.styles['on_dialog_point']);
-                break;
-            case "MultiLineString":
-                layer.setStyle(objectsSettings.styles['on_dialog_line']);
-                break;
-            case "Polygon":
-                layer.setStyle(objectsSettings.styles['on_dialog_polygon']);
-                break;
-        }
-    }
-
-    function zoomToLayer(layer, ev) {
-        selectedObject.layer = layer;
-        selectedObject.event = ev;
-
-        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== map.getZoom()) {
-            map.setView(ev.latlng, layer.feature.properties._zoom);
-        } else {
-            map.setView(ev.latlng);
-            openLayerPopup(layer, ev);
-        }
-    }
-
-    function openLayerPopup(layer, ev) {
-        if (!layer.getPopup()) {
-            return;
-        }
-        layer.getPopup().setLatLng(ev.latlng).openOn(map);
-        if (layer.feature.properties._behavior === 'survey') {
-            openConfirmPopup(layer);
-        }
-    }
-
-    function openConfirmPopup(layer) {
-        let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
-        let dialogLink = '/geo/' + layer.feature.properties.id;
-        confirmPopup.removeClass('d-none');
-        confirmPopup.find('[data-confirm-title]').html(`${dialogTitle}?`);
-        confirmPopup.find('[data-confirm-link]').attr('href', dialogLink);
     }
 
     function locate() {
@@ -232,13 +169,91 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }).addTo(myLocationLayerGroup);
 
         center.bindPopup("Намирате се в радиус от " + radius + " метра от тази локация", {
-                offset: L.point(0, -10)
-            });
+            offset: L.point(0, -10)
+        });
         center.openPopup();
     }
 
     function setInitialMapView() {
         loading.addClass('d-none');
         map.setView(mapCenter, 17)
+    }
+
+    function zoomToLayer(layer, ev) {
+        let clickCoordinates = map.mouseEventToLatLng(ev.originalEvent);
+        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== map.getZoom()) {
+            map.setView(clickCoordinates, layer.feature.properties._zoom);
+        } else {
+            map.setView(clickCoordinates);
+        }
+    }
+
+    function openLayerPopup(layer, ev) {
+        setLayerActiveStyle(layer);
+        removeAllPopups();
+        layer.feature.properties.activePopup = true;
+
+        let coordinates;
+        if (layer.feature.properties._behavior === 'survey') {
+            coordinates = map.mouseEventToLatLng(ev.originalEvent);
+            openConfirmModal(layer);
+        } else {
+            coordinates = ev.latlng;
+        }
+
+        let popupLayer = L.circle(coordinates, {
+            fillOpacity: 0,
+            weight:      0,
+            opacity:     0,
+            radius:      1
+        }).addTo(popusLayerGroup);
+
+        let popupContent = `<p class="text-center">${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+
+        popupLayer.bindPopup(popupContent, {
+            offset: L.point(0, -20)
+        }).on('popupclose', function () {
+            confirmModal.addClass('d-none');
+            layer.feature.properties.activePopup = false;
+            setLayerDefaultStyle(layer);
+            removeAllPopups();
+        }).openPopup();
+    }
+
+    function openConfirmModal(layer) {
+        let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
+        let dialogLink = '/geo/' + layer.feature.properties.id;
+        confirmModal.removeClass('d-none');
+        confirmModal.find('[data-confirm-title]').html(`${dialogTitle}?`);
+        confirmModal.find('[data-confirm-link]').attr('href', dialogLink);
+    }
+
+    function removeAllPopups() {
+        map.closePopup();
+        popusLayerGroup.eachLayer((layer) => {
+            popusLayerGroup.removeLayer(layer);
+        });
+    }
+
+    function setLayerDefaultStyle(layer) {
+        layer.setStyle(objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+    }
+
+    function setLayerHoverStyle(layer) {
+        layer.setStyle(objectsSettings.styles[layer.feature.properties._s2])
+    }
+
+    function setLayerActiveStyle(layer) {
+        switch (layer.feature.geometry.type) {
+            case "Point":
+                layer.setStyle(objectsSettings.styles['on_dialog_point']);
+                break;
+            case "MultiLineString":
+                layer.setStyle(objectsSettings.styles['on_dialog_line']);
+                break;
+            case "Polygon":
+                layer.setStyle(objectsSettings.styles['on_dialog_polygon']);
+                break;
+        }
     }
 })();
