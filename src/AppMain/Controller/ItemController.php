@@ -69,7 +69,6 @@ class ItemController extends AbstractController
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
 
-
         $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $result[] = $row;
@@ -96,7 +95,6 @@ class ItemController extends AbstractController
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
 
-
         $resultByUsers = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $resultByUsers[] = $row;
@@ -122,6 +120,31 @@ class ItemController extends AbstractController
         }
 
         $answers = $request->get('answers');
+        $files = $request->files->get('answers');
+
+        $r = [];
+
+        foreach ($answers as $a) {
+            if (isset($a['id'])) {
+                $r[$a['id']] = [];
+            }
+        }
+
+        foreach ($answers as $a) {
+            foreach ($a as $key => $item) {
+                if (isset($r[$key])) {
+                    $r[$key] += $item;
+                }
+            }
+        }
+
+        foreach ($files as $file) {
+            foreach ($file as $key => $item) {
+                if (isset($r[$key])) {
+                    $r[$key] += $item;
+                }
+            }
+        }
 
         if (!\is_array($answers)) {
             return $this->redirectToRoute('app.geo-object.details', [
