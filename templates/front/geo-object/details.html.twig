@@ -2,65 +2,107 @@
 
 {% block content %}
     <script>
-        window.geoObject = '{{ geo_object.attributes | json_encode | raw }}';
+        window.geoObject = '{{ geo_object | json_encode | raw }}';
     </script>
-    <div id="mapMini"></div>
-    <p>{{ geo_object.attributes.type }}</p>
 
-    <h4>{{ geo_object.attributes.name }}</h4>
-	<h5>{{ geo_object.attributes.type }}</h5>
+    <div class="container mb-4">
+        <div class="row">
+            <div class="col">
+                <div id="mapMini"></div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <h3>Име на обекта: <strong>{{ geo_object.attributes.name }}</strong></h3>
+                <h4 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h4>
+            </div>
+        </div>
+    </div>
 
+    <div class="container" id="surveyForm">
     {% if is_available_for_survey == true %}
-        {% if question is null %}
-            Няма повече въпроси
-        {% else %}
-            <strong>{{ question.title }}</strong>
+        {% if question is null and result|length > 0 %}
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Среден резултат</h3>
+                </div>
+            </div>
 
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Критерии</th>
+                        <th class="text-center" width="40">Точки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for criterion in result %}
+                    <tr>
+                        <td>{{ criterion.name }}</td>
+                        <td class="text-center" width="40">{{ criterion.rating }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Оценки на хора</h3>
+                </div>
+            </div>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Потребител</th>
+                        <th>Критерии</th>
+                        <th class="text-center" width="40">Точки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for result in resultByUsers %}
+                    <tr>
+                        <td>{{ result.user_username }}</td>
+                        <td>{{ result.criterion_name }}</td>
+                        <td class="text-center" width="40">{{ result.rating }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
             <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
+                <div class="form-group">
+                    <h5 class="font-weight-bold m-0">{{ question.title }}</h5>
+                </div>
+                <div class="py-3">
                 {% for answer in question.answers %}
                     {% if answer.parent is null %}
-                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="radio" name="answers[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="{{ answer.uuid }}" data-parent="{{ answer.uuid }}" name="answers[]" value="{{ answer.uuid }}" class="custom-control-input">
+                                <label class="custom-control-label" for="{{ answer.uuid }}">{{ answer.title }}</label>
+                            </div>
+                        </div>
                     {% else %}
-                        <p {{ answer.parent is null ? '' : 'style="padding-left:30px;"' }}><label><input type="checkbox" name="answers[]" value="{{ answer.uuid }}">{{ answer.title }}</label></p>
+                        {% if answer.isFreeAnswer == true %}
+                            <div class="form-group pl-4">
+                                <label for="{{ answer.uuid }}">{{ answer.title }}</label>
+                                <textarea name="answers[]" id="{{ answer.uuid }}" data-txt-parent="{{ answer.parent.uuid }}" rows="3" class="form-control w-100"></textarea>
+                            </div>
+                        {% else %}
+                            <div class="form-group pl-4">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" id="{{ answer.uuid }}" data-parent="{{ answer.parent.uuid }}" name="answers[]" value="{{ answer.uuid }}" class="custom-control-input">
+                                    <label class="custom-control-label" for="{{ answer.uuid }}">{{ answer.title }}</label>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
-                <button type="submit">Изпрати</button>
+                </div>
+                <button class="btn btn-success" type="submit">Изпрати</button>
             </form>
         {% endif %}
     {% endif %}
-
-    <div>
-        {% if result|length > 0 %}
-        <h3>Среден резултат</h3>
-        <table cellpadding="5">
-            <tr>
-                <th style="text-align: left;">Критерии</th>
-                <th style="text-align: left;">Точки</th>
-            </tr>
-            {% for criterion in result %}
-                <tr>
-                    <td>{{ criterion.name }}</td>
-                    <td>{{ criterion.rating }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-
-
-        <h3>Оценки на хора</h3>
-        <table cellpadding="5">
-            <tr>
-                <th style="text-align: left;">Потребител</th>
-                <th style="text-align: left;">Критерии</th>
-                <th style="text-align: left;">Точки</th>
-            </tr>
-            {% for result in resultByUsers %}
-                <tr>
-                    <td>{{ result.user_username }}</td>
-                    <td>{{ result.criterion_name }}</td>
-                    <td>{{ result.rating }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        {% endif %}
     </div>
 {% endblock %}
