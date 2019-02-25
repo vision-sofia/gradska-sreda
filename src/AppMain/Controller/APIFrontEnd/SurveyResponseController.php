@@ -77,6 +77,7 @@ class SurveyResponseController extends AbstractController
             $data['id'] = $answer->getUuid();
             $data['title'] = $answer->getTitle();
             $data['is_free_answer'] = $answer->getIsFreeAnswer();
+            $data['is_photo_enabled'] = $answer->getIsPhotoEnabled();
 
             if ($answer->getParent() instanceof Answer) {
                 $data['parent'] = $answer->getParent()->getUuid();
