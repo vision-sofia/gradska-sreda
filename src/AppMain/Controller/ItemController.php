@@ -137,11 +137,12 @@ class ItemController extends AbstractController
                 }
             }
         }
-
-        foreach ($files as $file) {
-            foreach ($file as $key => $item) {
-                if (isset($r[$key])) {
-                    $r[$key] += $item;
+        if ($files) {
+            foreach ($files as $file) {
+                foreach ($file as $key => $item) {
+                    if (isset($r[$key])) {
+                        $r[$key] += $item;
+                    }
                 }
             }
         }
@@ -152,7 +153,7 @@ class ItemController extends AbstractController
             ]);
         }
 
-        $question->response($answers, $geoObject, $this->getUser());
+        $question->response($r, $geoObject, $this->getUser());
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);

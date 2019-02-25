@@ -64,7 +64,10 @@ class SurveyResponseController extends AbstractController
         ;
 
         if ($question === null) {
-            return new JsonResponse(['status' => 'no_question'], 200);
+            return new JsonResponse([
+                'status' => 'no_question',
+                'message' => 'Няма повече въпроси'
+            ], 200);
         }
 
         $answers = [];
@@ -103,10 +106,35 @@ class SurveyResponseController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        $answers = $request->getContent();
-        $answers = json_decode($answers, true);
+        $answers = $request->get('answers');
+        $files = $request->files->get('answers');
 
-        $question->response($answers['answers'], $geoObject, $this->getUser());
+        $r = [];
+
+        foreach ($answers as $a) {
+            if (isset($a['id'])) {
+                $r[$a['id']] = [];
+            }
+        }
+
+        foreach ($answers as $a) {
+            foreach ($a as $key => $item) {
+                if (isset($r[$key])) {
+                    $r[$key] += $item;
+                }
+            }
+        }
+        if ($files) {
+            foreach ($files as $file) {
+                foreach ($file as $key => $item) {
+                    if (isset($r[$key])) {
+                        $r[$key] += $item;
+                    }
+                }
+            }
+        }
+
+        $question->response($r, $geoObject, $this->getUser());
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);

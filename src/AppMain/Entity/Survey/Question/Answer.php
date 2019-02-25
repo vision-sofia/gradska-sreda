@@ -52,6 +52,10 @@ class Answer implements UuidInterface
      */
     private $isFreeAnswer;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isPhotoEnabled;
 
     public function __construct()
     {
@@ -93,12 +97,12 @@ class Answer implements UuidInterface
         $this->children = $children;
     }
 
-    public function getParent(): ?Answer
+    public function getParent(): ?self
     {
         return $this->parent;
     }
 
-    public function setParent(?Answer $parent): void
+    public function setParent(?self $parent): void
     {
         $this->parent = $parent;
     }
@@ -111,5 +115,15 @@ class Answer implements UuidInterface
     public function setIsFreeAnswer(bool $isFreeAnswer): void
     {
         $this->isFreeAnswer = $isFreeAnswer;
+    }
+
+    public function getIsPhotoEnabled(): bool
+    {
+        return $this->isPhotoEnabled;
+    }
+
+    public function setIsPhotoEnabled(bool $isPhotoEnabled): void
+    {
+        $this->isPhotoEnabled = $isPhotoEnabled;
     }
 }
