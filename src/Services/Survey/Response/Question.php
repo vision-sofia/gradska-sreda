@@ -1,9 +1,7 @@
 <?php
 
-
 namespace App\Services\Survey\Response;
 
-use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
@@ -20,16 +18,10 @@ class Question
         $this->entityManager = $entityManager;
     }
 
-
-    public function response(array $answers, GeoObjectInterface $geoObject, UserInterface $user) {
-
-        // Check: Is answer exists
-        if(!isset($answers[0])) {
-            return new JsonResponse(['error']);
-        }
-
+    public function response(array $answers, GeoObjectInterface $geoObject, UserInterface $user)
+    {
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
-            'uuid' => $answers[0],
+            'uuid' => key($answers),
         ])
         ;
 
@@ -40,11 +32,10 @@ class Question
         // TODO: Survey scope check (geo-object, question)
         // TODO: Redis cache
 
-
-        $countAnswers= $question->getAnswers()->count();
+        $countAnswers = $question->getAnswers()->count();
 
         // Check: Is number of input answers fit in number of question answers
-        if(\count($answers) > $countAnswers) {
+        if (\count($answers) > $countAnswers) {
             return new JsonResponse(['error']);
         }
 
@@ -53,8 +44,6 @@ class Question
         // TODO: Redis cache
 
         // Check 4: Is single answer question have one input answer
-
-
 
         // BEFORE INSERT trigger simulation
         $conn = $this->entityManager->getConnection();
@@ -70,22 +59,21 @@ class Question
                 AND is_latest = TRUE
         ');
 
-
         $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('question_id', $answer->getQuestion()->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
 
         $location = $this->entityManager
-                         ->getRepository(Survey\Response\Location::class)
-                         ->findOneBy([
-                             'geoObject'   => $geoObject,
-                             'user'        => $user,
+            ->getRepository(Survey\Response\Location::class)
+            ->findOneBy([
+                             'geoObject' => $geoObject,
+                             'user' => $user,
                              'coordinates' => null,
                          ])
         ;
 
-        if ($location === null) {
+        if (null === $location) {
             $location = new Survey\Response\Location();
             $location->setGeoObject($geoObject);
             $location->setUser($user);
@@ -105,7 +93,6 @@ class Question
 
         $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
-
     }
 
     public function isValidAnswer(Survey\Question\Question $question, Survey\Question\Answer $answer): ?bool
