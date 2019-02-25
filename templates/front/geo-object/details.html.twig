@@ -68,11 +68,15 @@
             </div>
         {% else %}
             <div class="container">
-                <form method="post" id="surveyForm" data-object-id="{{ geo_object.uuid }}">
+                <form method="post" id="surveyForm" data-object-id="{{ geo_object.uuid }}" enctype="multipart/form-data">
                     <div id="surveyFormContent"></div>
                     <button class="btn btn-success" type="submit">Изпрати</button>
                 </form>
             </div>
         {% endif %}
     {% endif %}
+    <div class="loading d-none">
+        <h3 class="mb-4">Зарежда...</h3>
+        <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
+    </div>
 {% endblock %}
