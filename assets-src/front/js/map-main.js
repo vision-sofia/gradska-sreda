@@ -59,7 +59,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             updateMap(() => {
                 if (!initialLoad) {
                     initialLoad = true;
-                    // locate();
+                    if ($('#mapMain').data('locate-on-load') === true) {
+                        locate();
+                    }
                 }
             })
         }, 200);

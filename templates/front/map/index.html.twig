@@ -1,7 +1,7 @@
 {% extends 'front/map/layout.html.twig' %}
 {% block title %}Карта{% endblock %}
 {% block content %}
-    <div id="mapMain"></div>
+    <div id="mapMain" data-locate-on-load="true"></div>
     <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
         <div class="container py-4">
             <div class="row">
