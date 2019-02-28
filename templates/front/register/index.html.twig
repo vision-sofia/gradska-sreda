@@ -25,5 +25,9 @@
         </div>
         <button type="submit" class="btn btn-primary">Регистрирай ме</button>
         {{ form_end(form) }}
+
+        <div class="text-center">
+            Имаш регистрация? <a href="{{ path('app.login') }}">Влез</a>
+        </div>
     </div>
 {% endblock %}
