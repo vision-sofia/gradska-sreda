@@ -178,11 +178,11 @@ class MapController extends AbstractController
                 $s2 = '';
             }
 
-            if($row['type_name'] === 'Градоустройствена единица') {
+            if ('Градоустройствена единица' === $row['type_name']) {
                 $attributes['_zoom'] = 17;
             }
 
-            if(isset($attributes['_sca']) && $attributes['_sca'] === 'Пресичания') {
+            if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
                 $attributes['_zoom'] = 20;
             }
 
@@ -213,9 +213,17 @@ class MapController extends AbstractController
                     1 => 'Искате ли да оцените избраното пресичане',
                     2 => 'Искате ли да оцените избрания тротоар',
                     3 => 'Искате ли да оцените избраната алея',
-                ]
+                ],
             ],
             'objects' => $result,
         ]);
+    }
+
+    /**
+     * @Route("/test", name="api.test")
+     */
+    public function test(): JsonResponse
+    {
+        return new JsonResponse([1, 2, 3, 4]);
     }
 }

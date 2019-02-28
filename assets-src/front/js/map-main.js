@@ -25,7 +25,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     let mapStyle = L.tileLayer(mapBoxUrl, {
         attribution: mapBoxAttribution,
         maxNativeZoom: 19,
-        maxZoom: 20,
+        maxZoom: 21,
         minZoom: 11,
         updateWhenZooming: false
     });
@@ -210,7 +210,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             radius:      1
         }).addTo(popusLayerGroup);
 
-        let popupContent = `<p class="text-center">${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+        let popupContent = `<p class="text-center"><form method="post" class="m-form" action="/front-end/test"><button type="submit">${layer.feature.properties.id}</button></form> ${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
@@ -220,6 +220,25 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             setLayerDefaultStyle(layer);
             removeAllPopups();
         }).openPopup();
+
+
+        $(".m-form").submit(function(e) {
+            var form = $(this);
+            var url = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function(data)
+                {
+                    updateMap();
+                    alert(data);
+                }
+            });
+
+            e.preventDefault();
+        });
     }
 
     function openConfirmModal(layer) {
