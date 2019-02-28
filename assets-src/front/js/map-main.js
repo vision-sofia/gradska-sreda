@@ -210,7 +210,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             radius:      1
         }).addTo(popusLayerGroup);
 
-        let popupContent = `<p class="text-center"><form method="post" class="m-form" action="/front-end/test"><button type="submit">${layer.feature.properties.id}</button></form> ${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+        let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
@@ -222,23 +222,38 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         }).openPopup();
 
 
+        $.ajax({
+            type: "POST",
+            url: '/front-end/geo-collection/add',
+            data: {
+                'geo-object': layer.feature.properties.id
+            },
+            success: function()
+            {
+                updateMap();
+            }
+        });
+/*
         $(".m-form").submit(function(e) {
             var form = $(this);
             var url = form.attr('action');
 
             $.ajax({
                 type: "POST",
-                url: url,
-                data: form.serialize(),
-                success: function(data)
+                url: '/front-end/geo-collection/add',
+                //data: form.serialize(),
+                data: {
+                    'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
+                },
+                success: function()
                 {
                     updateMap();
-                    alert(data);
                 }
             });
 
             e.preventDefault();
         });
+*/
     }
 
     function openConfirmModal(layer) {
