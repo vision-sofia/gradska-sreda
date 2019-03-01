@@ -1,0 +1,54 @@
+{% extends 'front/map/layout.html.twig' %}
+{% block title %}Карта{% endblock %}
+{% block content %}
+    <div class="container">
+        <a href="">Добави маршрут</a>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <form action="{{ path('app.geo-collection.add') }}">
+                    <button type="submit">Нов маршрут</button>
+                </form>
+
+                <ul>
+                    {% for collection in collections %}
+                        <li><a href="{{ path('app.geo-collection.view', {'id': collection.uuid, 'collection': collection.uuid}) }}">{{ collection.uuid }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-6" style="height: 600px;">
+                <div style="">
+                    <div id="mapMain" data-locate-on-load="true"></div>
+                    <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
+                        <div class="container py-4">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h5 class="font-weight-bold mb-3" data-confirm-title>Искате ли да оцените?</h5>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <a href="#" data-confirm-link class="btn btn-success mr-3 px-4">ДА</a>
+                                    <span data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loading d-none">
+                        <h3 class="mb-4">Локализиране...</h3>
+                        <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {#    <script>
+
+            let url = new URL(window.location.href);
+            let c = url.searchParams.get("c");
+            console.log(c);
+            console.log(window.location.href)
+
+        </script>#}
+
+{% endblock %}

@@ -113,20 +113,26 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         let zoom = map.getZoom();
         let coords = map.getBounds();
 
+        let a = {
+            in: coords._southWest.lng + ',' +
+            coords._northEast.lat + ',' +
+            coords._southWest.lng + ',' +
+            coords._southWest.lat + ',' +
+            coords._northEast.lng + ',' +
+            coords._southWest.lat + ',' +
+            coords._northEast.lng + ',' +
+            coords._northEast.lat + ',' +
+            coords._southWest.lng + ',' +
+            coords._northEast.lat,
+            zoom: zoom
+        };
+
+
+
+        const returnedTarget = Object.assign(a, b);
+
         $.ajax({
-            data: {
-                in: coords._southWest.lng + ',' +
-                    coords._northEast.lat + ',' +
-                    coords._southWest.lng + ',' +
-                    coords._southWest.lat + ',' +
-                    coords._northEast.lng + ',' +
-                    coords._southWest.lat + ',' +
-                    coords._northEast.lng + ',' +
-                    coords._northEast.lat + ',' +
-                    coords._southWest.lng + ',' +
-                    coords._northEast.lat,
-                zoom: zoom
-            },
+            data: returnedTarget,
             url: "/front-end/map?",
             success: function (results) {
                 objectsSettings = results.settings;
@@ -221,12 +227,15 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             removeAllPopups();
         }).openPopup();
 
+        let url = new URL(window.location.href);
+        let collection = url.searchParams.get("collection");
 
         $.ajax({
             type: "POST",
             url: '/front-end/geo-collection/add',
             data: {
-                'geo-object': layer.feature.properties.id
+                'geo-object': layer.feature.properties.id,
+                'collection': collection
             },
             success: function()
             {
