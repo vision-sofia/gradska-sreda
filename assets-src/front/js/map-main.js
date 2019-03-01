@@ -112,6 +112,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     function updateMap(fn = () => {}) {
         let zoom = map.getZoom();
         let coords = map.getBounds();
+        let returnedTarget = {};
 
         let a = {
             in: coords._southWest.lng + ',' +
@@ -127,9 +128,11 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             zoom: zoom
         };
 
-
-
-        const returnedTarget = Object.assign(a, b);
+        if (typeof b !== 'undefined') {
+            returnedTarget = Object.assign(a, b);
+        } else {
+            returnedTarget = a;
+        }
 
         $.ajax({
             data: returnedTarget,

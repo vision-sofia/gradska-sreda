@@ -6,6 +6,7 @@ use App\AppMain\Entity\Survey\GeoCollection\Collection;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\Geometry\Utils;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,15 +67,19 @@ class GeoCollectionController extends AbstractController
 
     /**
      * @Route("{id}/view", name="view")
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
      */
-    public function view(Request $request): Response
+    public function view(Request $request, Collection $collection): Response
     {
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
             'user' => $this->getUser()
         ]);
 
+
+
         return $this->render('front/geo-collection/index.html.twig', [
-            'collections' => $collections
+            'collections' => $collections,
+            'collection' => $collection
         ]);
     }
 }

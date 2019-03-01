@@ -15,6 +15,11 @@ monolog:
             type: console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
+        info:
+            type: stream
+            path: "%kernel.logs_dir%/info.log"
+            level: info
+            channels: ["!event"]
         deprecation:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
