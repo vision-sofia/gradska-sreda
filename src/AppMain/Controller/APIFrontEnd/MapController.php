@@ -89,7 +89,7 @@ class MapController extends AbstractController
                             x_survey.survey s ON c.survey_id = s.id
                         WHERE
                             s.is_active = TRUE
-                            AND ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            AND m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND :zoom <= min_zoom AND :zoom > max_zoom
             
                         UNION ALL
@@ -114,7 +114,7 @@ class MapController extends AbstractController
                                 INNER JOIN
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
-                            ST_Intersects(m.coordinates, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND :zoom <= min_zoom AND :zoom > max_zoom
                     ) as w
             )
@@ -134,7 +134,10 @@ class MapController extends AbstractController
         $zoom = (float) $zoom;
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
 
-        $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
+        $stmt->bindValue('x_min', $this->utils->bbox($in, 0));
+        $stmt->bindValue('y_min', $this->utils->bbox($in, 1));
+        $stmt->bindValue('x_max', $this->utils->bbox($in, 2));
+        $stmt->bindValue('y_max', $this->utils->bbox($in, 3));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
@@ -201,6 +204,7 @@ class MapController extends AbstractController
 
         $this->logger->info('Map view', [
             'zoom' => $zoom,
+            'bbox' => $in,
             'simplify_tolerance' => $simplifyTolerance,
             'objects' => $i,
         ]);

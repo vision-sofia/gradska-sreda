@@ -27,6 +27,13 @@ class Utils
         return implode(' ', $pieces);
     }
 
+    public function bbox(string $text, $element): string
+    {
+        $explode = explode(',', $text);
+
+        return $explode[$element];
+    }
+
     public function findTolerance(array $array, float $zoom): ?float
     {
         foreach ($array as $item) {
