@@ -136,8 +136,8 @@ class MapController extends AbstractController
                 x_survey.gc_collection c 
                     ON gc.geo_collection_id = c.id 
                     ON gc.geo_object_id = g.id 
-                    AND c.user_id = :user_id
-                    AND c.uuid = :collection_id                
+               --     AND c.user_id = :user_id
+               --     AND c.uuid = :collection_id                
         ');
 
         $zoom = (float) $zoom;
@@ -150,12 +150,12 @@ class MapController extends AbstractController
         $stmt->bindValue('y_max', $this->utils->bbox($in, 3));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
-        $stmt->bindValue('collection_id', $collectionId);
+        #$stmt->bindValue('collection_id', $collectionId);
 
         if ($this->getUser()) {
-            $stmt->bindValue('user_id', $this->getUser()->getId());
+           # $stmt->bindValue('user_id', $this->getUser()->getId());
         } else {
-            $stmt->bindValue('user_id', null);
+         #   $stmt->bindValue('user_id', null);
         }
         $stmt->execute();
 

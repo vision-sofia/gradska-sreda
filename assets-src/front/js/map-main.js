@@ -231,18 +231,20 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
         let collection = mapOption.collection;
 
-        $.ajax({
-            type: "POST",
-            url: '/front-end/geo-collection/add',
-            data: {
-                'geo-object': layer.feature.properties.id,
-                'collection': collection
-            },
-            success: function()
-            {
-                updateMap();
-            }
-        });
+        if(typeof collection !== 'undefined') {
+            $.ajax({
+                type: "POST",
+                url: '/front-end/geo-collection/add',
+                data: {
+                    'geo-object': layer.feature.properties.id,
+                    'collection': collection
+                },
+                success: function()
+                {
+                    updateMap();
+                }
+            });
+        }
 /*
         $(".m-form").submit(function(e) {
             var form = $(this);
