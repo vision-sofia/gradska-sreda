@@ -27,114 +27,75 @@ class TestCommand extends Command
     {
         $this->stopwatch->start('a');
 
-        $a = [
+        $item = [
             'style' => [
-                'c' => 1,
-                't' => 1,
+                '_s1'        => 'aaa',
+                'collection' => 25,
+                'complete'   => 1,
+
+            ],
+        ];
+
+        $styles = [
+            'aaa' => [
+                'color'  => '#FF0000',
+                'weight' => 1,
             ],
         ];
 
         $pre = [
-            'qe' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 1,
-                'v' => 'color',
-                's' => '#FF00FF',
+            'collection' => [
+                [
+                    'c'   => 'eq',
+                    'a'   => 25,
+                    'v'   => 'color',
+                    's'   => '#FFf0FF',
+                    'key' => 'b',
+                ],
             ],
-            'za' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 2,
-                'v' => 'color',
-                's' => '#FF0000',
-            ],
-            'vv' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFF00',
-            ],
-            'zz' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z1z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'zz2' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z3z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z4z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z5z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z6z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
-            ],
-            'z7z' => [
-                'p' => 'c',
-                'c' => 'eq',
-                'a' => 3,
-                'v' => 'color',
-                's' => '#FFFFFF',
+            'complete'   => [
+                [
+                    'c'   => 'eq',
+                    'a'   => 1,
+                    'v'   => 'color',
+                    's'   => 0.5,
+                    'key' => 'g',
+                ],
             ],
         ];
 
-        for ($i = 0; $i < 10000; ++$i) {
-            foreach ($a as $item) {
-                $s1 = [];
 
-                foreach ($pre as $k => $c) {
-                    if ($c['a'] === $item[$c['p']]) {
-                        $s1[$c['v']]['v'] = $c['s'];
-                        $s1[$c['v']]['s'] = $k;
+       # $set->find(1);
+        for ($i = 0; $i < 10000; ++$i) {
+            $s1 = [
+                'key' => 0,
+            ];
+
+
+
+            foreach ($item['style'] as $k => $v) {
+                if (!isset($pre[$k])) {
+                    continue;
+                }
+
+                foreach ($pre[$k] as $z) {
+                    if ($item['style'][$k] === $z['a']) {
+                        $s1[$z['v']] = $z['s'];
+                        $s1['key'] .= $z['key'];
                     }
                 }
-
-                $st = [];
-                $o = [];
-                $w = '';
-                foreach ($s1 as $k => $ss) {
-                    $w .= $ss['s'];
-                    $o[$k] = $ss['v'];
-                }
-
-                $st[$w] = $o;
             }
+
+            if (!empty($s1['key'])) {
+                $os = $styles[$item['style']['_s1']];
+                //dump(array_merge($os, $s1));
+                $r = $item['style']['_s1'];
+                $nn = $r . '-' . $s1['key'];
+                //  dump($nn);
+                //   dump(array_merge($os, $s1));
+            }
+
+            //  print_r($s1);
         }
 
         $d = $this->stopwatch->stop('a')->getDuration();
