@@ -35,11 +35,11 @@ class GeoCollectionController extends AbstractController
     public function index(Request $request): Response
     {
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
         ]);
 
         return $this->render('front/geo-collection/index.html.twig', [
-            'collections' => $collections
+            'collections' => $collections,
         ]);
     }
 
@@ -61,25 +61,23 @@ class GeoCollectionController extends AbstractController
         $em->flush();
 
         return $this->redirectToRoute('app.geo-collection.view', [
-            'id' => $collection->getId()
+            'id' => $collection->getId(),
         ]);
     }
 
     /**
-     * @Route("{id}/view", name="view")
+     * @Route("{id}", name="view")
      * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
      */
     public function view(Request $request, Collection $collection): Response
     {
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
         ]);
-
-
 
         return $this->render('front/geo-collection/index.html.twig', [
             'collections' => $collections,
-            'collection' => $collection
+            'collection' => $collection,
         ]);
     }
 }

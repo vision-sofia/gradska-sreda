@@ -199,12 +199,17 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         layer.feature.properties.activePopup = true;
 
         let coordinates;
+
+
         if (layer.feature.properties._behavior === 'survey') {
             coordinates = map.mouseEventToLatLng(ev.originalEvent);
-            openConfirmModal(layer);
+            if(mapOption.survey === true) {
+                openConfirmModal(layer);
+            }
         } else {
             coordinates = ev.latlng;
         }
+
 
         let popupLayer = L.circle(coordinates, {
             fillOpacity: 0,
@@ -224,8 +229,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             removeAllPopups();
         }).openPopup();
 
-        let url = new URL(window.location.href);
-        let collection = url.searchParams.get("collection");
+        let collection = mapOption.collection;
 
         $.ajax({
             type: "POST",

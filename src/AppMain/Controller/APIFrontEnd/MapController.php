@@ -124,15 +124,25 @@ class MapController extends AbstractController
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
-                g.geometry
+                g.geometry,
+                gc.geo_object_id as entry
             FROM
                 g
                     INNER JOIN
                 x_geospatial.object_type t ON t.id = g.object_type_id
+                    LEFT JOIN 
+                x_survey.gc_collection_content gc 
+                    LEFT JOIN
+                x_survey.gc_collection c 
+                    ON gc.geo_collection_id = c.id 
+                    ON gc.geo_object_id = g.id 
+                    AND c.user_id = :user_id
+                    AND c.uuid = :collection_id                
         ');
 
         $zoom = (float) $zoom;
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
+        $collectionId = $request->query->get('collection');
 
         $stmt->bindValue('x_min', $this->utils->bbox($in, 0));
         $stmt->bindValue('y_min', $this->utils->bbox($in, 1));
@@ -140,6 +150,13 @@ class MapController extends AbstractController
         $stmt->bindValue('y_max', $this->utils->bbox($in, 3));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
+        $stmt->bindValue('collection_id', $collectionId);
+
+        if ($this->getUser()) {
+            $stmt->bindValue('user_id', $this->getUser()->getId());
+        } else {
+            $stmt->bindValue('user_id', null);
+        }
         $stmt->execute();
 
         $styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
@@ -179,6 +196,10 @@ class MapController extends AbstractController
             } else {
                 $s1 = '';
                 $s2 = '';
+            }
+
+            if (null !== $row['entry']) {
+                $s1 = 'm';
             }
 
             if($row['type_name'] === 'Градоустройствена единица') {

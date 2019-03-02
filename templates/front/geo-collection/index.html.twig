@@ -42,19 +42,16 @@
         </div>
     </div>
 
+    {% if collection is defined %}
     <script>
         let b = {
             collection: '{{ collection.uuid }}'
         };
+
+        let mapOption = {
+            collection: '{{ collection.uuid }}',
+            survey: false
+        }
     </script>
-
-    {#    <script>
-
-            let url = new URL(window.location.href);
-            let c = url.searchParams.get("c");
-            console.log(c);
-            console.log(window.location.href)
-
-        </script>#}
-
+    {% endif %}
 {% endblock %}
