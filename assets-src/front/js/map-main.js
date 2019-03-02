@@ -117,14 +117,8 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         let a = {
             in: coords._southWest.lng + ',' +
             coords._northEast.lat + ',' +
-            coords._southWest.lng + ',' +
-            coords._southWest.lat + ',' +
             coords._northEast.lng + ',' +
-            coords._southWest.lat + ',' +
-            coords._northEast.lng + ',' +
-            coords._northEast.lat + ',' +
-            coords._southWest.lng + ',' +
-            coords._northEast.lat,
+            coords._southWest.lat + ',',
             zoom: zoom
         };
 

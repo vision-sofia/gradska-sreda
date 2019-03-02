@@ -89,7 +89,7 @@ class MapController extends AbstractController
                             x_survey.survey s ON c.survey_id = s.id
                         WHERE
                             s.is_active = TRUE
-                            AND ST_Intersects(m.geom, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            AND m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND :zoom <= min_zoom AND :zoom > max_zoom
             
                         UNION ALL
@@ -114,7 +114,7 @@ class MapController extends AbstractController
                                 INNER JOIN
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
-                            ST_Intersects(m.geom, ST_MakePolygon(ST_GeomFromText(:linestring, 4326))) = TRUE
+                            m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND :zoom <= min_zoom AND :zoom > max_zoom
                     ) as w
             )
@@ -124,39 +124,22 @@ class MapController extends AbstractController
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
-                g.geometry,
-                gc.geo_object_id as entry
+                g.geometry
             FROM
                 g
                     INNER JOIN
                 x_geospatial.object_type t ON t.id = g.object_type_id
-                    LEFT JOIN 
-                x_survey.gc_collection_content gc 
-                    LEFT JOIN
-                x_survey.gc_collection c 
-                    ON gc.geo_collection_id = c.id 
-                    ON gc.geo_object_id = g.id 
-                    AND c.user_id = :user_id
-                    AND c.uuid = :collection_id
-                
         ');
 
         $zoom = (float) $zoom;
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
 
-        $collectionId = $request->query->get('collection');
-
-        $stmt->bindValue('linestring', sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)));
+        $stmt->bindValue('x_min', $this->utils->bbox($in, 0));
+        $stmt->bindValue('y_min', $this->utils->bbox($in, 1));
+        $stmt->bindValue('x_max', $this->utils->bbox($in, 2));
+        $stmt->bindValue('y_max', $this->utils->bbox($in, 3));
         $stmt->bindValue('zoom', $zoom);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
-        $stmt->bindValue('collection_id', $collectionId);
-
-        if ($this->getUser()) {
-            $stmt->bindValue('user_id', $this->getUser()->getId());
-        } else {
-            $stmt->bindValue('user_id', null);
-        }
-
         $stmt->execute();
 
         $styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
@@ -198,15 +181,11 @@ class MapController extends AbstractController
                 $s2 = '';
             }
 
-            if (null !== $row['entry']) {
-                $s1 = 'm';
-            }
-
-            if ('Градоустройствена единица' === $row['type_name']) {
+            if($row['type_name'] === 'Градоустройствена единица') {
                 $attributes['_zoom'] = 17;
             }
 
-            if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+            if(isset($attributes['_sca']) && $attributes['_sca'] === 'Пресичания') {
                 $attributes['_zoom'] = 20;
             }
 
@@ -225,7 +204,7 @@ class MapController extends AbstractController
 
         $this->logger->info('Map view', [
             'zoom' => $zoom,
-            'linestring' => sprintf('LINESTRING(%s)', $this->utils->parseCoordinates($in)),
+            'bbox' => $in,
             'simplify_tolerance' => $simplifyTolerance,
             'objects' => $i,
         ]);
@@ -238,17 +217,9 @@ class MapController extends AbstractController
                     1 => 'Искате ли да оцените избраното пресичане',
                     2 => 'Искате ли да оцените избрания тротоар',
                     3 => 'Искате ли да оцените избраната алея',
-                ],
+                ]
             ],
             'objects' => $result,
         ]);
-    }
-
-    /**
-     * @Route("/test", name="api.test")
-     */
-    public function test(): JsonResponse
-    {
-        return new JsonResponse([1, 2, 3, 4]);
     }
 }
