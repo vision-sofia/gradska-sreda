@@ -1,13 +1,13 @@
 <?php
 
-namespace App\AppMain\Controller\APIFrontEnd;
+namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\Event\GeoObjectSurveyTouch;
-use App\Services\Survey\Response\Question as SurveyResponseQuestionService;
 use App\Services\Survey\Response\Question;
+use App\Services\Survey\Response\Question as SurveyResponseQuestionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,26 +47,23 @@ class SurveyResponseController extends AbstractController
         }
 
         $isAvailableForSurvey = $this->getDoctrine()
-                                     ->getRepository(GeoObject::class)
-                                     ->isAvailableForSurvey($geoObject)
+            ->getRepository(GeoObject::class)
+            ->isAvailableForSurvey($geoObject)
         ;
 
-        if ($isAvailableForSurvey === false) {
+        if (false === $isAvailableForSurvey) {
             return new JsonResponse(['message' => 'error'], 400);
         }
 
         $question = $this->getDoctrine()
-                         ->getRepository(Survey\Question\Question::class)
-                         ->findNextQuestion(
-                             $this->getUser(),
-                             $geoObject
-                         )
+            ->getRepository(Survey\Question\Question::class)
+            ->findNextQuestion($this->getUser(), $geoObject)
         ;
 
-        if ($question === null) {
+        if (null === $question) {
             return new JsonResponse([
                 'status' => 'no_question',
-                'message' => 'Няма повече въпроси'
+                'message' => 'Няма повече въпроси',
             ], 200);
         }
 
@@ -89,9 +86,9 @@ class SurveyResponseController extends AbstractController
         }
 
         $response = [
-            'question'             => $question->getTitle(),
+            'question' => $question->getTitle(),
             'has_multiple_answers' => $question->getHasMultipleAnswers(),
-            'answers'              => $answers,
+            'answers' => $answers,
         ];
 
         return new JsonResponse($response);

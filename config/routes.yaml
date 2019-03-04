@@ -4,7 +4,7 @@ manage:
   prefix: /manage
 
 api-front-end:
-  resource: '../src/AppMain/Controller/APIFrontEnd'
+  resource: '../src/AppAPIFrontend/Controller'
   type:     annotation
   prefix: /front-end
 
