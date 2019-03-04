@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Controller\APIFrontEnd;
+namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey\GeoCollection\Collection;
