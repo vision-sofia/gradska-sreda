@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppMain\Controller\APIFrontEnd;
+namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppManage\Entity\Settings;
