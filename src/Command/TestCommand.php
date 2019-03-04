@@ -29,16 +29,19 @@ class TestCommand extends Command
 
         $item = [
             'style' => [
-                '_s1'        => 'aaa',
+                '_s1' => 'aaa',
+                '_s2' => 'aaa',
+                'id' => 'aaa',
+                'name' => 'aaa',
+                'type' => 'aaa',
                 'collection' => 25,
-                'complete'   => 1,
-
+                'complete' => 1,
             ],
         ];
 
         $styles = [
             'aaa' => [
-                'color'  => '#FF0000',
+                'color' => '#FF0000',
                 'weight' => 1,
             ],
         ];
@@ -46,40 +49,40 @@ class TestCommand extends Command
         $pre = [
             'collection' => [
                 [
-                    'c'   => 'eq',
-                    'a'   => 25,
-                    'v'   => 'color',
-                    's'   => '#FFf0FF',
+                    'c' => 'eq',
+                    'a' => 25,
+                    'v' => 'color',
+                    's' => '#FFf0FF',
                     'key' => 'b',
                 ],
             ],
-            'complete'   => [
+            'complete' => [
                 [
-                    'c'   => 'eq',
-                    'a'   => 1,
-                    'v'   => 'color',
-                    's'   => 0.5,
+                    'c' => 'eq',
+                    'a' => 1,
+                    'v' => 'color',
+                    's' => 0.5,
                     'key' => 'g',
                 ],
             ],
         ];
 
-
-       # $set->find(1);
+        // $set->find(1);
         for ($i = 0; $i < 10000; ++$i) {
             $s1 = [
                 'key' => 0,
             ];
 
+            $a = $item['style'];
+            // unset($a['_s1'], $a['_s2'], $a['id'], $a['name'], $a['type']);
 
-
-            foreach ($item['style'] as $k => $v) {
+            foreach ($a as $k => $v) {
                 if (!isset($pre[$k])) {
                     continue;
                 }
 
                 foreach ($pre[$k] as $z) {
-                    if ($item['style'][$k] === $z['a']) {
+                    if ($a[$k] === $z['a']) {
                         $s1[$z['v']] = $z['s'];
                         $s1['key'] .= $z['key'];
                     }
