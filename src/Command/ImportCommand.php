@@ -108,6 +108,10 @@ class ImportCommand extends Command
                         $stmt->bindValue('uuid', Uuid::uuid4());
                         $stmt->execute();
                         ++$i;
+
+                        if($i % 1000 === 0) {
+                            echo $i . PHP_EOL;
+                        }
                     } else {
                         ++$j;
 

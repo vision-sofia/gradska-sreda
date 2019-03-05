@@ -5,7 +5,11 @@ namespace App\AppMain\Entity\Geospatial;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="style_group", schema="x_geospatial")
+ * @ORM\Table(
+ *     name="style_group",
+ *     schema="x_geospatial",
+ *     uniqueConstraints={@ORM\UniqueConstraint(columns={"code"})}
+ * )
  * @ORM\Entity()
  */
 class StyleGroup
@@ -18,7 +22,7 @@ class StyleGroup
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="code", type="string")
      */
     private $code;
 

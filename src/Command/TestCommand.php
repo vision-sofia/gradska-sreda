@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\AppMain\Entity\Geospatial\Style;
+use App\AppMain\Entity\Geospatial\StyleGroup;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,61 +30,44 @@ class TestCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->stopwatch->start('a');
+        $em = $this->entityManager;
+        $conn = $this->entityManager->getConnection();
 
-        $styles = [
-            '_sca' => [
-                [
-                    'value' => 'Пешеходни отсечки',
-                    'code' => 'a1',
-                    'style' => [
-                        'color' => '#0099ff',
-                        'weight' => 7,
-                        'opacity' => 0.9
-                    ]
-                ],
-                [
-                    'value' => 'Алеи',
-                    'code' => 'a4',
-                    'style' => [
-                        'color' => '#33cc33',
-                        'weight' => 7,
-                    ]
-                ],
-                [
-                    'value' => 'Пресичания',
-                    'code' => 'a7',
-                    'style' => [
-                        'color' => '#ff3300',
-                        'weight' => 7,
-                    ]
-                ],
-            ],
-            '_behavior' => [
-                [
-                    'value' => 'survey',
-                    'code' => 'op',
-                    'style' => [
-                        'weight' => 8,
-                        'opacity' => 0.7,
-                    ]
-                ],
-            ],
-        ];
+        $stylesSource = $this->entityManager->getRepository(Style::class)->findBy([
+            'type' => 'base_normal',
+        ], [
+            'priority' => 'ASC',
+        ]);
+
+        $styles = [];
+        /** @var Style $item */
+        foreach ($stylesSource as $item) {
+            $styles[$item->getAttribute()][] = [
+                'value' => $item->getValue(),
+                'code' => $item->getCode(),
+                'styles' => $item->getStyles(),
+            ];
+        }
+
+        $this->stopwatch->start('a');
 
         $settingsStyle = [];
 
         $i = 0;
 
+
+
+        $conn->beginTransaction();
+
+        $stmtUpdate = $conn->prepare('UPDATE x_geospatial.geo_object SET style = ? WHERE id = ?');
+
         foreach ($this->geoObjects() as $item) {
-            $i++;
-            $s1 = [
-            ];
+            ++$i;
+            $s1 = [];
 
             $key = '';
 
             $attributes = json_decode($item['attributes'], true);
-            // unset($a['_s1'], $a['_s2'], $a['id'], $a['name'], $a['type']);
 
             foreach ($attributes as $attributeKey => $attributeValue) {
                 if (!isset($styles[$attributeKey])) {
@@ -91,15 +76,13 @@ class TestCommand extends Command
 
                 foreach ($styles[$attributeKey] as $style) {
                     if ($attributes[$attributeKey] === $style['value']) {
-                        $s1 = $style['style'] + $s1;
+                        $s1 = $style['styles'] + $s1;
                         $key .= $style['code'];
                     }
                 }
             }
 
-
-
-            //dump($s1);
+           # $stmtUpdate->execute([$key, $item['id']]);
 
             //  dump($s1);
 
@@ -115,12 +98,28 @@ class TestCommand extends Command
                 $settingsStyle[$key] = $s1;
             }
 
+            if($i % 1000 === 0) {
+                echo $i . PHP_EOL;
+            }
+
             //  print_r($s1);
+        }
+
+        $conn->commit();
+
+        $conn->query('DELETE FROM x_geospatial.style_group');;
+
+        foreach ($settingsStyle as $key => $item) {
+            $styleGroup = new StyleGroup();
+            $styleGroup->setCode($key);
+            $styleGroup->setStyles($item);
+
+            $em->persist($styleGroup);
+            $em->flush();
         }
 
         $d = $this->stopwatch->stop('a')->getDuration();
 
-        print_r($settingsStyle);
 
         echo sprintf("GeoObjects: %d\nDuration: %s\n", $i, $d);
     }

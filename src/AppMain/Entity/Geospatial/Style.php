@@ -42,6 +42,21 @@ class Style
      */
     private $code;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="json_array", options={"jsonb": true})
+     */
+    private $styles;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $priority;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,5 +110,35 @@ class Style
     public function setCode(string $code): void
     {
         $this->code = $code;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getStyles(): ?array
+    {
+        return $this->styles;
+    }
+
+    public function setStyles(array $styles): void
+    {
+        $this->styles = $styles;
+    }
+
+    public function getPriority(): ?int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
     }
 }

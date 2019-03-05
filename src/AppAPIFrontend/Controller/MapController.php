@@ -3,6 +3,7 @@
 namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\Simplify;
+use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\AppManage\Entity\Settings;
 use App\Services\Geometry\Utils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,6 +61,7 @@ class MapController extends AbstractController
                     id,
                     uuid,
                     name,
+                    style,
                     object_type_id,
                     geometry,
                     jsonb_strip_nulls(attributes) as attributes
@@ -69,6 +71,7 @@ class MapController extends AbstractController
                             g.id,
                             g.uuid,
                             g.name,
+                            g.style,
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -98,6 +101,7 @@ class MapController extends AbstractController
                             g.id,
                             g.uuid,
                             g.name,
+                            g.style,
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -124,6 +128,7 @@ class MapController extends AbstractController
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
+                g.style,
                 g.geometry
             FROM
                 g
@@ -142,8 +147,18 @@ class MapController extends AbstractController
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->execute();
 
-        $styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
-        $styles = json_decode($styles->getValue());
+        #$styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
+        #$styles = json_decode($styles->getValue());
+
+        $stylesGroups = $this->getDoctrine()
+                             ->getRepository(StyleGroup::class)
+                             ->findAll();
+
+        $styles = [];
+
+        foreach ($stylesGroups as $stylesGroup) {
+            $styles[$stylesGroup->getCode()] = $stylesGroup->getStyles();
+        }
 
         $i = 0;
 
@@ -193,7 +208,7 @@ class MapController extends AbstractController
                 'type' => 'Feature',
                 'geometry' => $geometry,
                 'properties' => [
-                    '_s1' => $s1,
+                    '_s1' => $row['style'],
                     '_s2' => $s2,
                     'id' => $row['uuid'],
                     'name' => $row['geo_name'],
