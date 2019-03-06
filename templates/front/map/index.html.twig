@@ -2,8 +2,8 @@
 {% block title %}Карта{% endblock %}
 {% block content %}
     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-        <div class="container">
-            <a href="{{ path('app.geo-collection.create') }}">Маршрути</a>
+        <div class="container py-3">
+            <a href="{{ path('app.geo-collection.create') }}" class="">Маршрути</a>
         </div>
     {% endif %}
     <div style="">
