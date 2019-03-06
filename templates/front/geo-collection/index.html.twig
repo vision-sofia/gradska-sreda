@@ -2,22 +2,24 @@
 {% block title %}Карта{% endblock %}
 {% block content %}
     <div class="container">
-        <a href="">Добави маршрут</a>
+        Маршрути
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-3">
                 <form action="{{ path('app.geo-collection.add') }}">
-                    <button type="submit">Нов маршрут</button>
+                    <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
                 </form>
 
-                <ul>
+                <ul class="mt-4">
+                    {% set m = 0 %}
                     {% for collection in collections %}
-                        <li><a href="{{ path('app.geo-collection.view', {'id': collection.uuid, 'collection': collection.uuid}) }}">{{ collection.uuid }}</a></li>
+                        {% set m = m + 1 %}
+                        <li><a href="{{ path('app.geo-collection.view', {'id': collection.uuid}) }}">Маршрут {{ m }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="col-lg-6" style="height: 600px;">
+            <div class="col-lg-9" style="height: 600px;">
                 <div style="">
                     <div id="mapMain" data-locate-on-load="true"></div>
                     <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">

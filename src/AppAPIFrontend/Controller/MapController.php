@@ -100,7 +100,7 @@ class MapController extends AbstractController
                 $s2 = '';
             }
 
-            if (null !== $row['entry']) {
+            if (isset($row['entry'])) {
                 $s1 = 'm';
             }
 
