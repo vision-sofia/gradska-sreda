@@ -10,9 +10,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-class TestCommand extends Command
+class StyleBuildCommand extends Command
 {
-    protected static $defaultName = 'test';
+    protected static $defaultName = 'style:build';
 
     protected $stopwatch;
     protected $entityManager;
@@ -37,7 +37,8 @@ class TestCommand extends Command
             'type' => 'base_normal',
         ], [
             'priority' => 'ASC',
-        ]);
+        ])
+        ;
 
         $styles = [];
         /** @var Style $item */
@@ -55,17 +56,19 @@ class TestCommand extends Command
 
         $i = 0;
 
-
+        $conn->query('CREATE TEMP TABLE sc(id INT, style VARCHAR(32))');
 
         $conn->beginTransaction();
 
-        $stmtUpdate = $conn->prepare('UPDATE x_geospatial.geo_object SET style = ? WHERE id = ?');
-
+       # $stmtUpdate = $conn->prepare('UPDATE x_geospatial.geo_object SET style = ? WHERE id = ?');
+        $stmtUpdate = $conn->prepare('INSERT INTO sc (style, id) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?)');
+        $data = [];
         foreach ($this->geoObjects() as $item) {
             ++$i;
             $s1 = [];
 
             $key = '';
+            $geometry = json_decode($item['geometry'], true);
 
             $attributes = json_decode($item['attributes'], true);
 
@@ -76,15 +79,35 @@ class TestCommand extends Command
 
                 foreach ($styles[$attributeKey] as $style) {
                     if ($attributes[$attributeKey] === $style['value']) {
-                        $s1 = $style['styles'] + $s1;
-                        $key .= $style['code'];
+                        if (isset($style['styles']['line'])
+                            && ('LineString' === $geometry['type'] || 'MultiLineString' === $geometry['type'])
+                        ) {
+                            $s1 = $style['styles']['line']['content'] + $s1;
+                            $key .= $style['styles']['line']['code'];
+                        } elseif (isset($style['styles']['point'])
+                                  && ('Point' === $geometry['type'] || 'MultiPoint' === $geometry['type'])
+                        ) {
+                            $s1 = $style['styles']['point']['content'] + $s1;
+                            $key .= $style['styles']['point']['code'];
+                        } elseif (isset($style['styles']['polygon'])
+                                  && ('Polygon' === $geometry['type'] || 'MultiPolygon' === $geometry['type'])
+                        ) {
+                            $s1 = $style['styles']['polygon']['content'] + $s1;
+                            $key .= $style['styles']['polygon']['code'];
+                        }
                     }
                 }
             }
 
-           # $stmtUpdate->execute([$key, $item['id']]);
 
-            //  dump($s1);
+
+            $data[] = $key;
+            $data[] = $item['id'];
+
+            if($i % 5 ===0) {
+                $stmtUpdate->execute($data);
+                $data = [];
+            }
 
             if (!empty($key)) {
                 //$os = $styles[$item['style']['_s1']];
@@ -98,16 +121,25 @@ class TestCommand extends Command
                 $settingsStyle[$key] = $s1;
             }
 
-            if($i % 1000 === 0) {
+            if (0 === $i % 1000) {
                 echo $i . PHP_EOL;
-            }
 
-            //  print_r($s1);
+            }
         }
+
+        $conn->query('
+            UPDATE 
+                x_geospatial.geo_object g 
+            SET 
+                style = s.style 
+            FROM 
+                sc s 
+            WHERE s.id = g.id 
+        ');
 
         $conn->commit();
 
-        $conn->query('DELETE FROM x_geospatial.style_group');;
+        $conn->query('DELETE FROM x_geospatial.style_group');
 
         foreach ($settingsStyle as $key => $item) {
             $styleGroup = new StyleGroup();
@@ -119,7 +151,6 @@ class TestCommand extends Command
         }
 
         $d = $this->stopwatch->stop('a')->getDuration();
-
 
         echo sprintf("GeoObjects: %d\nDuration: %s\n", $i, $d);
     }
