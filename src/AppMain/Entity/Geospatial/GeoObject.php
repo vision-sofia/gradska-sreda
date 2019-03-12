@@ -51,7 +51,12 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $style;
+    private $styleBase;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $styleHover;
 
     public function getId(): ?int
     {
@@ -113,13 +118,23 @@ class GeoObject implements UuidInterface, GeoObjectInterface
         $this->objectType = $objectType;
     }
 
-    public function getStyle(): ?string
+    public function getStyleBase(): ?string
     {
-        return $this->style;
+        return $this->styleBase;
     }
 
-    public function setStyle(?string $style): void
+    public function setStyleBase(?string $styleBase): void
     {
-        $this->style = $style;
+        $this->styleBase = $styleBase;
+    }
+
+    public function getStyleHover(): ?string
+    {
+        return $this->styleHover;
+    }
+
+    public function setStyleHover(?string $styleHover): void
+    {
+        $this->styleHover = $styleHover;
     }
 }

@@ -15,8 +15,8 @@ class StyleFixtures extends Fixture
             $objectType->setAttribute($item['attribute']);
             $objectType->setValue($item['value']);
             $objectType->setCode('');
-            $objectType->setStyles($item['style']);
-            $objectType->setType($item['type']);
+            $objectType->setStyles($item['style_body']);
+            $objectType->setType($item['style_type']);
             $objectType->setPriority($item['priority']);
             $objectType->setStyleValue('');
             $objectType->setStyleOption('');
@@ -33,9 +33,25 @@ class StyleFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пешеходни отсечки',
-                'type' => 'base_normal',
                 'priority' => 1,
-                'style' => [
+                'style_type' => 'hover',
+                'style_body' => [
+                    'line' => [
+                        'code' => 'ha1',
+                        'content' => [
+                            'color' => '#0099ff',
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_sca',
+                'value' => 'Пешеходни отсечки',
+                'priority' => 1,
+                'style_type' => 'base',
+                'style_body' => [
                     'line' => [
                         'code' => 'a1',
                         'content' => [
@@ -49,9 +65,9 @@ class StyleFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Алеи',
-                'type' => 'base_normal',
                 'priority' => 2,
-                'style' => [
+                'style_type' => 'base',
+                'style_body' => [
                     'line' => [
                         'code' => 'a4',
                         'content' => [
@@ -64,9 +80,9 @@ class StyleFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пресичания',
-                'type' => 'base_normal',
                 'priority' => 3,
-                'style' => [
+                'style_type' => 'base',
+                'style_body' => [
                     'line' => [
                         'code' => 'a7',
                         'content' => [
@@ -79,9 +95,9 @@ class StyleFixtures extends Fixture
             [
                 'attribute' => '_behavior',
                 'value' => 'survey',
-                'type' => 'base_normal',
                 'priority' => 4,
-                'style' => [
+                'style_type' => 'base',
+                'style_body' => [
                     'line' => [
                         'code' => 'op',
                         'content' => [

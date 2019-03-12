@@ -34,7 +34,7 @@ class StyleBuildCommand extends Command
         $conn = $this->entityManager->getConnection();
 
         $stylesSource = $this->entityManager->getRepository(Style::class)->findBy([
-            'type' => 'base_normal',
+
         ], [
             'priority' => 'ASC',
         ])
@@ -46,7 +46,9 @@ class StyleBuildCommand extends Command
             $styles[$item->getAttribute()][] = [
                 'value' => $item->getValue(),
                 'code' => $item->getCode(),
+                'style_type' => $item->getType(),
                 'styles' => $item->getStyles(),
+
             ];
         }
 
@@ -56,18 +58,27 @@ class StyleBuildCommand extends Command
 
         $i = 0;
 
-        $conn->query('CREATE TEMP TABLE sc(id INT, style VARCHAR(32))');
+        $conn->query('CREATE TEMP TABLE sc(id INT, style_base VARCHAR(32), style_hover VARCHAR(32))');
 
         $conn->beginTransaction();
 
-       # $stmtUpdate = $conn->prepare('UPDATE x_geospatial.geo_object SET style = ? WHERE id = ?');
-        $stmtUpdate = $conn->prepare('INSERT INTO sc (style, id) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?)');
+        $stmtUpdate = $conn->prepare('
+            INSERT INTO sc (id, style_base, style_hover) VALUES 
+            (?, ?, ?), 
+            (?, ?, ?), 
+            (?, ?, ?), 
+            (?, ?, ?), 
+            (?, ?, ?)
+        ');
+
         $data = [];
         foreach ($this->geoObjects() as $item) {
             ++$i;
             $s1 = [];
+            $s2 = [];
 
-            $key = '';
+            $key1 = '';
+            $key2 = '';
             $geometry = json_decode($item['geometry'], true);
 
             $attributes = json_decode($item['attributes'], true);
@@ -78,22 +89,46 @@ class StyleBuildCommand extends Command
                 }
 
                 foreach ($styles[$attributeKey] as $style) {
+
                     if ($attributes[$attributeKey] === $style['value']) {
                         if (isset($style['styles']['line'])
                             && ('LineString' === $geometry['type'] || 'MultiLineString' === $geometry['type'])
                         ) {
-                            $s1 = $style['styles']['line']['content'] + $s1;
-                            $key .= $style['styles']['line']['code'];
+                            if($style['style_type'] === 'base') {
+                                $s1 = $style['styles']['line']['content'] + $s1;
+                                $key1 .= $style['styles']['line']['code'];
+                            } elseif($style['style_type'] === 'hover') {
+                                $s2 = $style['styles']['line']['content'] + $s1;
+                                $key2 .= $style['styles']['line']['code'];
+                            }
+
                         } elseif (isset($style['styles']['point'])
                                   && ('Point' === $geometry['type'] || 'MultiPoint' === $geometry['type'])
                         ) {
-                            $s1 = $style['styles']['point']['content'] + $s1;
-                            $key .= $style['styles']['point']['code'];
+                            #$s1 = $style['styles']['point']['content'] + $s1;
+                            #$key .= $style['styles']['point']['code'];
+
+                            if($style['style_type'] === 'base') {
+                                $s1 = $style['styles']['point']['content'] + $s1;
+                                $key1 .= $style['styles']['point']['code'];
+                            } elseif($style['style_type'] === 'hover') {
+                                $s2 = $style['styles']['point']['content'] + $s1;
+                                $key2 .= $style['styles']['point']['code'];
+                            }
+
                         } elseif (isset($style['styles']['polygon'])
                                   && ('Polygon' === $geometry['type'] || 'MultiPolygon' === $geometry['type'])
                         ) {
-                            $s1 = $style['styles']['polygon']['content'] + $s1;
-                            $key .= $style['styles']['polygon']['code'];
+                            #$s1 = $style['styles']['polygon']['content'] + $s1;
+                            #$key .= $style['styles']['polygon']['code'];
+
+                            if($style['style_type'] === 'base') {
+                                $s1 = $style['styles']['polygon']['content'] + $s1;
+                                $key1 .= $style['styles']['polygon']['code'];
+                            } elseif($style['style_type'] === 'hover') {
+                                $s2 = $style['styles']['polygon']['content'] + $s1;
+                                $key2 .= $style['styles']['polygon']['code'];
+                            }
                         }
                     }
                 }
@@ -101,15 +136,17 @@ class StyleBuildCommand extends Command
 
 
 
-            $data[] = $key;
             $data[] = $item['id'];
+            $data[] = $key1;
+            $data[] = $key2;
+
 
             if($i % 5 ===0) {
                 $stmtUpdate->execute($data);
                 $data = [];
             }
 
-            if (!empty($key)) {
+            if (!empty($key1)) {
                 //$os = $styles[$item['style']['_s1']];
                 //dump(array_merge($os, $s1));
                 // $r = $item['style']['_s1'];
@@ -118,7 +155,21 @@ class StyleBuildCommand extends Command
                 //   dump(array_merge($os, $s1));
                 //dump($s1['key']);
 
-                $settingsStyle[$key] = $s1;
+                $settingsStyle[$key1] = $s1;
+
+            }
+
+            if (!empty($key2)) {
+                //$os = $styles[$item['style']['_s1']];
+                //dump(array_merge($os, $s1));
+                // $r = $item['style']['_s1'];
+                // $nn = $r . '-' . $s1['key'];
+                //  dump($nn);
+                //   dump(array_merge($os, $s1));
+                //dump($s1['key']);
+
+                $settingsStyle[$key2] = $s2;
+
             }
 
             if (0 === $i % 1000) {
@@ -131,7 +182,8 @@ class StyleBuildCommand extends Command
             UPDATE 
                 x_geospatial.geo_object g 
             SET 
-                style = s.style 
+                style_base = s.style_base,
+                style_hover = s.style_hover
             FROM 
                 sc s 
             WHERE s.id = g.id 
