@@ -129,8 +129,6 @@ class SettingsController extends AbstractController
             ],
         ];
 
-        dump(json_encode($styles));
-
         return $this->render('manage/settings/edit.html.twig', [
             'settings' => $settings,
             'form' => $form->createView(),

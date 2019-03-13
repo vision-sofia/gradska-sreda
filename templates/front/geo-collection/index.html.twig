@@ -1,0 +1,58 @@
+{% extends 'front/map/layout.html.twig' %}
+{% block title %}Карта{% endblock %}
+{% block content %}
+    <div class="container py-3">
+        Маршрути
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <form action="{{ path('app.geo-collection.add') }}">
+                    <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
+                </form>
+                <ul class="mt-4 pl-4">
+                    {% set m = 0 %}
+                    {% for collectionItem in collections %}
+                        {% set m = m + 1 %}
+                        <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}" class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-9" style="height: 600px;">
+                <div style="">
+                    <div id="mapMain" data-locate-on-load="true"></div>
+                    <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
+                        <div class="container py-4">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h5 class="font-weight-bold mb-3" data-confirm-title>Искате ли да оцените?</h5>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <a href="#" data-confirm-link class="btn btn-success mr-3 px-4">ДА</a>
+                                    <span data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loading d-none">
+                        <h3 class="mb-4">Локализиране...</h3>
+                        <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if collection is defined %}
+    <script>
+        let b = {
+            collection: '{{ collection.uuid }}'
+        };
+
+        let mapOption = {
+            collection: '{{ collection.uuid }}',
+            survey: false
+        }
+    </script>
+    {% endif %}
+{% endblock %}

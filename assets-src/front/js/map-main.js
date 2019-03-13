@@ -25,7 +25,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     let mapStyle = L.tileLayer(mapBoxUrl, {
         attribution: mapBoxAttribution,
         maxNativeZoom: 19,
-        maxZoom: 20,
+        maxZoom: 21,
         minZoom: 11,
         updateWhenZooming: false
     });
@@ -112,15 +112,24 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     function updateMap(fn = () => {}) {
         let zoom = map.getZoom();
         let coords = map.getBounds();
+        let returnedTarget = {};
+
+        let a = {
+            in: coords._southWest.lng + ',' +
+            coords._northEast.lat + ',' +
+            coords._northEast.lng + ',' +
+            coords._southWest.lat + ',',
+            zoom: zoom
+        };
+
+        if (typeof b !== 'undefined') {
+            returnedTarget = Object.assign(a, b);
+        } else {
+            returnedTarget = a;
+        }
 
         $.ajax({
-            data: {
-                in: coords._southWest.lng + ',' +
-                    coords._northEast.lat + ',' +
-                    coords._northEast.lng + ',' +
-                    coords._southWest.lat + ',',
-                zoom: zoom
-            },
+            data: returnedTarget,
             url: "/front-end/map?",
             success: function (results) {
                 objectsSettings = results.settings;
@@ -190,12 +199,17 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         layer.feature.properties.activePopup = true;
 
         let coordinates;
+
+
         if (layer.feature.properties._behavior === 'survey') {
             coordinates = map.mouseEventToLatLng(ev.originalEvent);
-            openConfirmModal(layer);
+            if(mapOption.survey === true) {
+                openConfirmModal(layer);
+            }
         } else {
             coordinates = ev.latlng;
         }
+
 
         let popupLayer = L.circle(coordinates, {
             fillOpacity: 0,
@@ -204,7 +218,7 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             radius:      1
         }).addTo(popusLayerGroup);
 
-        let popupContent = `<p class="text-center">${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+        let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
@@ -214,6 +228,44 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             setLayerDefaultStyle(layer);
             removeAllPopups();
         }).openPopup();
+
+        let collection = mapOption.collection;
+
+        if(typeof collection !== 'undefined') {
+            $.ajax({
+                type: "POST",
+                url: '/front-end/geo-collection/add',
+                data: {
+                    'geo-object': layer.feature.properties.id,
+                    'collection': collection
+                },
+                success: function()
+                {
+                    updateMap();
+                }
+            });
+        }
+/*
+        $(".m-form").submit(function(e) {
+            var form = $(this);
+            var url = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: '/front-end/geo-collection/add',
+                //data: form.serialize(),
+                data: {
+                    'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
+                },
+                success: function()
+                {
+                    updateMap();
+                }
+            });
+
+            e.preventDefault();
+        });
+*/
     }
 
     function openConfirmModal(layer) {
