@@ -5,10 +5,10 @@ namespace App\AppMain\Entity\Geospatial;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="style", schema="x_geospatial")
+ * @ORM\Table(name="style_condition", schema="x_geospatial")
  * @ORM\Entity()
  */
-class Style
+class StyleCondition
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -16,16 +16,6 @@ class Style
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $styleOption;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $styleValue;
 
     /**
      * @ORM\Column(type="string")
@@ -60,26 +50,6 @@ class Style
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getStyleOption(): ?string
-    {
-        return $this->styleOption;
-    }
-
-    public function setStyleOption(string $styleOption): void
-    {
-        $this->styleOption = $styleOption;
-    }
-
-    public function getStyleValue(): ?string
-    {
-        return $this->styleValue;
-    }
-
-    public function setStyleValue(string $styleValue): void
-    {
-        $this->styleValue = $styleValue;
     }
 
     public function getAttribute(): ?string

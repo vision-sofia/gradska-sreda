@@ -2,24 +2,23 @@
 
 namespace App\DataFixtures\Geospatial;
 
-use App\AppMain\Entity\Geospatial\Style;
+use App\AppMain\Entity\Geospatial\StyleCondition;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class StyleFixtures extends Fixture
+class StyleConditionFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
         foreach ($this->data() as $item) {
-            $objectType = new Style();
+            $objectType = new StyleCondition();
             $objectType->setAttribute($item['attribute']);
             $objectType->setValue($item['value']);
             $objectType->setCode('');
             $objectType->setStyles($item['style_body']);
             $objectType->setType($item['style_type']);
             $objectType->setPriority($item['priority']);
-            $objectType->setStyleValue('');
-            $objectType->setStyleOption('');
+
 
             $manager->persist($objectType);
         }
@@ -32,14 +31,13 @@ class StyleFixtures extends Fixture
         return [
             [
                 'attribute' => '_sca',
-                'value' => 'Пешеходни отсечки',
+                'value' => '*',
                 'priority' => 1,
                 'style_type' => 'hover',
                 'style_body' => [
                     'line' => [
                         'code' => 'ha1',
                         'content' => [
-                            'color' => '#0099ff',
                             'weight' => 10,
                             'opacity' => 1,
                         ],
@@ -106,7 +104,7 @@ class StyleFixtures extends Fixture
                         ],
                     ],
                 ],
-            ],
+            ]
         ];
     }
 }

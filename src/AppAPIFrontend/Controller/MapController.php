@@ -61,7 +61,8 @@ class MapController extends AbstractController
                     id,
                     uuid,
                     name,
-                    style,
+                    style_base,
+                    style_hover,
                     object_type_id,
                     geometry,
                     jsonb_strip_nulls(attributes) as attributes
@@ -71,7 +72,8 @@ class MapController extends AbstractController
                             g.id,
                             g.uuid,
                             g.name,
-                            g.style,
+                            g.style_base,
+                            g.style_hover,
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -101,7 +103,8 @@ class MapController extends AbstractController
                             g.id,
                             g.uuid,
                             g.name,
-                            g.style,
+                            g.style_base,
+                            g.style_hover,
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -128,7 +131,8 @@ class MapController extends AbstractController
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
-                g.style,
+                g.style_base,
+                g.style_hover,
                 g.geometry
             FROM
                 g
@@ -170,7 +174,7 @@ class MapController extends AbstractController
             $geometry = json_decode($row['geometry'], true);
             $attributes = json_decode($row['attributes'], true);
 
-            if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
+/*            if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
                 $s1 = 'cat1';
                 $s2 = 'line_hover';
                 $attributes['_dtext'] = 2;
@@ -194,7 +198,7 @@ class MapController extends AbstractController
             } else {
                 $s1 = '';
                 $s2 = '';
-            }
+            }*/
 
             if ('Градоустройствена единица' === $row['type_name']) {
                 $attributes['_zoom'] = 17;
@@ -208,8 +212,8 @@ class MapController extends AbstractController
                 'type' => 'Feature',
                 'geometry' => $geometry,
                 'properties' => [
-                    '_s1' => $row['style'],
-                    '_s2' => $s2,
+                    '_s1' => $row['style_base'],
+                    '_s2' => $row['style_hover'],
                     'id' => $row['uuid'],
                     'name' => $row['geo_name'],
                     'type' => $row['type_name'],
