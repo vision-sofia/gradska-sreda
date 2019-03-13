@@ -27,6 +27,8 @@ class Finder
                     id,
                     uuid,
                     name,
+                    style_base,
+                    style_hover,
                     object_type_id,
                     geometry,
                     jsonb_strip_nulls(attributes) as attributes
@@ -36,6 +38,8 @@ class Finder
                             g.id,
                             g.uuid,
                             g.name,
+                            g.style_base,
+                            g.style_hover,
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -65,6 +69,8 @@ class Finder
                             g.id,
                             g.uuid,
                             g.name,
+                            g.style_base,
+                            g.style_hover,                            
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
@@ -92,8 +98,11 @@ class Finder
         $qb->select([
             'g.id',
             'g.uuid',
+            'g.style_base',
+            'g.style_hover',
             'g.name as geo_name',
             't.name as type_name',
+
             'g.attributes',
             'g.geometry',
 
