@@ -19,7 +19,6 @@ class StyleConditionFixtures extends Fixture
             $objectType->setType($item['style_type']);
             $objectType->setPriority($item['priority']);
 
-
             $manager->persist($objectType);
         }
 
@@ -104,7 +103,79 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
-            ]
+            ],
+            [
+                'attribute' => 'has_vhc_metro',
+                'value' => 1,
+                'priority' => 1,
+                'style_type' => 'base',
+                'style_body' => [
+                    'point' => [
+                        'code' => 'vhc-o',
+                        'content' => [
+                            'radius' => 8,
+                            'color' => '#000',
+                            'weight' => 1,
+                            'opacity' => 1,
+                            'fillColor' => '#0000ff',
+                            'fillOpacity' => 0.8,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => 'has_vhc_other',
+                'value' => 1,
+                'priority' => 1,
+                'style_type' => 'base',
+                'style_body' => [
+                    'point' => [
+                        'code' => 'vhc-m',
+                        'content' => [
+                            'radius' => 8,
+                            'color' => '#000',
+                            'weight' => 1,
+                            'opacity' => 1,
+                            'fillColor' => '#ff00ff',
+                            'fillOpacity' => 0.8,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_default',
+                'value' => '',
+                'priority' => 0,
+                'style_type' => 'base',
+                'style_body' => [
+                    'point' => [
+                        'code' => 'def-point-base',
+                        'content' => [
+                            'radius' => 8,
+                            'color' => '#000',
+                            'weight' => 1,
+                            'opacity' => 1,
+                            'fillColor' => '#ff7800',
+                            'fillOpacity' => 0.8,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_default',
+                'value' => '',
+                'priority' => 0,
+                'style_type' => 'hover',
+                'style_body' => [
+                    'point' => [
+                        'code' => 'def-point-hover',
+                        'content' => [
+                            'fillColor' => '#ff00ff',
+                            'fillOpacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

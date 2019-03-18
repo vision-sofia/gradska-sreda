@@ -46,8 +46,6 @@ class ImportCommand extends Command
             $objectTypes[$row['name']] = $row['id'];
         }
 
-        $conn->beginTransaction();
-
         $stmt = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
@@ -109,7 +107,7 @@ class ImportCommand extends Command
                         $stmt->execute();
                         ++$i;
 
-                        if($i % 1000 === 0) {
+                        if (0 === $i % 1000) {
                             echo $i . PHP_EOL;
                         }
                     } else {
@@ -138,8 +136,6 @@ class ImportCommand extends Command
 
         $stmt->bindValue('name', 'Анкета-2');
         $stmt->execute();
-
-        $conn->commit();
 
         echo "Done {$j}/{$i}\n";
     }

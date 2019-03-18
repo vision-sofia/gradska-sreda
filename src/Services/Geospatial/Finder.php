@@ -75,8 +75,8 @@ class Finder
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior,
-                                \'vt_b\', g.attributes->\'has_other\',
-                                \'vt_m\', g.attributes->\'has_metro\'
+                                \'has_vhc_other\', g.attributes->\'has_vhc_other\',
+                                \'has_vhc_metro\', g.attributes->\'has_vhc_metro\'
                             ) as attributes
                         FROM
                             x_geometry.geometry_base m

@@ -44,7 +44,7 @@ class StyleGroupFixtures extends Fixture
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
-            ],
+            ]
         ];
     }
 }
