@@ -30,17 +30,16 @@ class StyleBuildCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        // TODO: refactor to services
         $em = $this->entityManager;
-        $conn = $this->entityManager->getConnection();
 
-        $stylesSource = $this->entityManager->getRepository(StyleCondition::class)->findBy([
-
-        ], [
+        $stylesSource = $em->getRepository(StyleCondition::class)->findBy([], [
             'priority' => 'ASC',
         ])
         ;
 
         $styles = [];
+
         /** @var StyleCondition $item */
         foreach ($stylesSource as $item) {
             $styles[$item->getAttribute()][] = [
@@ -50,13 +49,13 @@ class StyleBuildCommand extends Command
             ];
         }
 
-        $this->stopwatch->start('a');
-
         $settingsStyle = [];
 
         $i = 0;
 
-        $batch = 100;
+        $batch = 2;
+
+        $conn = $this->entityManager->getConnection();
 
         $conn->query('
             UPDATE 
@@ -65,6 +64,8 @@ class StyleBuildCommand extends Command
                 style_base = NULL, 
                 style_hover = NULL 
         ');
+
+        $this->stopwatch->start('style_build');
 
         $conn->beginTransaction();
 
@@ -80,88 +81,39 @@ class StyleBuildCommand extends Command
         foreach ($this->geoObjects() as $item) {
             ++$i;
 
-            $s1 = [];
-            $s2 = [];
+            $sk = [
+                's1' => [],
+                's2' => [],
+                'key1' => '',
+                'key2' => '',
+            ];
 
-            $key1 = '';
-            $key2 = '';
-
-            $geometry = json_decode($item['geometry'], true);
+            $geometryType = json_decode($item['geometry'], true)['type'];
             $attributes = json_decode($item['attributes'], true);
 
-            foreach ($attributes as $attributeKey => $attributeValue) {
-                if (!isset($styles[$attributeKey])) {
-                    continue;
-                }
-
-                foreach ($styles[$attributeKey] as $style) {
-                    if ('*' === $style['value'] || $attributes[$attributeKey] === $style['value']) {
-                        if (isset($style['styles']['line'])
-                            && ('LineString' === $geometry['type'] || 'MultiLineString' === $geometry['type'])
-                        ) {
-                            if ('base' === $style['style_type']) {
-                                $s1 = $style['styles']['line']['content'] + $s1;
-                                $key1 .= $style['styles']['line']['code'];
-                            } elseif ('hover' === $style['style_type']) {
-                                $s2 = $style['styles']['line']['content'] + $s2;
-                                $key2 .= $style['styles']['line']['code'];
-                            }
-                        } elseif (isset($style['styles']['point'])
-                                   && ('Point' === $geometry['type'] || 'MultiPoint' === $geometry['type'])
-                        ) {
-                            if ('base' === $style['style_type']) {
-                                $s1 = $style['styles']['point']['content'] + $s1;
-                                $key1 .= $style['styles']['point']['code'];
-                            } elseif ('hover' === $style['style_type']) {
-                                $s2 = $style['styles']['point']['content'] + $s2;
-                                $key2 .= $style['styles']['point']['code'];
-                            }
-                        } elseif (isset($style['styles']['polygon'])
-                                   && ('Polygon' === $geometry['type'] || 'MultiPolygon' === $geometry['type'])
-                        ) {
-                            if ('base' === $style['style_type']) {
-                                $s1 = $style['styles']['polygon']['content'] + $s1;
-                                $key1 .= $style['styles']['polygon']['code'];
-                            } elseif ('hover' === $style['style_type']) {
-                                $s2 = $style['styles']['polygon']['content'] + $s2;
-                                $key2 .= $style['styles']['polygon']['code'];
-                            }
-                        }
-                    }
-                }
+            if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
+                $sk = $this->chk($attributes, $styles, $sk, 'line');
+            } elseif ('Point' === $geometryType || 'MultiPoint' === $geometryType) {
+                $sk = $this->chk($attributes, $styles, $sk, 'point');
+            } elseif ('Polygon' === $geometryType || 'MultiPolygon' === $geometryType) {
+                $sk = $this->chk($attributes, $styles, $sk, 'polygon');
             }
 
             $data[] = $item['id'];
-            $data[] = $key1;
-            $data[] = $key2;
+            $data[] = $sk['key1'];
+            $data[] = $sk['key2'];
 
             if (0 === $i % $batch) {
                 $stmtInsert->execute($data);
                 $data = [];
             }
 
-            if (!empty($key1)) {
-                //$os = $styles[$item['style']['_s1']];
-                //dump(array_merge($os, $s1));
-                // $r = $item['style']['_s1'];
-                // $nn = $r . '-' . $s1['key'];
-                //  dump($nn);
-                //   dump(array_merge($os, $s1));
-                //dump($s1['key']);
-
-                $settingsStyle[$key1] = $s1;
+            if (!empty($sk['key1'])) {
+                $settingsStyle[$sk['key1']] = $sk['s1'];
             }
 
-            if (!empty($key2)) {
-                //$os = $styles[$item['style']['_s1']];
-                //dump(array_merge($os, $s1));
-                // $r = $item['style']['_s1'];
-                // $nn = $r . '-' . $s1['key'];
-                //  dump($nn);
-                //   dump(array_merge($os, $s1));
-                //dump($s1['key']);
-
-                $settingsStyle[$key2] = $s2;
+            if (!empty($sk['key2'])) {
+                $settingsStyle[$sk['key2']] = $sk['s2'];
             }
 
             if (0 === $i % 1000) {
@@ -183,18 +135,62 @@ class StyleBuildCommand extends Command
 
         $conn->commit();
 
+        $duration = $this->stopwatch->stop('style_build')->getDuration();
+
         foreach ($settingsStyle as $key => $item) {
             $styleGroup = new StyleGroup();
             $styleGroup->setCode($key);
             $styleGroup->setStyles($item);
 
             $em->persist($styleGroup);
-            $em->flush();
         }
 
-        $d = $this->stopwatch->stop('a')->getDuration();
+        $em->flush();
 
-        echo sprintf("GeoObjects: %d\nDuration: %s\n", $i, $d);
+        echo sprintf("GeoObjects: %d\nDuration: %s\n", $i, $duration);
+    }
+
+    private function chk($attributes, $styles, $sk, $type)
+    {
+        // Attribute based style
+        foreach ($attributes as $attributeKey => $attributeValue) {
+            if (!isset($styles[$attributeKey])) {
+                continue;
+            }
+
+            foreach ($styles[$attributeKey] as $style) {
+                if ('*' === $style['value']
+                    || (string) $attributes[$attributeKey] === (string) $style['value']) {
+                    $sk = $this->comp($style, $sk, $type);
+                }
+            }
+        }
+
+        // Default style
+        if (empty($sk['key1']) && empty($sk['key2']) && isset($styles['_default'])) {
+            foreach ($styles['_default'] as $style) {
+                $sk = $this->comp($style, $sk, $type);
+            }
+        }
+
+        return $sk;
+    }
+
+    private function comp($style, array $sk, $type): array
+    {
+        if (!isset($style['styles'][$type]['content'])) {
+            return $sk;
+        }
+
+        if ('base' === $style['style_type']) {
+            $sk['s1'] = $style['styles'][$type]['content'] + $sk['s1'];
+            $sk['key1'] .= $style['styles'][$type]['code'];
+        } elseif ('hover' === $style['style_type']) {
+            $sk['s2'] = $style['styles'][$type]['content'] + $sk['s2'];
+            $sk['key2'] .= $style['styles'][$type]['code'];
+        }
+
+        return $sk;
     }
 
     private function geoObjects(): \Generator
@@ -235,7 +231,7 @@ class StyleBuildCommand extends Command
                                 INNER JOIN
                             x_survey.survey s ON c.survey_id = s.id
                         WHERE
-                            s.is_active = TRUE
+                            s.is_active = TRUE    
                                     
                         UNION ALL
             
@@ -246,7 +242,9 @@ class StyleBuildCommand extends Command
                             g.object_type_id,
                             st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
-                                \'_behavior\', a.behavior
+                                \'_behavior\', a.behavior,
+                                \'has_vhc_other\', g.attributes->\'has_vhc_other\',
+                                \'has_vhc_metro\', g.attributes->\'has_vhc_metro\'
                             ) as attributes
                         FROM
                             x_geometry.geometry_base m
@@ -259,7 +257,7 @@ class StyleBuildCommand extends Command
                                 INNER JOIN
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
-                            s.is_active = TRUE
+                            s.is_active = TRUE                             
 
                     ) as w
             )

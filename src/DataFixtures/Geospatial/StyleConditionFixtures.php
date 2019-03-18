@@ -111,13 +111,13 @@ class StyleConditionFixtures extends Fixture
                 'style_type' => 'base',
                 'style_body' => [
                     'point' => [
-                        'code' => 'vhc-o',
+                        'code' => 'vhc-m',
                         'content' => [
                             'radius' => 8,
                             'color' => '#000',
                             'weight' => 1,
                             'opacity' => 1,
-                            'fillColor' => '#0000ff',
+                            'fillColor' => '#3847A4',
                             'fillOpacity' => 0.8,
                         ],
                     ],
@@ -130,13 +130,13 @@ class StyleConditionFixtures extends Fixture
                 'style_type' => 'base',
                 'style_body' => [
                     'point' => [
-                        'code' => 'vhc-m',
+                        'code' => 'vhc-o',
                         'content' => [
-                            'radius' => 8,
+                            'radius' => 6,
                             'color' => '#000',
                             'weight' => 1,
                             'opacity' => 1,
-                            'fillColor' => '#ff00ff',
+                            'fillColor' => '#4296EC',
                             'fillOpacity' => 0.8,
                         ],
                     ],
@@ -151,7 +151,7 @@ class StyleConditionFixtures extends Fixture
                     'point' => [
                         'code' => 'def-point-base',
                         'content' => [
-                            'radius' => 8,
+                            'radius' => 10,
                             'color' => '#000',
                             'weight' => 1,
                             'opacity' => 1,
