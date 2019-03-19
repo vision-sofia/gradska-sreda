@@ -8,7 +8,11 @@ use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="survey_auxiliary_object_type", schema="x_survey")
+ * @ORM\Table(
+ *     name="survey_auxiliary_object_type",
+ *     schema="x_survey",
+ *     uniqueConstraints={@ORM\UniqueConstraint(columns={"survey_id", "object_type_id"})}
+ * )
  * @ORM\Entity()
  */
 class AuxiliaryObjectType implements UuidInterface
