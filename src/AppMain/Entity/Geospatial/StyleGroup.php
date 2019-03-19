@@ -29,7 +29,7 @@ class StyleGroup
     /**
      * @ORM\Column(type="json_array", options={"jsonb": true})
      */
-    private $styles;
+    private $style;
 
     public function getId(): int
     {
@@ -46,13 +46,13 @@ class StyleGroup
         $this->code = $code;
     }
 
-    public function getStyles(): ?array
+    public function getStyle(): ?array
     {
-        return $this->styles;
+        return $this->style;
     }
 
-    public function setStyles(array $styles): void
+    public function setStyle(array $styles): void
     {
-        $this->styles = $styles;
+        $this->style = $styles;
     }
 }

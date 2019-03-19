@@ -4,7 +4,6 @@ namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppMain\Entity\Geospatial\StyleGroup;
-use App\AppManage\Entity\Settings;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,13 +64,13 @@ class MapController extends AbstractController
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
         $stylesGroups = $this->getDoctrine()
-                             ->getRepository(StyleGroup::class)
-                             ->findAll();
+            ->getRepository(StyleGroup::class)
+            ->findAll();
 
         $styles = [];
 
         foreach ($stylesGroups as $stylesGroup) {
-            $styles[$stylesGroup->getCode()] = $stylesGroup->getStyles();
+            $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
         }
 
         $i = 0;

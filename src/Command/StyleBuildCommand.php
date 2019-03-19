@@ -28,32 +28,29 @@ class StyleBuildCommand extends Command
     {
     }
 
+    // TODO: refactor to services
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        // TODO: refactor to services
+        $chunkSize = 500;
+
         $em = $this->entityManager;
 
-        $stylesSource = $em->getRepository(StyleCondition::class)->findBy([], [
-            'priority' => 'ASC',
-        ])
+        $stylesSource = $em->getRepository(StyleCondition::class)
+            ->findBy([], ['priority' => 'ASC'])
         ;
 
         $styles = [];
 
-        /** @var StyleCondition $item */
-        foreach ($stylesSource as $item) {
-            $styles[$item->getAttribute()][] = [
-                'value' => $item->getValue(),
-                'style_type' => $item->getType(),
-                'styles' => $item->getStyles(),
+        /** @var StyleCondition $style */
+        foreach ($stylesSource as $style) {
+            $styles[$style->getAttribute()][] = [
+                'value' => $style->getValue(),
+                'base_style' => $style->getBaseStyle(),
+                'hover_style' => $style->getHoverStyle(),
             ];
         }
 
-        $settingsStyle = [];
-
-        $i = 0;
-
-        $batch = 2;
+        $styleGroups = [];
 
         $conn = $this->entityManager->getConnection();
 
@@ -71,14 +68,13 @@ class StyleBuildCommand extends Command
 
         $conn->query('CREATE TEMP TABLE sc(id INT, style_base VARCHAR(32), style_hover VARCHAR(32))');
 
-        $sql = 'INSERT INTO sc (id, style_base, style_hover) 
-        VALUES ' . rtrim(str_repeat('(?, ?, ?),', $batch), ',');
+        $insertStmt = $conn->prepare($this->buildInsertSQL($chunkSize));
 
-        $stmtInsert = $conn->prepare($sql);
+        $batch = [];
 
-        $data = [];
+        $i = 0;
 
-        foreach ($this->geoObjects() as $item) {
+        foreach ($this->geoObjects() as $style) {
             ++$i;
 
             $sk = [
@@ -88,8 +84,8 @@ class StyleBuildCommand extends Command
                 'key2' => '',
             ];
 
-            $geometryType = json_decode($item['geometry'], true)['type'];
-            $attributes = json_decode($item['attributes'], true);
+            $geometryType = json_decode($style['geometry'], true)['type'];
+            $attributes = json_decode($style['attributes'], true);
 
             if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
                 $sk = $this->chk($attributes, $styles, $sk, 'line');
@@ -99,26 +95,33 @@ class StyleBuildCommand extends Command
                 $sk = $this->chk($attributes, $styles, $sk, 'polygon');
             }
 
-            $data[] = $item['id'];
-            $data[] = $sk['key1'];
-            $data[] = $sk['key2'];
+            $batch[] = $style['id'];
+            $batch[] = $sk['key1'];
+            $batch[] = $sk['key2'];
 
-            if (0 === $i % $batch) {
-                $stmtInsert->execute($data);
-                $data = [];
+            if (0 === $i % $chunkSize) {
+                $insertStmt->execute($batch);
+                $batch = [];
             }
 
             if (!empty($sk['key1'])) {
-                $settingsStyle[$sk['key1']] = $sk['s1'];
+                $styleGroups[$sk['key1']] = $sk['s1'];
             }
 
             if (!empty($sk['key2'])) {
-                $settingsStyle[$sk['key2']] = $sk['s2'];
+                $styleGroups[$sk['key2']] = $sk['s2'];
             }
 
             if (0 === $i % 1000) {
                 echo $i . PHP_EOL;
             }
+        }
+
+        if (!empty($batch)) {
+            $remain = \count($batch) / 3;
+
+            $stmt = $conn->prepare($this->buildInsertSQL($remain));
+            $stmt->execute($batch);
         }
 
         $conn->query('
@@ -137,17 +140,25 @@ class StyleBuildCommand extends Command
 
         $duration = $this->stopwatch->stop('style_build')->getDuration();
 
-        foreach ($settingsStyle as $key => $item) {
-            $styleGroup = new StyleGroup();
-            $styleGroup->setCode($key);
-            $styleGroup->setStyles($item);
+        foreach ($styleGroups as $code => $style) {
+            $styleGroups = new StyleGroup();
+            $styleGroups->setCode($code);
+            $styleGroups->setStyle($style);
 
-            $em->persist($styleGroup);
+            $em->persist($styleGroups);
         }
 
         $em->flush();
 
         echo sprintf("GeoObjects: %d\nDuration: %s\n", $i, $duration);
+    }
+
+    private function buildInsertSQL(int $chunkSize): string
+    {
+        $sql = 'INSERT INTO sc (id, style_base, style_hover) 
+            VALUES ' . rtrim(str_repeat('(?, ?, ?),', $chunkSize), ',');
+
+        return $sql;
     }
 
     private function chk($attributes, $styles, $sk, $type)
@@ -178,16 +189,14 @@ class StyleBuildCommand extends Command
 
     private function comp($style, array $sk, $type): array
     {
-        if (!isset($style['styles'][$type]['content'])) {
-            return $sk;
+        if (isset($style['base_style'][$type]['content'])) {
+            $sk['s1'] = $style['base_style'][$type]['content'] + $sk['s1'];
+            $sk['key1'] .= $style['base_style'][$type]['code'];
         }
 
-        if ('base' === $style['style_type']) {
-            $sk['s1'] = $style['styles'][$type]['content'] + $sk['s1'];
-            $sk['key1'] .= $style['styles'][$type]['code'];
-        } elseif ('hover' === $style['style_type']) {
-            $sk['s2'] = $style['styles'][$type]['content'] + $sk['s2'];
-            $sk['key2'] .= $style['styles'][$type]['code'];
+        if (isset($style['hover_style'][$type]['content'])) {
+            $sk['s2'] = $style['hover_style'][$type]['content'] + $sk['s2'];
+            $sk['key2'] .= $style['hover_style'][$type]['code'];
         }
 
         return $sk;

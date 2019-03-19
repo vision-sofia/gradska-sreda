@@ -13,7 +13,7 @@ class StyleGroupFixtures extends Fixture
         foreach ($this->data() as $item) {
             $objectType = new StyleGroup();
             $objectType->setCode($item['code']);
-            $objectType->setStyles($item['style']);
+            $objectType->setStyle($item['style']);
 
             $manager->persist($objectType);
         }

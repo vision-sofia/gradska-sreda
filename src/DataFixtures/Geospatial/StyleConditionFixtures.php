@@ -14,9 +14,15 @@ class StyleConditionFixtures extends Fixture
             $objectType = new StyleCondition();
             $objectType->setAttribute($item['attribute']);
             $objectType->setValue($item['value']);
-            $objectType->setCode('');
-            $objectType->setStyles($item['style_body']);
-            $objectType->setType($item['style_type']);
+
+            if (isset($item['base_style'])) {
+                $objectType->setBaseStyle($item['base_style']);
+            }
+
+            if (isset($item['hover_style'])) {
+                $objectType->setHoverStyle($item['hover_style']);
+            }
+
             $objectType->setPriority($item['priority']);
 
             $manager->persist($objectType);
@@ -30,25 +36,9 @@ class StyleConditionFixtures extends Fixture
         return [
             [
                 'attribute' => '_sca',
-                'value' => '*',
-                'priority' => 1,
-                'style_type' => 'hover',
-                'style_body' => [
-                    'line' => [
-                        'code' => 'ha1',
-                        'content' => [
-                            'weight' => 10,
-                            'opacity' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'attribute' => '_sca',
                 'value' => 'Пешеходни отсечки',
                 'priority' => 1,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'line' => [
                         'code' => 'a1',
                         'content' => [
@@ -58,13 +48,21 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
+                'hover_style' => [
+                    'line' => [
+                        'code' => 'a1-h',
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
             ],
             [
                 'attribute' => '_sca',
                 'value' => 'Алеи',
                 'priority' => 2,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'line' => [
                         'code' => 'a4',
                         'content' => [
@@ -73,13 +71,21 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
+                'hover_style' => [
+                    'line' => [
+                        'code' => 'a4-h',
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
             ],
             [
                 'attribute' => '_sca',
                 'value' => 'Пресичания',
                 'priority' => 3,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'line' => [
                         'code' => 'a7',
                         'content' => [
@@ -88,13 +94,21 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
+                'hover_style' => [
+                    'line' => [
+                        'code' => 'a7-h',
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
             ],
             [
                 'attribute' => '_behavior',
                 'value' => 'survey',
                 'priority' => 4,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'line' => [
                         'code' => 'op',
                         'content' => [
@@ -108,10 +122,9 @@ class StyleConditionFixtures extends Fixture
                 'attribute' => 'has_vhc_metro',
                 'value' => 1,
                 'priority' => 1,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'point' => [
-                        'code' => 'vhc-m',
+                        'code' => 'vhc-m-b',
                         'content' => [
                             'radius' => 8,
                             'color' => '#000',
@@ -122,15 +135,22 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
+                'hover_style' => [
+                    'point' => [
+                        'code' => 'vhc-m-h',
+                        'content' => [
+                            'fillColor' => '#00FFF0',
+                        ],
+                    ],
+                ],
             ],
             [
                 'attribute' => 'has_vhc_other',
                 'value' => 1,
                 'priority' => 1,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'point' => [
-                        'code' => 'vhc-o',
+                        'code' => 'vhc-o-b',
                         'content' => [
                             'radius' => 6,
                             'color' => '#000',
@@ -141,13 +161,20 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
+                'hover_style' => [
+                    'point' => [
+                        'code' => 'vhc-o-h',
+                        'content' => [
+                            'fillColor' => '#00FF0F',
+                        ],
+                    ],
+                ],
             ],
             [
                 'attribute' => '_default',
                 'value' => '',
                 'priority' => 0,
-                'style_type' => 'base',
-                'style_body' => [
+                'base_style' => [
                     'point' => [
                         'code' => 'def-point-base',
                         'content' => [
@@ -160,13 +187,7 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
-            ],
-            [
-                'attribute' => '_default',
-                'value' => '',
-                'priority' => 0,
-                'style_type' => 'hover',
-                'style_body' => [
+                'hover_style' => [
                     'point' => [
                         'code' => 'def-point-hover',
                         'content' => [

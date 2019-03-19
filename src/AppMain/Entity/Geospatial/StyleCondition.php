@@ -28,19 +28,14 @@ class StyleCondition
     private $value;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
      */
-    private $code;
+    private $baseStyle;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
      */
-    private $type;
-
-    /**
-     * @ORM\Column(type="json_array", options={"jsonb": true})
-     */
-    private $styles;
+    private $hoverStyle;
 
     /**
      * @ORM\Column(type="integer")
@@ -72,34 +67,24 @@ class StyleCondition
         $this->value = $value;
     }
 
-    public function getCode(): ?string
+    public function getBaseStyle(): ?array
     {
-        return $this->code;
+        return $this->baseStyle;
     }
 
-    public function setCode(string $code): void
+    public function setBaseStyle(?array $baseStyle): void
     {
-        $this->code = $code;
+        $this->baseStyle = $baseStyle;
     }
 
-    public function getType()
+    public function getHoverStyle(): ?array
     {
-        return $this->type;
+        return $this->hoverStyle;
     }
 
-    public function setType($type): void
+    public function setHoverStyle(?array $hoverStyle): void
     {
-        $this->type = $type;
-    }
-
-    public function getStyles(): ?array
-    {
-        return $this->styles;
-    }
-
-    public function setStyles(array $styles): void
-    {
-        $this->styles = $styles;
+        $this->hoverStyle = $hoverStyle;
     }
 
     public function getPriority(): ?int
