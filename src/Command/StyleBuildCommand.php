@@ -35,25 +35,24 @@ class StyleBuildCommand extends Command
 
         $em = $this->entityManager;
 
-        $stylesSource = $em->getRepository(StyleCondition::class)
+        $stylesConditions = $em->getRepository(StyleCondition::class)
             ->findBy([], ['priority' => 'ASC'])
         ;
 
         $styles = [];
 
-        /** @var StyleCondition $style */
-        foreach ($stylesSource as $style) {
-            $styles[$style->getAttribute()][] = [
-                'value' => $style->getValue(),
-                'base_style' => $style->getBaseStyle(),
-                'hover_style' => $style->getHoverStyle(),
+        /** @var StyleCondition $geoObject */
+        foreach ($stylesConditions as $styleCondition) {
+            $styles[$styleCondition->getAttribute()][] = [
+                'value' => $styleCondition->getValue(),
+                'base_style' => $styleCondition->getBaseStyle(),
+                'hover_style' => $styleCondition->getHoverStyle(),
             ];
         }
 
         $styleGroups = [];
 
         $conn = $this->entityManager->getConnection();
-
         $conn->query('
             UPDATE 
                 x_geospatial.geo_object 
@@ -74,7 +73,7 @@ class StyleBuildCommand extends Command
 
         $i = 0;
 
-        foreach ($this->geoObjects() as $style) {
+        foreach ($this->geoObjects() as $geoObject) {
             ++$i;
 
             $sk = [
@@ -84,8 +83,8 @@ class StyleBuildCommand extends Command
                 'key2' => '',
             ];
 
-            $geometryType = json_decode($style['geometry'], true)['type'];
-            $attributes = json_decode($style['attributes'], true);
+            $geometryType = json_decode($geoObject['geometry'], true)['type'];
+            $attributes = json_decode($geoObject['attributes'], true);
 
             if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
                 $sk = $this->chk($attributes, $styles, $sk, 'line');
@@ -95,7 +94,7 @@ class StyleBuildCommand extends Command
                 $sk = $this->chk($attributes, $styles, $sk, 'polygon');
             }
 
-            $batch[] = $style['id'];
+            $batch[] = $geoObject['id'];
             $batch[] = $sk['key1'];
             $batch[] = $sk['key2'];
 
@@ -140,10 +139,10 @@ class StyleBuildCommand extends Command
 
         $duration = $this->stopwatch->stop('style_build')->getDuration();
 
-        foreach ($styleGroups as $code => $style) {
+        foreach ($styleGroups as $code => $geoObject) {
             $styleGroups = new StyleGroup();
             $styleGroups->setCode($code);
-            $styleGroups->setStyle($style);
+            $styleGroups->setStyle($geoObject);
 
             $em->persist($styleGroups);
         }
@@ -265,8 +264,8 @@ class StyleBuildCommand extends Command
                             x_survey.survey s ON a.survey_id = s.id AND s.is_active = TRUE
                                 INNER JOIN
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
-                        WHERE
-                            s.is_active = TRUE                             
+                      --  WHERE
+                      --      s.is_active = TRUE                             
 
                     ) as w
             )

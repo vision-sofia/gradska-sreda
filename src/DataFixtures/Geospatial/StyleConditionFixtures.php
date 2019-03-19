@@ -176,7 +176,7 @@ class StyleConditionFixtures extends Fixture
                 'priority' => 0,
                 'base_style' => [
                     'point' => [
-                        'code' => 'def-point-base',
+                        'code' => 'def-point-b',
                         'content' => [
                             'radius' => 10,
                             'color' => '#000',
@@ -186,13 +186,44 @@ class StyleConditionFixtures extends Fixture
                             'fillOpacity' => 0.8,
                         ],
                     ],
+                    'line' => [
+                        'code' => 'def-line-b',
+                        'content' => [
+                            'color' => '#ff99ff',
+                            'opacity' => 0.6,
+                            'weight' => 5,
+                        ],
+                    ],
+                    'polygon' => [
+                        'code' => 'def-poly-b',
+                        'content' => [
+                            'stroke' => '#ff99ff',
+                            'strokeWidth' => 1,
+                            'strokeOpacity' => 0.2,
+                            'fill' => '#ff00ff',
+                            'fillOpacity' => 0.05,
+                        ],
+                    ],
                 ],
                 'hover_style' => [
                     'point' => [
-                        'code' => 'def-point-hover',
+                        'code' => 'def-point-h',
                         'content' => [
                             'fillColor' => '#ff00ff',
                             'fillOpacity' => 1,
+                        ],
+                    ],
+                    'line' => [
+                        'code' => 'def-line-h',
+                        'content' => [
+                            'opacity' => 1,
+                            'color' => '#00ffff',
+                        ],
+                    ],
+                    'polygon' => [
+                        'code' => 'def-poly-h',
+                        'content' => [
+                            'fillOpacity' => 0.3,
                         ],
                     ],
                 ],
