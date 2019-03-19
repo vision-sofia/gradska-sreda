@@ -34,7 +34,7 @@ class Utils
         return $explode[$element];
     }
 
-    public function findTolerance(array $array, float $zoom): ?float
+    public function findTolerance(array $array, float $zoom): float
     {
         foreach ($array as $item) {
             if ($zoom <= (float) $item['min_zoom']
@@ -43,6 +43,6 @@ class Utils
             }
         }
 
-        return null;
+        return 0.001;
     }
 }
