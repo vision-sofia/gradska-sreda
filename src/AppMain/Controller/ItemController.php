@@ -226,6 +226,30 @@ class ItemController extends AbstractController
 
         dump($result);
 
+
+        /*
+
+        UPDATE
+            x_survey.response_answer ra
+        SET
+            answer_id = (
+                SELECT
+                    id
+                FROM
+                    x_survey.q_answer
+                WHERE
+                    uuid = '9328fe5d-7633-441b-a8a2-9c72c17d4a45'
+            )
+        FROM
+            x_survey.response_question q
+                INNER JOIN
+            x_survey.q_answer a ON a.id = ra.answer_id
+        WHERE
+            ra.question_id = q.id
+            AND a.uuid = 'ec953811-2356-4248-ac79-130c7ea493f1'
+
+         */
+
         $q = $conn->prepare('
             UPDATE 
                 x_survey.response_answer ra
