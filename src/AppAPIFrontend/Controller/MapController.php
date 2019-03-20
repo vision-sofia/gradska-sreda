@@ -3,7 +3,7 @@
 namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\Entity\Geospatial\Simplify;
-use App\AppManage\Entity\Settings;
+use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,6 +63,15 @@ class MapController extends AbstractController
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
+        $stylesGroups = $this->getDoctrine()
+            ->getRepository(StyleGroup::class)
+            ->findAll();
+
+        $styles = [];
+
+        foreach ($stylesGroups as $stylesGroup) {
+            $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
+        }
 
         $i = 0;
 
@@ -74,34 +83,8 @@ class MapController extends AbstractController
             $geometry = json_decode($row['geometry'], true);
             $attributes = json_decode($row['attributes'], true);
 
-            if (isset($attributes['_sca']) && 'Пешеходни отсечки' === $attributes['_sca']) {
-                $s1 = 'cat1';
-                $s2 = 'line_hover';
-                $attributes['_dtext'] = 2;
-            } elseif (isset($attributes['_sca']) && 'Алеи' === $attributes['_sca']) {
-                $s1 = 'cat2';
-                $s2 = 'line_hover';
-                $attributes['_dtext'] = 3;
-            } elseif (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-                $s1 = 'cat3';
-                $s2 = 'line_hover';
-                $attributes['_dtext'] = 1;
-            } elseif ('MultiLineString' === $geometry['type']) {
-                $s1 = 'line_main';
-                $s2 = 'line_hover';
-            } elseif ('Polygon' === $geometry['type']) {
-                $s1 = 'poly_main';
-                $s2 = 'poly_hover';
-            } elseif ('Point' === $geometry['type']) {
-                $s1 = 'point_default';
-                $s2 = 'point_hover';
-            } else {
-                $s1 = '';
-                $s2 = '';
-            }
-
             if (isset($row['entry'])) {
-                $s1 = 'm';
+                $row['style_base'] = 'on_dialog_line';
             }
 
             if ('Градоустройствена единица' === $row['type_name']) {
@@ -116,8 +99,8 @@ class MapController extends AbstractController
                 'type' => 'Feature',
                 'geometry' => $geometry,
                 'properties' => [
-                    '_s1' => $s1,
-                    '_s2' => $s2,
+                    '_s1' => $row['style_base'],
+                    '_s2' => $row['style_hover'],
                     'id' => $row['uuid'],
                     'name' => $row['geo_name'],
                     'type' => $row['type_name'],
@@ -131,9 +114,6 @@ class MapController extends AbstractController
             'simplify_tolerance' => $simplifyTolerance,
             'objects' => $i,
         ]);
-
-        $styles = $this->getDoctrine()->getRepository(Settings::class)->findOneBy(['key' => 'map_style']);
-        $styles = json_decode($styles->getValue());
 
         return new JsonResponse([
             'settings' => [
