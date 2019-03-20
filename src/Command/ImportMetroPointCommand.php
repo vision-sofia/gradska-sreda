@@ -44,7 +44,7 @@ class ImportMetroPointCommand extends Command
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
 
-        $stmt = $conn->prepare('
+        $stmtInsGeometry = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
@@ -58,7 +58,7 @@ class ImportMetroPointCommand extends Command
             )
         ');
 
-        $stmtSPO = $conn->prepare('
+        $stmtInsGeoObject = $conn->prepare('
             INSERT INTO x_geospatial.geo_object (
                 attributes,
                 uuid,
@@ -89,18 +89,18 @@ class ImportMetroPointCommand extends Command
 
                     $name = isset($s['properties']['Sub_stop']) ? $s['properties']['Sub_stop'] : '';
 
-                    $s['properties']['has_metro'] = 1;
+                    $s['properties']['has_vhc_metro'] = 1;
 
-                    $stmtSPO->bindValue('attr', json_encode($s['properties']));
-                    $stmtSPO->bindValue('uuid', Uuid::uuid4());
-                    $stmtSPO->bindValue('name', $name);
-                    $stmtSPO->bindValue('object_type_id', $objectType->getId());
-                    $stmtSPO->execute();
+                    $stmtInsGeoObject->bindValue('attr', json_encode($s['properties']));
+                    $stmtInsGeoObject->bindValue('uuid', Uuid::uuid4());
+                    $stmtInsGeoObject->bindValue('name', $name);
+                    $stmtInsGeoObject->bindValue('object_type_id', $objectType->getId());
+                    $stmtInsGeoObject->execute();
 
-                    $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmt->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
-                    $stmt->bindValue('uuid', Uuid::uuid4());
-                    $stmt->execute();
+                    $stmtInsGeometry->bindValue('spatial_object_id', $conn->lastInsertId());
+                    $stmtInsGeometry->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
+                    $stmtInsGeometry->bindValue('uuid', Uuid::uuid4());
+                    $stmtInsGeometry->execute();
                 }
             }
         }

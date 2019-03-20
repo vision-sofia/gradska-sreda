@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Geospatial;
 
 use App\AppMain\Entity\Geometry\GeometryBase;
@@ -48,6 +47,16 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
      */
     private $metadata;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $styleBase;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $styleHover;
 
     public function getId(): ?int
     {
@@ -97,5 +106,35 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     public function getMetadata(): ?array
     {
         return $this->metadata;
+    }
+
+    public function getObjectType()
+    {
+        return $this->objectType;
+    }
+
+    public function setObjectType($objectType): void
+    {
+        $this->objectType = $objectType;
+    }
+
+    public function getStyleBase(): ?string
+    {
+        return $this->styleBase;
+    }
+
+    public function setStyleBase(?string $styleBase): void
+    {
+        $this->styleBase = $styleBase;
+    }
+
+    public function getStyleHover(): ?string
+    {
+        return $this->styleHover;
+    }
+
+    public function setStyleHover(?string $styleHover): void
+    {
+        $this->styleHover = $styleHover;
     }
 }
