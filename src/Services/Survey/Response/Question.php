@@ -18,8 +18,9 @@ class Question
         $this->entityManager = $entityManager;
     }
 
-    public function response(array $answers, GeoObjectInterface $geoObject, UserInterface $user)
+    public function response(array $answers, array $currentAnswers, GeoObjectInterface $geoObject, UserInterface $user)
     {
+        dump($answers);
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => key($answers),
         ])
@@ -86,12 +87,19 @@ class Question
         $responseQuestion->setIsLatest(true);
         $responseQuestion->setLocation($location);
 
-        $responseAnswer = new Survey\Response\Answer();
-        $responseAnswer->setAnswer($answer);
+        foreach ($answers as $answerUuid => $answer) {
+            $a = $this->entityManager->getRepository(Answer::class)->findOneBy([
+                'uuid' =>$answerUuid
+            ]);
 
-        $responseQuestion->addAnswer($responseAnswer);
+            $responseAnswer = new Survey\Response\Answer();
+            $responseAnswer->setAnswer($a);
 
-        $this->entityManager->persist($responseQuestion);
+            $responseQuestion->addAnswer($responseAnswer);
+
+            $this->entityManager->persist($responseQuestion);
+        }
+
         $this->entityManager->flush();
     }
 

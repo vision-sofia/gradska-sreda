@@ -15,68 +15,90 @@
         </div>
     </div>
 
-    {% if is_available_for_survey == true %}
-        {% if question is null and result|length > 0 %}
-            <div class="container">
-                <div class="row mb-3">
-                    <div class="col">
-                        <h3>Среден резултат</h3>
+    <div class="container">
+        <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}">
+            <button type="submit" name="submit">Запази</button>
+            {% for question in questions %}
+                <h5>{{ question.title }}</h5>
+                {% for answer in question.answers %}
+                    {% if answer.parent is null %}
+                        <div>
+                            <label><input type="radio" {% if answer.id in response|keys %}checked="checked"{% endif %} name="answers[{{ question.uuid }}][][id]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
+                        </div>
+                    {% else %}
+                        <div style="padding-left:20px;">
+                            <label><input type="checkbox" {% if answer.id in response|keys %}checked="checked"{% endif %} name="answers[{{ question.uuid }}][][id]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <button type="submit" name="submit">Запази</button>
+        </form>
+    </div>
+    {#
+        {% if is_available_for_survey == true %}
+            {% if question is null and result|length > 0 %}
+                <div class="container">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h3>Среден резултат</h3>
+                        </div>
                     </div>
-                </div>
 
-                <table class="table table-hover">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Критерии</th>
+                                <th class="text-center" width="40">Точки</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for criterion in result %}
+                            <tr>
+                                <td>{{ criterion.name }}</td>
+                                <td class="text-center" width="40">{{ criterion.rating }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h3>Оценки на хора</h3>
+                        </div>
+                    </div>
+
+                    <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>Потребител</th>
                             <th>Критерии</th>
                             <th class="text-center" width="40">Точки</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for criterion in result %}
+                    {% for result in resultByUsers %}
                         <tr>
-                            <td>{{ criterion.name }}</td>
-                            <td class="text-center" width="40">{{ criterion.rating }}</td>
+                            <td>{{ result.user_username }}</td>
+                            <td>{{ result.criterion_name }}</td>
+                            <td class="text-center" width="40">{{ result.rating }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-
-                <div class="row mb-3">
-                    <div class="col">
-                        <h3>Оценки на хора</h3>
-                    </div>
                 </div>
-
-                <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Потребител</th>
-                        <th>Критерии</th>
-                        <th class="text-center" width="40">Точки</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for result in resultByUsers %}
-                    <tr>
-                        <td>{{ result.user_username }}</td>
-                        <td>{{ result.criterion_name }}</td>
-                        <td class="text-center" width="40">{{ result.rating }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            </div>
-        {% else %}
-            <div class="container">
-                <form method="post" id="surveyForm" data-object-id="{{ geo_object.uuid }}" enctype="multipart/form-data">
-                    <div id="surveyFormContent"></div>
-                    <button class="btn btn-success" type="submit">Изпрати</button>
-                </form>
-            </div>
+            {% else %}
+                <div class="container">
+                    <form method="post" id="surveyForm" data-object-id="{{ geo_object.uuid }}" enctype="multipart/form-data">
+                        <div id="surveyFormContent"></div>
+                        <button class="btn btn-success" type="submit">Изпрати</button>
+                    </form>
+                </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
-    <div class="loading d-none">
-        <h3 class="mb-4">Зарежда...</h3>
-        <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
-    </div>
+        <div class="loading d-none">
+            <h3 class="mb-4">Зарежда...</h3>
+            <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
+        </div>
+        #}
 {% endblock %}
