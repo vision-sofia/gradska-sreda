@@ -9,7 +9,7 @@ use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class Question
+class QuestionV2
 {
     private $entityManager;
 
@@ -18,11 +18,10 @@ class Question
         $this->entityManager = $entityManager;
     }
 
-    public function response(array $answers, array $toImport, GeoObjectInterface $geoObject, UserInterface $user)
+    public function response(string $answerUuid, array $extra, GeoObjectInterface $geoObject, UserInterface $user): void
     {
-
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
-            'uuid' => key($answers),
+            'uuid' => $answerUuid,
         ])
         ;
 
@@ -33,12 +32,12 @@ class Question
         // TODO: Survey scope check (geo-object, question)
         // TODO: Redis cache
 
-        $countAnswers = $question->getAnswers()->count();
+        // $countAnswers = $question->getAnswers()->count();
 
         // Check: Is number of input answers fit in number of question answers
-        if (\count($answers) > $countAnswers) {
-            return new JsonResponse(['error']);
-        }
+        // if (\count($answers) > $countAnswers) {
+        //     return new JsonResponse(['error']);
+        // }
 
         // Check: Is all input answers are from one questions
         // TODO: WHERE id IN (:answers) GROUP BY question_ID
@@ -46,24 +45,7 @@ class Question
 
         // Check 4: Is single answer question have one input answer
 
-        // BEFORE INSERT trigger simulation
-        $conn = $this->entityManager->getConnection();
-        $stmt = $conn->prepare('
-            UPDATE
-                x_survey.response_question
-            SET
-                is_latest = FALSE
-            WHERE
-                user_id = :user_id
-                AND question_id = :question_id
-                AND geo_object_id = :geo_object_id
-                AND is_latest = TRUE
-        ');
 
-        $stmt->bindValue('user_id', $user->getId());
-        $stmt->bindValue('question_id', $answer->getQuestion()->getId());
-        $stmt->bindValue('geo_object_id', $geoObject->getId());
-        $stmt->execute();
 
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
@@ -84,10 +66,29 @@ class Question
             ->findOneBy([
                 'user' => $user,
                 'geoObject' => $geoObject,
-                'question' => $answer->getQuestion()
+                'question' => $answer->getQuestion(),
             ]);
 
-        if($responseQuestion === null) {
+        if (null === $responseQuestion) {
+            // BEFORE INSERT trigger simulation
+            $conn = $this->entityManager->getConnection();
+            $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_question
+            SET
+                is_latest = FALSE
+            WHERE
+                user_id = :user_id
+                AND question_id = :question_id
+                AND geo_object_id = :geo_object_id
+                AND is_latest = TRUE
+        ');
+
+            $stmt->bindValue('user_id', $user->getId());
+            $stmt->bindValue('question_id', $question->getId());
+            $stmt->bindValue('geo_object_id', $geoObject->getId());
+            $stmt->execute();
+
             $responseQuestion = new Survey\Response\Question();
             $responseQuestion->setUser($user);
             $responseQuestion->setGeoObject($geoObject);
@@ -96,19 +97,12 @@ class Question
             $responseQuestion->setLocation($location);
         }
 
-        foreach ($answers as $answerUuid => $answer) {
-            $a = $this->entityManager->getRepository(Answer::class)->findOneBy([
-                'uuid' =>$answerUuid
-            ]);
+        $responseAnswer = new Survey\Response\Answer();
+        $responseAnswer->setAnswer($answer);
 
-            $responseAnswer = new Survey\Response\Answer();
-            $responseAnswer->setAnswer($a);
+        $responseQuestion->addAnswer($responseAnswer);
 
-            $responseQuestion->addAnswer($responseAnswer);
-
-            $this->entityManager->persist($responseQuestion);
-        }
-
+        $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
     }
 
