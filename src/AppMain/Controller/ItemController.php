@@ -4,6 +4,7 @@ namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Response\QuestionV2;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,14 +39,14 @@ class ItemController extends AbstractController
         }
 
         $isAvailableForSurvey = $this->getDoctrine()
-                                     ->getRepository(GeoObject::class)
-                                     ->isAvailableForSurvey($geoObject)
+            ->getRepository(GeoObject::class)
+            ->isAvailableForSurvey($geoObject)
         ;
         $questions = [];
         if ($isAvailableForSurvey) {
             $questions = $this->getDoctrine()
-                              ->getRepository(Survey\Question\Question::class)
-                              ->findQuestions($this->getUser(), $geoObject)
+                ->getRepository(Survey\Question\Question::class)
+                ->findQuestions($this->getUser(), $geoObject)
             ;
         }
 
@@ -58,7 +59,7 @@ class ItemController extends AbstractController
                 round(AVG(rating), 1) AS rating
             FROM
                 x_survey.result_geo_object_rating gr
-                    INNER JOIN
+                     INNER JOIN
                 x_survey.ev_criterion_subject cr ON gr.criterion_subject_id = cr.id
             WHERE
                 gr.geo_object_id = :geo_object_id
@@ -101,7 +102,8 @@ class ItemController extends AbstractController
 
         $stmt = $conn->prepare('
             SELECT
-                ra.answer_id
+                ra.answer_id,
+                ra.explanation
             FROM
                 x_survey.response_answer ra
                     INNER JOIN
@@ -118,16 +120,20 @@ class ItemController extends AbstractController
 
         $response = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $response[$row['answer_id']] = $row['answer_id'];
+            if (empty($row['explanation'])) {
+                unset($row['explanation']);
+            }
+
+            $response[$row['answer_id']] = $row;
         }
 
         return $this->render('front/geo-object/details.html.twig', [
-            'geo_object'              => $geoObject,
-            'questions'               => $questions,
+            'geo_object' => $geoObject,
+            'questions' => $questions,
             'is_available_for_survey' => $isAvailableForSurvey,
-            'result'                  => $result,
-            'resultByUsers'           => $resultByUsers,
-            'response'                => $response,
+            'result' => $result,
+            'resultByUsers' => $resultByUsers,
+            'response' => $response,
         ]);
     }
 
@@ -175,55 +181,55 @@ class ItemController extends AbstractController
         $r = [];
 
         // Options
-        foreach ($answers['option'] as $value) {
-            foreach ($value as $k => $a) {
-                if ('id' === $k) {
-                    if (\is_array($a)) {
-                        foreach ($a as $item) {
-                            $r[$item] = [];
+        if (isset($answers['option']) && \is_array($answers['option'])) {
+            foreach ($answers['option'] as $value) {
+                foreach ($value as $k => $a) {
+                    if ('id' === $k) {
+                        if (\is_array($a)) {
+                            foreach ($a as $item) {
+                                $r[$item] = [];
+                            }
+                        } else {
+                            $r[$a] = [];
                         }
-                    } else {
-                        $r[$a] = [];
                     }
                 }
             }
         }
 
         // Explanation
-        foreach ($answers['explanation'] as $key => $item) {
-            if(isset($r[$key])) {
-                $r[$key]['explanation'] = $item;
+        if (isset($answers['explanation']) && \is_array($answers['explanation'])) {
+            foreach ($answers['explanation'] as $key => $item) {
+                if (isset($r[$key])) {
+                    $r[$key]['explanation'] = $item;
+                }
             }
         }
 
         // Photo
-        foreach ($files['photo'] as $key => $item) {
-            if(isset($r[$key])) {
-                $r[$key]['photo'] = $item;
+        if (isset($answers['photo']) && \is_array($answers['photo'])) {
+            foreach ($files['photo'] as $key => $item) {
+                if (isset($r[$key])) {
+                    $r[$key]['photo'] = $item;
+                }
             }
         }
-        
-        
+
         $d = [];
 
         foreach ($r as $key => $item) {
             $d[] = $key;
         }
 
-
         // new
-        $result = array_diff($d, $currentAnswers);
+        $diff = array_diff($d, $currentAnswers);
 
-        foreach ($result as $item) {
-              $question->response($item, $r[$item],  $geoObject, $this->getUser());
+        foreach ($diff as $item) {
+            $question->response($item, $r[$item], $geoObject, $this->getUser());
         }
 
-        //   dump($result);
-
         // old
-        $odlResult = array_diff($currentAnswers, $d);
-
-        $q = $conn->prepare('
+        $stmt = $conn->prepare('
             DELETE FROM
                 x_survey.response_answer ra
             USING
@@ -237,182 +243,45 @@ class ItemController extends AbstractController
                 AND a.uuid = :answer_uuid
         ');
 
-        $q->bindValue('user_id', $this->getUser()->getId());
-        $q->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
 
-        foreach ($odlResult as $item) {
-            $q->bindValue('answer_uuid', $item);
-            $q->execute();
+        $diff = array_diff($currentAnswers, $d);
+
+        foreach ($diff as $item) {
+            $stmt->bindValue('answer_uuid', $item);
+            $stmt->execute();
         }
 
+        // Update explanation
+        if (isset($answers['explanation']) && \is_array($answers['explanation'])) {
+            $stmt = $conn->prepare('
+                        UPDATE
+                            x_survey.response_answer ra
+                        SET
+                            explanation = :explanation
+                        FROM
+                            x_survey.q_answer a,
+                            x_survey.response_question rq
+                        WHERE
+                            rq.id = ra.question_id
+                            AND ra.answer_id = a.id 
+                            AND a.uuid = :answer_uuid
+                            AND rq.user_id = :user_id
+                            AND rq.geo_object_id = :geo_object_id
+                          
+                    ');
 
-        /*
-                foreach ($value['explanation'] as $key => $z) {
-                    if (isset($z['explanation'], $r[$key])) {
-                        $r[$key]['explanation'] = $z['explanation'];
-                    }
-                }
-        */
-/*        foreach ($r as $key => $value) {
-            if(isset($files[$key])) {
-                $r[$key]['photo'] = $files[$key];
-            }
-        }*/
-
-       # dump($r);
-        //   dump($a);
-
-        $j = [];
-
-        foreach ($answers as $answer) {
-            foreach ($answer as $a) {
-                if (isset($a['id'])) {
-                    $r[$a['id']] = [];
-                }
-            }
-
-            foreach ($answer as $a) {
-                foreach ($a as $key => $item) {
-                    if (isset($r[$key])) {
-                        $r[$key] += $item;
-                    }
-                }
-            }
-
-            if ($files) {
-                foreach ($files as $file) {
-                    foreach ($file as $key => $item) {
-                        if (isset($r[$key])) {
-                            $r[$key] += $item;
-                        }
-                    }
-                }
-            }
-
-            $j[] = $r;
-
-            /*  if (!\is_array($answer)) {
-                  return $this->redirectToRoute('app.geo-object.details', [
-                      'id' => $geoObject->getUuid(),
-                  ]);
-              }*/
-
-            // $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
-            // $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
-        }
-
-        $submit = [];
-        foreach ($j as $item) {
-            $submit[] = key($item);
-        }
-
-        $result = array_diff($submit, $currentAnswers);
-
-        //   dump($result, $j);
-
-        foreach ($j as $v) {
-            //   dump($j);
-            if (\in_array(key($v), $j, true)) {
-            }
-            // $question->response($v,  $geoObject, $this->getUser());
-            //  dump($v);
-        }
-
-        // new
-        //   $result = array_diff($j, $currentAnswers);
-
-        foreach ($result as $item) {
-            //  $question->response($item, $geoObject, $this->getUser());
-        }
-
-        //   dump($result);
-
-        // old
-        $odlResult = array_diff($currentAnswers, $j);
-
-        //   dump($odlResult);
-
-        /*
-
-        UPDATE
-            x_survey.response_answer ra
-        SET
-            answer_id = (
-                SELECT
-                    id
-                FROM
-                    x_survey.q_answer
-                WHERE
-                    uuid = '9328fe5d-7633-441b-a8a2-9c72c17d4a45'
-            )
-        FROM
-            x_survey.response_question q
-                INNER JOIN
-            x_survey.q_answer a ON a.id = ra.answer_id
-        WHERE
-            ra.question_id = q.id
-            AND a.uuid = 'ec953811-2356-4248-ac79-130c7ea493f1'
-
-         */
-
-        $q = $conn->prepare('
-            DELETE FROM
-                x_survey.response_answer ra
-            USING
-                x_survey.response_question rq,
-                x_survey.q_answer a
-            WHERE
-                ra.question_id = rq.id
-                AND ra.answer_id = a.id
-                AND rq.user_id = :user_id
-                AND rq.geo_object_id = :geo_object_id
-                AND a.uuid = :answer_uuid
-        ');
-
-        $q->bindValue('user_id', $this->getUser()->getId());
-        $q->bindValue('geo_object_id', $geoObject->getId());
-
-        foreach ($odlResult as $item) {
-            $q->bindValue('answer_uuid', $item);
-            $q->execute();
-        }
-
-        /* return $this->redirectToRoute('app.geo-object.details', [
-             'id' => $geoObject->getUuid(),
-         ]);*/
-        $r = [];
-
-        foreach ($answers as $a) {
-            if (isset($a['id'])) {
-                $r[$a['id']] = [];
-            }
-        }
-
-        foreach ($answers as $a) {
-            foreach ($a as $key => $item) {
+            foreach ($answers['explanation'] as $key => $item) {
                 if (isset($r[$key])) {
-                    $r[$key] += $item;
+                    $stmt->bindValue('explanation', $item);
+                    $stmt->bindValue('answer_uuid', $key);
+                    $stmt->bindValue('user_id', $this->getUser()->getId());
+                    $stmt->bindValue('geo_object_id', $geoObject->getId());
+                    $stmt->execute();
                 }
             }
         }
-        if ($files) {
-            foreach ($files as $file) {
-                foreach ($file as $key => $item) {
-                    if (isset($r[$key])) {
-                        $r[$key] += $item;
-                    }
-                }
-            }
-        }
-
-        if (!\is_array($answers)) {
-            return $this->redirectToRoute('app.geo-object.details', [
-                'id' => $geoObject->getUuid(),
-            ]);
-        }
-
-        /*
-        $question->response($r, $geoObject, $this->getUser());
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
@@ -420,6 +289,5 @@ class ItemController extends AbstractController
         return $this->redirectToRoute('app.geo-object.details', [
             'id' => $geoObject->getUuid(),
         ]);
-        */
     }
 }

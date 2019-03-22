@@ -7,7 +7,7 @@ use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class QuestionV2
 {
@@ -46,14 +46,13 @@ class QuestionV2
         // Check 4: Is single answer question have one input answer
 
 
-
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
             ->findOneBy([
-                             'geoObject' => $geoObject,
-                             'user' => $user,
-                             'coordinates' => null,
-                         ])
+                'geoObject'   => $geoObject,
+                'user'        => $user,
+                'coordinates' => null,
+            ])
         ;
 
         if (null === $location) {
@@ -63,25 +62,26 @@ class QuestionV2
         }
 
         $responseQuestion = $this->entityManager->getRepository(Survey\Response\Question::class)
-            ->findOneBy([
-                'user' => $user,
-                'geoObject' => $geoObject,
-                'question' => $answer->getQuestion(),
-            ]);
+                                                ->findOneBy([
+                                                    'user'      => $user,
+                                                    'geoObject' => $geoObject,
+                                                    'question'  => $answer->getQuestion(),
+                                                ])
+        ;
 
         if (null === $responseQuestion) {
             // BEFORE INSERT trigger simulation
             $conn = $this->entityManager->getConnection();
             $stmt = $conn->prepare('
-            UPDATE
-                x_survey.response_question
-            SET
-                is_latest = FALSE
-            WHERE
-                user_id = :user_id
-                AND question_id = :question_id
-                AND geo_object_id = :geo_object_id
-                AND is_latest = TRUE
+                UPDATE
+                    x_survey.response_question
+                SET
+                    is_latest = FALSE
+                WHERE
+                    user_id = :user_id
+                    AND question_id = :question_id
+                    AND geo_object_id = :geo_object_id
+                    AND is_latest = TRUE
         ');
 
             $stmt->bindValue('user_id', $user->getId());
@@ -99,6 +99,16 @@ class QuestionV2
 
         $responseAnswer = new Survey\Response\Answer();
         $responseAnswer->setAnswer($answer);
+
+        if (isset($extra['explanation'])) {
+            $responseAnswer->setExplanation($extra['explanation']);
+        }
+
+        if (isset($extra['photo']) && $extra['photo'] instanceof UploadedFile) {
+            /** @var UploadedFile $photo */
+            $photo = $extra['photo'];
+            $responseAnswer->setPhoto($photo->getClientOriginalName());
+        }
 
         $responseQuestion->addAnswer($responseAnswer);
 
