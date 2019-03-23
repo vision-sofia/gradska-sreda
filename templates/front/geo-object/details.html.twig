@@ -36,14 +36,11 @@
                             <label><input type="checkbox" {% if answer.id in response|keys %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
                         </div>
                     {% endif %}
-
                     {% if answer.isFreeAnswer %}
                         <div class="form-group pl-4">
                             <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3" class="form-control w-100">{% if response[answer.id] is defined %}{{ response[answer.id].explanation }}{% endif %}</textarea>
                         </div>
                     {% endif %}
-
-
                 {% endfor %}
             {% endfor %}
             <button type="submit" name="submit">Запази</button>
