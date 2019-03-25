@@ -14,7 +14,7 @@
         </div>
 
         <div class="progress mb-4">
-            <div class="progress-bar" role="progressbar" style="width: {{ progress.percentage }}%"
+            <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%"
                  aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
 
@@ -70,7 +70,11 @@
                     </div>
                 </div>
             {% endfor %}
-            <button type="submit" name="submit">Запази</button>
+            <div class="text-right">
+                <button type="submit" name="submit" class="btn btn-primary position-fixed" style="bottom: 20px;" >
+                    Запази
+                </button>
+            </div>
         </form>
     </div>
     {#
