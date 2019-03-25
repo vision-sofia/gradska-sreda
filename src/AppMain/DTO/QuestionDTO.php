@@ -1,4 +1,7 @@
 <?php
+/**
+ * Properties naming convention: underscore
+ */
 
 namespace App\AppMain\DTO;
 
@@ -9,6 +12,7 @@ class QuestionDTO
     protected $title;
     protected $has_multiple_answers;
     protected $answers;
+    protected $is_answered = false;
 
     public function getAnswers()
     {
@@ -20,69 +24,53 @@ class QuestionDTO
         $this->answers = $answers;
     }
 
-    /**
-     * @return mixed
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
     public function setId($id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
     public function getUuid()
     {
         return $this->uuid;
     }
 
-    /**
-     * @param mixed $uuid
-     */
     public function setUuid($uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    /**
-     * @return mixed
-     */
     public function getTitle()
     {
         return $this->title;
     }
 
-    /**
-     * @param mixed $title
-     */
     public function setTitle($title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @return mixed
-     */
     public function getHasMultipleAnswers()
     {
         return $this->has_multiple_answers;
     }
 
-    /**
-     * @param mixed $has_multiple_answers
-     */
-    public function setHasMultipleAnswers($has_multiple_answers): void
+    public function setHasMultipleAnswers($hasMultipleAnswers): void
     {
-        $this->has_multiple_answers = $has_multiple_answers;
+        $this->has_multiple_answers = $hasMultipleAnswers;
     }
 
+    public function isAnswered(): bool
+    {
+        return $this->is_answered;
+    }
 
+    public function setIsAnswered(bool $isAnswered): void
+    {
+        $this->is_answered = $isAnswered;
+    }
 }

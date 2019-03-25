@@ -1,4 +1,7 @@
 <?php
+/**
+ * Properties naming convention: underscore
+ */
 
 namespace App\AppMain\DTO;
 
@@ -8,11 +11,11 @@ class QuestionAnswerDTO
     protected $uuid;
     protected $title;
     protected $parent;
-    protected $isFreeAnswer;
-    protected $isPhotoEnabled;
+    protected $is_free_answer;
+    protected $is_photo_enabled;
     protected $explanation;
     protected $photo;
-    protected $isSelected = false;
+    protected $is_selected = false;
 
     public function getId(): ?int
     {
@@ -56,22 +59,22 @@ class QuestionAnswerDTO
 
     public function getIsFreeAnswer(): ?bool
     {
-        return $this->isFreeAnswer;
+        return $this->is_free_answer;
     }
 
     public function setIsFreeAnswer(bool $isFreeAnswer): void
     {
-        $this->isFreeAnswer = $isFreeAnswer;
+        $this->is_free_answer = $isFreeAnswer;
     }
 
     public function getIsPhotoEnabled(): ?bool
     {
-        return $this->isPhotoEnabled;
+        return $this->is_photo_enabled;
     }
 
     public function setIsPhotoEnabled(bool $isPhotoEnabled): void
     {
-        $this->isPhotoEnabled = $isPhotoEnabled;
+        $this->is_photo_enabled = $isPhotoEnabled;
     }
 
     public function getExplanation()
@@ -94,18 +97,15 @@ class QuestionAnswerDTO
         $this->photo = $photo;
     }
 
-
     public function getIsSelected():bool
     {
-        return $this->isSelected;
+        return $this->is_selected;
     }
-
 
     public function setIsSelected($isSelected): void
     {
-        $this->isSelected = $isSelected;
+        $this->is_selected = $isSelected;
     }
-
 
     public static function fromStd(object $object): QuestionAnswerDTO
     {

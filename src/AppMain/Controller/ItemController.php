@@ -3,11 +3,10 @@
 namespace App\AppMain\Controller;
 
 use App\AppMain\DTO\ResponseAnswerDTO;
-use App\AppMain\DTO\QuestionDTO;
-use App\AppMain\DTO\QuestionAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
+use App\Services\Survey\Question;
 use App\Services\Survey\Response\QuestionV2;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
@@ -15,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,23 +24,26 @@ class ItemController extends AbstractController
     protected $entityManager;
     protected $eventDispatcher;
     protected $uploaderHelper;
+    protected $question;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
-        UploaderHelper $uploaderHelper
+        UploaderHelper $uploaderHelper,
+        Question $question
     )
     {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
+        $this->question = $question;
     }
 
     /**
      * @Route("geo/{id}", name="app.geo-object.details")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
-    public function details(GeoObject $geoObject): Response
+    public function details(GeoObject $geoObject, string $mediaDir): Response
     {
         if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return $this->redirectToRoute('app.login');
@@ -64,7 +67,8 @@ class ItemController extends AbstractController
                 SELECT
                     ra.answer_id as id,
                     ra.explanation,
-                    ra.photo
+                    ra.photo,
+                    rq.question_id 
                 FROM
                     x_survey.response_answer ra
                         INNER JOIN
@@ -79,37 +83,19 @@ class ItemController extends AbstractController
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
 
-        $responses = [];
-        /** @var ResponseAnswerDTO $row [] */
-        while ($row = $stmt->fetch()) {
-            $responses[$row->getId()] = $row;
-        }
-
-        $re = [];
-
-        foreach ($questions as $row) {
-            $a = [];
-
-            foreach (json_decode($row->getAnswers()) as $item) {
-                $answerDTO = QuestionAnswerDTO::fromStd($item);
-
-                if (isset($responses[$answerDTO->getId()])) {
-
-                    /** @var ResponseAnswerDTO $response */
-                    $response = $responses[$answerDTO->getId()];
-
-                    $answerDTO->setExplanation($response->getExplanation());
-                    $answerDTO->setPhoto($response->getPhoto());
-                    $answerDTO->setIsSelected(true);
-                }
-
-                $a[] = $answerDTO;
+        $responseAnswers = [];
+        /** @var ResponseAnswerDTO $answer [] */
+        while ($answer = $stmt->fetch()) {
+            if ($answer->getPhoto() !== null) {
+               # $file = new File($mediaDir . DIRECTORY_SEPARATOR . $answer->getPhoto());
+               ## $answer->setPhoto($file);
+              #  dump($answer, $answer->getPhoto());
             }
 
-            $row->setAnswers($a);
-            $re[] = $row;
+            $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
         }
 
+        $questions = $this->question->build($questions, $responseAnswers);
 
         $stmt = $conn->prepare('
             SELECT
@@ -128,8 +114,8 @@ class ItemController extends AbstractController
         $stmt->execute();
 
         $result = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $result[] = $row;
+        while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $result[] = $question;
         }
 
         $stmt = $conn->prepare('
@@ -154,16 +140,51 @@ class ItemController extends AbstractController
         $stmt->execute();
 
         $resultByUsers = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $resultByUsers[] = $row;
+        while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $resultByUsers[] = $question;
         }
+
+        $stmt = $conn->prepare('
+            WITH z as (
+              SELECT
+                  COUNT(*) as total
+              FROM
+                  x_survey.geo_object_question gq
+              WHERE
+                  gq.geo_object_type_id = :geo_object_type_id
+                  AND gq.survey_is_active = TRUE
+            ), d as (
+              SELECT
+                COUNT(*) as complete
+              FROM
+                  x_survey.response_question gq
+              WHERE
+                  gq.geo_object_id = :geo_object_id
+                  AND user_id = 1
+            )
+            SELECT total, complete FROM z, d        
+        ');
+
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->bindValue('geo_object_type_id', $geoObject->getType()->getId());
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+
+        $progress = [
+            'total' => $result['total'],
+            'complete' => $result['complete'],
+            'percentage' => round(($result['complete'] / $result['total']) * 100)
+        ];
+
 
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
             'resultByUsers' => $resultByUsers,
-            'questions' => $re,
+            'questions' => $questions,
+            'progress' => $progress
         ]);
     }
 

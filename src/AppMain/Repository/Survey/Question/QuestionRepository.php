@@ -76,7 +76,7 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @return \Generator QuestionDTO
+     * @return \Generator|QuestionDTO
      */
     public function findQuestions(UserInterface $user, GeoObject $geoObject): \Generator
     {

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Properties naming convention: underscore
+ */
 
 namespace App\AppMain\DTO;
 
@@ -7,53 +10,46 @@ class ResponseAnswerDTO
     protected $id;
     protected $explanation;
     protected $photo;
+    protected $question_id;
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getExplanation()
+    public function getExplanation(): ?string
     {
         return $this->explanation;
     }
 
-    /**
-     * @param mixed $explanation
-     */
-    public function setExplanation($explanation): void
+    public function setExplanation(?string $explanation): void
     {
         $this->explanation = $explanation;
     }
 
-    /**
-     * @return mixed
-     */
     public function getPhoto()
     {
         return $this->photo;
     }
 
-    /**
-     * @param mixed $photo
-     */
     public function setPhoto($photo): void
     {
         $this->photo = $photo;
+    }
+
+    public function getQuestionId(): ?int
+    {
+        return $this->question_id;
+    }
+
+    public function setQuestionId(int $questionId): void
+    {
+        $this->question_id = $questionId;
     }
 
 

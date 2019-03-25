@@ -1,47 +1,74 @@
 {% extends 'front/geo-object/layout.html.twig' %}
 
 {% block content %}
-    <div class="container mb-4">
-        <div class="row">
-            <div class="col">
-                <div id="mapMini"></div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col">
-                <h3>Име на обекта: <strong>{{ geo_object.attributes.name }}</strong></h3>
-                <h4 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h4>
-            </div>
-        </div>
+    <div class="container-fluid p-0">
+        <div id="mapMini"></div>
     </div>
 
     <div class="container">
-        <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}" enctype="multipart/form-data">
-            <button type="submit" name="submit">Запази</button>
+        <div class="row mt-3">
+            <div class="col">
+                <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
+                <h5 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
+            </div>
+        </div>
+
+        <div class="progress mb-4">
+            <div class="progress-bar" role="progressbar" style="width: {{ progress.percentage }}%"
+                 aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}"
+              enctype="multipart/form-data">
+            <div class="mb-3">
+                <button type="submit" name="submit" class="btn btn-primary">Запази</button>
+            </div>
             {% for question in questions %}
-                <h5>{{ question.title }}</h5>
-                {% for answer in question.answers %}
-                    {% if answer.parent is null %}
-                        <div>
-                            <label><input type="radio" {% if answer.isSelected == true %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
-                            {% if answer.isPhotoEnabled %}
-                                <div class="custom-file">
-                                    <input type="file" name="answers[photo][{{ answer.uuid }}]" class="custom-file-input">
-                                    <label class="custom-file-label">Качете снимка</label>
+                <div class="mb-4">
+
+                    <i class="fa fa-star {{ question.isAnswered ? 'text-warning' : 'text-black-50' }}"></i> <h5
+                            class="d-inline">{{ question.title }}</h5>
+                    <div class="mt-2 ml-4">
+                        {% for answer in question.answers %}
+                            {% if answer.parent is null %}
+                                <div class="d-flex">
+                                    <div class="w-75">
+                                        <label><input type="radio"
+                                                      {% if answer.isSelected == true %}checked="checked"{% endif %}
+                                                      name="answers[option][{{ question.uuid }}][id][]"
+                                                      value="{{ answer.uuid }}"/> {{ answer.title }}
+                                        </label> {% if answer.isPhotoEnabled %}
+                                            {#
+                                            {% if answer.photo is null %}
+                                                <div class="custom-file">
+                                                    <input type="file" name="answers[photo][{{ answer.uuid }}]"
+                                                           class="custom-file-input">
+                                                    <label class="custom-file-label">Качете снимка</label>
+                                                </div>
+                                            {% else %}
+                                                <img src="/media/{{ answer.photo.filename }}" style="width: 84px;height: 84px" />
+                                            {% endif %}
+                                            #}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div style="padding-left:20px;">
+                                    <label><input type="checkbox"
+                                                  {% if answer.isSelected == true %}checked="checked"{% endif %}
+                                                  name="answers[option][{{ question.uuid }}][id][]"
+                                                  value="{{ answer.uuid }}"/> {{ answer.title }}</label>
                                 </div>
                             {% endif %}
-                        </div>
-                    {% else %}
-                        <div style="padding-left:20px;">
-                            <label><input type="checkbox" {% if answer.isSelected == true %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
-                        </div>
-                    {% endif %}
-                    {% if answer.isFreeAnswer %}
-                        <div class="form-group pl-4">
-                            <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3" class="form-control w-100">{{ answer.explanation }}</textarea>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                            {% if answer.isFreeAnswer %}
+                                <div class="form-group pl-4">
+                            <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3"
+                                      class="form-control w-100">{{ answer.explanation }}</textarea>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             {% endfor %}
             <button type="submit" name="submit">Запази</button>
         </form>
