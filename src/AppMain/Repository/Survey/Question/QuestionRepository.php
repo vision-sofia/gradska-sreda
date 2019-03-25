@@ -2,6 +2,7 @@
 
 namespace App\AppMain\Repository\Survey\Question;
 
+use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey\Question\Question;
 use App\AppMain\Entity\User\UserInterface;
@@ -72,5 +73,55 @@ class QuestionRepository extends EntityRepository
         $query->setParameter('object_type_id', $geoObject->getType()->getId());
 
         return $query->getOneOrNullResult();
+    }
+
+    /**
+     * @return \Generator|QuestionDTO
+     */
+    public function findQuestions(UserInterface $user, GeoObject $geoObject): \Generator
+    {
+
+        $conn = $this->_em->getConnection();
+
+        $stmt = $conn->prepare('
+                SELECT
+                    question_id as id,
+                    question_uuid as uuid,
+                    question_title as title,
+                    question_has_multiple_answers as has_multiple_answers,
+                    question_answers as answers
+                FROM
+                    x_survey.geo_object_question gq       
+                WHERE
+                    gq.geo_object_type_id = :object_type_id
+                    AND gq.survey_is_active = TRUE
+                    AND NOT EXISTS( 
+                        SELECT
+                            *
+                        FROM
+                            x_survey.q_flow f
+                                INNER JOIN
+                            x_survey.response_answer a ON f.answer_id = a.answer_id
+                                INNER JOIN
+                            x_survey.response_question rq ON a.question_id = rq.id
+                        WHERE
+                            rq.user_id = :user_id 
+                            AND rq.geo_object_id = :geo_object_id
+                            AND f.question_id = gq.question_id
+                    )
+                ORDER BY 
+                    survey_id ASC, 
+                    gq.question_id ASC');
+
+        $stmt->bindValue('user_id', $user->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->bindValue('object_type_id', $geoObject->getType()->getId());
+        $stmt->execute();
+
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, QuestionDTO::class);
+
+        while ($row = $stmt->fetch()) {
+            yield $row;
+        }
     }
 }
