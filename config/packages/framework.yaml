@@ -5,8 +5,9 @@ framework:
     #http_method_override: true
 
     session:
-      cookie_httponly: true
+      handler_id: ~
       cookie_secure: auto
+      cookie_samesite: lax
 
     assets:
         packages:

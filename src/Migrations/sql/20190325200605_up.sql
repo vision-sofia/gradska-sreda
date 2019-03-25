@@ -1,4 +1,3 @@
-DROP MATERIALIZED VIEW x_survey.geo_object_question;
 CREATE MATERIALIZED VIEW IF NOT EXISTS x_survey.geo_object_question AS
 SELECT
     q.id as question_id,
@@ -33,4 +32,7 @@ FROM
     x_survey.q_question q ON q.category_id = c.id
         INNER JOIN
     x_survey.survey s ON c.survey_id = s.id
+;
+---
+CREATE INDEX ON x_survey.geo_object_question(geo_object_type_id)
 ;
