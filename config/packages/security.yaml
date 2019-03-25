@@ -29,6 +29,7 @@ security:
                 login_path: app.login
                 check_path: app.login
                 csrf_token_generator: security.csrf.token_manager
+                use_referer: true
             logout:
                 path:   /logout
                 target: /
