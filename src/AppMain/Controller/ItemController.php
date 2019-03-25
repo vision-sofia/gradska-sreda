@@ -11,6 +11,7 @@ use App\Services\Survey\Response\QuestionV2;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -42,12 +43,10 @@ class ItemController extends AbstractController
     /**
      * @Route("geo/{id}", name="app.geo-object.details")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function details(GeoObject $geoObject, string $mediaDir): Response
     {
-        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            return $this->redirectToRoute('app.login');
-        }
 
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(GeoObject::class)
