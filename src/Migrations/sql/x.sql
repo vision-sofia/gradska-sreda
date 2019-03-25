@@ -1,10 +1,11 @@
+DROP MATERIALIZED VIEW x_survey.geo_object_question;
 CREATE MATERIALIZED VIEW IF NOT EXISTS x_survey.geo_object_question AS
 SELECT
-    q.id,
-    q.title,
-    q.uuid,
-    q.has_multiple_answers,
-    l.object_type_id,
+    q.id as question_id,
+    q.title as question_title,
+    q.uuid as question_uuid,
+    q.has_multiple_answers as question_has_multiple_answers,
+    l.object_type_id as geo_object_type_id,
     s.id as survey_id,
     s.is_active as survey_is_active,
     c.id as survey_category_id,
@@ -23,7 +24,7 @@ SELECT
         WHERE
              a.question_id = q.id
         ) z
-    ) as answers
+    ) as question_answers
 FROM
     x_survey.survey_element l
         INNER JOIN
@@ -32,7 +33,4 @@ FROM
     x_survey.q_question q ON q.category_id = c.id
         INNER JOIN
     x_survey.survey s ON c.survey_id = s.id
-ORDER BY
-    s.id ASC,
-    q.id ASC
 ;

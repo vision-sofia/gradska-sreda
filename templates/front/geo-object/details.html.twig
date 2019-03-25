@@ -23,7 +23,7 @@
                 {% for answer in question.answers %}
                     {% if answer.parent is null %}
                         <div>
-                            <label><input type="radio" {% if answer.id in response|keys %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
+                            <label><input type="radio" {% if answer.isSelected == true %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
                             {% if answer.isPhotoEnabled %}
                                 <div class="custom-file">
                                     <input type="file" name="answers[photo][{{ answer.uuid }}]" class="custom-file-input">
@@ -33,12 +33,12 @@
                         </div>
                     {% else %}
                         <div style="padding-left:20px;">
-                            <label><input type="checkbox" {% if answer.id in response|keys %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
+                            <label><input type="checkbox" {% if answer.isSelected == true %}checked="checked"{% endif %} name="answers[option][{{ question.uuid }}][id][]" value="{{ answer.uuid }}" /> {{ answer.title }}</label>
                         </div>
                     {% endif %}
                     {% if answer.isFreeAnswer %}
                         <div class="form-group pl-4">
-                            <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3" class="form-control w-100">{% if response[answer.id] is defined %}{{ response[answer.id].explanation }}{% endif %}</textarea>
+                            <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3" class="form-control w-100">{{ answer.explanation }}</textarea>
                         </div>
                     {% endif %}
                 {% endfor %}

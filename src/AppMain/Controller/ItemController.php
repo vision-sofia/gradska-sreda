@@ -2,8 +2,9 @@
 
 namespace App\AppMain\Controller;
 
+use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\DTO\QuestionDTO;
-use App\AppMain\DTO\UserAnswerDTO;
+use App\AppMain\DTO\QuestionAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
@@ -28,20 +29,12 @@ class ItemController extends AbstractController
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
         UploaderHelper $uploaderHelper
-    ) {
+    )
+    {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
     }
-
-/*    private function objectToObject($instance, $className) {
-        return unserialize(sprintf(
-            'O:%d:"%s"%s',
-            strlen($className),
-            $className,
-            strstr(strstr(serialize($instance), '"'), ':')
-        ));
-    }*/
 
     /**
      * @Route("geo/{id}", name="app.geo-object.details")
@@ -53,67 +46,68 @@ class ItemController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        /** @var Connection $conn */
-        $conn = $this->getDoctrine()->getConnection();
-
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(GeoObject::class)
             ->isAvailableForSurvey($geoObject);
-        $questions = [];
-        if ($isAvailableForSurvey) {
-            $questions = $this->getDoctrine()
-                ->getRepository(Survey\Question\Question::class)
-                ->findQuestions($this->getUser(), $geoObject);
 
+        if (!$isAvailableForSurvey) {
+            return $this->redirectToRoute('app.map');
+        }
 
-            $stmt = $conn->prepare('
-            SELECT
-                *
-            FROM
-                x_survey.geo_object_question gq
-                   
-            WHERE
-                gq.object_type_id = :object_type_id
-                AND gq.survey_is_active = TRUE
-                AND NOT EXISTS(
-                    SELECT
-                        *
-                    FROM
-                        x_survey.q_flow f
-                            INNER JOIN
-                        x_survey.response_answer a ON f.answer_id = a.answer_id
-                            INNER JOIN
-                        x_survey.response_question rq ON a.question_id = rq.id
-                    WHERE
-                        rq.user_id = :user_id 
-                        AND rq.geo_object_id = :geo_object_id
-                        AND f.question_id = gq.id
-                )
-            ORDER BY 
-                survey_id ASC, 
-                gq.id ASC');
+        $questions = $this->getDoctrine()
+            ->getRepository(Survey\Question\Question::class)
+            ->findQuestions($this->getUser(), $geoObject);
 
-            $stmt->bindValue('user_id', $this->getUser()->getId());
-            $stmt->bindValue('geo_object_id', $geoObject->getId());
-            $stmt->bindValue('object_type_id', $geoObject->getType()->getId());
-            $stmt->execute();
+        /** @var Connection $conn */
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->prepare('
+                SELECT
+                    ra.answer_id as id,
+                    ra.explanation,
+                    ra.photo
+                FROM
+                    x_survey.response_answer ra
+                        INNER JOIN
+                    x_survey.response_question rq ON ra.question_id = rq.id
+                WHERE
+                    rq.geo_object_id = :geo_object_id
+                    AND rq.user_id = :user_id
+            ');
 
-            $result = [];
-            $stmt->setFetchMode(\PDO::FETCH_CLASS, QuestionDTO::class);
+        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->execute();
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
 
-            /** @var QuestionDTO $row */
-            while ($row = $stmt->fetch()) {
+        $responses = [];
+        /** @var ResponseAnswerDTO $row [] */
+        while ($row = $stmt->fetch()) {
+            $responses[$row->getId()] = $row;
+        }
 
-                foreach (json_decode($row->getAnswers()) as $item) {
-                  #  dump($this->objectToObject($item, UserAnswerDTO::class));
+        $re = [];
+
+        foreach ($questions as $row) {
+            $a = [];
+
+            foreach (json_decode($row->getAnswers()) as $item) {
+                $answerDTO = QuestionAnswerDTO::fromStd($item);
+
+                if (isset($responses[$answerDTO->getId()])) {
+
+                    /** @var ResponseAnswerDTO $response */
+                    $response = $responses[$answerDTO->getId()];
+
+                    $answerDTO->setExplanation($response->getExplanation());
+                    $answerDTO->setPhoto($response->getPhoto());
+                    $answerDTO->setIsSelected(true);
                 }
 
-
-              #  $row->setAnswers();
-                $result[] = $row;
+                $a[] = $answerDTO;
             }
 
-            dump($result);
+            $row->setAnswers($a);
+            $re[] = $row;
         }
 
 
@@ -164,43 +158,12 @@ class ItemController extends AbstractController
             $resultByUsers[] = $row;
         }
 
-        $stmt = $conn->prepare('
-            SELECT
-                ra.answer_id,
-                ra.explanation,
-                ra.photo,
-                a.is_free_answer
-            FROM
-                x_survey.response_answer ra
-                    INNER JOIN
-                x_survey.response_question rq ON ra.question_id = rq.id
-                    INNER JOIN
-                x_survey.q_answer a ON ra.answer_id = a.id
-            WHERE
-                rq.geo_object_id = :geo_object_id
-                AND rq.user_id = :user_id
-        ');
-
-        $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->bindValue('geo_object_id', $geoObject->getId());
-        $stmt->execute();
-
-        $response = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            if (!$row['is_free_answer']) {
-                unset($row['explanation']);
-            }
-
-            $response[$row['answer_id']] = $row;
-        }
-
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
-            'questions' => $questions,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
             'resultByUsers' => $resultByUsers,
-            'response' => $response,
+            'questions' => $re,
         ]);
     }
 
@@ -415,10 +378,9 @@ class ItemController extends AbstractController
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
-        /*
-                return $this->redirectToRoute('app.geo-object.details', [
-                    'id' => $geoObject->getUuid(),
-                ]);
-        */
+
+        return $this->redirectToRoute('app.geo-object.details', [
+            'id' => $geoObject->getUuid(),
+        ]);
     }
 }
