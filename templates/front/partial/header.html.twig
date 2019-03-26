@@ -1,43 +1,125 @@
 <header>
-    <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
-    <div class="nav">
-        <button class="navToggle"><i class="fas fa-bars"></i></button>
-        <nav class="main">
-            <ul>
-                {#<li class="nav-item{{ app.request.get('_route') == 'app.homepage' ? ' active' }}">
-                    <a class=" " href="{{ path('app.homepage') }}"><i class="fas fa-home"></i>Начало</a>
-                </li>#}
+
+    <nav class="navbar fixed-top navbar-expand-md bg-white ">
+        <div class="container p-0 ">
+        <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="collapsingNavbar">
+
+            <ul class="navbar-nav ml-auto">
+
                 <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
-                    <a class="" href="{{ path('app.map') }}"><i class="fas fa-map-marked-alt"></i>Карта</a>
+                    <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
                 </li>
                 <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
-                    <a class="" href="{{ path('app.info') }}"><i class="fas fa-info"></i>Информация</a>
+                    <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
                 </li>
                 <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
-                    <a class="" href="{{ path('app.about') }}"><i class="fas fa-info"></i>За платформата</a>
+                    <a class="nav-link" href="{{ path('app.about') }}">За платформата</a>
                 </li>
-            </ul>
-        </nav>
-        <nav class="system">
-            <ul>
                 {% if is_granted('ROLE_MANAGE') %}
                     <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
-                        <a href="{{ path('manage.index') }}"><i class="fas fa-user"></i><span class="hide-sm">Контролен панел</span></a>
+                        <a class="nav-link" href="{{ path('manage.index') }}"><span class="hide-sm">Контролен панел</span></a>
                     </li>
                 {% endif %}
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item{{ app.request.get('_route') == 'app.user.settings.profile' ? ' active' }}">
-                        <a href="{{ path('app.user.settings.profile') }}"><i class="fas fa-cogs"></i><span class="hide-sm">Настройки</span></a>
+                        <a class="nav-link" href="{{ path('app.user.settings.profile') }}"><span class="hide-sm">Настройки</span></a>
                     </li>
                     <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
-                        <a href="{{ path('logout') }}"><i class="fas fa-sign-out-alt"></i><span class="hide-sm">Изход</span></a>
+                        <a class="nav-link" href="{{ path('logout') }}"><span class="hide-sm">Изход</span></a>
                     </li>
                 {% else %}
                     <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
-                        <a href="{{ path('app.login') }}"><i class="fas fa-sign-in-alt"></i><span class="hide-sm">Вход</span></a>
+                        <a class="nav-link" href="{{ path('app.login') }}"><span class="hide-sm">Вход</span></a>
                     </li>
                 {% endif %}
             </ul>
-        </nav>
-    </div>
+        </div>
+        </div>
+    </nav>
+
+    {#<nav class="navbar fixed-top navbar-light bg-white navbar-expand-lg">
+        <div class="container ">
+            <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse " id="navbarNav">
+                <ul class="navbar-nav ">
+                    <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
+                        <a class="" href="{{ path('app.map') }}">Карта</a>
+                    </li>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
+                        <a class="" href="{{ path('app.info') }}">Информация</a>
+                    </li>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
+                        <a class="" href="{{ path('app.about') }}">За платформата</a>
+                    </li>
+                    {% if is_granted('ROLE_MANAGE') %}
+                        <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
+                            <a href="{{ path('manage.index') }}"><span class="hide-sm">Контролен панел</span></a>
+                        </li>
+                    {% endif %}
+                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        <li class="nav-item{{ app.request.get('_route') == 'app.user.settings.profile' ? ' active' }}">
+                            <a href="{{ path('app.user.settings.profile') }}"><span class="hide-sm">Настройки</span></a>
+                        </li>
+                        <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
+                            <a href="{{ path('logout') }}"><span class="hide-sm">Изход</span></a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
+                            <a href="{{ path('app.login') }}"><span class="hide-sm">Вход</span></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>#}
+
+    {#  <div class="container">
+
+          <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
+          <div class="nav container">
+              <button class="navToggle"><i class="fas fa-bars"></i></button>
+              <nav class="main">
+                  <ul>
+                      <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
+                          <a class="" href="{{ path('app.map') }}">Карта</a>
+                      </li>
+                      <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
+                          <a class="" href="{{ path('app.info') }}">Информация</a>
+                      </li>
+                      <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
+                          <a class="" href="{{ path('app.about') }}">За платформата</a>
+                      </li>
+                  </ul>
+              </nav>
+              <nav class="system">
+                  <ul>
+                      {% if is_granted('ROLE_MANAGE') %}
+                          <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
+                              <a href="{{ path('manage.index') }}"><span class="hide-sm">Контролен панел</span></a>
+                          </li>
+                      {% endif %}
+                      {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                          <li class="nav-item{{ app.request.get('_route') == 'app.user.settings.profile' ? ' active' }}">
+                              <a href="{{ path('app.user.settings.profile') }}"><span class="hide-sm">Настройки</span></a>
+                          </li>
+                          <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
+                              <a href="{{ path('logout') }}"><span class="hide-sm">Изход</span></a>
+                          </li>
+                      {% else %}
+                          <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
+                              <a href="{{ path('app.login') }}"><span class="hide-sm">Вход</span></a>
+                          </li>
+                      {% endif %}
+                  </ul>
+              </nav>
+          </div>
+
+      </div>#}
 </header>
