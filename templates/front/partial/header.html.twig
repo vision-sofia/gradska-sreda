@@ -1,45 +1,45 @@
 <header>
-
-    <nav class="navbar fixed-top navbar-expand-md bg-white ">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white " style="min-height: 87px;">
         <div class="container p-0 ">
-        <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse" id="collapsingNavbar">
+            <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('images/logo.png', 'front') }}"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar" aria-controls="collapsingNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse" id="collapsingNavbar">
+                <ul class="navbar-nav ml-auto">
 
-            <ul class="navbar-nav ml-auto">
-
-                <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
-                    <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
-                </li>
-                <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
-                    <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
-                </li>
-                <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
-                    <a class="nav-link" href="{{ path('app.about') }}">За платформата</a>
-                </li>
-                {% if is_granted('ROLE_MANAGE') %}
-                    <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('manage.index') }}"><span class="hide-sm">Контролен панел</span></a>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
+                        <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
                     </li>
-                {% endif %}
-                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <li class="nav-item{{ app.request.get('_route') == 'app.user.settings.profile' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.user.settings.profile') }}"><span class="hide-sm">Настройки</span></a>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
+                        <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
                     </li>
-                    <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('logout') }}"><span class="hide-sm">Изход</span></a>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
+                        <a class="nav-link" href="{{ path('app.about') }}">За платформата</a>
                     </li>
-                {% else %}
-                    <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.login') }}"><span class="hide-sm">Вход</span></a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
+                    {% if is_granted('ROLE_MANAGE') %}
+                        <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
+                            <a class="nav-link" href="{{ path('manage.index') }}">Контролен панел</a>
+                        </li>
+                    {% endif %}
+                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        <li class="nav-item{{ app.request.get('_route') == 'app.user.settings.profile' ? ' active' }}">
+                            <a class="nav-link" href="{{ path('app.user.settings.profile') }}">Настройки</a>
+                        </li>
+                        <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
+                            <a class="nav-link" href="{{ path('logout') }}">Изход</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
+                            <a class="nav-link  " href="{{ path('app.login') }}">Вход</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </nav>
+
+
 
     {#<nav class="navbar fixed-top navbar-light bg-white navbar-expand-lg">
         <div class="container ">
