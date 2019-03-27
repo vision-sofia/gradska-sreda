@@ -1,8 +1,6 @@
 import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
 (() => {
-    console.log(mapOption);
-
     if (!document.getElementById('mapMain')) {
         return;
     }
@@ -148,6 +146,39 @@ console.log(center);
         });
     }
 
+    function updateMap2(center, fn = () => {}) {
+        let zoom = map.getZoom();
+        let coords = map.getBounds();
+
+        let returnedTarget = {};
+
+        let a = {
+            in: coords._southWest.lng + ',' +
+            coords._northEast.lat + ',' +
+            coords._northEast.lng + ',' +
+            coords._southWest.lat + ',',
+            zoom: zoom,
+            c: center.lat + ',' + center.lng
+        };
+console.log(center);
+        if (typeof b !== 'undefined') {
+            returnedTarget = Object.assign(a, b);
+        } else {
+            returnedTarget = a;
+        }
+
+        $.ajax({
+            data: returnedTarget,
+            url: "/front-end/map?",
+            success: function (results) {
+                objectsSettings = results.settings;
+                geoJsonLayer.clearLayers();
+                geoJsonLayer.addData(results.objects);
+                fn();
+            }
+        });
+    }
+
     function locate() {
         loading.removeClass('d-none');
         map.locate({
@@ -197,7 +228,6 @@ console.log(center);
         $.ajax({
             url: "/map/p",
             success: function (results) {
-                console.log(results);
                 zoom = results.zoom;
                 lat = results.lat;
                 lng = results.lng;
@@ -220,7 +250,7 @@ console.log(center);
         } else {
             map.setView(clickCoordinates);
 
-            updateMap();
+            updateMap2(clickCoordinates);
         }
     }
 
