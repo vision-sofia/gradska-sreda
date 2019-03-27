@@ -18,6 +18,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ItemController extends AbstractController
@@ -45,7 +46,7 @@ class ItemController extends AbstractController
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function details(GeoObject $geoObject, string $mediaDir): Response
+    public function details(GeoObject $geoObject, string $mediaDir, SessionInterface $session): Response
     {
 
         $isAvailableForSurvey = $this->getDoctrine()
@@ -176,7 +177,7 @@ class ItemController extends AbstractController
             'percentage' => round(($result['complete'] / $result['total']) * 100)
         ];
 
-
+dump($session->get('zoom'), $session->get('center'));
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,

@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MapController extends AbstractController
@@ -20,17 +21,20 @@ class MapController extends AbstractController
     protected $utils;
     protected $logger;
     protected $finder;
+    protected $session;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Utils $utils,
         LoggerInterface $logger,
-        Finder $finder
+        Finder $finder,
+        SessionInterface $session
     ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
         $this->finder = $finder;
+        $this->session = $session;
     }
 
     /**
@@ -40,6 +44,11 @@ class MapController extends AbstractController
     {
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
+        $center = $request->query->get('c');
+
+    #    $e = explode(',', $center);
+
+
 
         if (null === $in || null === $zoom) {
             return new JsonResponse(['Missing parameters'], 400);
@@ -110,10 +119,14 @@ class MapController extends AbstractController
 
         $this->logger->info('Map view', [
             'zoom' => $zoom,
+            'center' => $center,
             'bbox' => $in,
             'simplify_tolerance' => $simplifyTolerance,
             'objects' => $i,
         ]);
+
+        $this->session->set('center', $center);
+        $this->session->set('zoom', $zoom);
 
         return new JsonResponse([
             'settings' => [

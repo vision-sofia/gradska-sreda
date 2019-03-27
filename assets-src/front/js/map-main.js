@@ -1,6 +1,8 @@
 import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
 (() => {
+    console.log(mapOption);
+
     if (!document.getElementById('mapMain')) {
         return;
     }
@@ -9,7 +11,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     $(document).on('click', '[data-confirm-cancel]', function () {
         removeAllPopups();
     });
-    const mapCenter = [42.697664, 23.3166103];
+    const mapCenter = mapOption.center;
+    const mapZoom = mapOption.zoom;
+
     const defaultObjectStyle = {
         color: "#ff9710",
         opacity: 0.5,
@@ -109,9 +113,12 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
     setInitialMapView();
 
+
+
     function updateMap(fn = () => {}) {
         let zoom = map.getZoom();
         let coords = map.getBounds();
+        let center = map.getCenter();
         let returnedTarget = {};
 
         let a = {
@@ -119,9 +126,10 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             coords._northEast.lat + ',' +
             coords._northEast.lng + ',' +
             coords._southWest.lat + ',',
-            zoom: zoom
+            zoom: zoom,
+            c: center.lat + ',' + center.lng
         };
-
+console.log(center);
         if (typeof b !== 'undefined') {
             returnedTarget = Object.assign(a, b);
         } else {
@@ -181,7 +189,28 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
 
     function setInitialMapView() {
         loading.addClass('d-none');
-        map.setView(mapCenter, 17)
+
+        let zoom;
+        let lat;
+        let lng;
+
+        $.ajax({
+            url: "/map/p",
+            success: function (results) {
+                console.log(results);
+                zoom = results.zoom;
+                lat = results.lat;
+                lng = results.lng;
+                setRealInitialMapView(lat, lng, zoom)
+            }
+        });
+
+
+
+    }
+
+    function setRealInitialMapView(lat, lng, zoom) {
+        map.setView([lat, lng], zoom)
     }
 
     function zoomToLayer(layer, ev) {
@@ -190,6 +219,8 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
             map.setView(clickCoordinates, layer.feature.properties._zoom);
         } else {
             map.setView(clickCoordinates);
+
+            updateMap();
         }
     }
 
