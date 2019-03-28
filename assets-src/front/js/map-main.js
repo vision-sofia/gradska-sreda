@@ -1,4 +1,4 @@
-import { mapBoxAttribution, mapBoxUrl } from './map-config';
+import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
 (() => {
     if (!document.getElementById('mapMain')) {
@@ -9,8 +9,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     $(document).on('click', '[data-confirm-cancel]', function () {
         removeAllPopups();
     });
-    const mapCenter = mapOption.center;
-    const mapZoom = mapOption.zoom;
+
+    //const mapCenter = mapOption.center;
+    //const mapZoom = mapOption.zoom;
 
     const defaultObjectStyle = {
         color: "#ff9710",
@@ -58,7 +59,9 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     map.on('dragend zoomend', function () {
         clearTimeout(updateMapThrottle);
         updateMapThrottle = setTimeout(() => {
-            updateMap(() => {
+            let center = map.getCenter();
+
+            updateMap(center, () => {
                 if (!initialLoad) {
                     initialLoad = true;
                     if ($('#mapMain').data('locate-on-load') === true) {
@@ -79,12 +82,13 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
         onEachFeature: function (feature, layer) {
             layer.on('click', function (ev) {
                 switch (feature.properties._behavior) {
-                    case "navigation": zoomToLayer(layer, ev);
-                    break;
+                    case "navigation":
+                        zoomToLayer(layer, ev);
+                        break;
                     default:
                         openLayerPopup(layer, ev);
                         zoomToLayer(layer, ev);
-                    break;
+                        break;
                 }
             });
             layer.on('mouseover', function () {
@@ -112,55 +116,55 @@ import { mapBoxAttribution, mapBoxUrl } from './map-config';
     setInitialMapView();
 
 
+    /*
+        function updateMap(fn = () => {}) {
+            let zoom = map.getZoom();
+            let coords = map.getBounds();
+            let center = map.getCenter();
+            let returnedTarget = {};
 
-    function updateMap(fn = () => {}) {
-        let zoom = map.getZoom();
-        let coords = map.getBounds();
-        let center = map.getCenter();
-        let returnedTarget = {};
+            let a = {
+                in: coords._southWest.lng + ',' +
+                coords._northEast.lat + ',' +
+                coords._northEast.lng + ',' +
+                coords._southWest.lat + ',',
+                zoom: zoom,
+                c: center.lat + ',' + center.lng
+            };
 
-        let a = {
-            in: coords._southWest.lng + ',' +
-            coords._northEast.lat + ',' +
-            coords._northEast.lng + ',' +
-            coords._southWest.lat + ',',
-            zoom: zoom,
-            c: center.lat + ',' + center.lng
-        };
-console.log(center);
-        if (typeof b !== 'undefined') {
-            returnedTarget = Object.assign(a, b);
-        } else {
-            returnedTarget = a;
-        }
-
-        $.ajax({
-            data: returnedTarget,
-            url: "/front-end/map?",
-            success: function (results) {
-                objectsSettings = results.settings;
-                geoJsonLayer.clearLayers();
-                geoJsonLayer.addData(results.objects);
-                fn();
+            if (typeof b !== 'undefined') {
+                returnedTarget = Object.assign(a, b);
+            } else {
+                returnedTarget = a;
             }
-        });
-    }
 
-    function updateMap2(center, fn = () => {}) {
+            $.ajax({
+                data: returnedTarget,
+                url: "/front-end/map?",
+                success: function (results) {
+                    objectsSettings = results.settings;
+                    geoJsonLayer.clearLayers();
+                    geoJsonLayer.addData(results.objects);
+                    fn();
+                }
+            });
+        }
+    */
+    function updateMap(center, fn = () => {
+    }) {
         let zoom = map.getZoom();
-        let coords = map.getBounds();
-
+        let bounds = map.getBounds();
         let returnedTarget = {};
 
         let a = {
-            in: coords._southWest.lng + ',' +
-            coords._northEast.lat + ',' +
-            coords._northEast.lng + ',' +
-            coords._southWest.lat + ',',
+            in: bounds._southWest.lng + ',' +
+            bounds._northEast.lat + ',' +
+            bounds._northEast.lng + ',' +
+            bounds._southWest.lat + ',',
             zoom: zoom,
             c: center.lat + ',' + center.lng
         };
-console.log(center);
+
         if (typeof b !== 'undefined') {
             returnedTarget = Object.assign(a, b);
         } else {
@@ -196,20 +200,20 @@ console.log(center);
         });
 
         let center = L.circle(e.latlng, {
-            color:       '#fff',
-            fillColor:   '#2A93EE',
+            color: '#fff',
+            fillColor: '#2A93EE',
             fillOpacity: 1,
-            weight:      4,
-            opacity:     1,
-            radius:      5
+            weight: 4,
+            opacity: 1,
+            radius: 5
         }).addTo(myLocationLayerGroup);
 
         L.circle(e.latlng, {
-            radius:      e.accuracy / 2,
-            color:       '#136AEC',
-            fillColor:   '#136AEC',
+            radius: e.accuracy / 2,
+            color: '#136AEC',
+            fillColor: '#136AEC',
             fillOpacity: 0.15,
-            weight:      0
+            weight: 0
         }).addTo(myLocationLayerGroup);
 
         center.bindPopup("Намирате се в радиус от " + radius + " метра от тази локация", {
@@ -234,9 +238,6 @@ console.log(center);
                 setRealInitialMapView(lat, lng, zoom)
             }
         });
-
-
-
     }
 
     function setRealInitialMapView(lat, lng, zoom) {
@@ -250,7 +251,7 @@ console.log(center);
         } else {
             map.setView(clickCoordinates);
 
-            updateMap2(clickCoordinates);
+            updateMap(clickCoordinates);
         }
     }
 
@@ -264,7 +265,7 @@ console.log(center);
 
         if (layer.feature.properties._behavior === 'survey') {
             coordinates = map.mouseEventToLatLng(ev.originalEvent);
-            if(mapOption.survey === true) {
+            if (mapOption.survey === true) {
                 openConfirmModal(layer);
             }
         } else {
@@ -274,9 +275,9 @@ console.log(center);
 
         let popupLayer = L.circle(coordinates, {
             fillOpacity: 0,
-            weight:      0,
-            opacity:     0,
-            radius:      1
+            weight: 0,
+            opacity: 0,
+            radius: 1
         }).addTo(popusLayerGroup);
 
         let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
@@ -292,7 +293,7 @@ console.log(center);
 
         let collection = mapOption.collection;
 
-        if(typeof collection !== 'undefined') {
+        if (typeof collection !== 'undefined') {
             $.ajax({
                 type: "POST",
                 url: '/front-end/geo-collection/add',
@@ -300,33 +301,32 @@ console.log(center);
                     'geo-object': layer.feature.properties.id,
                     'collection': collection
                 },
-                success: function()
-                {
+                success: function () {
                     updateMap();
                 }
             });
         }
-/*
-        $(".m-form").submit(function(e) {
-            var form = $(this);
-            var url = form.attr('action');
+        /*
+                $(".m-form").submit(function(e) {
+                    var form = $(this);
+                    var url = form.attr('action');
 
-            $.ajax({
-                type: "POST",
-                url: '/front-end/geo-collection/add',
-                //data: form.serialize(),
-                data: {
-                    'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
-                },
-                success: function()
-                {
-                    updateMap();
-                }
-            });
+                    $.ajax({
+                        type: "POST",
+                        url: '/front-end/geo-collection/add',
+                        //data: form.serialize(),
+                        data: {
+                            'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
+                        },
+                        success: function()
+                        {
+                            updateMap();
+                        }
+                    });
 
-            e.preventDefault();
-        });
-*/
+                    e.preventDefault();
+                });
+        */
     }
 
     function openConfirmModal(layer) {

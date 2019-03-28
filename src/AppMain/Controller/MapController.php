@@ -2,13 +2,11 @@
 
 namespace App\AppMain\Controller;
 
-use App\AppMain\Entity\Survey;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class MapController extends AbstractController
 {
@@ -19,7 +17,6 @@ class MapController extends AbstractController
         $this->session = $session;
     }
 
-
     /**
      * @Route("", name="app.map")
      * @Route("/map", name="app.map-e")
@@ -28,10 +25,10 @@ class MapController extends AbstractController
     {
         $center = $this->session->get('center');
         $zoom = $this->session->get('zoom');
-        dump($zoom, $center);
+
         return $this->render('front/map/index.html.twig', [
             'center' => $center,
-            'zoom' => $zoom
+            'zoom' => $zoom,
         ]);
     }
 
@@ -41,10 +38,15 @@ class MapController extends AbstractController
     public function p(SessionInterface $session): Response
     {
         $ex = explode(',', $session->get('center'));
+
+        if (empty($session->get('center'))) {
+            $ex = [42.697664, 23.3166103];
+        }
+
         return new JsonResponse([
             'zoom' => $session->get('zoom'),
-            'lat' =>(float) $ex[0],
-            'lng' =>(float) $ex[1],
+            'lat' => (float) $ex[0],
+            'lng' => (float) $ex[1],
         ]);
     }
 }
