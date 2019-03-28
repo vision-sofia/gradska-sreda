@@ -115,41 +115,6 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
     setInitialMapView();
 
-
-    /*
-        function updateMap(fn = () => {}) {
-            let zoom = map.getZoom();
-            let coords = map.getBounds();
-            let center = map.getCenter();
-            let returnedTarget = {};
-
-            let a = {
-                in: coords._southWest.lng + ',' +
-                coords._northEast.lat + ',' +
-                coords._northEast.lng + ',' +
-                coords._southWest.lat + ',',
-                zoom: zoom,
-                c: center.lat + ',' + center.lng
-            };
-
-            if (typeof b !== 'undefined') {
-                returnedTarget = Object.assign(a, b);
-            } else {
-                returnedTarget = a;
-            }
-
-            $.ajax({
-                data: returnedTarget,
-                url: "/front-end/map?",
-                success: function (results) {
-                    objectsSettings = results.settings;
-                    geoJsonLayer.clearLayers();
-                    geoJsonLayer.addData(results.objects);
-                    fn();
-                }
-            });
-        }
-    */
     function updateMap(center, fn = () => {
     }) {
         let zoom = map.getZoom();
@@ -179,6 +144,22 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
                 fn();
+            }
+        });
+    }
+
+    function saveViewport(center) {
+        let zoom = map.getZoom();
+        let a = {
+            zoom: zoom,
+            c: center.lat + ',' + center.lng
+        };
+
+        $.ajax({
+            data: a,
+            url: "/map/z",
+            success: function (results) {
+
             }
         });
     }
@@ -251,7 +232,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         } else {
             map.setView(clickCoordinates);
 
-            updateMap(clickCoordinates);
+            saveViewport(clickCoordinates);
         }
     }
 

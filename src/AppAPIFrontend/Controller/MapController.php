@@ -45,10 +45,7 @@ class MapController extends AbstractController
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
         $center = $request->query->get('c');
-
-    #    $e = explode(',', $center);
-
-
+        $geo = $request->query->get('g');
 
         if (null === $in || null === $zoom) {
             return new JsonResponse(['Missing parameters'], 400);
@@ -92,7 +89,7 @@ class MapController extends AbstractController
             $geometry = json_decode($row['geometry'], true);
             $attributes = json_decode($row['attributes'], true);
 
-            if (isset($row['entry'])) {
+            if (isset($row['entry']) || $row['uuid'] === $geo) {
                 $row['style_base'] = 'on_dialog_line';
             }
 

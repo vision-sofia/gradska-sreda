@@ -33,8 +33,7 @@ class ItemController extends AbstractController
         EventDispatcherInterface $eventDispatcher,
         UploaderHelper $uploaderHelper,
         Question $question
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
@@ -48,7 +47,6 @@ class ItemController extends AbstractController
      */
     public function details(GeoObject $geoObject, string $mediaDir, SessionInterface $session): Response
     {
-
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(GeoObject::class)
             ->isAvailableForSurvey($geoObject);
@@ -86,10 +84,10 @@ class ItemController extends AbstractController
         $responseAnswers = [];
         /** @var ResponseAnswerDTO $answer [] */
         while ($answer = $stmt->fetch()) {
-            if ($answer->getPhoto() !== null) {
-               # $file = new File($mediaDir . DIRECTORY_SEPARATOR . $answer->getPhoto());
-               ## $answer->setPhoto($file);
-              #  dump($answer, $answer->getPhoto());
+            if (null !== $answer->getPhoto()) {
+                // $file = new File($mediaDir . DIRECTORY_SEPARATOR . $answer->getPhoto());
+               //# $answer->setPhoto($file);
+              //  dump($answer, $answer->getPhoto());
             }
 
             $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
@@ -174,17 +172,16 @@ class ItemController extends AbstractController
         $progress = [
             'total' => $result['total'],
             'complete' => $result['complete'],
-            'percentage' => round(($result['complete'] / $result['total']) * 100)
+            'percentage' => round(($result['complete'] / $result['total']) * 100),
         ];
 
-dump($session->get('zoom'), $session->get('center'));
         return $this->render('front/geo-object/details.html.twig', [
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
             'resultByUsers' => $resultByUsers,
             'questions' => $questions,
-            'progress' => $progress
+            'progress' => $progress,
         ]);
     }
 
@@ -357,7 +354,6 @@ dump($session->get('zoom'), $session->get('center'));
                       
                 ');
 
-
                 $stmt->bindValue('photo', $file->getFilename());
                 $stmt->bindValue('answer_uuid', $key);
                 $stmt->bindValue('user_id', $this->getUser()->getId());
@@ -365,7 +361,6 @@ dump($session->get('zoom'), $session->get('center'));
                 $stmt->execute();
             }
         }
-
 
         // Remove
         $stmt = $conn->prepare('

@@ -4,6 +4,7 @@ namespace App\AppMain\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,5 +49,21 @@ class MapController extends AbstractController
             'lat' => (float) $ex[0],
             'lng' => (float) $ex[1],
         ]);
+    }
+
+    /**
+     * @Route("/map/z", name="app.map-z")
+     */
+    public function z(Request $request): JsonResponse
+    {
+        $zoom = $request->query->get('zoom');
+        $center = $request->query->get('c');
+
+        $zoom = (float) $zoom;
+
+        $this->session->set('center', $center);
+        $this->session->set('zoom', $zoom);
+
+        return  new JsonResponse([]);
     }
 }
