@@ -32,6 +32,8 @@ class ImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        ini_set('memory_limit', '-1');
+
         $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/network.json');
         $content = json_decode($string, true);
 
