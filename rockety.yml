@@ -18,8 +18,8 @@ options:
 # case for multiple sources.
 sources:
     front:
-        src: assets-src/front
-        dest: assets/front
+        src: assets/front
+        dest: public/front
         css:
             main: main.scss
             vendor:

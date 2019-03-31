@@ -8,15 +8,15 @@
     <meta name="description" content="">
     <title>Градска среда</title>
     <!-- Icons-->
-    <link href="{{ asset('vendors/@coreui/icons/css/coreui-icons.min.css', 'manage') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/flag-icon-css/css/flag-icon.min.css', 'manage') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/font-awesome/css/font-awesome.min.css', 'manage') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/simple-line-icons/css/simple-line-icons.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/vendors/@coreui/icons/css/coreui-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/vendors/flag-icon-css/css/flag-icon.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/vendors/simple-line-icons/css/simple-line-icons.css') }}" rel="stylesheet">
     <!-- Main styles for this application-->
-    <link href="{{ asset('css/style.css', 'manage') }}" rel="stylesheet">
-    <link href="{{ asset('vendors/pace-progress/css/pace.min.css', 'manage') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('/core-ui/vendors/pace-progress/css/pace.min.css') }}" rel="stylesheet">
 
-    <link href="{{ asset('plugins/toastr/toastr.min.css', 'front') }}" rel="stylesheet" />
+    <link href="{{ asset('/plugins/toastr/toastr.min.css', 'front') }}" rel="stylesheet" />
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
 {% include 'manage/partial/header.html.twig' %}
@@ -54,17 +54,17 @@
 {% include 'manage/partial/footer.html.twig' %}
 
 <!-- CoreUI and necessary plugins-->
-<script src="{{ asset('vendors/jquery/js/jquery.min.js', 'manage') }}"></script>
-<script src="{{ asset('plugins/toastr/toastr.min.js', 'front') }}"></script>
-<script src="{{ asset('vendors/popper.js/js/popper.min.js', 'manage') }}"></script>
-<script src="{{ asset('vendors/bootstrap/js/bootstrap.min.js', 'manage') }}"></script>
-<script src="{{ asset('vendors/pace-progress/js/pace.min.js', 'manage') }}"></script>
-<script src="{{ asset('vendors/perfect-scrollbar/js/perfect-scrollbar.min.js', 'manage') }}"></script>
-<script src="{{ asset('vendors/@coreui/coreui/js/coreui.min.js', 'manage') }}"></script>
+<script src="{{ asset('/core-ui/vendors/jquery/js/jquery.min.js') }}"></script>
+<script src="{{ asset('/plugins/toastr/toastr.min.js', 'front') }}"></script>
+<script src="{{ asset('/core-ui/vendors/popper.js/js/popper.min.js') }}"></script>
+<script src="{{ asset('/core-ui/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('/core-ui/vendors/pace-progress/js/pace.min.js') }}"></script>
+<script src="{{ asset('/core-ui/vendors/perfect-scrollbar/js/perfect-scrollbar.min.js') }}"></script>
+<script src="{{ asset('/core-ui/vendors/@coreui/coreui/js/coreui.min.js') }}"></script>
 <!-- Plugins and scripts required by this view-->
-<script src="{{ asset('vendors/chart.js/js/Chart.min.js', 'manage') }}"></script>
-<script src="{{ asset('vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js', 'manage') }}"></script>
-<script src="{{ asset('js/main.js', 'manage') }}"></script>
+<script src="{{ asset('/core-ui/vendors/chart.js/js/Chart.min.js') }}"></script>
+<script src="{{ asset('/core-ui/vendors/@coreui/coreui-plugin-chartjs-custom-tooltips/js/custom-tooltips.min.js') }}"></script>
+<script src="{{ asset('/core-ui/js/main.js') }}"></script>
 
 <script type="text/javascript">
     $(function () {
