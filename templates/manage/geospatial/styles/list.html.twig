@@ -1,0 +1,62 @@
+{% extends 'manage/base.html.twig' %}
+{% import 'manage/macro/macros.html.twig' as macros %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            Стилове
+        </div>
+        <div class="card-body">
+            <table class="table table-responsive-sm table-bordered table-sm ">
+                <thead>
+                <tr>
+                    <th class="align-middle c-w-30">#</th>
+                    <th class="align-middle">Атрибут</th>
+                    <th class="align-middle" >Стойност</th>
+                    <th class="c-w-190 text-center">Стил на точка</th>
+                    <th class="c-w-190 text-center">Стил на линия</th>
+                    <th class="c-w-190 text-center">Стил на полигон</th>
+                    <th class="align-middle c-w-100 text-right">Приоритет</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for styleCondition in styleConditions %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('manage.geospatial.styles.edit', {'id': styleCondition.id}) }}" class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
+                        </td>
+                        <td>{{ styleCondition.attribute }}</td>
+                        <td >{{ styleCondition.value }}</td>
+
+                        <td>
+                            {% if styleCondition.baseStyle.point is defined %}
+                               {{ macros.geometry_style_info(styleCondition.baseStyle.point, 'base') }}
+                            {% endif %}
+                            {% if styleCondition.hoverStyle.point is defined %}
+                                {{ macros.geometry_style_info(styleCondition.hoverStyle.point, 'hover') }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if styleCondition.baseStyle.line is defined %}
+                                {{ macros.geometry_style_info(styleCondition.baseStyle.line, 'base') }}
+                            {% endif %}
+                            {% if styleCondition.hoverStyle.line is defined %}
+                                {{ macros.geometry_style_info(styleCondition.hoverStyle.line, 'hover') }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if styleCondition.baseStyle.polygon is defined %}
+                                {{ macros.geometry_style_info(styleCondition.baseStyle.polygon, 'base') }}
+                            {% endif %}
+                            {% if styleCondition.hoverStyle.polygon is defined %}
+                                {{ macros.geometry_style_info(styleCondition.hoverStyle.polygon, 'hover') }}
+                            {% endif %}
+                        </td>
+                        <td class="text-right">{{ styleCondition.priority }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

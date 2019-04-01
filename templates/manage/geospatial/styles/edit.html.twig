@@ -1,0 +1,69 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Стилове</strong>
+                    <small>{{ 'form.edit'|trans }}</small>
+                </div>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+                <div class="card-body">
+                    <div class="form-group row ">
+                        <label class="col-md-2 col-form-label">Атрибут</label>
+                        <div class="col-md-4">
+                            {{ form_widget(form.attribute, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-group row ">
+                        <label class="col-md-2 col-form-label">Стойност</label>
+                        <div class="col-md-4">
+                            {{ form_widget(form.value, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-group row ">
+                        <label class="col-md-2 col-form-label">Стил</label>
+                        <div class="col-md-10 form-control-plaintext">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <strong>point base</strong>
+                                    <textarea class="form-control mb-3" rows="7" name="styles[base][point]">{{ styles.base.point }}</textarea>
+                                    <strong>point hover</strong>
+                                    <textarea class="form-control" rows="5" name="styles[hover][point]">{{ styles.hover.point }}</textarea>
+                                </div>
+                                <div class="col-lg-4">
+                                    <strong>line base</strong>
+                                    <textarea class="form-control mb-3" rows="7" name="styles[base][line]">{{ styles.base.line }}</textarea>
+                                    <strong>line hover</strong>
+                                    <textarea class="form-control" rows="5" name="styles[hover][line]">{{ styles.hover.line }}</textarea>
+                                </div>
+                                <div class="col-lg-4">
+                                    <strong>polygon base</strong>
+                                    <textarea class="form-control mb-3" rows="7" name="styles[base][polygon]">{{ styles.base.polygon }}</textarea>
+                                    <strong>polygon hover</strong>
+                                    <textarea class="form-control" rows="5" name="styles[hover][polygon]">{{ styles.hover.polygon }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer">
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div>
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                <i class="fa fa-dot-circle-o"></i> {{ 'button.save'|trans }}
+                            </button>
+                            <a class="btn btn-sm btn-danger" href="{{ path('manage.geospatial.styles.list') }}">
+                                <i class="fa fa-ban"></i> Откажи
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
