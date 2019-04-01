@@ -6,6 +6,7 @@ use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -67,11 +68,18 @@ class MapController extends AbstractController
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
         $collectionId = $request->query->get('collection');
 
+        $bbox = [];
+
+        if ($collectionId) {
+            $bbox = $this->findCollectionBbox($this->getUser()->getId(), $collectionId);
+        }
+
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
         $stylesGroups = $this->getDoctrine()
             ->getRepository(StyleGroup::class)
-            ->findAll();
+            ->findAll()
+        ;
 
         $styles = [];
 
@@ -89,7 +97,11 @@ class MapController extends AbstractController
             $geometry = json_decode($row['geometry'], true);
             $attributes = json_decode($row['attributes'], true);
 
-            if (isset($row['entry']) || $row['uuid'] === $geo) {
+            if ($row['uuid'] === $geo) {
+                $row['style_base'] = 'on_dialog_line';
+            }
+
+            if (isset($row['entry'])) {
                 $row['style_base'] = 'on_dialog_line';
             }
 
@@ -105,12 +117,12 @@ class MapController extends AbstractController
                 'type' => 'Feature',
                 'geometry' => $geometry,
                 'properties' => [
-                    '_s1' => $row['style_base'],
-                    '_s2' => $row['style_hover'],
-                    'id' => $row['uuid'],
-                    'name' => $row['geo_name'],
-                    'type' => $row['type_name'],
-                ] + $attributes,
+                                    '_s1' => $row['style_base'],
+                                    '_s2' => $row['style_hover'],
+                                    'id' => $row['uuid'],
+                                    'name' => $row['geo_name'],
+                                    'type' => $row['type_name'],
+                                ] + $attributes,
             ];
         }
 
@@ -135,7 +147,60 @@ class MapController extends AbstractController
                     3 => 'Искате ли да оцените избраната алея',
                 ],
             ],
+            'bbox' => $bbox,
             'objects' => $result,
         ]);
+    }
+
+    private function findCollectionBbox(int $userId, string $collectionUuid): array
+    {
+        /** @var Connection $conn */
+        $conn = $this->getDoctrine()->getConnection();
+
+        $stmt = $conn->prepare('
+            WITH z AS (
+            SELECT
+                ST_Extent(gb.coordinates::geometry) as w
+            FROM
+                x_survey.gc_collection c
+                    INNER JOIN
+                x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                    INNER JOIN
+                x_geospatial.geo_object g ON cc.geo_object_id = g.id
+                    INNER JOIN
+                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+            WHERE
+                c.user_id = :user_id
+                AND c.uuid = :collection_uuid
+            )
+            SELECT
+                st_xmin(w) as xmin,
+                st_xmax(w) as xmax,
+                st_ymin(w) as ymin,
+                st_ymax(w) as ymax,
+                st_asgeojson(
+                        st_makeenvelope(
+                                st_xmin(w),
+                                st_xmax(w),
+                                st_ymin(w),
+                                st_ymax(w)
+                            )
+                    ) as envelope
+            FROM z
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('collection_uuid', $collectionUuid);
+        $stmt->execute();
+
+        $row = $stmt->fetch();
+
+        return [
+            'xmin' => $row['xmin'],
+            'xmax' => $row['xmax'],
+            'ymin' => $row['ymin'],
+            'ymax' => $row['ymax'],
+            'rectangle' => json_decode($row['envelope']),
+        ];
     }
 }
