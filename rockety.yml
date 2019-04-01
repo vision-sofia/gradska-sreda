@@ -30,3 +30,8 @@ sources:
                 - node_modules/jquery/dist/jquery.min.js
                 - node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
                 - node_modules/leaflet/dist/leaflet.js
+    manage:
+        src: assets/core-ui
+        dest: public/core-ui
+        css:
+            main: main.scss
