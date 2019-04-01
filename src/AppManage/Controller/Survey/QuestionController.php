@@ -2,8 +2,8 @@
 
 namespace App\AppManage\Controller\Survey;
 
-use App\AppManage\Form\Survey\QuestionType;
 use App\AppMain\Entity\Survey\Question\Question;
+use App\AppManage\Form\Survey\QuestionType;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -25,8 +25,8 @@ class QuestionController extends AbstractController
     public function __construct(
         FlashMessage $flashMessage,
         CsrfTokenValidator $csrfTokenValidator,
-        TranslatorInterface $translator)
-    {
+        TranslatorInterface $translator
+    ) {
         $this->flashMessage = $flashMessage;
         $this->csrfTokenValidator = $csrfTokenValidator;
         $this->translator = $translator;
@@ -38,8 +38,8 @@ class QuestionController extends AbstractController
     public function index(): Response
     {
         $questions = $this->getDoctrine()
-                        ->getRepository(Question::class)
-                        ->findBy([], ['title' => 'ASC'])
+            ->getRepository(Question::class)
+            ->findBy([], ['title' => 'ASC'])
         ;
 
         return $this->render('manage/survey-system/question/list.html.twig', [
@@ -97,10 +97,8 @@ class QuestionController extends AbstractController
             return $this->redirectToRoute('manage.survey-system.questions.edit', ['question' => $question->getUuid()]);
         }
 
-
-
         return $this->render('manage/survey-system/question/edit.html.twig', [
-            'form'  => $form->createView(),
+            'form' => $form->createView(),
             'item' => $question,
         ]);
     }

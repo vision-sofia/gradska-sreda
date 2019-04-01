@@ -2,7 +2,6 @@
 
 namespace App\AppManage\Form\Survey;
 
-
 use App\AppMain\Entity\Survey\Question\Question;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

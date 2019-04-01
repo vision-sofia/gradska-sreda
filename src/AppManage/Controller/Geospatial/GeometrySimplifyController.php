@@ -59,7 +59,7 @@ class GeometrySimplifyController extends AbstractController
 
             $this->flashMessage->addSuccess(
                 '',
-                $this->translator->trans('flash.add.success')
+                $this->translator->trans('flash.edit.success')
             );
 
             return $this->redirectToRoute('manage.geospatial.simplify.list');

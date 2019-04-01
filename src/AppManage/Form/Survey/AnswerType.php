@@ -2,7 +2,6 @@
 
 namespace App\AppManage\Form\Survey;
 
-
 use App\AppMain\Entity\Survey\Question\Answer;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,26 +18,29 @@ class AnswerType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [])
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-                $form = $event->getForm();
+            ->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                static function (FormEvent $event): void {
+                    $form = $event->getForm();
 
-                /** @var Answer $data */
-                $data = $event->getData();
+                    /** @var Answer $data */
+                    $data = $event->getData();
 
-                $form->add('parent', EntityType::class, [
-                    'class'         => Answer::class,
-                    'choice_label'  => 'title',
-                    'placeholder'   => '',
+                    $form->add('parent', EntityType::class, [
+                    'class' => Answer::class,
+                    'choice_label' => 'title',
+                    'placeholder' => '',
                     'query_builder' => function (EntityRepository $er) use ($data) {
                         return $er->createQueryBuilder('u')
-                                  ->andWhere('u.question = :question')
-                                  ->andWhere('u.id != :answer')
-                                  ->setParameter('question', $data->getQuestion())
-                                  ->setParameter('answer', $data)
+                            ->andWhere('u.question = :question')
+                            ->andWhere('u.id != :answer')
+                            ->setParameter('question', $data->getQuestion())
+                            ->setParameter('answer', $data)
                             ;
                     },
                 ]);
-            })
+                }
+            )
         ;
     }
 

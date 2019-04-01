@@ -2,7 +2,6 @@
 
 namespace App\AppManage\Form\Type;
 
-use App\AppMain\Entity\Geospatial\ObjectTypeVisibility;
 use App\AppMain\Entity\Geospatial\Simplify;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;

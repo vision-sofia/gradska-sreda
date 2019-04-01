@@ -2,9 +2,8 @@
 
 namespace App\AppManage\Controller\Survey;
 
-use App\AppManage\Form\Survey\SurveyType;
-use App\AppMain\Entity\Survey\EvaluationDefinition\Criterion;
 use App\AppMain\Entity\Survey\Survey\Survey;
+use App\AppManage\Form\Survey\SurveyType;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,8 +25,8 @@ class SurveyController extends AbstractController
     public function __construct(
         FlashMessage $flashMessage,
         CsrfTokenValidator $csrfTokenValidator,
-        TranslatorInterface $translator)
-    {
+        TranslatorInterface $translator
+    ) {
         $this->flashMessage = $flashMessage;
         $this->csrfTokenValidator = $csrfTokenValidator;
         $this->translator = $translator;
@@ -39,8 +38,8 @@ class SurveyController extends AbstractController
     public function index(): Response
     {
         $surveys = $this->getDoctrine()
-                        ->getRepository(Survey::class)
-                        ->findBy([], ['name' => 'ASC'])
+            ->getRepository(Survey::class)
+            ->findBy([], ['name' => 'ASC'])
         ;
 
         return $this->render('manage/survey-system/survey/list.html.twig', [
@@ -99,13 +98,14 @@ class SurveyController extends AbstractController
         }
 
         $criteria = $this->getDoctrine()->getRepository(Criterion::class)->findBy([
-            'survey' => $survey
-        ]);
+            'survey' => $survey,
+        ])
+        ;
 
         return $this->render('manage/survey-system/survey/edit.html.twig', [
-            'form'  => $form->createView(),
+            'form' => $form->createView(),
             'item' => $survey,
-            'criteria' => $criteria
+            'criteria' => $criteria,
         ]);
     }
 

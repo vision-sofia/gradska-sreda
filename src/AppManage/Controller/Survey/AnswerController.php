@@ -2,10 +2,9 @@
 
 namespace App\AppManage\Controller\Survey;
 
-use App\AppManage\Form\Survey\AnswerType;
-use App\AppManage\Form\Survey\QuestionType;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Question;
+use App\AppManage\Form\Survey\AnswerType;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Form\CsrfTokenValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -27,8 +26,8 @@ class AnswerController extends AbstractController
     public function __construct(
         FlashMessage $flashMessage,
         CsrfTokenValidator $csrfTokenValidator,
-        TranslatorInterface $translator)
-    {
+        TranslatorInterface $translator
+    ) {
         $this->flashMessage = $flashMessage;
         $this->csrfTokenValidator = $csrfTokenValidator;
         $this->translator = $translator;
@@ -61,7 +60,7 @@ class AnswerController extends AbstractController
         }
 
         return $this->render('manage/survey-system/answer/edit.html.twig', [
-            'form'  => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -89,9 +88,8 @@ class AnswerController extends AbstractController
         }
 
         return $this->render('manage/survey-system/answer/edit.html.twig', [
-            'form'  => $form->createView(),
+            'form' => $form->createView(),
             'answer' => $question,
         ]);
     }
-
 }
