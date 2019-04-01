@@ -158,11 +158,12 @@ class ItemController extends AbstractController
                   x_survey.response_question gq
               WHERE
                   gq.geo_object_id = :geo_object_id
-                  AND user_id = 1
+                  AND user_id = :user_id
             )
             SELECT total, complete FROM z, d        
         ');
 
+        $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->bindValue('geo_object_type_id', $geoObject->getType()->getId());
         $stmt->execute();
