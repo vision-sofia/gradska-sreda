@@ -39,7 +39,7 @@ class MapController extends AbstractController
     }
 
     /**
-     * @Route("/map", name="api.map")
+     * @Route("/map", name="api.map", methods="GET")
      */
     public function index(Request $request): Response
     {
@@ -89,16 +89,24 @@ class MapController extends AbstractController
 
         $i = 0;
 
-        $result = [];
+        $userSubmitted = $result = [];
+
+        if ($this->getUser()) {
+            $userSubmitted = $this->userSubmitted($this->getUser()->getId());
+        }
 
         foreach ($geoObjects as $row) {
             ++$i;
 
-            $geometry = json_decode($row['geometry'], true);
-            $attributes = json_decode($row['attributes'], true);
+            $geometry = json_decode($row['geometry'],true);
+            $attributes = json_decode($row['attributes'],true);
 
             if ($row['uuid'] === $geo) {
                 $row['style_base'] = 'on_dialog_line';
+            }
+
+            if (isset($userSubmitted[$row['id']])) {
+                $row['style_base'] = 'upr';
             }
 
             if (isset($row['entry'])) {
@@ -152,6 +160,31 @@ class MapController extends AbstractController
         ]);
     }
 
+    private function userSubmitted(int $userId):array
+    {
+        /** @var Connection $conn */
+        $conn = $this->getDoctrine()->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                uc.geo_object_id
+            FROM
+                x_survey.result_user_completion uc
+            WHERE
+                user_id = :user_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->execute();
+
+        $result = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $result[$row['geo_object_id']] = $row['geo_object_id'];
+        }
+
+        return $result;
+    }
+
     private function findCollectionBbox(int $userId, string $collectionUuid): array
     {
         /** @var Connection $conn */
@@ -159,19 +192,19 @@ class MapController extends AbstractController
 
         $stmt = $conn->prepare('
             WITH z AS (
-            SELECT
-                ST_Extent(gb.coordinates::geometry) as w
-            FROM
-                x_survey.gc_collection c
-                    INNER JOIN
-                x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
-                    INNER JOIN
-                x_geospatial.geo_object g ON cc.geo_object_id = g.id
-                    INNER JOIN
-                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-            WHERE
-                c.user_id = :user_id
-                AND c.uuid = :collection_uuid
+                SELECT
+                    ST_Extent(gb.coordinates::geometry) as w
+                FROM
+                    x_survey.gc_collection c
+                        INNER JOIN
+                    x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                        INNER JOIN
+                    x_geospatial.geo_object g ON cc.geo_object_id = g.id
+                        INNER JOIN
+                    x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                WHERE
+                    c.user_id = :user_id
+                    AND c.uuid = :collection_uuid
             )
             SELECT
                 st_xmin(w) as xmin,
@@ -179,13 +212,13 @@ class MapController extends AbstractController
                 st_ymin(w) as ymin,
                 st_ymax(w) as ymax,
                 st_asgeojson(
-                        st_makeenvelope(
-                                st_xmin(w),
-                                st_xmax(w),
-                                st_ymin(w),
-                                st_ymax(w)
-                            )
-                    ) as envelope
+                    st_makeenvelope(
+                        st_xmin(w),
+                        st_xmax(w),
+                        st_ymin(w),
+                        st_ymax(w)
+                    )
+                ) as envelope
             FROM z
         ');
 

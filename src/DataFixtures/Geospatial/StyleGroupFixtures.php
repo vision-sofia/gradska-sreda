@@ -44,6 +44,12 @@ class StyleGroupFixtures extends Fixture
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
+            ],
+            [
+                'code' => 'upr',
+                'style' => [
+                    'color' => '#00F',
+                ],
             ]
         ];
     }
