@@ -21,10 +21,10 @@
     {{ element.vars.errors|length > 0 ? 'has-error' : '' }}
 {% endmacro %}
 
-{% macro geometry_style_info(element, part) %}
+{% macro geometry_style_info(content, part) %}
     <span class="text-muted">{{ part }}</span>
     <ul class="pl-4 mb-0">
-        {% for k, v in element.content %}
+        {% for k, v in content %}
             <li>{{ k }}: <span style="{{ v|split(0,1).0 == '#' ? 'color: ' ~ v : '' }}">{{ v }}</span></li>
         {% endfor %}
     </ul>

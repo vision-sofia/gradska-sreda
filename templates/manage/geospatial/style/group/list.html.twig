@@ -1,0 +1,37 @@
+{% extends 'manage/base.html.twig' %}
+{% import 'manage/macro/macros.html.twig' as macros %}
+
+{% block body %}
+    {% include 'manage/geospatial/style/partial/nav.html.twig' with {active: 'group'} %}
+
+    <div class="card">
+        <div class="card-header">
+            Групи
+        </div>
+        <div class="card-body">
+            <table class="table table-responsive-sm table-bordered table-sm ">
+                <thead>
+                <tr>
+                    <th class="align-middle c-w-30">#</th>
+                    <th class="align-middle">Група</th>
+                    <th class="align-middle">Стил</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for styleGroup in styleGroups %}
+                    <tr>
+                        <td class="text-center">
+                            <a href="{{ path('manage.geospatial.style-group.edit', {'id': styleGroup.id}) }}"
+                               class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
+                        </td>
+                        <td>{{ styleGroup.code }}</td>
+                        <td>
+                            {{ macros.geometry_style_info(styleGroup.style) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

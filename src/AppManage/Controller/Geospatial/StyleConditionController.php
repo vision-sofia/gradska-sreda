@@ -13,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @Route("/geospatial/styles", name="manage.geospatial.styles.")
+ * @Route("/geospatial/style-condition", name="manage.geospatial.style-condition.")
  */
-class StyleController extends AbstractController
+class StyleConditionController extends AbstractController
 {
     protected $styleService;
     protected $flashMessage;
@@ -44,7 +44,7 @@ class StyleController extends AbstractController
             ])
         ;
 
-        return $this->render('manage/geospatial/styles/list.html.twig', [
+        return $this->render('manage/geospatial/style/condition/list.html.twig', [
             'styleConditions' => $styleConditions,
         ]);
     }
@@ -58,8 +58,6 @@ class StyleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
             $styles = $request->request->get('styles');
 
             if (isset($styles['base'])) {
@@ -87,10 +85,10 @@ class StyleController extends AbstractController
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.geospatial.styles.list');
+            return $this->redirectToRoute('manage.geospatial.style-condition.list');
         }
 
-        return $this->render('manage/geospatial/styles/edit.html.twig', [
+        return $this->render('manage/geospatial/style/condition/edit.html.twig', [
             'form' => $form->createView(),
             'styles' => $this->styleService->toText($styleCondition),
         ]);

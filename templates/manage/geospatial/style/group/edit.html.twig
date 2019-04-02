@@ -1,0 +1,40 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Стилове</strong>
+                    <small>{{ 'form.edit'|trans }}</small>
+                </div>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+                <div class="card-body">
+                    <div class="form-group row ">
+                        <label class="col-md-3 col-form-label">Група</label>
+                        <div class="col-md-9 form-control-plaintext">{{ styleGroup.code }}</div>
+                    </div>
+                    <div class="form-group row ">
+                        <label class="col-md-3 col-form-label">Стил</label>
+                        <div class="col-md-9 form-control-plaintext">
+                            <textarea class="form-control mb-3" rows="7" name="style">{{ style }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                        <div>
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                <i class="fa fa-dot-circle-o"></i> {{ 'button.save'|trans }}
+                            </button>
+                            <a class="btn btn-sm btn-danger" href="{{ path('manage.geospatial.style-group.list') }}">
+                                <i class="fa fa-ban"></i> Откажи
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
