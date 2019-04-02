@@ -197,11 +197,10 @@ class StyleConditionFixtures extends Fixture
                     'polygon' => [
                         'code' => 'def-poly-b',
                         'content' => [
-                            'stroke' => '#ff99ff',
-                            'strokeWidth' => 1,
-                            'strokeOpacity' => 0.2,
-                            'fill' => '#ff00ff',
-                            'fillOpacity' => 0.05,
+                            'color'=> '#5655a4',
+                            'weight'=> 2,
+                            'opacity'=> 1,
+                            'fillOpacity'=> 0,
                         ],
                     ],
                 ],
@@ -223,7 +222,8 @@ class StyleConditionFixtures extends Fixture
                     'polygon' => [
                         'code' => 'def-poly-h',
                         'content' => [
-                            'fillOpacity' => 0.3,
+                            'weight'=> 7,
+
                         ],
                     ],
                 ],
