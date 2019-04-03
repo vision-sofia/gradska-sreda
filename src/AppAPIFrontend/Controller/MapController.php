@@ -141,9 +141,15 @@ class MapController extends AbstractController
             $row['style_base'] = 'on_dialog_line';
         }
 
-        if (isset($attributes['urp'])) {
-            $row['style_base'] = 'upr';
-            $row['style_hover'] = 'upr';
+        if (isset($attributes['urp']) && $attributes['urp'] === 1) {
+            $row['style_base'] = 'upr-c';
+            $row['style_hover'] = 'upr-c';
+        }
+
+
+        if (isset($attributes['urp']) && $attributes['urp'] === 0) {
+            $row['style_base'] = 'upr-uc';
+            $row['style_hover'] = 'upr-uc';
         }
 
         if ('Градоустройствена единица' === $row['type_name']) {

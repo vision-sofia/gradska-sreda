@@ -172,7 +172,7 @@ class Finder
                 g.attributes,
                 st_asgeojson(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
-                    \'urp\', 1
+                    \'urp\', uc.is_completed::int
                 ) as attributes
             FROM
                 x_survey.result_user_completion uc

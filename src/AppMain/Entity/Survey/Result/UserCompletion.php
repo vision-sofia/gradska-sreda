@@ -30,27 +30,14 @@ class UserCompletion
     private $geoObject;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Survey")
+     * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
      */
-    private $data;
+    private $survey;
 
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    public function setUser($user): void
-    {
-        $this->user = $user;
-    }
-
-    public function getCompletion()
-    {
-        return $this->completion;
-    }
-
-    public function setCompletion($completion): void
-    {
-        $this->completion = $completion;
-    }
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isCompleted;
 }

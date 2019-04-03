@@ -30,25 +30,29 @@ class StyleGroupFixtures extends Fixture
                     'color' => '#00ffff',
                     'opacity' => 0.5,
                 ],
-            ],
-            [
+            ], [
                 'code' => 'on_dialog_point',
                 'style' => [
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
-            ],
-            [
+            ], [
                 'code' => 'on_dialog_polygon',
                 'style' => [
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
-            ],
-            [
-                'code' => 'upr',
+            ], [
+                'code' => 'upr-c',
                 'style' => [
-                    'color' => '#00F',
+                    'color' => '#000',
+                    'weight' => 2,
+                ],
+            ], [
+                'code' => 'upr-uc',
+                'style' => [
+                    'color' => '#000',
+                    'weight' => 1,
                 ],
             ]
         ];
