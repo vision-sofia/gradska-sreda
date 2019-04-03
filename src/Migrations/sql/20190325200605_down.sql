@@ -1,1 +1,0 @@
-DROP MATERIALIZED VIEW IF EXISTS x_survey.geo_object_question;

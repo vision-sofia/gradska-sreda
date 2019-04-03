@@ -36,3 +36,21 @@ FROM
 ---
 CREATE INDEX ON x_survey.geo_object_question(geo_object_type_id)
 ;
+---
+CREATE OR REPLACE FUNCTION refresh_matview_geo_object_question()
+    RETURNS TRIGGER LANGUAGE PLPGSQL
+AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW x_survey.geo_object_question;
+    RETURN NULL;
+END $$
+;
+---
+CREATE TRIGGER trig_refresh_matview_geo_object_question
+    AFTER INSERT
+        OR UPDATE
+        OR DELETE
+        OR TRUNCATE
+    ON x_survey.q_question FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_matview_geo_object_question()
+;

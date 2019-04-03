@@ -22,8 +22,11 @@ BEGIN
     RETURN NULL;
 END;
 $$
-LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE 'plpgsql' VOLATILE
+;
 ---
-CREATE TRIGGER tg_geometry_bi BEFORE INSERT
+CREATE TRIGGER trig_geometry_bi
+    BEFORE INSERT
     ON x_geometry.geometry_base FOR EACH ROW
-EXECUTE PROCEDURE x_survey.geometry_redirection();
+EXECUTE PROCEDURE x_survey.geometry_redirection()
+;

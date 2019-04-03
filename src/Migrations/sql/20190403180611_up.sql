@@ -14,22 +14,26 @@ GROUP BY
 ---
 CREATE INDEX ON x_survey.ev_criterion_question(subject_id);
 ---
-CREATE INDEX ON x_survey.ev_criterion_question(question_id);
+CREATE INDEX ON x_survey.ev_criterion_question(question_id)
+;
 ---
-CREATE UNIQUE INDEX ON x_survey.ev_criterion_question(subject_id, question_id) ;
+CREATE UNIQUE INDEX ON x_survey.ev_criterion_question(subject_id, question_id)
+;
 ---
-CREATE OR REPLACE FUNCTION refresh_mat_view_ev_criterion_question()
+CREATE OR REPLACE FUNCTION refresh_matview_ev_criterion_question()
     RETURNS TRIGGER LANGUAGE PLPGSQL
 AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY x_survey.ev_criterion_question;
     RETURN NULL;
-END $$;
+END $$
+;
 ---
-CREATE TRIGGER REFRESH_MAT_VIEW_EV_CRITERION_QUESTION
+CREATE TRIGGER trig_refresh_matview_ev_criterion_question
     AFTER INSERT
     OR UPDATE
     OR DELETE
     OR TRUNCATE
 ON x_survey.ev_criterion_definition FOR EACH STATEMENT
-EXECUTE PROCEDURE refresh_mat_view_ev_criterion_question();
+EXECUTE PROCEDURE refresh_matview_ev_criterion_question()
+;
