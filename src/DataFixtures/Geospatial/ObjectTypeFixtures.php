@@ -33,55 +33,55 @@ class ObjectTypeFixtures extends Fixture
         return [
             [
                 'name' => 'Пътно платно',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Нерегулирано',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Тротоар',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Паркинг',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Пешеходна пътека',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Светофар',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Алея с настилка',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Алея без настилка',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Алея',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Подлез',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Стълбище',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 16,
             ], [
                 'name' => 'Спирка на градски транспорт',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 14,
             ], [
                 'name' => 'Спирка на метро',
-                'min_zoom' => 20,
+                'min_zoom' => 21,
                 'max_zoom' => 5,
             ], [
                 'name' => 'Градоустройствена единица',
@@ -90,7 +90,7 @@ class ObjectTypeFixtures extends Fixture
             ], [
                 'name' => 'Административен райони',
                 'min_zoom' => 14,
-                'max_zoom' => 5,
+                'max_zoom' => 4,
             ],
         ];
     }

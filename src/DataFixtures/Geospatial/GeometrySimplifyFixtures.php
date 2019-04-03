@@ -37,7 +37,7 @@ class GeometrySimplifyFixtures extends Fixture
                 'min_zoom' => 14,
                 'max_zoom' => 10,
             ], [
-                'tolerance' => 0.00002,
+                'tolerance' => 0.0001,
                 'min_zoom' => 10,
                 'max_zoom' => 1,
             ],
