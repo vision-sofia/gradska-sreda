@@ -87,59 +87,27 @@ class MapController extends AbstractController
             $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
         }
 
-        $i = 0;
-
         $userSubmitted = $result = [];
 
         if ($this->getUser()) {
-            $userSubmitted = $this->userSubmitted($this->getUser()->getId());
+            $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
         }
 
         foreach ($geoObjects as $row) {
-            ++$i;
+            $result[] = $this->process($row, $geo);
+        }
 
-            $geometry = json_decode($row['geometry'],true);
-            $attributes = json_decode($row['attributes'],true);
-
-            if ($row['uuid'] === $geo) {
-                $row['style_base'] = 'on_dialog_line';
-            }
-
-            if (isset($userSubmitted[$row['id']])) {
-                $row['style_base'] = 'upr';
-            }
-
-            if (isset($row['entry'])) {
-                $row['style_base'] = 'on_dialog_line';
-            }
-
-            if ('Градоустройствена единица' === $row['type_name']) {
-                $attributes['_zoom'] = 17;
-            }
-
-            if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-                $attributes['_zoom'] = 20;
-            }
-
-            $result[] = [
-                'type' => 'Feature',
-                'geometry' => $geometry,
-                'properties' => [
-                                    '_s1' => $row['style_base'],
-                                    '_s2' => $row['style_hover'],
-                                    'id' => $row['uuid'],
-                                    'name' => $row['geo_name'],
-                                    'type' => $row['type_name'],
-                                ] + $attributes,
-            ];
+        foreach ($userSubmitted as $row) {
+            $result[] = $this->process($row, $geo);
         }
 
         $this->logger->info('Map view', [
+            'mem' => round(memory_get_usage() / 1024 / 1024, 2),
             'zoom' => $zoom,
             'center' => $center,
             'bbox' => $in,
             'simplify_tolerance' => $simplifyTolerance,
-            'objects' => $i,
+            'objects' => 0,
         ]);
 
         $this->session->set('center', $center);
@@ -160,30 +128,46 @@ class MapController extends AbstractController
         ]);
     }
 
-    private function userSubmitted(int $userId):array
+    private function process($row, $geo):array
     {
-        /** @var Connection $conn */
-        $conn = $this->getDoctrine()->getConnection();
+        $geometry = json_decode($row['geometry'], true);
+        $attributes = json_decode($row['attributes'], true);
 
-        $stmt = $conn->prepare('
-            SELECT
-                uc.geo_object_id
-            FROM
-                x_survey.result_user_completion uc
-            WHERE
-                user_id = :user_id
-        ');
-
-        $stmt->bindValue('user_id', $userId);
-        $stmt->execute();
-
-        $result = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $result[$row['geo_object_id']] = $row['geo_object_id'];
+        if ($row['uuid'] === $geo) {
+            $row['style_base'] = 'on_dialog_line';
         }
 
-        return $result;
+        if (isset($row['entry'])) {
+            $row['style_base'] = 'on_dialog_line';
+        }
+
+        if (isset($attributes['urp'])) {
+            $row['style_base'] = 'upr';
+            $row['style_hover'] = 'upr';
+        }
+
+        if ('Градоустройствена единица' === $row['type_name']) {
+            $attributes['_zoom'] = 17;
+        }
+
+        if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+            $attributes['_zoom'] = 20;
+        }
+
+        return [
+            'type' => 'Feature',
+            'geometry' => $geometry,
+            'properties' => [
+                    '_s1' => $row['style_base'],
+                    '_s2' => $row['style_hover'],
+                    'id' => $row['uuid'],
+                    'name' => $row['geo_name'],
+                    'type' => $row['type_name'],
+                ] + $attributes,
+        ];
     }
+
+
 
     private function findCollectionBbox(int $userId, string $collectionUuid): array
     {

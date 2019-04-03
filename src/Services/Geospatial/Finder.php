@@ -4,6 +4,7 @@ namespace App\Services\Geospatial;
 
 use App\AppMain\Entity\User\UserInterface;
 use App\Services\Geometry\Utils;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Finder
@@ -153,5 +154,48 @@ class Finder
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             yield $row;
         }
+    }
+
+    public function userSubmitted(int $userId, float $simplifyTolerance)
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                g.id,
+                g.uuid,
+                g.style_base,
+                g.style_hover,
+                g.name as geo_name,
+                t.name as type_name,
+                g.attributes,
+                st_asgeojson(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                jsonb_build_object(
+                    \'urp\', 1
+                ) as attributes
+            FROM
+                x_survey.result_user_completion uc
+                    INNER JOIN
+                x_geospatial.geo_object g ON uc.geo_object_id = g.id
+                    INNER JOIN
+                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                    INNER JOIN
+                x_geospatial.object_type t ON g.object_type_id = t.id
+            WHERE
+                user_id = :user_id
+        ');
+
+        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->execute();
+
+        $result = [];
+
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            yield $row;
+        }
+
+        return $result;
     }
 }
