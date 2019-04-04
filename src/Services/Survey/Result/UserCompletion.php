@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Survey\Result;
 
 use Doctrine\DBAL\Driver\Connection;
@@ -19,6 +18,20 @@ class UserCompletion
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
+
+        $conn->beginTransaction();
+
+        $stmt = $conn->prepare('
+            DELETE FROM 
+                x_survey.result_user_completion
+            WHERE
+                user_id = :user_id
+                AND geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
 
         $stmt = $conn->prepare('
             INSERT INTO x_survey.result_user_completion(
@@ -65,10 +78,11 @@ class UserCompletion
         $stmt->bindValue('user_id', $userId);
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
+
+        $conn->commit();
     }
 
-
-    /** @deprecated */
+    // @deprecated
     /*
     public function update(int $geoObjectId, int $userId):void
     {

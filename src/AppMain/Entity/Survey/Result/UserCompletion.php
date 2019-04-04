@@ -1,9 +1,11 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Result;
 
+use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\Survey\Survey\SurveyInterface;
+use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -40,4 +42,24 @@ class UserCompletion
      * @ORM\Column(type="boolean")
      */
     private $isCompleted;
+
+    public function getUser(): ?UserInterface
+    {
+        return $this->user;
+    }
+
+    public function getGeoObject(): ?GeoObjectInterface
+    {
+        return $this->geoObject;
+    }
+
+    public function getSurvey(): ?SurveyInterface
+    {
+        return $this->survey;
+    }
+
+    public function getIsCompleted(): ?bool
+    {
+        return $this->isCompleted;
+    }
 }

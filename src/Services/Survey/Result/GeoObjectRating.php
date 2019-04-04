@@ -1,9 +1,8 @@
 <?php
 
-
 namespace App\Services\Survey\Result;
 
-
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GeoObjectRating
@@ -15,9 +14,24 @@ class GeoObjectRating
         $this->em = $entityManager;
     }
 
-    public function update(int $geoObjectId):void
+    public function update(int $geoObjectId, int $userId): void
     {
+        /** @var Connection $conn */
         $conn = $this->em->getConnection();
+
+        $conn->beginTransaction();
+
+        $stmt = $conn->prepare('
+            DELETE FROM 
+                x_survey.result_geo_object_rating
+            WHERE
+                user_id = :user_id
+                AND geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
 
         $stmt = $conn->prepare('
             INSERT INTO x_survey.result_geo_object_rating
@@ -59,5 +73,7 @@ class GeoObjectRating
 
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
+
+        $conn->commit();
     }
 }

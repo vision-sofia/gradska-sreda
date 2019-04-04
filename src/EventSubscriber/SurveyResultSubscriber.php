@@ -55,9 +55,10 @@ class SurveyResultSubscriber implements EventSubscriberInterface
 
     public function geoObjectRatingUpdate(GeoObjectSurveyTouch $event): void
     {
+        $userId = $event->getUser()->getId();
         $geoObjectId = $event->getGeoObject()->getId();
 
-        $this->geoObjectRating->update($geoObjectId);
+        $this->geoObjectRating->update($geoObjectId, $userId);
     }
 
 }
