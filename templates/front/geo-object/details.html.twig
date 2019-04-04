@@ -47,8 +47,8 @@
                                 <div class="d-flex">
                                     <div class="w-75">
                                         <label><input type="radio"
-                                                      {% if answer.isSelected == true %}checked="checked"{% endif %}
-                                                      name="answers[option][{{ question.uuid }}][id][]"
+                                                      {% if answer.isSelected %}checked="checked"{% endif %}
+                                                      name="answers[option][{{ question.uuid }}][]"
                                                       value="{{ answer.uuid }}"/> {{ answer.title }}
                                         </label> {% if answer.isPhotoEnabled %}
                                             {#
@@ -68,18 +68,23 @@
                             {% else %}
                                 <div style="padding-left:20px;">
                                     <label><input type="checkbox"
-                                                  {% if answer.isSelected == true %}checked="checked"{% endif %}
-                                                  name="answers[option][{{ question.uuid }}][id][]"
+                                                  {% if answer.isSelected %}checked="checked"{% endif %}
+                                                  name="answers[option][{{ question.uuid }}][]"
                                                   value="{{ answer.uuid }}"/> {{ answer.title }}</label>
                                 </div>
                             {% endif %}
                             {% if answer.isFreeAnswer %}
                                 <div class="form-group pl-4">
-                            <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3"
-                                      class="form-control w-100">{{ answer.explanation }}</textarea>
+                                    <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3"
+                                              class="form-control w-100">{{ answer.explanation }}</textarea>
                                 </div>
                             {% endif %}
+
                         {% endfor %}
+
+                        {% if question.isAnswered %}
+                            <label class="text-danger"><input type="radio" name="answers[option][{{ question.uuid }}][]" value=""> Изчисти</label>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

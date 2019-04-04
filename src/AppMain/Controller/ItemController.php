@@ -7,6 +7,7 @@ use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Question;
+use App\Services\Survey\Response\Compose;
 use App\Services\Survey\Response\QuestionV2;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
@@ -144,21 +145,21 @@ class ItemController extends AbstractController
 
         $stmt = $conn->prepare('
             WITH z as (
-              SELECT
-                  COUNT(*) as total
-              FROM
-                  x_survey.geo_object_question gq
-              WHERE
-                  gq.geo_object_type_id = :geo_object_type_id
-                  AND gq.survey_is_active = TRUE
+                SELECT
+                    COUNT(*) as total
+                FROM
+                    x_survey.geo_object_question gq
+                WHERE
+                    gq.geo_object_type_id = :geo_object_type_id
+                    AND gq.survey_is_active = TRUE
             ), d as (
-              SELECT
-                COUNT(*) as complete
-              FROM
-                  x_survey.response_question gq
-              WHERE
-                  gq.geo_object_id = :geo_object_id
-                  AND user_id = :user_id
+                SELECT
+                    COUNT(*) as complete
+                FROM
+                    x_survey.response_question q
+                WHERE
+                  q.geo_object_id = :geo_object_id
+                  AND q.user_id = :user_id
             )
             SELECT total, complete FROM z, d        
         ');
@@ -190,7 +191,7 @@ class ItemController extends AbstractController
      * @Route("geo/{id}/result", name="app.geo-object.result", methods="POST")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      */
-    public function result(Request $request, GeoObject $geoObject, QuestionV2 $question): Response
+    public function result(Request $request, GeoObject $geoObject, QuestionV2 $question, Compose $compose): Response
     {
         if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return $this->redirectToRoute('app.login');
@@ -200,15 +201,17 @@ class ItemController extends AbstractController
         $conn = $this->getDoctrine()->getConnection();
         $stmt = $conn->prepare('
                 SELECT
-                    a.uuid,
-                    rq.question_id
+                    a.uuid as answer_uuid,
+                    q.id as question_id,
+                    q.uuid as question_uuid
                 FROM
                     x_survey.response_answer ra
                         INNER JOIN
                     x_survey.response_question rq ON ra.question_id = rq.id
                         INNER JOIN
                     x_survey.q_answer a ON a.id = ra.answer_id                        
-                      
+                        INNER JOIN
+                    x_survey.q_question q ON q.id = a.question_id
                 WHERE
                     rq.geo_object_id = :geo_object_id
                     AND rq.is_latest = TRUE
@@ -220,61 +223,20 @@ class ItemController extends AbstractController
         $stmt->execute();
 
         $currentAnswers = [];
+        $questionHashMap = [];
+
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $currentAnswers[] = $row['uuid'];
+            $currentAnswers[$row['question_uuid']][] = $row['answer_uuid'];
+            $questionHashMap[$row['question_uuid']] = $row['question_id'];
         }
 
         $answers = $request->get('answers');
         $files = $request->files->get('answers');
 
-        $r = [];
+        $result = $compose->build($answers, $files, $currentAnswers);
 
-        // Options
-        if (isset($answers['option']) && \is_array($answers['option'])) {
-            foreach ($answers['option'] as $value) {
-                foreach ($value as $k => $a) {
-                    if ('id' === $k) {
-                        if (\is_array($a)) {
-                            foreach ($a as $item) {
-                                $r[$item] = [];
-                            }
-                        } else {
-                            $r[$a] = [];
-                        }
-                    }
-                }
-            }
-        }
-
-        // Explanation
-        if (isset($answers['explanation']) && \is_array($answers['explanation'])) {
-            foreach ($answers['explanation'] as $key => $item) {
-                if (isset($r[$key])) {
-                    $r[$key]['explanation'] = $item;
-                }
-            }
-        }
-
-        // Photo
-        if (isset($files['photo']) && \is_array($files['photo'])) {
-            foreach ($files['photo'] as $key => $item) {
-                if (isset($r[$key])) {
-                    $r[$key]['photo'] = $item;
-                }
-            }
-        }
-
-        $d = [];
-
-        foreach ($r as $key => $item) {
-            $d[] = $key;
-        }
-
-        // new
-        $diff = array_diff($d, $currentAnswers);
-
-        foreach ($diff as $item) {
-            $question->response($item, $r[$item], $geoObject, $this->getUser());
+        foreach ($result['new'] as $answerUuid => $answerExtra) {
+            $question->response($answerUuid, $answerExtra, $geoObject, $this->getUser());
         }
 
         // old
@@ -295,9 +257,7 @@ class ItemController extends AbstractController
         $stmt->bindValue('user_id', $this->getUser()->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
 
-        $diff = array_diff($currentAnswers, $d);
-
-        foreach ($diff as $item) {
+        foreach ($result['old'] as $item) {
             $stmt->bindValue('answer_uuid', $item);
             $stmt->execute();
         }
@@ -332,7 +292,7 @@ class ItemController extends AbstractController
             }
         }
 
-        foreach ($r as $key => $value) {
+        foreach ($result['all'] as $key => $value) {
             if (isset($value['photo'])) {
                 $photo = $value['photo'];
 
@@ -363,7 +323,28 @@ class ItemController extends AbstractController
             }
         }
 
-        // Remove
+        foreach ($result['clean'] as $value) {
+            if (!isset($questionHashMap[$value])) {
+                continue;
+            }
+
+            $stmt = $conn->prepare('
+                DELETE
+                FROM
+                    x_survey.response_question
+                WHERE
+                    question_id = :question_id
+                    AND user_id = :user_id
+                    AND geo_object_id = :geo_object_id
+            ');
+
+            $stmt->bindValue('question_id', $questionHashMap[$value]);
+            $stmt->bindValue('user_id', $this->getUser()->getId());
+            $stmt->bindValue('geo_object_id', $geoObject->getId());
+            $stmt->execute();
+        }
+
+        // Remove answers with no parent
         $stmt = $conn->prepare('
             DELETE FROM 
                 x_survey.response_answer ra1 

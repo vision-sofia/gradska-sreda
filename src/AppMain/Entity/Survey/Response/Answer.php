@@ -31,7 +31,7 @@ class Answer implements UuidInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Response\Question", inversedBy="answers")
-     * @ORM\JoinColumn(referencedColumnName="id", name="question_id", nullable=false)
+     * @ORM\JoinColumn(referencedColumnName="id", name="question_id", nullable=false, onDelete="CASCADE")
      */
     private $question;
 
