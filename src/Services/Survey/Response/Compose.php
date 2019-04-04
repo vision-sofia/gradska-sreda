@@ -16,7 +16,6 @@ class Compose
         // Options
         if (isset($answers['option']) && \is_array($answers['option'])) {
             foreach ($answers['option'] as $question => $a) {
-
                 if (\is_array($a)) {
                     foreach ($a as $item) {
                         if (empty($item) && isset($currentAnswers[$question])) {
@@ -69,7 +68,7 @@ class Compose
                 unset($new[$discardAnswer]);
             }
 
-            if (($key = array_search($discardAnswer, $old, true)) !== false) {
+            if (false !== ($key = array_search($discardAnswer, $old, true))) {
                 unset($old[$key]);
             }
 
@@ -79,9 +78,9 @@ class Compose
         }
 
         return [
-            'new'   => $new,
-            'old'   => $old,
-            'all'   => $r,
+            'new' => $new,
+            'old' => $old,
+            'all' => $r,
             'clean' => array_keys($questionsToClear),
         ];
     }
@@ -92,7 +91,6 @@ class Compose
         $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($array));
 
         foreach ($it as $v) {
-
             $result[] = $v;
         }
 
