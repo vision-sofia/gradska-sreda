@@ -40,6 +40,11 @@ class Criterion implements UuidInterface
      */
     private $indicators;
 
+    /**
+     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     */
+    private $metadata;
+
     public function getId(): int
     {
         return $this->id;
@@ -77,7 +82,10 @@ class Criterion implements UuidInterface
         $this->category = $category;
     }
 
-
+    public function getMetadata(): array
+    {
+        return $this->metadata;
+    }
 
     /**
      * @return Collection|Indicator[]

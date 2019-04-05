@@ -19,81 +19,104 @@
     </div>
 
     <div class="container">
-        <div class="row mt-3">
-            <div class="col">
-                <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
-                <h5 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
-            </div>
-        </div>
 
-        <div class="progress mb-4">
-            <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%"
-                 aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
+        <div class="row  mt-5">
+            <div class="col-lg-7">
 
-        <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}"
-              enctype="multipart/form-data">
-            <div class="mb-3">
-                <button type="submit" name="submit" class="btn btn-primary">Запази</button>
-            </div>
-            {% for question in questions %}
-                <div class="mb-4">
-
-                    <i class="fa fa-star {{ question.isAnswered ? 'text-warning' : 'text-black-50' }}"></i> <h5
-                            class="d-inline">{{ question.title }}</h5>
-                    <div class="mt-2 ml-4">
-                        {% for answer in question.answers %}
-                            {% if answer.parent is null %}
-                                <div class="d-flex">
-                                    <div class="w-75">
-                                        <label><input type="radio"
-                                                      {% if answer.isSelected %}checked="checked"{% endif %}
-                                                      name="answers[option][{{ question.uuid }}][]"
-                                                      value="{{ answer.uuid }}"/> {{ answer.title }}
-                                        </label> {% if answer.isPhotoEnabled %}
-                                            {#
-                                            {% if answer.photo is null %}
-                                                <div class="custom-file">
-                                                    <input type="file" name="answers[photo][{{ answer.uuid }}]"
-                                                           class="custom-file-input">
-                                                    <label class="custom-file-label">Качете снимка</label>
-                                                </div>
-                                            {% else %}
-                                                <img src="/media/{{ answer.photo.filename }}" style="width: 84px;height: 84px" />
-                                            {% endif %}
-                                            #}
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% else %}
-                                <div style="padding-left:20px;">
-                                    <label><input type="checkbox"
-                                                  {% if answer.isSelected %}checked="checked"{% endif %}
-                                                  name="answers[option][{{ question.uuid }}][]"
-                                                  value="{{ answer.uuid }}"/> {{ answer.title }}</label>
-                                </div>
-                            {% endif %}
-                            {% if answer.isFreeAnswer %}
-                                <div class="form-group pl-4">
-                                    <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3"
-                                              class="form-control w-100">{{ answer.explanation }}</textarea>
-                                </div>
-                            {% endif %}
-
-                        {% endfor %}
-
-                        {% if question.isAnswered %}
-                            <label class="text-danger"><input type="radio" name="answers[option][{{ question.uuid }}][]" value=""> Изчисти</label>
-                        {% endif %}
+                <div class="row">
+                    <div class="col">
+                        <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
+                        <h5 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
                     </div>
                 </div>
-            {% endfor %}
-            <div class="text-right">
-                <button type="submit" name="submit" class="btn btn-primary position-fixed" style="bottom: 20px;" >
-                    Запази
-                </button>
+
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%"
+                         aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <form method="post" action="{{ path('app.geo-object.result', {'id': geo_object.uuid}) }}"
+                      enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <button type="submit" name="submit" class="btn btn-primary">Запази</button>
+                    </div>
+                    {% for question in questions %}
+                        <div class="mb-4">
+
+                            <i class="fa fa-star {{ question.isAnswered ? 'text-warning' : 'text-black-50' }}"></i> <h5
+                                    class="d-inline">{{ question.title }}</h5>
+                            <div class="mt-2 ml-4">
+                                {% for answer in question.answers %}
+                                    {% if answer.parent is null %}
+                                        <div class="d-flex">
+                                            <div class="w-75">
+                                                <label><input type="{{ question.hasMultipleAnswers ? 'checkbox' : 'radio' }}"
+                                                              {% if answer.isSelected %}checked="checked"{% endif %}
+                                                              name="answers[option][{{ question.uuid }}][]"
+                                                              value="{{ answer.uuid }}" /> {{ answer.title }}
+                                                </label> {% if answer.isPhotoEnabled %}
+
+                                                    {#
+                                                    {% if answer.photo is null %}
+                                                        <div class="custom-file">
+                                                            <input type="file" name="answers[photo][{{ answer.uuid }}]"
+                                                                   class="custom-file-input">
+                                                            <label class="custom-file-label">Качете снимка</label>
+                                                        </div>
+                                                    {% else %}
+                                                        <img src="/media/{{ answer.photo.filename }}" style="width: 84px;height: 84px" />
+                                                    {% endif %}
+                                                    #}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div style="padding-left:20px;">
+                                            <label><input type="checkbox"
+                                                          {% if answer.isSelected %}checked="checked"{% endif %}
+                                                          name="answers[option][{{ question.uuid }}][]"
+                                                          value="{{ answer.uuid }}" /> {{ answer.title }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% if answer.isFreeAnswer %}
+                                        <div class="form-group pl-4">
+                                    <textarea name="answers[explanation][{{ answer.uuid }}]" rows="3"
+                                              class="form-control w-100">{{ answer.explanation }}</textarea>
+                                        </div>
+                                    {% endif %}
+
+                                {% endfor %}
+
+                                {% if question.isAnswered %}
+                                    <label class="text-danger"><input type="radio" name="answers[option][{{ question.uuid }}][]" value=""> Изчисти</label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-right">
+                        <button type="submit" name="submit" class="btn btn-primary position-fixed" style="bottom: 20px;">
+                            Запази
+                        </button>
+                    </div>
+                </form>
+
             </div>
-        </form>
+            <div class="col-lg-5">
+                <h4>Рейтинг</h4>
+                {% for c in rating %}
+                    {% set percentage = (c.rating / c.max_points) * 100 %}
+                    <div class="row">
+                        <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
+                        <div class="col-lg-6">
+                            <div class="progress mb-4">
+                                <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
+                                     aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ c.rating|number_format(1) }} / {{ c.max_points|number_format(0) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
     {#
         {% if is_available_for_survey == true %}

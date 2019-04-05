@@ -117,6 +117,7 @@ class ItemController extends AbstractController
             $result[] = $question;
         }
 
+        /*
         $stmt = $conn->prepare('
             SELECT
                 u.username AS user_username, 
@@ -133,7 +134,8 @@ class ItemController extends AbstractController
                             
             GROUP BY
                 cr.id, u.id
-            ORDER BY u.username                ');
+            ORDER BY u.username
+        ');
 
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
@@ -142,6 +144,32 @@ class ItemController extends AbstractController
         while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $resultByUsers[] = $question;
         }
+        */
+
+        $stmt = $conn->prepare('
+            SELECT
+                cr.name AS criterion_name,
+                round(AVG(rating), 2) as rating,
+                metadata->\'max_points\' as max_points
+            FROM
+                x_survey.result_geo_object_rating gr
+                    INNER JOIN
+                x_survey.ev_criterion_subject cr ON gr.criterion_subject_id = cr.id
+            WHERE
+                gr.geo_object_id = :geo_object_id
+            GROUP BY
+                cr.id               
+        ');
+
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->execute();
+
+        $resultByCriterion = [];
+        while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $resultByCriterion[] = $question;
+        }
+
+
 
         $stmt = $conn->prepare('
             WITH z as (
@@ -181,9 +209,10 @@ class ItemController extends AbstractController
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
-            'resultByUsers' => $resultByUsers,
+          #  'resultByUsers' => $resultByUsers,
             'questions' => $questions,
             'progress' => $progress,
+            'rating' => $resultByCriterion,
         ]);
     }
 
