@@ -1,0 +1,27 @@
+{% extends 'front/info/layout.html.twig' %}
+
+{% block content %}
+    <h2>Класации</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Потребител</th>
+            <th class="text-center" scope="col">Точки</th>
+            <th class="text-center" scope="col">Попълнени анкети</th>
+            <th class="text-center" scope="col">Започнати анкети</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in rating %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.username }}</td>
+                <td class="text-center">{{ row.score|round(2) }}</td>
+                <td class="text-center">{{ row.completed }}</td>
+                <td class="text-center">{{ row.total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
