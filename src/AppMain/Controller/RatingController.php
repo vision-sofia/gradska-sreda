@@ -47,7 +47,7 @@ class RatingController extends AbstractController
             FROM 
                 z 
             ORDER BY 
-                score
+                score DESC
         ');
 
         $stmt->execute();
