@@ -56,7 +56,6 @@
                                                               value="{{ answer.uuid }}" /> {{ answer.title }}
                                                 </label> {% if answer.isPhotoEnabled %}
 
-                                                    {#
                                                     {% if answer.photo is null %}
                                                         <div class="custom-file">
                                                             <input type="file" name="answers[photo][{{ answer.uuid }}]"
@@ -64,9 +63,9 @@
                                                             <label class="custom-file-label">Качете снимка</label>
                                                         </div>
                                                     {% else %}
-                                                        <img src="/media/{{ answer.photo.filename }}" style="width: 84px;height: 84px" />
+                                                        <img src="/media/{{ answer.photo }}" style="width: 84px;height: 84px;" />
                                                     {% endif %}
-                                                    #}
+
                                                 {% endif %}
                                             </div>
                                         </div>

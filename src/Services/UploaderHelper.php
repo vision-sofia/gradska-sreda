@@ -1,30 +1,34 @@
 <?php
 
-
 namespace App\Services;
 
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploaderHelper
 {
-    private $mediaDir;
+    private $filesystem;
 
-    public function __construct(string $mediaDir)
+    public function __construct(FilesystemInterface $publicUploadsFilesystem)
     {
-
-        $this->mediaDir = $mediaDir;
+        $this->filesystem = $publicUploadsFilesystem;
     }
 
-    public function uploadDataFile(UploadedFile $uploadedFile): File
+    public function uploadAnswerImage(File $file): string
     {
-        $newFilename = bin2hex(random_bytes(12)) . '.' . $uploadedFile->guessExtension();
+        $newFilename = bin2hex(random_bytes(12)) . '.' . $file->guessExtension();
 
-        $file = $uploadedFile->move(
-            $this->mediaDir,
-            $newFilename
+        $this->filesystem->write(
+            $newFilename,
+            file_get_contents($file->getPathname())
         );
 
-        return $file;
+        return $newFilename;
+    }
+
+    public function getPublicPath(string $path): string
+    {
+        //return $this->requestStackContext->getBasePath() . '/uploads/' . $path;
+        return '';
     }
 }

@@ -16,7 +16,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -120,8 +119,8 @@ class ItemController extends AbstractController
         /*
         $stmt = $conn->prepare('
             SELECT
-                u.username AS user_username, 
-                cr.name AS criterion_name, 
+                u.username AS user_username,
+                cr.name AS criterion_name,
                 round(AVG(rating), 2) AS rating
             FROM
                 x_survey.result_geo_object_rating gr
@@ -131,7 +130,7 @@ class ItemController extends AbstractController
                 x_main.user_base u ON gr.user_id = u.id
             WHERE
                 gr.geo_object_id = :geo_object_id
-                            
+
             GROUP BY
                 cr.id, u.id
             ORDER BY u.username
@@ -168,8 +167,6 @@ class ItemController extends AbstractController
         while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $resultByCriterion[] = $question;
         }
-
-
 
         $stmt = $conn->prepare('
             WITH z as (
@@ -209,7 +206,7 @@ class ItemController extends AbstractController
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
-          #  'resultByUsers' => $resultByUsers,
+          //  'resultByUsers' => $resultByUsers,
             'questions' => $questions,
             'progress' => $progress,
             'rating' => $resultByCriterion,
@@ -325,7 +322,7 @@ class ItemController extends AbstractController
             if (isset($value['photo'])) {
                 $photo = $value['photo'];
 
-                $file = $this->uploaderHelper->uploadDataFile($photo);
+                $file = $this->uploaderHelper->uploadAnswerImage($photo);
 
                 $stmt = $conn->prepare('
                     UPDATE
@@ -344,7 +341,7 @@ class ItemController extends AbstractController
                       
                 ');
 
-                $stmt->bindValue('photo', $file->getFilename());
+                $stmt->bindValue('photo', $file);
                 $stmt->bindValue('answer_uuid', $key);
                 $stmt->bindValue('user_id', $this->getUser()->getId());
                 $stmt->bindValue('geo_object_id', $geoObject->getId());
