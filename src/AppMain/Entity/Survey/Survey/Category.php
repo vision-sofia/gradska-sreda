@@ -2,7 +2,7 @@
 
 namespace App\AppMain\Entity\Survey\Survey;
 
-use App\AppMain\Entity\Survey\EvaluationDefinition\Indicator;
+use App\AppMain\Entity\Survey\Evaluation\Definition\Indicator;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
