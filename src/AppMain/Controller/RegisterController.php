@@ -44,7 +44,7 @@ class RegisterController extends AbstractController
 
             $this->addFlash('success', 'Регистрацията е успешна!');
 
-            return $this->redirectToRoute('app.homepage');
+            return $this->redirectToRoute('app.map');
         }
 
         return $this->render('front/register/index.html.twig', [
