@@ -22,17 +22,15 @@ security:
             security: false
 
         main:
-            context: main
             anonymous: ~
-            provider: db_provider
-            form_login:
-                login_path: app.login
-                check_path: app.login
-                csrf_token_generator: security.csrf.token_manager
-                use_referer: true
             logout:
-                path:   /logout
+                path:   logout
                 target: /
+            guard:
+                provider: db_provider
+                entry_point: App\Security\LoginFormAuthenticator
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
 
     access_control:
         - { path: ^/manage, roles: ROLE_MANAGE }

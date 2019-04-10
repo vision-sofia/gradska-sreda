@@ -16,7 +16,7 @@ class Logout
 
     public function logout(Request $request): void
     {
-        $this->tokenStorage->setToken(null);
+        $this->tokenStorage->setToken();
 
         if ($request->getSession()) {
             $request->getSession()->invalidate();

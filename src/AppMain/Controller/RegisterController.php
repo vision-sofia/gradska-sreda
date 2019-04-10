@@ -2,22 +2,29 @@
 
 namespace App\AppMain\Controller;
 
-
 use App\AppMain\Entity\User\User;
-
 use App\AppMain\Form\Type\UserRegisterType;
+use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class RegisterController extends AbstractController
 {
     protected $passwordEncoder;
+    protected $guardHandler;
+    protected $authenticator;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        UserPasswordEncoderInterface $passwordEncoder,
+        GuardAuthenticatorHandler $guardHandler,
+        LoginFormAuthenticator $authenticator
+    ) {
         $this->passwordEncoder = $passwordEncoder;
+        $this->guardHandler = $guardHandler;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -31,7 +38,6 @@ class RegisterController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $password = $this->passwordEncoder->encodePassword($user, $user->getPlainPassword());
 
             $user->setPassword($password);
@@ -44,7 +50,12 @@ class RegisterController extends AbstractController
 
             $this->addFlash('success', 'Регистрацията е успешна!');
 
-            return $this->redirectToRoute('app.map');
+            return $this->guardHandler->authenticateUserAndHandleSuccess(
+                $user,
+                $request,
+                $this->authenticator,
+                'main'
+            );
         }
 
         return $this->render('front/register/index.html.twig', [
