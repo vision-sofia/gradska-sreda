@@ -221,7 +221,7 @@ class StyleBuildCommand extends Command
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -248,7 +248,7 @@ class StyleBuildCommand extends Command
                             g.uuid,
                             g.name,
                             g.object_type_id,
-                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior,
                                 \'has_vhc_other\', g.attributes->\'has_vhc_other\',

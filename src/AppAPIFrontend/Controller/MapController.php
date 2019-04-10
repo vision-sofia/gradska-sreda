@@ -201,7 +201,7 @@ class MapController extends AbstractController
                 st_xmax(w) as xmax,
                 st_ymin(w) as ymin,
                 st_ymax(w) as ymax,
-                st_asgeojson(
+                ST_AsGeoJSON(
                     st_makeenvelope(
                         st_xmin(w),
                         st_xmax(w),

@@ -42,7 +42,7 @@ class Finder
                             g.style_base,
                             g.style_hover,
                             g.object_type_id,
-                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
@@ -73,7 +73,7 @@ class Finder
                             g.style_base,
                             g.style_hover,                            
                             g.object_type_id,
-                            st_asgeojson(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior,
                                 \'has_vhc_other\', g.attributes->\'has_vhc_other\',
@@ -170,7 +170,7 @@ class Finder
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
-                st_asgeojson(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'urp\', uc.is_completed::int
                 ) as attributes

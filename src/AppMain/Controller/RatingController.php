@@ -50,6 +50,38 @@ class RatingController extends AbstractController
                 score DESC
         ');
 
+        /*
+
+        WITH z AS (
+  SELECT
+      count(*) filter (where r.is_completed = true)::dec as completed,
+      count(*)::dec as total,
+      r.user_id,
+      r.survey_id,
+      p.geo_object_id as polygon
+  FROM
+      x_survey.result_user_completion r
+          INNER JOIN
+      x_geometry.geometry_base gb ON gb.geo_object_id = r.geo_object_id
+          CROSS JOIN
+      x_geometry.polygon p
+  WHERE
+      ST_Intersects(p.coordinates::geometry, gb.coordinates::geometry)
+  GROUP BY
+      r.user_id, r.survey_id, p.id
+)
+SELECT
+    total,
+    completed,
+    user_id,
+    survey_id,
+    polygon
+FROM
+    z
+
+        */
+
+
         $stmt->execute();
 
         while ($row = $stmt->fetch()) {

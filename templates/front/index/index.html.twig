@@ -4,39 +4,4 @@
     <div class="container">
         <h2>Начало</h2>
     </div>
-    <div class="container-fluid">
-        <div id="map" class="map"></div>
-        <script type="text/javascript">
-            var map = new ol.Map({
-                target: 'map',
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
-                    })
-                ],
-                view: new ol.View({
-                    center: ol.proj.fromLonLat([23.3197423, 42.696717]),
-                    zoom: 15
-                })
-            });
-        </script>
-    </div>
-
-    <div class="container">
-        <ul>
-            {% for item in items %}
-                <li>
-                    {{ item.category_name }} ({{ item.type }} ) - <a href="{{ path('app.geo-object.details', {'id': item.id}) }}">{{ item.id }}</a>
-
-                    {% for survey_id, data in item.data %}
-                        <p>
-                        {% for key, value in data %}
-                            {{ key }}: {{ value }}<br />
-                        {% endfor %}
-                        </p>
-                    {% endfor %}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
 {% endblock %}

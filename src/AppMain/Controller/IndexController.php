@@ -52,7 +52,7 @@ class IndexController extends AbstractController
             SELECT 
                 g.uuid as id,
                 c.name as category_name,                
-                st_asgeojson(m.coordinates) as geo,
+                ST_AsGeoJSON(m.coordinates) as geo,
                 g.attributes,
                 u.data,
                 g.name as object_name,
