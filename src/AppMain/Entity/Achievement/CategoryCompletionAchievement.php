@@ -11,26 +11,15 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="a_survey_completion_achievement", schema="x_main")
  * @ORM\Entity()
  */
-class CategoryCompletionAchievement implements UuidInterface
+class CategoryCompletionAchievement extends AbstractAchievement
 {
-    use UUIDableTrait;
-
     /**
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="App\Doctrine\NextValGenerator")
      */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $title;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $description;
+    protected $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
@@ -39,7 +28,7 @@ class CategoryCompletionAchievement implements UuidInterface
     private $surveyCategory;
 
     /**
-     * @ORM\Column(type="decimal", scale=1, precision=2)
+     * @ORM\Column(type="smallint")
      */
     private $threshold;
 
