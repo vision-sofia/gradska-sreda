@@ -1,11 +1,8 @@
 {% extends 'front/map/layout.html.twig' %}
 {% block title %}Карта{% endblock %}
 {% block content %}
-    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-        <div class="container py-3">
-            <a href="{{ path('app.geo-collection.create') }}" class="">Маршрути</a>
-        </div>
-    {% endif %}
+
+    {% include 'front/partial/subnavigation.html.twig' %}
     <div style="">
         <div id="mapMain" data-locate-on-load="true" data-geo-collection="123"></div>
         <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">

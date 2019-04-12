@@ -3,13 +3,13 @@
 namespace App\DataFixtures\Survey;
 
 use App\AppMain\Entity\Survey\Evaluation\Definition;
+use App\AppMain\Entity\Survey\Evaluation\Subject;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Question;
 use App\AppMain\Entity\Survey\Survey\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use App\AppMain\Entity\Survey\Evaluation\Subject;
 
 class QuestionFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -24,9 +24,10 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
     {
         foreach ($this->data() as $question) {
             $category = $manager->getRepository(Category::class)
-                                ->findOneBy([
-                                    'name' => $question['category']
-                                ]);
+                ->findOneBy([
+                                    'name' => $question['category'],
+                                ])
+            ;
 
             $questionObject = new Question();
             $questionObject->setCategory($category);
@@ -46,13 +47,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 $manager->persist($answerObject);
                 $manager->flush();
 
-                if(isset($answer['child'])) {
+                if (isset($answer['child'])) {
                     foreach ($answer['child'] as $item) {
                         $answerChild = new Answer();
                         $answerChild->setTitle($item['title']);
                         $answerChild->setQuestion($questionObject);
                         $answerChild->setParent($answerObject);
-                        $answerChild->setIsFreeAnswer(isset($item['is_free_answer']) && $item['is_free_answer'] === true);
+                        $answerChild->setIsFreeAnswer(isset($item['is_free_answer']) && true === $item['is_free_answer']);
                         $answerChild->setIsPhotoEnabled(isset($answer['is_photo_enabled']) ? $answer['is_photo_enabled'] : false);
 
                         $manager->persist($answerChild);
@@ -60,12 +61,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     }
                 }
 
-                if(isset($answer['evaluation'])) {
+                if (isset($answer['evaluation'])) {
                     foreach ($answer['evaluation'] as $item) {
                         $criterionSubject = $manager->getRepository(Subject\Criterion::class)->findOneBy([
                             'name' => $item['criterion'],
-                            'category' => $category
-                        ]);
+                            'category' => $category,
+                        ])
+                        ;
                         $criterionDefinition = new Definition\Criterion();
                         $criterionDefinition->setValue($item['point']);
                         $criterionDefinition->setSubject($criterionSubject);
@@ -78,7 +80,6 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             }
         }
     }
-
 
     private function data(): array
     {
@@ -96,18 +97,18 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
-                        ]
+                        ],
                     ],
                     [
                         'title' => 'Спокоен',
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -121,58 +122,58 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
-                            ]
-                        ]
+                                'criterion' => 'Сигурност',
+                            ],
+                        ],
                     ],
                     [
                         'title' => 'Пешеходна пътека',
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
-                            ]
-                        ]
+                                'criterion' => 'Сигурност',
+                            ],
+                        ],
                     ],
                     [
                         'title' => 'Пешеходен подлез',
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
-                            ]
-                        ]
+                                'criterion' => 'Сигурност',
+                            ],
+                        ],
                     ],
                     [
                         'title' => 'Пешеходен мост / надлез',
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
-                            ]
-                        ]
+                                'criterion' => 'Сигурност',
+                            ],
+                        ],
                     ],
                     [
-                        'title' => 'Нерегулирано (квартални улици)'
+                        'title' => 'Нерегулирано (квартални улици)',
                     ],
                     [
-                        'title' => 'Несъществуващо(!)'
+                        'title' => 'Несъществуващо(!)',
                     ],
                 ],
             ],
@@ -186,29 +187,27 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                         'child' => [
                             [
-                                'title' => 'Скосени бордюри / повдигната пешеходна повърхност'
+                                'title' => 'Скосени бордюри / повдигната пешеходна повърхност',
+                            ], [
+                                'title' => 'Тактилни (релефни) плочки',
+                            ], [
+                                'title' => 'Звукова сигнализация',
                             ],
-                            [
-                                'title' => 'Тактилни (релефни) плочки'
-                            ],
-                            [
-                                'title' => 'Звукова сигнализация'
-                            ],
-                        ]
+                        ],
                     ],
                     [
-                        'title' => 'Не, никакви'
+                        'title' => 'Не, никакви',
                     ],
                 ],
             ],
             [
                 'category' => 'Пресичания',
-                'question' => 'Има ли нещо, което в момента да затруднява видимостта или пресичането? (да не се появява при отговор “нерегулирано” на въпрос 2)',
+                'question' => 'Има ли нещо, което в момента да затруднява видимостта или пресичането?', // TODO: да не се появява при отговор “нерегулирано” на въпрос 2
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -216,26 +215,26 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'is_photo_enabled' => true,
                         'child' => [
                             [
-                                'title' => 'Паркирани коли'
+                                'title' => 'Паркирани коли',
                             ],
                             [
-                                'title' => 'Кофи за боклук'
+                                'title' => 'Кофи за боклук',
                             ],
                             [
                                 'title' => 'Друго',
-                                'is_free_answer' => true
+                                'is_free_answer' => true,
                             ],
-                        ]
+                        ],
                     ],
                     [
                         'title' => 'Не',
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Достъпност и проходимост'
-                            ],  [
+                                'criterion' => 'Достъпност и проходимост',
+                            ], [
                                 'point' => 1,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                         ],
                     ],
@@ -251,7 +250,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                         ],
                     ],
@@ -270,35 +269,35 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'is_photo_enabled' => true,
                         'child' => [
                             [
-                                'title' => 'Паркирани коли'
+                                'title' => 'Паркирани коли',
                             ],
                             [
-                                'title' => 'Кофи за боклук'
+                                'title' => 'Кофи за боклук',
                             ],
                             [
-                                'title' => 'Маси на заведения'
+                                'title' => 'Маси на заведения',
                             ],
                             [
-                                'title' => 'Спирки на МГТ'
+                                'title' => 'Спирки на МГТ',
                             ],
                             [
-                                'title' => 'Несъобразено поставени осветителни стълбове и реклами'
+                                'title' => 'Несъобразено поставени осветителни стълбове и реклами',
                             ],
                             [
-                                'title' => 'Антипаркинг колчета'
+                                'title' => 'Антипаркинг колчета',
                             ],
                             [
                                 'title' => 'Друго',
-                                'is_free_answer' => true
+                                'is_free_answer' => true,
                             ],
-                        ]
+                        ],
                     ],
                     [
                         'title' => 'Да, епизодично',
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                     ],
@@ -307,7 +306,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                     ],
@@ -327,7 +326,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                     ],
@@ -343,7 +342,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                     ],
@@ -352,22 +351,22 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'is_photo_enabled' => true,
                         'child' => [
                             [
-                                'title' => 'Има много неравности'
+                                'title' => 'Има много неравности',
                             ],
                             [
-                                'title' => 'Липса на настилка'
+                                'title' => 'Липса на настилка',
                             ],
                             [
-                                'title' => 'Хлъзгаво е'
+                                'title' => 'Хлъзгаво е',
                             ],
                             [
-                                'title' => 'Има наводнени участъци'
+                                'title' => 'Има наводнени участъци',
                             ],
                             [
                                 'title' => 'Друго',
-                                'is_free_answer' => true
+                                'is_free_answer' => true,
                             ],
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -381,11 +380,11 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -404,11 +403,11 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -427,8 +426,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
-                            ]
+                                'criterion' => 'Сигурност',
+                            ],
                         ],
                     ],
                     [
@@ -436,8 +435,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Сигурност'
-                            ]
+                                'criterion' => 'Сигурност',
+                            ],
                         ],
                     ],
                     [
@@ -459,10 +458,10 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Сигурност'
-                            ]
+                                'criterion' => 'Сигурност',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
             ],
             [
@@ -475,8 +474,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
@@ -484,13 +483,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
-                        'title' => 'Не'
-                    ]
+                        'title' => 'Не',
+                    ],
                 ],
             ],
             [
@@ -499,15 +498,15 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Интензивен'
+                        'title' => 'Интензивен',
                     ],
                     [
                         'title' => 'Умерен',
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
@@ -515,10 +514,10 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
             ],
             [
@@ -531,8 +530,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
@@ -541,13 +540,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
                         'title' => 'Не, няма',
-                    ]
+                    ],
                 ],
             ],
             [
@@ -560,8 +559,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
@@ -570,13 +569,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
-                        'title' => 'Не, няма'
-                    ]
+                        'title' => 'Не, няма',
+                    ],
                 ],
             ],
             [
@@ -587,7 +586,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Много',
                         'is_photo_enabled' => true,
-                        'is_free_answer' => true
+                        'is_free_answer' => true,
                     ],
                     [
                         'title' => 'Малко',
@@ -595,8 +594,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
@@ -604,13 +603,13 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
-                            ]
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
                         ],
                     ],
                     [
-                        'title' => 'Няма сгради'
-                    ]
+                        'title' => 'Няма сгради',
+                    ],
                 ],
             ],
             [
@@ -623,7 +622,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Достъпност и проходимост'
+                                'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
                     ],
@@ -632,22 +631,22 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'is_photo_enabled' => true,
                         'child' => [
                             [
-                                'title' => 'Има много неравности'
+                                'title' => 'Има много неравности',
                             ],
                             [
-                                'title' => 'Липса на настилка'
+                                'title' => 'Липса на настилка',
                             ],
                             [
-                                'title' => 'Хлъзгаво е'
+                                'title' => 'Хлъзгаво е',
                             ],
                             [
-                                'title' => 'Има наводнени участъци'
+                                'title' => 'Има наводнени участъци',
                             ],
                             [
                                 'title' => 'Друго',
-                                'is_free_answer' => true
+                                'is_free_answer' => true,
                             ],
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -661,7 +660,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 2,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                         ],
                     ],
@@ -670,7 +669,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Сигурност'
+                                'criterion' => 'Сигурност',
                             ],
                         ],
                     ],
@@ -689,7 +688,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -698,7 +697,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -717,7 +716,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -727,7 +726,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -746,7 +745,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -756,7 +755,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 0.5,
-                                'criterion' => 'Комфорт и привлекателност'
+                                'criterion' => 'Комфорт и привлекателност',
                             ],
                         ],
                     ],
@@ -776,7 +775,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Критерии-1'
+                                'criterion' => 'Критерии-1',
                             ],
                         ],
                     ],
@@ -799,7 +798,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Критерии-2'
+                                'criterion' => 'Критерии-2',
                             ],
                         ],
                     ],
@@ -815,7 +814,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Критерии-1'
+                                'criterion' => 'Критерии-1',
                             ],
                         ],
                     ],
@@ -824,7 +823,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'evaluation' => [
                             [
                                 'point' => 1,
-                                'criterion' => 'Критерии-2'
+                                'criterion' => 'Критерии-2',
                             ],
                         ],
                     ],

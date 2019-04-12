@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="progress mb-4">
-                    <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%"
+                    <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%;"
                          aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
 
@@ -63,7 +63,8 @@
                                                             <label class="custom-file-label">Качете снимка</label>
                                                         </div>
                                                     {% else %}
-                                                        <img src="/media/{{ answer.photo }}" style="width: 84px;height: 84px;" />
+                                                        <img src="/media/{{ answer.photo }}" style="width: 128px;height: 128px;" />
+                                                        <button class="btn btn-danger btn-sm pt-2" type="submit"><i class="fa fa-trash"></i> Махни снимката</button>
                                                     {% endif %}
 
                                                 {% endif %}
@@ -113,6 +114,24 @@
                             </div>
                         </div>
                     </div>
+                {% endfor %}
+
+                <h4 class="mt-4">Оценки от хората</h4>
+                {% for u, r in resultByUsers %}
+                    <strong>{{ u }}</strong>
+                    {% for c in r %}
+                        {% set percentage = (c.rating / c.max_points) * 100 %}
+                    <div class="row">
+                        <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
+                        <div class="col-lg-6">
+                            <div class="progress mb-4">
+                                <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
+                                     aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ c.rating|number_format(1) }} / {{ c.max_points|number_format(0) }}</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>

@@ -1,0 +1,6 @@
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+    <div class="container py-3">
+        <a href="{{ path('app.geo-collection.create') }}" class="mr-5">Маршрути</a>
+        <a href="{{ path('app.achievements.index') }}" class="">Постижения</a>
+    </div>
+{% endif %}

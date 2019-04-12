@@ -1,10 +1,9 @@
 {% extends 'front/map/layout.html.twig' %}
 {% block title %}Карта{% endblock %}
 {% block content %}
-    <div class="container py-3">
-        Маршрути
-    </div>
+    {% include 'front/partial/subnavigation.html.twig' %}
     <div class="container">
+        <h3>Маршрути</h3>
         <div class="row">
             <div class="col-lg-3">
                 <form action="{{ path('app.geo-collection.add') }}">

@@ -1,10 +1,7 @@
 <?php
 
-
 namespace App\AppMain\Entity\Achievement;
 
-use App\AppMain\Entity\Traits\UUIDableTrait;
-use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,8 +17,68 @@ class UserResult extends AbstractAchievement
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Achievement\Achievement")
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Achievement\AchievementBase")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $achivment;
+    private $achievement;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $count;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isCompleted;
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAchievement()
+    {
+        return $this->achievement;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    /**
+     * @param mixed $count
+     */
+    public function setCount($count): void
+    {
+        $this->count = $count;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsCompleted()
+    {
+        return $this->isCompleted;
+    }
+
+    /**
+     * @param mixed $isCompleted
+     */
+    public function setIsCompleted($isCompleted): void
+    {
+        $this->isCompleted = $isCompleted;
+    }
+
+
 }

@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="a_achievement", schema="x_main")
  * @ORM\Entity()
  */
-class Achievement extends AbstractAchievement
+class AchievementBase extends AbstractAchievement
 {
 
 }

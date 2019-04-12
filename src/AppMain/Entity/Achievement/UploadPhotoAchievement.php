@@ -1,10 +1,7 @@
 <?php
 
-
 namespace App\AppMain\Entity\Achievement;
 
-use App\AppMain\Entity\Traits\UUIDableTrait;
-use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,7 +14,7 @@ class UploadPhotoAchievement extends AbstractAchievement
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="App\Doctrine\NextValGenerator")
+     * @ORM\CustomIdGenerator(class="App\Doctrine\AchievementIdGenerator")
      */
     protected $id;
 
@@ -32,65 +29,21 @@ class UploadPhotoAchievement extends AbstractAchievement
      */
     private $threshold;
 
-    /**
-     * @return mixed
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title): void
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getSurvey()
     {
         return $this->survey;
     }
 
-    /**
-     * @param mixed $survey
-     */
     public function setSurvey($survey): void
     {
         $this->survey = $survey;
     }
 
-    /**
-     * @return mixed
-     */
     public function getThreshold()
     {
         return $this->threshold;
     }
 
-    /**
-     * @param mixed $threshold
-     */
     public function setThreshold($threshold): void
     {
         $this->threshold = $threshold;

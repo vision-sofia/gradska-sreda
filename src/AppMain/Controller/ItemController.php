@@ -116,12 +116,13 @@ class ItemController extends AbstractController
             $result[] = $question;
         }
 
-        /*
+
         $stmt = $conn->prepare('
             SELECT
                 u.username AS user_username,
                 cr.name AS criterion_name,
-                round(AVG(rating), 2) AS rating
+                round(AVG(gr.rating), 2) AS rating,
+                cr.metadata->\'max_points\' as max_points
             FROM
                 x_survey.result_geo_object_rating gr
                     INNER JOIN
@@ -130,7 +131,6 @@ class ItemController extends AbstractController
                 x_main.user_base u ON gr.user_id = u.id
             WHERE
                 gr.geo_object_id = :geo_object_id
-
             GROUP BY
                 cr.id, u.id
             ORDER BY u.username
@@ -141,15 +141,15 @@ class ItemController extends AbstractController
 
         $resultByUsers = [];
         while ($question = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $resultByUsers[] = $question;
+            $resultByUsers[$question['user_username']][] = $question;
         }
-        */
+
 
         $stmt = $conn->prepare('
             SELECT
                 cr.name AS criterion_name,
-                round(AVG(rating), 2) as rating,
-                metadata->\'max_points\' as max_points
+                round(AVG(gr.rating), 2) as rating,
+                cr.metadata->\'max_points\' as max_points
             FROM
                 x_survey.result_geo_object_rating gr
                     INNER JOIN
@@ -206,7 +206,7 @@ class ItemController extends AbstractController
             'geo_object' => $geoObject,
             'is_available_for_survey' => $isAvailableForSurvey,
             'result' => $result,
-          //  'resultByUsers' => $resultByUsers,
+            'resultByUsers' => $resultByUsers,
             'questions' => $questions,
             'progress' => $progress,
             'rating' => $resultByCriterion,

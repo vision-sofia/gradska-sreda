@@ -1,0 +1,16 @@
+{% extends 'front/map/layout.html.twig' %}
+{% block title %}Карта{% endblock %}
+{% block content %}
+    {% include 'front/partial/subnavigation.html.twig' %}
+    <div class="container">
+        <h3>Постижения</h3>
+        <div class="row">
+        {% for achievement in achievements %}
+            <div class="col-lg-4 text-center mb-4">
+                <i class="fa fa-star fa-2x {{ loop.index < 3 ? 'text-warning' : ''}}"></i>
+                <p>{{ achievement.title }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}
