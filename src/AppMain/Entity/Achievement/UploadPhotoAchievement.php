@@ -39,12 +39,12 @@ class UploadPhotoAchievement extends AbstractAchievement
         $this->survey = $survey;
     }
 
-    public function getThreshold()
+    public function getThreshold(): ?int
     {
         return $this->threshold;
     }
 
-    public function setThreshold($threshold): void
+    public function setThreshold(int $threshold): void
     {
         $this->threshold = $threshold;
     }

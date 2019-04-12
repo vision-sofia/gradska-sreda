@@ -8,15 +8,17 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="a_result", schema="x_main")
  * @ORM\Entity()
  */
-class UserResult extends AbstractAchievement
+class UserResult
 {
     /**
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Achievement\AchievementBase")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -32,53 +34,23 @@ class UserResult extends AbstractAchievement
      */
     private $isCompleted;
 
-    /**
-     * @return mixed
-     */
     public function getUser()
     {
         return $this->user;
     }
 
-    /**
-     * @return mixed
-     */
     public function getAchievement()
     {
         return $this->achievement;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCount()
+    public function getCount(): ?int
     {
         return $this->count;
     }
 
-    /**
-     * @param mixed $count
-     */
-    public function setCount($count): void
-    {
-        $this->count = $count;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIsCompleted()
+    public function getIsCompleted(): ?bool
     {
         return $this->isCompleted;
     }
-
-    /**
-     * @param mixed $isCompleted
-     */
-    public function setIsCompleted($isCompleted): void
-    {
-        $this->isCompleted = $isCompleted;
-    }
-
-
 }

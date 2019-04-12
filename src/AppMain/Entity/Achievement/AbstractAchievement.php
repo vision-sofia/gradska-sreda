@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Achievement;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
@@ -22,43 +21,35 @@ abstract class AbstractAchievement implements UuidInterface
     /**
      * @ORM\Column(type="string")
      */
-    protected $title;
+    protected $title = '';
 
-
-    protected $description;
-
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $description = '';
 
     public function getId()
     {
         return $this->id;
     }
 
-
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle($title): void
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-
-    public function setDescription($description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
-
 }
