@@ -5,7 +5,7 @@
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
             <div class="card my-5">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Вход</h5>
+                    <h4 class="card-title text-center">Вход</h4>
                     <form action="{{ path('app.login') }}" method="post">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                         <div class="form-group">
