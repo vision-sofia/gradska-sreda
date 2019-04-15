@@ -23,6 +23,18 @@ security:
 
         main:
             anonymous: ~
+            remember_me:
+                secret: '%kernel.secret%'
+                name: REM
+                lifetime: 31536000
+                path: /
+                #domain:
+                #secure: auto
+                #httponly:
+                #samesite:
+                #remember_me_parameter:
+                #always_remember_me:
+                #token_provider:
             logout:
                 path:   logout
                 target: /
