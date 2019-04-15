@@ -20,6 +20,10 @@
                         <label for="login_password">Повторете паролата</label>
                         {{ form_widget(form.plainPassword.second, {'attr': {'placeholder': '', 'class': 'form-control input'}}) }}
                     </div>
+                    <div class="custom-control custom-checkbox mb-3">
+                        <input type="checkbox" name="_remember_me" class="custom-control-input" id="remember_me">
+                        <label class="custom-control-label" for="remember_me">Приемам <a href="{{ path('app.site.terms-and-conditions') }}" target="_blank">условията за ползване</a></label>
+                    </div>
                     <button type="submit" class="btn btn-lg btn-primary btn-block" style="padding:9px 0 4px 0;">
                         Регистрирай ме
                     </button>
