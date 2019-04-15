@@ -51,7 +51,7 @@ class AchievementFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-                'title' => 'Попълни анкета за едно песичане',
+                'title' => 'Попълни анкета за едно пресичане',
                 'desc' => 'Попълни анкета за едно пресичане',
                 'threshold' => 1,
                 'category' => 'Пресичания',
