@@ -1,7 +1,11 @@
 .footer-nav {
   background-color: $colorPrimary;
-  color: $light;
+  color: $white;
   font-size: 14px;
+}
+
+.footer-nav a {
+  color: $white;
 }
 
 .custom-control-label {

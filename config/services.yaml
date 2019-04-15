@@ -35,3 +35,9 @@ services:
     App\EventListener\Doctrine\UUIDSetter:
         tags:
             - { name: doctrine.event_listener, event: prePersist }
+
+    App\Services\Markdown\Parsedown:
+        arguments: ['@Parsedown']
+
+    Parsedown:
+        class: 'Parsedown'

@@ -101,6 +101,9 @@
     "egulias/email-validator": {
         "version": "2.1.7"
     },
+    "erusev/parsedown": {
+        "version": "1.7.3"
+    },
     "facebook/webdriver": {
         "version": "1.6.0"
     },

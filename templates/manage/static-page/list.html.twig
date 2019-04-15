@@ -1,0 +1,35 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    Статични страници
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm table-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Страница</th>
+                            <th>Идентификатор</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for page in pages %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('manage.static-pages.edit', {'slug': page.slug}) }}" class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
+                                </td>
+                                <td>{{ page.title }}</td>
+                                <td>{{ page.slug }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

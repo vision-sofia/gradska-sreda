@@ -1,0 +1,59 @@
+{% extends 'manage/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Статична страница</strong>
+                    <small>{{ 'form.edit'|trans }}</small>
+                </div>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="form-control-plaintext"> {{ staticPage.title }} ({{ staticPage.slug }})</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                {{ form_widget(form.content, {'attr': {'class': 'form-control', 'rows': 15}}) }}
+                                <div class="d-flex justify-content-between mt-2">
+                                    <div>Поддържан формат: <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a></div>
+                                    <div><a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+                                            target="_blank">Помощ за форматиране</a>    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="btn-toolbar justify-content-between" role="toolbar"
+                         aria-label="Toolbar with button groups">
+                        <div>
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                <i class="fa fa-dot-circle-o"></i> {{ 'button.save'|trans }}
+                            </button>
+                            <a class="btn btn-sm btn-danger" href="{{ path('manage.static-pages.list') }}">
+                                <i class="fa fa-ban"></i> Откажи
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">  {{ preview|raw }}</div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

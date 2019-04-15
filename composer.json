@@ -11,6 +11,7 @@
         "ext-pdo": "*",
         "creof/doctrine2-spatial": "^1.2",
         "doctrine/doctrine-migrations-bundle": "^2.0",
+        "erusev/parsedown": "^1.7",
         "oneup/flysystem-bundle": "^3.0",
         "php-ds/php-ds": "^1.2",
         "ramsey/uuid": "^3.8",

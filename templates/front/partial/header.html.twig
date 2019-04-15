@@ -18,7 +18,7 @@
                         <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
                     </li>
                     <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.about') }}">За платформата</a>
+                        <a class="nav-link" href="{{ path('app.site.about') }}">За платформата</a>
                     </li>
                     {% if is_granted('ROLE_MANAGE') %}
                         <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">

@@ -22,13 +22,4 @@ class InfoController extends AbstractController
             'users' => $users
         ]);
     }
-
-    /**
-     * @Route("about", name="app.about")
-     */
-    public function about(): Response
-    {
-        return $this->render('front/about/index.html.twig', [
-        ]);
-    }
 }
