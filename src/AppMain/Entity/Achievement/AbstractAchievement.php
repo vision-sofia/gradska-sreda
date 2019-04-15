@@ -24,7 +24,7 @@ abstract class AbstractAchievement implements UuidInterface
     protected $title = '';
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      */
     protected $description = '';
 
