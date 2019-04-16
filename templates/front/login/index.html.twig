@@ -6,6 +6,9 @@
             <div class="card my-5">
                 <div class="card-body">
                     <h4 class="card-title text-center">Вход</h4>
+                    {% if error is not empty %}
+                    <div class="text-danger text-center my-3">Невалидно потребителско име/парола</div>
+                    {% endif %}
                     <form action="{{ path('app.login') }}" method="post">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                         <div class="form-group">
