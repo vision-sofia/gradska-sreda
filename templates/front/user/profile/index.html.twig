@@ -2,30 +2,28 @@
 
 {% block content %}
     <h2>Плофил</h2>
-    <div>
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Текуща парола</label>
-            <div class="col-sm-10">
-                {{ form_widget(form.currentPassword, {'attr': {'placeholder': 'Текуща парола', 'class': 'form-control'}}) }}
-                {{ form_errors(form.currentPassword) }}
-            </div>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="form-group row">
+        <label class="col-lg-3 col-form-label">Текуща парола</label>
+        <div class="col-lg-9">
+            {{ form_widget(form.currentPassword, {'attr': {'placeholder': 'Текуща парола', 'class': 'form-control'}}) }}
+            {{ form_errors(form.currentPassword) }}
         </div>
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Потребителско име</label>
-            <div class="col-sm-10">
-                {{ form_widget(form.username, {'attr': {'placeholder': 'Потребителско име', 'class': 'form-control'}}) }}
-                {{ form_errors(form.username) }}
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label">E-mail</label>
-            <div class="col-sm-10">
-                {{ form_widget(form.email, {'attr': {'placeholder': 'E-mail', 'class': 'form-control'}}) }}
-                {{ form_errors(form.email) }}
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Промени</button>
-        {{ form_end(form) }}
     </div>
+    <div class="form-group row">
+        <label class="col-lg-3 col-form-label">Потребителско име</label>
+        <div class="col-lg-9">
+            {{ form_widget(form.username, {'attr': {'placeholder': 'Потребителско име', 'class': 'form-control'}}) }}
+            {{ form_errors(form.username) }}
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-lg-3 col-form-label">E-mail</label>
+        <div class="col-lg-9">
+            {{ form_widget(form.email, {'attr': {'placeholder': 'E-mail', 'class': 'form-control'}}) }}
+            {{ form_errors(form.email) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Промени</button>
+    {{ form_end(form) }}
 {% endblock %}

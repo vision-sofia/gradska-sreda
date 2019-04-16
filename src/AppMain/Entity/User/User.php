@@ -5,15 +5,18 @@ namespace App\AppMain\Entity\User;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Serializable;
 use Symfony\Component\Security\Core\User\UserInterface as UserSecurityInterface;
 use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="user_base", schema="x_main")
+ * @UniqueEntity("username", groups={"register", "default"})
  */
-class User implements UserSecurityInterface, \Serializable, UuidInterface, UserInterface
+class User implements UserSecurityInterface, Serializable, UuidInterface, UserInterface
 {
     use UUIDableTrait;
 
@@ -26,7 +29,7 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
 
     /**
      * @ORM\Column(length=255, unique=true)
-     * @Assert\NotBlank(groups={"profile"})
+     * @Assert\NotBlank(groups={"profile", "register"})
      */
     protected $username;
 
@@ -49,7 +52,7 @@ class User implements UserSecurityInterface, \Serializable, UuidInterface, UserI
 
     /**
      * @Assert\Length(max=4096)
-     * @Assert\NotBlank(groups={"plain_password"})
+     * @Assert\NotBlank(groups={"plain_password", "register"})
      */
     protected $plainPassword;
 

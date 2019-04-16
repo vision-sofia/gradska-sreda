@@ -2,10 +2,16 @@
 
 {% block body %}
     <div class="container">
-        <ul>
-            <li><a href="{{ path('app.user.settings.profile') }}">Профил</a></li>
-            <li><a href="{{ path('app.user.settings.security') }}">Сигурност</a></li>
-        </ul>
-        {% block content %}{% endblock %}
+        <div class="row">
+            <div class="col-lg-2">
+                <ul>
+                    <li><a href="{{ path('app.user.settings.profile') }}">Профил</a></li>
+                    <li><a href="{{ path('app.user.settings.security') }}">Сигурност</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-10">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
 {% endblock %}
