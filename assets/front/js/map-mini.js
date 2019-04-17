@@ -22,7 +22,8 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     let initialLoad = false;
 
     let map = new L.map('mapMini', {
-        updateWhenZooming: false
+        updateWhenZooming: false,
+        attributionControl: false
     });
 
     let mapStyle = L.tileLayer(mapBoxUrl, {
@@ -144,6 +145,11 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 objectsSettings = results.settings;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
+/*
+                map.fitBounds(results.bbox, {
+
+                });
+*/
                 fn();
             }
         });
@@ -217,7 +223,15 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 zoom = results.zoom;
                 lat = results.lat;
                 lng = results.lng;
-                setRealInitialMapView(lat, lng, zoom)
+
+                setRealInitialMapView(lat, lng, zoom);
+
+/*                map.fitBounds( [
+                    [42.683283201884, 23.320472594639],
+                    [42.683469003617, 23.321549198832]
+                ], {
+                    padding: [50, 50]
+                });*/
             }
         });
     }

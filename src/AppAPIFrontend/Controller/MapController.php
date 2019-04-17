@@ -2,12 +2,14 @@
 
 namespace App\AppAPIFrontend\Controller;
 
+use App\AppMain\DTO\BoundingBoxDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use PDO;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -68,11 +70,17 @@ class MapController extends AbstractController
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
         $collectionId = $request->query->get('collection');
 
-        $bbox = [];
+        $boundingBox = [];
 
         if ($collectionId) {
-            $bbox = $this->findCollectionBbox($this->getUser()->getId(), $collectionId);
+            $collectionBoundingBox = $this->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
+
+            $boundingBox = [
+                [$collectionBoundingBox->getYMin(), $collectionBoundingBox->getXMin()],
+                [$collectionBoundingBox->getYMax(), $collectionBoundingBox->getXMax()],
+            ];
         }
+
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
@@ -123,12 +131,12 @@ class MapController extends AbstractController
                     3 => 'Искате ли да оцените избраната алея',
                 ],
             ],
-            'bbox' => $bbox,
+            'bbox' => $boundingBox,
             'objects' => $result,
         ]);
     }
 
-    private function process($row, $geo):array
+    private function process($row, $geo): array
     {
         $geometry = json_decode($row['geometry'], true);
         $attributes = json_decode($row['attributes'], true);
@@ -141,13 +149,12 @@ class MapController extends AbstractController
             $row['style_base'] = 'on_dialog_line';
         }
 
-        if (isset($attributes['urp']) && $attributes['urp'] === 1) {
+        if (isset($attributes['urp']) && 1 === $attributes['urp']) {
             $row['style_base'] = 'upr-c';
             $row['style_hover'] = 'upr-c';
         }
 
-
-        if (isset($attributes['urp']) && $attributes['urp'] === 0) {
+        if (isset($attributes['urp']) && 0 === $attributes['urp']) {
             $row['style_base'] = 'upr-uc';
             $row['style_hover'] = 'upr-uc';
         }
@@ -173,9 +180,7 @@ class MapController extends AbstractController
         ];
     }
 
-
-
-    private function findCollectionBbox(int $userId, string $collectionUuid): array
+    private function findCollectionBoundingBox(int $userId, string $collectionUuid): BoundingBoxDTO
     {
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
@@ -197,10 +202,10 @@ class MapController extends AbstractController
                     AND c.uuid = :collection_uuid
             )
             SELECT
-                st_xmin(w) as xmin,
-                st_xmax(w) as xmax,
-                st_ymin(w) as ymin,
-                st_ymax(w) as ymax,
+                st_xmin(w) as x_min,
+                st_xmax(w) as x_max,
+                st_ymin(w) as y_min,
+                st_ymax(w) as y_max,
                 ST_AsGeoJSON(
                     st_makeenvelope(
                         st_xmin(w),
@@ -216,14 +221,8 @@ class MapController extends AbstractController
         $stmt->bindValue('collection_uuid', $collectionUuid);
         $stmt->execute();
 
-        $row = $stmt->fetch();
+        $stmt->setFetchMode(PDO::FETCH_CLASS, BoundingBoxDTO::class);
 
-        return [
-            'xmin' => $row['xmin'],
-            'xmax' => $row['xmax'],
-            'ymin' => $row['ymin'],
-            'ymax' => $row['ymax'],
-            'rectangle' => json_decode($row['envelope']),
-        ];
+        return $stmt->fetch();
     }
 }
