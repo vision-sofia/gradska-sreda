@@ -42,7 +42,8 @@
 	{% include 'front/partial/header.html.twig' %}
 	<main>
 	{% block body %}{% endblock %}
-	{% if app.request.get('_route') != 'app.map' %}
+	{% if app.request.get('_route') != 'app.map'
+		and not (app.request.get('_route') starts with 'app.geo-collection') %}
 	{% include 'front/partial/footer.html.twig' %}
 	{% endif %}
 	</main>

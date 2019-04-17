@@ -11,3 +11,36 @@
 .custom-control-label {
   padding-top: 2px;
 }
+
+.gc-map-wrapper {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  top: 130px;
+  background-color: #fff;
+  border: 0;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  vertical-align: baseline;
+  box-sizing: border-box;
+}
+
+.gc-sidebar-wrapper {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  top: 130px;
+  overflow-y: scroll;
+  background: #fff;
+  padding: 0;
+  overflow-x: hidden;
+  z-index: 0;
+  border: 0;
+  margin: 0;
+  outline: 0;
+  vertical-align: baseline;
+  box-sizing: border-box;
+}
