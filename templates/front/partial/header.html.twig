@@ -11,6 +11,14 @@
                     <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
                     </li>
+                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <li class="nav-item{{ app.request.get('_route') == 'app.geo-collection.create' ? ' active' }}">
+                        <a class="nav-link" href="{{ path('app.geo-collection.create') }}">Маршрути</a>
+                    </li>
+                    <li class="nav-item{{ app.request.get('_route') == 'app.achievements.index' ? ' active' }}">
+                        <a class="nav-link" href="{{ path('app.achievements.index') }}">Постижения</a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item{{ app.request.get('_route') == 'app.rating' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.rating') }}">Класации</a>
                     </li>
@@ -20,15 +28,15 @@
                     <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.site.about') }}">За платформата</a>
                     </li>
-                    {% if is_granted('ROLE_MANAGE') %}
-                        <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
-                            <a class="nav-link" href="{{ path('manage.index') }}">Контролен панел</a>
-                        </li>
-                    {% endif %}
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                         <li class="nav-item{{ app.request.get('_route') starts with 'app.user.settings' ? ' active' }}">
                             <a class="nav-link" href="{{ path('app.user.settings.profile') }}">Настройки</a>
                         </li>
+                        {% if is_granted('ROLE_MANAGE') %}
+                            <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
+                                <a class="nav-link" href="{{ path('manage.index') }}"><i class="fa fa-cog"></i> </a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
                             <a class="nav-link" href="{{ path('logout') }}">Изход</a>
                         </li>

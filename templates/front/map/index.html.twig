@@ -1,8 +1,6 @@
 {% extends 'front/map/layout.html.twig' %}
 {% block title %}Карта{% endblock %}
 {% block content %}
-
-    {% include 'front/partial/subnavigation.html.twig' %}
     <div style="">
         <div id="mapMain" data-locate-on-load="true" data-geo-collection="123"></div>
         <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
