@@ -22,7 +22,8 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     let initialLoad = false;
 
     let map = new L.map('mapMain', {
-        updateWhenZooming: false
+        updateWhenZooming: false,
+        attributionControl: false
     });
 
     let mapStyle = L.tileLayer(mapBoxUrl, {
