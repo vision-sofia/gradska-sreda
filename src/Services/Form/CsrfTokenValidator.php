@@ -3,7 +3,6 @@
 
 namespace App\Services\Form;
 
-
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -21,6 +20,10 @@ class CsrfTokenValidator
 
     public function isCsrfTokenValid(string $id):bool
     {
+        if (!$this->requestStack->getCurrentRequest()) {
+            return false;
+        }
+
         $token = $this->requestStack->getCurrentRequest()->get('_token');
 
         return $this->csrfTokenManager->isTokenValid(new CsrfToken($id, $token));

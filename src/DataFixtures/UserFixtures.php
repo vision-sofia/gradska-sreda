@@ -27,7 +27,6 @@ class UserFixtures extends Fixture
         $entity->addRole('ROLE_MANAGE');
 
         $manager->persist($entity);
-        $manager->flush();
 
         $entity = new User();
         $entity->setEmail('foo@localhost');
@@ -37,6 +36,7 @@ class UserFixtures extends Fixture
         $entity->addRole('ROLE_USER');
 
         $manager->persist($entity);
+
         $manager->flush();
     }
 }

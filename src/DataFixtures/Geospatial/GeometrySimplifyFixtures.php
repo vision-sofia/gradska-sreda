@@ -17,8 +17,9 @@ class GeometrySimplifyFixtures extends Fixture
             $simplify->setTolerance($item['tolerance']);
 
             $manager->persist($simplify);
-            $manager->flush();
         }
+
+        $manager->flush();
     }
 
     private function data(): array

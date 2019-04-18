@@ -3,7 +3,6 @@
 
 namespace App\Services\Markdown;
 
-
 class MarkdownService
 {
     protected $markdown;

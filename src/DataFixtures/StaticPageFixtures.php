@@ -21,8 +21,9 @@ class StaticPageFixtures extends Fixture
             $staticPage->setContent($data['content']);
 
             $manager->persist($staticPage);
-            $manager->flush();
         }
+
+        $manager->flush();
     }
 
     private function data(): array

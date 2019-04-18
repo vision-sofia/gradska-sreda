@@ -31,9 +31,6 @@ class AchievementFixtures extends Fixture implements DependentFixtureInterface
         }
 
         foreach ($this->data() as $data) {
-
-
-
             $achievement = new CategoryCompletionAchievement();
             $achievement->setTitle($data['title']);
             $achievement->setDescription($data['desc']);
@@ -41,10 +38,9 @@ class AchievementFixtures extends Fixture implements DependentFixtureInterface
             $achievement->setSurveyCategory($c[$data['category']]);
 
             $manager->persist($achievement);
-            $manager->flush();
         }
 
-
+        $manager->flush();
     }
 
     private function data(): array

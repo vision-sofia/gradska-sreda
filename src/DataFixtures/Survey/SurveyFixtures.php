@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures\Survey;
 
-
 use App\AppMain\Entity\Survey\Survey\Survey;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -15,8 +15,8 @@ class SurveyFixtures extends Fixture
             $object = new Survey();
             $object->setName($item['name']);
             $object->setIsActive($item['is_active']);
-            $object->setStartDate(new \DateTime($item['start_date']));
-            $object->setEndDate(new \DateTime($item['end_date']));
+            $object->setStartDate(new DateTime($item['start_date']));
+            $object->setEndDate(new DateTime($item['end_date']));
 
             $manager->persist($object);
         }

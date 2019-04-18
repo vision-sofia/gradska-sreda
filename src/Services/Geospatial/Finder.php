@@ -114,13 +114,13 @@ class Finder
         $qb->innerJoin('g', 'x_geospatial.object_type', 't', 't.id = g.object_type_id');
 
 
-        if($user && $collectionId === null) {
+        if ($user && $collectionId === null) {
             $qb->addSelect('gc.geo_object_id as entry');
             $qb->leftJoin('t', '(x_survey.gc_collection_content gc
                 INNER JOIN x_survey.gc_collection c ON (gc.geo_collection_id = c.id
                                  AND c.user_id = :user_id
                                  ))', '', 'gc.geo_object_id = g.id');
-        } elseif($user && $collectionId) {
+        } elseif ($user && $collectionId) {
             $qb->addSelect('gc.geo_object_id as entry');
             $qb->leftJoin('t', '(x_survey.gc_collection_content gc
                 INNER JOIN x_survey.gc_collection c ON (gc.geo_collection_id = c.id
@@ -142,9 +142,9 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
 
 
-        if($user && $collectionId === null) {
+        if ($user && $collectionId === null) {
             $stmt->bindValue('user_id', $user->getId());
-        } elseif($user && $collectionId) {
+        } elseif ($user && $collectionId) {
             $stmt->bindValue('user_id', $user->getId());
             $stmt->bindValue('collection_id', $collectionId);
         }
@@ -156,7 +156,7 @@ class Finder
         }
     }
 
-    public function userSubmitted(int $userId, float $simplifyTolerance)
+    public function userSubmitted(int $userId, float $simplifyTolerance): \Generator
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
@@ -190,12 +190,8 @@ class Finder
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
-        $result = [];
-
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             yield $row;
         }
-
-        return $result;
     }
 }
