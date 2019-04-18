@@ -7,13 +7,18 @@
   background-color: #f4f4f4;
 }
 
-#mapMini {
+.map-left {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 50%;
   top: 87px;
   background-color: #f4f4f4;
+}
+
+.map-wide {
+  width: 100%;
+  height: 260px;
 }
 
 .loading {
