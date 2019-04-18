@@ -137,9 +137,6 @@
             "config/packages/oneup_flysystem.yaml"
         ]
     },
-    "php-ds/php-ds": {
-        "version": "v1.2.0"
-    },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
     },
