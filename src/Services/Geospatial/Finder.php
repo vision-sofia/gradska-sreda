@@ -121,11 +121,13 @@ class Finder
                                  AND c.user_id = :user_id
                                  ))', '', 'gc.geo_object_id = g.id');
         } elseif ($user && $collectionId) {
+            /*
             $qb->addSelect('gc.geo_object_id as entry');
             $qb->leftJoin('t', '(x_survey.gc_collection_content gc
                 INNER JOIN x_survey.gc_collection c ON (gc.geo_collection_id = c.id
                                  AND c.user_id = :user_id
                                  AND c.uuid = :collection_id))', '', 'gc.geo_object_id = g.id');
+            */
         }
 
         $queryParts[] = $qb->getSQL();
@@ -146,7 +148,7 @@ class Finder
             $stmt->bindValue('user_id', $user->getId());
         } elseif ($user && $collectionId) {
             $stmt->bindValue('user_id', $user->getId());
-            $stmt->bindValue('collection_id', $collectionId);
+         #   $stmt->bindValue('collection_id', $collectionId);
         }
 
         $stmt->execute();
@@ -209,9 +211,10 @@ class Finder
                 g.name as geo_name,
                 t.name as type_name,
                 g.attributes,
+                c.uuid as geo_collection_uuid,     
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
-                    \'urp\', 1
+                    \'gc\', 1
                 ) as attributes
             FROM
                 x_survey.gc_collection c

@@ -35,7 +35,8 @@ class MapController extends AbstractController
         Finder $finder,
         SessionInterface $session,
         GeoCollection $geoCollection
-    ) {
+    )
+    {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
@@ -58,7 +59,7 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
-        $zoom = (float) $zoom;
+        $zoom = (float)$zoom;
 
         $simplify = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
 
@@ -94,8 +95,7 @@ class MapController extends AbstractController
 
         $stylesGroups = $this->getDoctrine()
             ->getRepository(StyleGroup::class)
-            ->findAll()
-        ;
+            ->findAll();
 
         $styles = [];
 
@@ -110,16 +110,22 @@ class MapController extends AbstractController
             $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
         }
 
+        $dynamicStyles = [
+            [
+                'attr' => 'gc', 'value' => 1, 'style' => 'dash'
+            ]
+        ];
+
         foreach ($geoObjects as $row) {
-            $result[] = $this->process($row, $geo);
+            $result[] = $this->process($row, $styles, $dynamicStyles);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $geo);
+            $result[] = $this->process($row, $styles, $dynamicStyles);
         }
 
         foreach ($userGeoCollection as $row) {
-            $result[] = $this->process($row, $geo);
+            $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
         }
 
         $this->logger->info('Map view', [
@@ -149,18 +155,10 @@ class MapController extends AbstractController
         ]);
     }
 
-    private function process($row, $geo): array
+    private function process($row, &$styles, $dynamicStyles, $geoCollectionUuid = null): array
     {
         $geometry = json_decode($row['geometry'], true);
         $attributes = json_decode($row['attributes'], true);
-
-        if ($row['uuid'] === $geo) {
-            $row['style_base'] = 'on_dialog_line';
-        }
-
-        if (isset($row['entry'])) {
-            $row['style_base'] = 'on_dialog_line';
-        }
 
         if (isset($attributes['urp']) && 1 === $attributes['urp']) {
             $row['style_base'] = 'upr-c';
@@ -171,6 +169,26 @@ class MapController extends AbstractController
             $row['style_base'] = 'upr-uc';
             $row['style_hover'] = 'upr-uc';
         }
+
+
+        foreach ($dynamicStyles as $item) {
+            if (isset($attributes[$item['attr']])) {
+                $newBaseStyle = $row['style_base'] . '-' . $item['style'];
+                $styles[$newBaseStyle] = $styles[$item['style']] + $styles[$row['style_base']];
+                $row['style_base'] = $newBaseStyle;
+
+                $newHoverStyle = $row['style_hover'] . '-' . $item['style'];
+                $styles[$newHoverStyle] = $styles[$item['style']] + $styles[$row['style_hover']];
+                $row['style_hover'] = $newHoverStyle;
+            }
+        }
+
+        if (isset($row['geo_collection_uuid'], $geoCollectionUuid) && $row['geo_collection_uuid'] === $geoCollectionUuid) {
+            $newBaseStyle = $row['style_base'] . '-zz';
+            $styles[$newBaseStyle] = array_merge($styles[$row['style_base']], ['color' => '#FF00FF']);
+            $row['style_base'] = $newBaseStyle;
+        }
+
 
         if ('Градоустройствена единица' === $row['type_name']) {
             $attributes['_zoom'] = 17;

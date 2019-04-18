@@ -129,7 +129,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 bounds._southWest.lat + ',',
             zoom: zoom,
             c: center.lat + ',' + center.lng,
-            g: mapOption.g
+            g: mapOption.collection
         };
 
         if (typeof b !== 'undefined') {
