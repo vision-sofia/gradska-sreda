@@ -124,9 +124,9 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
         let a = {
             in: bounds._southWest.lng + ',' +
-            bounds._northEast.lat + ',' +
-            bounds._northEast.lng + ',' +
-            bounds._southWest.lat + ',',
+                bounds._northEast.lat + ',' +
+                bounds._northEast.lng + ',' +
+                bounds._southWest.lat + ',',
             zoom: zoom,
             c: center.lat + ',' + center.lng,
             g: mapOption.g
@@ -145,11 +145,11 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 objectsSettings = results.settings;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
-/*
-                map.fitBounds(results.bbox, {
+                /*
+                                map.fitBounds(results.bbox, {
 
-                });
-*/
+                                });
+                */
                 fn();
             }
         });
@@ -217,23 +217,20 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         let lat;
         let lng;
 
-        $.ajax({
-            url: "/map/p",
-            success: function (results) {
-                zoom = results.zoom;
-                lat = results.lat;
-                lng = results.lng;
+        if (typeof mapOption.bbox == "object") {
+            map.fitBounds(mapOption.bbox, {});
+        } else {
+            $.ajax({
+                url: "/map/p",
+                success: function (results) {
+                    zoom = results.zoom;
+                    lat = results.lat;
+                    lng = results.lng;
 
-                setRealInitialMapView(lat, lng, zoom);
-
-/*                map.fitBounds( [
-                    [42.683283201884, 23.320472594639],
-                    [42.683469003617, 23.321549198832]
-                ], {
-                    padding: [50, 50]
-                });*/
-            }
-        });
+                    setRealInitialMapView(lat, lng, zoom);
+                }
+            });
+        }
     }
 
     function setRealInitialMapView(lat, lng, zoom) {

@@ -12,22 +12,22 @@ class BoundingBoxDTO
     private $y_min;
     private $y_max;
 
-    public function getXMin(): float
+    public function getXMin(): ?float
     {
         return $this->x_min;
     }
 
-    public function getXMax(): float
+    public function getXMax(): ?float
     {
         return $this->x_max;
     }
 
-    public function getYMin(): float
+    public function getYMin(): ?float
     {
         return $this->y_min;
     }
 
-    public function getYMax(): float
+    public function getYMax(): ?float
     {
         return $this->y_max;
     }

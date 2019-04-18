@@ -4,13 +4,12 @@ namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Survey\GeoCollection\Collection;
 use App\AppMain\Entity\Survey\Survey\Survey;
+use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,37 +22,43 @@ class GeoCollectionController extends AbstractController
     protected $entityManager;
     protected $utils;
     protected $logger;
+    protected $geoCollection;
 
     public function __construct(
         Utils $utils,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        GeoCollection $geoCollection
     ) {
         $this->utils = $utils;
         $this->logger = $logger;
+        $this->geoCollection = $geoCollection;
     }
 
     /**
      * @Route("create", name="create")
      */
-    public function index(Request $request): Response
+    public function index(GeoCollection $geoCollection): Response
     {
+        $boundingBox = $geoCollection->findCollectionBoundingBox($this->getUser()->getId());
+
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
             'user' => $this->getUser(),
         ]);
 
-
         return $this->render('front/geo-collection/index.html.twig', [
             'collections' => $collections,
+            'boundingBox' => Utils::buildBboxFromDTO($boundingBox),
         ]);
     }
 
     /**
      * @Route("add", name="add")
      */
-    public function add(Request $request): Response
+    public function add(): Response
     {
         $em = $this->getDoctrine()->getManager();
 
+        /** @var Survey $survey */
         $survey = $em->getRepository(Survey::class)->findOneBy(['isActive' => true]);
 
         $collection = new Collection();
@@ -73,15 +78,18 @@ class GeoCollectionController extends AbstractController
      * @Route("{id}", name="view")
      * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
      */
-    public function view(Request $request, Collection $collection, EntityManagerInterface $entityManager): Response
+    public function view(Collection $collection): Response
     {
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
             'user' => $this->getUser(),
         ]);
 
+        $boundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collection->getUuid());
+
         return $this->render('front/geo-collection/index.html.twig', [
             'collections' => $collections,
             'collection' => $collection,
+            'boundingBox' => Utils::buildBboxFromDTO($boundingBox),
         ]);
     }
 }

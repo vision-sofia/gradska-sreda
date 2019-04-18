@@ -5,6 +5,7 @@ namespace App\AppAPIFrontend\Controller;
 use App\AppMain\DTO\BoundingBoxDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppMain\Entity\Geospatial\StyleGroup;
+use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use Doctrine\DBAL\Driver\Connection;
@@ -25,19 +26,22 @@ class MapController extends AbstractController
     protected $logger;
     protected $finder;
     protected $session;
+    protected $geoCollection;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Utils $utils,
         LoggerInterface $logger,
         Finder $finder,
-        SessionInterface $session
+        SessionInterface $session,
+        GeoCollection $geoCollection
     ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
         $this->finder = $finder;
         $this->session = $session;
+        $this->geoCollection = $geoCollection;
     }
 
     /**
@@ -70,15 +74,19 @@ class MapController extends AbstractController
         $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
         $collectionId = $request->query->get('collection');
 
-        $boundingBox = [];
+        $boundingBox = null;
 
         if ($collectionId) {
-            $collectionBoundingBox = $this->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
+            $collectionBoundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
 
-            $boundingBox = [
-                [$collectionBoundingBox->getYMin(), $collectionBoundingBox->getXMin()],
-                [$collectionBoundingBox->getYMax(), $collectionBoundingBox->getXMax()],
-            ];
+            if ($collectionBoundingBox->getYMin()) {
+                $boundingBox = Utils::buildBbox(
+                    $collectionBoundingBox->getXMin(),
+                    $collectionBoundingBox->getYMin(),
+                    $collectionBoundingBox->getXMax(),
+                    $collectionBoundingBox->getYMax()
+                );
+            }
         }
 
 
@@ -95,10 +103,11 @@ class MapController extends AbstractController
             $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
         }
 
-        $userSubmitted = $result = [];
+        $userGeoCollection = $userSubmitted = $result = [];
 
         if ($this->getUser()) {
             $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
+            $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
         }
 
         foreach ($geoObjects as $row) {
@@ -106,6 +115,10 @@ class MapController extends AbstractController
         }
 
         foreach ($userSubmitted as $row) {
+            $result[] = $this->process($row, $geo);
+        }
+
+        foreach ($userGeoCollection as $row) {
             $result[] = $this->process($row, $geo);
         }
 
@@ -178,51 +191,5 @@ class MapController extends AbstractController
                     'type' => $row['type_name'],
                 ] + $attributes,
         ];
-    }
-
-    private function findCollectionBoundingBox(int $userId, string $collectionUuid): BoundingBoxDTO
-    {
-        /** @var Connection $conn */
-        $conn = $this->getDoctrine()->getConnection();
-
-        $stmt = $conn->prepare('
-            WITH z AS (
-                SELECT
-                    ST_Extent(gb.coordinates::geometry) as w
-                FROM
-                    x_survey.gc_collection c
-                        INNER JOIN
-                    x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
-                        INNER JOIN
-                    x_geospatial.geo_object g ON cc.geo_object_id = g.id
-                        INNER JOIN
-                    x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-                WHERE
-                    c.user_id = :user_id
-                    AND c.uuid = :collection_uuid
-            )
-            SELECT
-                st_xmin(w) as x_min,
-                st_xmax(w) as x_max,
-                st_ymin(w) as y_min,
-                st_ymax(w) as y_max,
-                ST_AsGeoJSON(
-                    st_makeenvelope(
-                        st_xmin(w),
-                        st_xmax(w),
-                        st_ymin(w),
-                        st_ymax(w)
-                    )
-                ) as envelope
-            FROM z
-        ');
-
-        $stmt->bindValue('user_id', $userId);
-        $stmt->bindValue('collection_uuid', $collectionUuid);
-        $stmt->execute();
-
-        $stmt->setFetchMode(PDO::FETCH_CLASS, BoundingBoxDTO::class);
-
-        return $stmt->fetch();
     }
 }

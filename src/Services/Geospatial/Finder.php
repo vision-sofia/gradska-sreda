@@ -194,4 +194,45 @@ class Finder
             yield $row;
         }
     }
+
+    public function userGeoCollection(int $userId, float $simplifyTolerance): \Generator
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                g.id,
+                g.uuid,
+                g.style_base,
+                g.style_hover,
+                g.name as geo_name,
+                t.name as type_name,
+                g.attributes,
+                ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                jsonb_build_object(
+                    \'urp\', 1
+                ) as attributes
+            FROM
+                x_survey.gc_collection c
+                    INNER JOIN
+                x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                    INNER JOIN
+                x_geospatial.geo_object g ON cc.geo_object_id = g.id
+                    INNER JOIN
+                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                    INNER JOIN
+                x_geospatial.object_type t ON g.object_type_id = t.id
+            WHERE
+                user_id = :user_id
+        ');
+
+        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            yield $row;
+        }
+    }
 }

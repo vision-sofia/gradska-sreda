@@ -12,7 +12,9 @@
             {% set m = 0 %}
             {% for collectionItem in collections %}
                 {% set m = m + 1 %}
-                <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}" class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a></li>
+                <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
+                       class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
+                </li>
             {% endfor %}
         </ul>
     </div>
@@ -55,16 +57,13 @@
         </div>
     </div>
     #}
-    {% if collection is defined %}
-        <script>
-            let b = {
-                collection: '{{ collection.uuid }}'
-            };
-
-            let mapOption = {
-                collection: '{{ collection.uuid }}',
-                survey: false
-            }
-        </script>
-    {% endif %}
+    <script>
+        let mapOption = {
+            {% if collection is defined %}
+            collection: '{{ collection.uuid }}',
+            {% endif %}
+            survey: false,
+            bbox: {{ boundingBox }}
+        }
+    </script>
 {% endblock %}
