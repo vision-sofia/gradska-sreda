@@ -76,11 +76,57 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     map.on('locationfound', setMapViewToMyLocation);
     map.on('locationerror', setInitialMapView);
 
-    let geoJsonLayer = L.geoJSON([], {
+    let geoJsonLayer = L.geoJSON([], { 
+        addInteractive: true,  
         style: function (feature) {
-            return objectsSettings.styles[feature.properties._s1] ? {...objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle}
+            let styles = objectsSettings.styles[feature.properties._s1] ? {...objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+            
+            if (feature.properties.type === 'Тротоар' && feature.properties._s1 === 'upr-uc') {
+                Object.assign(
+                    styles,
+                    {
+                            // // lineColorName: "red",
+                            // fill: false,
+                            // width: 20,
+                            // interactive: false,
+                            // hover: true,
+                            // border: true,
+                            // shadow:false,
+                            // transparent: false,
+                            // borderWidth: 20,
+                    }
+                );
+
+            }            
+            // console.log(styles)
+            
+            return styles;
         },
         onEachFeature: function (feature, layer) {
+            if (layer.feature.properties.type === 'Тротоар' && layer.feature.properties._s1 === 'upr-uc') {
+                Object.assign(
+                    layer.options, {
+                        // lineColorName: "red",
+                        // fill: false,
+                        // width: 4,
+                        // interactive: false,
+                        // hover: true,
+                        // border: true,
+                        // shadow:false,
+                        // transparent: false,
+                        // borderWidth: 4,
+                    }
+                );
+
+            
+
+                console.log(layer);
+                    
+            }
+
+
+
+            
             layer.on('click', function (ev) {
                 switch (feature.properties._behavior) {
                     case "navigation":
@@ -144,6 +190,39 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 objectsSettings = results.settings;
                 geoJsonLayer.clearLayers();
                 geoJsonLayer.addData(results.objects);
+                console.log(results.objects);
+                
+                // var aaa =
+                // L.geoJSON(results.objects,{
+                //     onEachFeature: function (feature, layer) {
+                //         layer.bindTooltip('Tooltip geoJSON');
+                //         layer.bindPopup('popup geoJSON');
+                //     },
+                //     draggable: true,
+                //     interactive: true,
+                //     lineColorName: 'red',
+                //     shadow: true,
+                //     addInteractive: true,
+                   
+                //     style: function(feature){
+                //         return {
+            
+                //             polyline: {
+                //                 // lineColorName: "red",
+                //                 fill: false,
+                //                 width: 20,
+                //                 interactive: false,
+                //                 hover: true,
+                //                 border: true,
+                //                 shadow:false,
+                //                 transparent: false,
+                //                 borderWidth: 20,
+            
+                //             }
+                //         }
+                //     },
+            
+                // }).addTo(map);
                 fn();
             }
         });
