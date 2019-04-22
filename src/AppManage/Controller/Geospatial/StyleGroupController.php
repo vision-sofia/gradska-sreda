@@ -67,7 +67,8 @@ class StyleGroupController extends AbstractController
 
                 if (isset($lineParts[0], $lineParts[1])) {
                     $lineParts[0] = trim($lineParts[0]);
-                    $lineParts[1] = trim($lineParts[1]);
+                    $lineParts[1] = rtrim(trim($lineParts[1]), ',');
+                    $lineParts[1] = str_replace('"', '', $lineParts[1]);
 
                     if (in_array($lineParts[0], [
                         'border',
@@ -115,10 +116,10 @@ class StyleGroupController extends AbstractController
             if (is_bool($v)) {
                 $v = ($v === true ? 'true' : 'false');
             } else {
-                $v = rtrim(trim($v), ',');
+                $v = rtrim('"'. trim($v) . '"', ',');
             }
 
-            $style .= sprintf("%s: %s\n", $k, $v);
+            $style .= sprintf("%s: %s,\n", $k, $v);
         }
 
         return $this->render('manage/geospatial/style/group/edit.html.twig', [
