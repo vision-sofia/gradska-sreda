@@ -69,7 +69,30 @@ class StyleGroupController extends AbstractController
                     $lineParts[0] = trim($lineParts[0]);
                     $lineParts[1] = trim($lineParts[1]);
 
-                    $result[$lineParts[0]] = $lineParts[1];
+                    if (in_array($lineParts[0], [
+                        'border',
+                        'transparent',
+                        'hover',
+                        'onlyShowOnHover',
+                        'shadow',
+                        'shadowWhenInteractive',
+                        'shadowWhenPopupOpen',
+                        'addInteractiveLayerGroup',
+                        'addInteractive',
+                        'interactive',
+                        'fill',
+                    ])) {
+                        $result[$lineParts[0]] = ('true' === $lineParts[1]);
+                    } elseif (in_array($lineParts[0], [
+                        'width',
+                        'borderWidth',
+                        'shadowWidth',
+                        'interactiveWidth',
+                    ])) {
+                        $result[$lineParts[0]] = (int) $lineParts[1];
+                    } else {
+                        $result[$lineParts[0]] = $lineParts[1];
+                    }
                 }
             }
 
@@ -82,13 +105,18 @@ class StyleGroupController extends AbstractController
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.geospatial.style-group.list');
+            return $this->redirectToRoute('manage.geospatial.style-group.edit', ['id' => $styleGroup->getId()]);
         }
 
         $style = '';
         foreach ($styleGroup->getStyle() as $k => $v) {
             $k = trim($k);
-            $v = trim($v);
+
+            if (is_bool($v)) {
+                $v = ($v === true ? 'true' : 'false');
+            } else {
+                $v = rtrim(trim($v), ',');
+            }
 
             $style .= sprintf("%s: %s\n", $k, $v);
         }
