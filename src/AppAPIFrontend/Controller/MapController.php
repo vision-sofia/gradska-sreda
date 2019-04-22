@@ -172,7 +172,7 @@ class MapController extends AbstractController
 
 
         foreach ($dynamicStyles as $item) {
-            if (isset($attributes[$item['attr']])) {
+            if (isset($attributes[$item['attr']], $styles[$item['style']])) {
                 $newBaseStyle = $row['style_base'] . '-' . $item['style'];
                 $styles[$newBaseStyle] = $styles[$item['style']] + $styles[$row['style_base']];
                 $row['style_base'] = $newBaseStyle;
@@ -183,7 +183,7 @@ class MapController extends AbstractController
             }
         }
 
-        if (isset($row['geo_collection_uuid'], $geoCollectionUuid) && $row['geo_collection_uuid'] === $geoCollectionUuid) {
+        if (isset($row['geo_collection_uuid'], $geoCollectionUuid, $styles[$row['style_base']]) && $row['geo_collection_uuid'] === $geoCollectionUuid) {
             $newBaseStyle = $row['style_base'] . '-zz';
             $styles[$newBaseStyle] = array_merge($styles[$row['style_base']], ['color' => '#FF00FF']);
             $row['style_base'] = $newBaseStyle;
