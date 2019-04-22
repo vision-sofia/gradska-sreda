@@ -89,6 +89,9 @@ class StyleGroupController extends AbstractController
                         'borderWidth',
                         'shadowWidth',
                         'interactiveWidth',
+                        'opacity',
+                        'weight',
+                        'dashOffset',
                     ])) {
                         $result[$lineParts[0]] = (int) $lineParts[1];
                     } else {
@@ -115,8 +118,10 @@ class StyleGroupController extends AbstractController
 
             if (is_bool($v)) {
                 $v = ($v === true ? 'true' : 'false');
-            } else {
+            } elseif (is_string($v)) {
                 $v = rtrim('"'. trim($v) . '"', ',');
+            } else {
+                $v = rtrim(trim($v), ',');
             }
 
             $style .= sprintf("%s: %s,\n", $k, $v);
