@@ -35,8 +35,7 @@ class MapController extends AbstractController
         Finder $finder,
         SessionInterface $session,
         GeoCollection $geoCollection
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
@@ -103,16 +102,43 @@ class MapController extends AbstractController
             $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
         }
 
-        $userGeoCollection = $userSubmitted = $result = [];
-
+        $userGeoCollectionLinks = $userGeoCollection = $userSubmitted = $result = [];
+        $bbox = [];
         if ($this->getUser()) {
             $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
             $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
+            $userGeoCollectionLinks = $this->finder->userGeoCollectionLinks($this->getUser()->getId(), $simplifyTolerance);
+
+            $collectionBoundingBoxCollection = $this->geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
+
+
+            foreach ($collectionBoundingBoxCollection as $collectionBoundingBox) {
+                $j = $collectionBoundingBox->getPolygon();
+
+                $k = [
+                    'geometry' => $j,
+                    'attributes' => '{}',
+                    'type_name' => '',
+                    'style_base' => 'gc_bounding_box',
+                    'style_hover' => 'gc_bounding_box',
+                    'uuid' => '',
+                    'geo_name' => '',
+                ];
+
+                $bbox[] = $k;
+            }
         }
 
         $dynamicStyles = [
             [
-                'attr' => 'gc', 'value' => 1, 'style' => 'dash'
+                'attr' => 'gc',
+                'value' => 1,
+                'style' => 'dash'
+            ],
+            [
+                'attr' => 'gcb',
+                'value' => 1,
+                'style' => 'def-poly-b'
             ]
         ];
 
@@ -125,6 +151,14 @@ class MapController extends AbstractController
         }
 
         foreach ($userGeoCollection as $row) {
+            $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
+        }
+
+        foreach ($userGeoCollectionLinks as $row) {
+              $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
+        }
+
+        foreach ($bbox as $row) {
             $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
         }
 
@@ -151,7 +185,7 @@ class MapController extends AbstractController
                 ],
             ],
             'bbox' => $boundingBox,
-            'objects' => $result,
+            'objects' => $result
         ]);
     }
 
@@ -168,6 +202,11 @@ class MapController extends AbstractController
         if (isset($attributes['urp']) && 0 === $attributes['urp']) {
             $row['style_base'] = 'upr-uc';
             $row['style_hover'] = 'upr-uc';
+        }
+
+        if (isset($attributes['link']) && 0 === $attributes['link']) {
+            $row['style_base'] = 'on_dialog_line';
+            $row['style_hover'] = 'on_dialog_line';
         }
 
 

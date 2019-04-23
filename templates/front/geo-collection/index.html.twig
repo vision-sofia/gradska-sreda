@@ -63,7 +63,7 @@
             collection: '{{ collection.uuid }}',
             {% endif %}
             survey: false,
-            bbox: {{ boundingBox }}
+            {% if boundingBox is not empty %}bbox: {{ boundingBox }}{% endif %}
         }
     </script>
 {% endblock %}

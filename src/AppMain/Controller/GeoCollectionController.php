@@ -39,7 +39,7 @@ class GeoCollectionController extends AbstractController
      */
     public function index(GeoCollection $geoCollection): Response
     {
-        $boundingBox = $geoCollection->findCollectionBoundingBox($this->getUser()->getId());
+        $boundingBox = $geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
 
         $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
             'user' => $this->getUser(),
@@ -47,7 +47,7 @@ class GeoCollectionController extends AbstractController
 
         return $this->render('front/geo-collection/index.html.twig', [
             'collections' => $collections,
-            'boundingBox' => Utils::buildBboxFromDTO($boundingBox),
+            'boundingBox' => '',
         ]);
     }
 

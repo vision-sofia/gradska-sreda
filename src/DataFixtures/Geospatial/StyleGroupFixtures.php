@@ -54,6 +54,20 @@ class StyleGroupFixtures extends Fixture
                     'color' => '#000',
                     'weight' => 1,
                 ],
+            ], [
+                'code' => 'gc_bounding_box',
+                'style' => [
+                    'color' => '#FF0000',
+                    'weight' => 1,
+                    'opacity' => 1,
+                ],
+            ], [
+                'code' => 'gc_mark',
+                'style' => [
+                    'color' => '#FF0000',
+                    'weight' => 1,
+                    'opacity' => 1,
+                ],
             ]
         ];
     }

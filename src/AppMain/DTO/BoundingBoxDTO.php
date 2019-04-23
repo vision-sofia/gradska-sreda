@@ -11,6 +11,7 @@ class BoundingBoxDTO
     private $x_max;
     private $y_min;
     private $y_max;
+    private $envelope;
 
     public function getXMin(): ?float
     {
@@ -30,5 +31,10 @@ class BoundingBoxDTO
     public function getYMax(): ?float
     {
         return $this->y_max;
+    }
+
+    public function getPolygon(): ?string
+    {
+        return $this->envelope;
     }
 }
