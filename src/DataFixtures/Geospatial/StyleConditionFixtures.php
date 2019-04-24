@@ -42,7 +42,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a1',
                         'content' => [
-                            'color' => '#0099ff',
+                            'color' => '#062978',
                             'weight' => 7,
                             'opacity' => 0.9,
                         ],
@@ -66,7 +66,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a4',
                         'content' => [
-                            'color' => '#33cc33',
+                            'color' => '#9FA3AD',
                             'weight' => 7,
                         ],
                     ],
@@ -89,7 +89,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a7',
                         'content' => [
-                            'color' => '#ff3300',
+                            'color' => '#828FAF',
                             'weight' => 7,
                         ],
                     ],
