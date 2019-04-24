@@ -124,7 +124,7 @@ class StyleBuilder
                 :style
             )
             ON CONFLICT (code) DO UPDATE SET
-                code = excluded.code    
+                style = excluded.style    
         ');
 
         foreach ($styleGroups as $code => $geoObject) {
