@@ -25,7 +25,7 @@ class StyleBuilder
 
         $styles = [];
 
-        /** @var StyleCondition $geoObject */
+        /** @var StyleCondition $style */
         foreach ($stylesConditions as $styleCondition) {
             $styles[$styleCondition->getAttribute()][] = [
                 'value' => $styleCondition->getValue(),
@@ -55,7 +55,7 @@ class StyleBuilder
 
         $i = 0;
 
-        foreach ($this->geoObjects() as $geoObject) {
+        foreach ($this->geoObjects() as $style) {
             ++$i;
 
             $sk = [
@@ -65,8 +65,8 @@ class StyleBuilder
                 'key2' => '',
             ];
 
-            $geometryType = json_decode($geoObject['geometry'], true)['type'];
-            $attributes = json_decode($geoObject['attributes'], true);
+            $geometryType = json_decode($style['geometry'], true)['type'];
+            $attributes = json_decode($style['attributes'], true);
 
             if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
                 $sk = $this->chk($attributes, $styles, $sk, 'line');
@@ -76,7 +76,7 @@ class StyleBuilder
                 $sk = $this->chk($attributes, $styles, $sk, 'polygon');
             }
 
-            $batch[] = $geoObject['id'];
+            $batch[] = $style['id'];
             $batch[] = $sk['key1'];
             $batch[] = $sk['key2'];
 
@@ -124,7 +124,7 @@ class StyleBuilder
                 :style
             )
             ON CONFLICT (code) DO UPDATE SET
-                code = excluded.code    
+                style = excluded.style    
         ');
 
         foreach ($styleGroups as $code => $geoObject) {
