@@ -9,6 +9,10 @@
             Стилове
         </div>
         <div class="card-body">
+            <form method="post" action="{{ path('manage.geospatial.style-condition.rebuild') }}" class="mb-3">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-refresh"></i> Обнови стиловете</button>
+            </form>
+
             <table class="table table-responsive-sm table-bordered table-sm ">
                 <thead>
                 <tr>
