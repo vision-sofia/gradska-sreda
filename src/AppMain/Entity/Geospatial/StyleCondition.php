@@ -42,6 +42,16 @@ class StyleCondition
      */
     private $priority;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDynamic;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $description;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,5 +105,25 @@ class StyleCondition
     public function setPriority(int $priority): void
     {
         $this->priority = $priority;
+    }
+
+    public function getIsDynamic(): ?bool
+    {
+        return $this->isDynamic;
+    }
+
+    public function setIsDynamic(bool $isDynamic): void
+    {
+        $this->isDynamic = $isDynamic;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 }

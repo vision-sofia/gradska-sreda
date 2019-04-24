@@ -20,7 +20,11 @@ class StyleBuilder
         $chunkSize = 1000;
 
         $stylesConditions = $this->em->getRepository(StyleCondition::class)
-            ->findBy([], ['priority' => 'ASC'])
+            ->findBy([
+                'isDynamic' => false
+            ], [
+                'priority' => 'ASC'
+            ])
         ;
 
         $styles = [];
@@ -182,6 +186,34 @@ class StyleBuilder
         }
 
         return $sk;
+    }
+
+    private function persistDynamicStyles() {
+/*        $stylesConditions = $this->em->getRepository(StyleCondition::class)
+            ->findBy([
+                'isDynamic' => false
+            ], [
+                'priority' => 'ASC'
+            ])
+        ;
+
+        $stmt = $conn->prepare('
+            INSERT INTO x_geospatial.style_group(
+                code,
+                style
+            ) VALUES (
+                :code,
+                :style
+            )
+            ON CONFLICT (code) DO UPDATE SET
+                style = excluded.style    
+        ');
+
+        foreach ($styleGroups as $code => $geoObject) {
+            $stmt->bindValue('code', $code);
+            $stmt->bindValue('style', json_encode($geoObject));
+            $stmt->execute();
+        }*/
     }
 
     private function geoObjects(): \Generator
