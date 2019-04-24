@@ -62,6 +62,10 @@
                 <source>question.has-multiple-answers</source>
                 <target>Повече от един възможни отговори</target>
             </trans-unit>
+            <trans-unit id="flash.style.rebuild.success">
+                <source>flash.style.rebuild.success</source>
+                <target>Стила е обновен успешно</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
