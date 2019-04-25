@@ -214,7 +214,7 @@ class Finder
                 c.uuid as geo_collection_uuid,     
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
-                    \'gc\', 1
+                    \'_gc\', 1
                 ) as attributes
             FROM
                 x_survey.gc_collection c

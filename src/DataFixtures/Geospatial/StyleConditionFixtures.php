@@ -293,7 +293,32 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
-            ],
+            ], [
+                'attribute' => '_gc',
+                'value' => 1,
+                'description' => 'маршрут',
+                'is_dynamic' => true,
+                'priority' => 1,
+                'base_style' => [
+                    'line' => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'color' => '#00FF00',
+                            'weight' => 1,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+                'hover_style' => [
+                    'line' => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'weight' => 1,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ]
         ];
     }
 }
