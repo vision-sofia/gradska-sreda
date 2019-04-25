@@ -17,8 +17,10 @@
                 <thead>
                 <tr>
                     <th class="align-middle c-w-30">#</th>
-                    <th class="align-middle">Атрибут</th>
-                    <th class="align-middle">Стойност</th>
+                    <th class="align-middle">Описание</th>
+                    <th class="text-right align-middle">Атрибут</th>
+                    <th class="text-right align-middle">Стойност</th>
+                    <th class="text-center">Стилизиране в реално време</th>
                     <th class="c-w-190 text-center">Стил на точка</th>
                     <th class="c-w-190 text-center">Стил на линия</th>
                     <th class="c-w-190 text-center">Стил на полигон</th>
@@ -32,9 +34,10 @@
                             <a href="{{ path('manage.geospatial.style-condition.edit', {'id': styleCondition.id}) }}"
                                class="btn btn-white btn-xs p-0"><i class="fa fa-pencil"></i></a>
                         </td>
-                        <td>{{ styleCondition.attribute }}</td>
-                        <td>{{ styleCondition.value }}</td>
-
+                        <td>{{ styleCondition.description }}</td>
+                        <td class="text-right">{{ styleCondition.attribute }}</td>
+                        <td class="text-right">{{ styleCondition.value }}</td>
+                        <td class="text-center">{{ styleCondition.isDynamic ? '<span class="text-success">Да</span>' : 'Не' }}</td>
                         <td>
                             {% if styleCondition.baseStyle.point is defined %}
                                 {{ macros.geometry_style_info(styleCondition.baseStyle.point.content, 'base') }}

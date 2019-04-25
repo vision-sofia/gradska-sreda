@@ -44,6 +44,7 @@ class StyleConditionController extends AbstractController
         $styleConditions = $this->getDoctrine()
             ->getRepository(StyleCondition::class)
             ->findBy([], [
+                'isDynamic' => 'DESC',
                 'attribute' => 'DESC',
                 'value' => 'ASC',
             ])
