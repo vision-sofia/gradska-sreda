@@ -16,6 +16,7 @@ class StyleConditionFixtures extends Fixture
             $styleCondition->setValue($item['value']);
             $styleCondition->setIsDynamic($item['is_dynamic']);
             $styleCondition->setDescription(isset($item['description']) ? $item['description'] : '');
+            $styleCondition->setPriority($item['priority']);
 
             if (isset($item['base_style'])) {
                 $styleCondition->setBaseStyle($item['base_style']);
@@ -24,8 +25,6 @@ class StyleConditionFixtures extends Fixture
             if (isset($item['hover_style'])) {
                 $styleCondition->setHoverStyle($item['hover_style']);
             }
-
-            $styleCondition->setPriority($item['priority']);
 
             $manager->persist($styleCondition);
         }
@@ -39,6 +38,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пешеходни отсечки',
+                'description' => 'Обект от категория "пешеходна отсечка"',
                 'is_dynamic' => false,
                 'priority' => 1,
                 'base_style' => [
@@ -64,6 +64,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Алеи',
+                'description' => 'Обект от категория "алея"',
                 'is_dynamic' => false,
                 'priority' => 2,
                 'base_style' => [
@@ -88,6 +89,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пресичания',
+                'description' => 'Обект от категория "пресичане"',
                 'is_dynamic' => false,
                 'priority' => 3,
                 'base_style' => [
@@ -127,6 +129,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => 'has_vhc_metro',
                 'value' => 1,
+                'description' => 'Спирка на метро',
                 'is_dynamic' => false,
                 'priority' => 1,
                 'base_style' => [
@@ -154,6 +157,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => 'has_vhc_other',
                 'value' => 1,
+                'description' => 'Спирка на наземен градски транспорт',
                 'is_dynamic' => false,
                 'priority' => 1,
                 'base_style' => [
@@ -181,6 +185,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_default',
                 'value' => '',
+                'description' => 'Стил по подразбиране',
                 'is_dynamic' => false,
                 'priority' => 0,
                 'base_style' => [
@@ -239,8 +244,8 @@ class StyleConditionFixtures extends Fixture
             ],
             [
                 'attribute' => '_geo_comp',
-                'description' => 'Обекти с частично попълнени анкети',
                 'value' => 0,
+                'description' => 'Обект с частично попълнена анкета',
                 'is_dynamic' => true,
                 'priority' => 1,
                 'base_style' => [
@@ -265,8 +270,8 @@ class StyleConditionFixtures extends Fixture
             ],
             [
                 'attribute' => '_geo_comp',
-                'description' => 'Обекти с изцяло попълнени анкети',
                 'value' => 1,
+                'description' => 'Обект с изцяло попълнена анкета',
                 'is_dynamic' => true,
                 'priority' => 1,
                 'base_style' => [
