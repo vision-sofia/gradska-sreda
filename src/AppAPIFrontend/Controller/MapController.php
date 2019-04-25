@@ -4,6 +4,7 @@ namespace App\AppAPIFrontend\Controller;
 
 use App\AppMain\DTO\BoundingBoxDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
+use App\AppMain\Entity\Geospatial\StyleCondition;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
@@ -110,22 +111,33 @@ class MapController extends AbstractController
             $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
         }
 
-        $dynamicStyles = [
-            [
-                'attr' => 'gc', 'value' => 1, 'style' => 'dash'
-            ]
-        ];
+        /** @var StyleCondition[] $dynamicStyles */
+        $dynamicStyles = $this->getDoctrine()->getRepository(StyleCondition::class)->findBy([
+            'isDynamic' => true
+        ]);
+
+        $ds = [];
+
+        foreach ($dynamicStyles as $dynamicStyle) {
+            $ds[] = [
+                'style' => $dynamicStyle->getBaseStyle(),
+                'attr' => $dynamicStyle->getAttribute()
+            ];
+        }
+
+      #  dump($ds);
+
 
         foreach ($geoObjects as $row) {
-            $result[] = $this->process($row, $styles, $dynamicStyles);
+         #   $result[] = $this->process($row, $styles, $dynamicStyles);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styles, $dynamicStyles);
+            $result[] = $this->process($row, $styles, $ds);
         }
 
         foreach ($userGeoCollection as $row) {
-            $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
+          #  $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
         }
 
         $this->logger->info('Map view', [
@@ -160,6 +172,7 @@ class MapController extends AbstractController
         $geometry = json_decode($row['geometry'], true);
         $attributes = json_decode($row['attributes'], true);
 
+        /*
         if (isset($attributes['urp']) && 1 === $attributes['urp']) {
             $row['style_base'] = 'upr-c';
             $row['style_hover'] = 'upr-c';
@@ -169,7 +182,7 @@ class MapController extends AbstractController
             $row['style_base'] = 'upr-uc';
             $row['style_hover'] = 'upr-uc';
         }
-
+        */
 
         foreach ($dynamicStyles as $item) {
             if (isset($attributes[$item['attr']], $styles[$item['style']])) {
@@ -189,7 +202,7 @@ class MapController extends AbstractController
             $row['style_base'] = $newBaseStyle;
         }
 
-
+/*
         if ('Градоустройствена единица' === $row['type_name']) {
             $attributes['_zoom'] = 17;
         }
@@ -197,7 +210,7 @@ class MapController extends AbstractController
         if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
             $attributes['_zoom'] = 20;
         }
-
+*/
         return [
             'type' => 'Feature',
             'geometry' => $geometry,
