@@ -9,6 +9,7 @@ use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
+use App\Services\Geospatial\StyleBuilder\StyleUtils;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use PDO;
@@ -28,6 +29,7 @@ class MapController extends AbstractController
     protected $finder;
     protected $session;
     protected $geoCollection;
+    protected $styleUtils;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -35,15 +37,16 @@ class MapController extends AbstractController
         LoggerInterface $logger,
         Finder $finder,
         SessionInterface $session,
-        GeoCollection $geoCollection
-    )
-    {
+        GeoCollection $geoCollection,
+        StyleUtils $styleUtils
+    ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
         $this->finder = $finder;
         $this->session = $session;
         $this->geoCollection = $geoCollection;
+        $this->styleUtils = $styleUtils;
     }
 
     /**
@@ -119,17 +122,15 @@ class MapController extends AbstractController
         $ds = [];
 
         foreach ($dynamicStyles as $dynamicStyle) {
-            $ds[] = [
-                'style' => $dynamicStyle->getBaseStyle(),
-                'attr' => $dynamicStyle->getAttribute()
-            ];
+            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['base_style'] = $dynamicStyle->getBaseStyle();
+            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['hover_style'] = $dynamicStyle->getBaseStyle();
         }
 
-      #  dump($ds);
+
 
 
         foreach ($geoObjects as $row) {
-         #   $result[] = $this->process($row, $styles, $dynamicStyles);
+            #   $result[] = $this->process($row, $styles, $dynamicStyles);
         }
 
         foreach ($userSubmitted as $row) {
@@ -137,7 +138,7 @@ class MapController extends AbstractController
         }
 
         foreach ($userGeoCollection as $row) {
-          #  $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
+            #  $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
         }
 
         $this->logger->info('Map view', [
@@ -183,17 +184,30 @@ class MapController extends AbstractController
             $row['style_hover'] = 'upr-uc';
         }
         */
+        /*
+               foreach ($dynamicStyles as $item) {
+                  if (isset($attributes[$item['attr']], $styles[$item['style']])) {
+                       $newBaseStyle = $row['style_base'] . '-' . $item['style'];
+                       $styles[$newBaseStyle] = $styles[$item['style']] + $styles[$row['style_base']];
+                       $row['style_base'] = $newBaseStyle;
 
-        foreach ($dynamicStyles as $item) {
-            if (isset($attributes[$item['attr']], $styles[$item['style']])) {
-                $newBaseStyle = $row['style_base'] . '-' . $item['style'];
-                $styles[$newBaseStyle] = $styles[$item['style']] + $styles[$row['style_base']];
-                $row['style_base'] = $newBaseStyle;
+                       $newHoverStyle = $row['style_hover'] . '-' . $item['style'];
+                       $styles[$newHoverStyle] = $styles[$item['style']] + $styles[$row['style_hover']];
+                       $row['style_hover'] = $newHoverStyle;
+                   }
+        }
+        */
 
-                $newHoverStyle = $row['style_hover'] . '-' . $item['style'];
-                $styles[$newHoverStyle] = $styles[$item['style']] + $styles[$row['style_hover']];
-                $row['style_hover'] = $newHoverStyle;
-            }
+        $s = $this->styleUtils->inherit('line', $attributes, $row['style_base'], $row['style_hover'], $dynamicStyles, $styles);
+
+        if (isset($s['base_style_code'])) {
+            $row['style_base'] = $s['base_style_code'];
+            $styles[$s['base_style_code']] = $s['base_style_content'];
+        }
+
+        if (isset($s['hover_style_code'])) {
+            $row['style_hover'] = $s['hover_style_code'];
+            $styles[$s['hover_style_code']] = $s['hover_style_content'];
         }
 
         if (isset($row['geo_collection_uuid'], $geoCollectionUuid, $styles[$row['style_base']]) && $row['geo_collection_uuid'] === $geoCollectionUuid) {
@@ -202,15 +216,15 @@ class MapController extends AbstractController
             $row['style_base'] = $newBaseStyle;
         }
 
-/*
-        if ('Градоустройствена единица' === $row['type_name']) {
-            $attributes['_zoom'] = 17;
-        }
-
-        if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-            $attributes['_zoom'] = 20;
-        }
-*/
+        /*
+                if ('Градоустройствена единица' === $row['type_name']) {
+                    $attributes['_zoom'] = 17;
+                }
+        
+                if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+                    $attributes['_zoom'] = 20;
+                }
+        */
         return [
             'type' => 'Feature',
             'geometry' => $geometry,

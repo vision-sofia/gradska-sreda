@@ -15,6 +15,11 @@ class StyleBuilder
         $this->em = $em;
     }
 
+
+    public function inherit() {
+
+    }
+
     public function build():void
     {
         $chunkSize = 1000;
