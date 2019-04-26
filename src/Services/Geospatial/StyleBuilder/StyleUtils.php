@@ -8,34 +8,52 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class StyleUtils
 {
-    public function inherit($type, $attributes, $baseStyle, $hoverStyle, $dynamicStyles, $styles): array
-    {
+    private $staticStyles;
+    private $dynamicStyles;
 
+    public function getStaticStyles()
+    {
+        return $this->staticStyles;
+    }
+
+    public function setStaticStyles(array $staticStyles): void
+    {
+        $this->staticStyles = $staticStyles;
+    }
+
+    public function getDynamicStyles()
+    {
+        return $this->dynamicStyles;
+    }
+
+    public function setDynamicStyles(array $dynamicStyles): void
+    {
+        $this->dynamicStyles = $dynamicStyles;
+    }
+
+    public function inherit(string $geometryType, array $attributes, string $baseStyle, string $hoverStyle): array
+    {
         $s1 = $baseStyle;
         $s2 = $hoverStyle;
-        $s1options = $styles[$s1];
-        $s2options = $styles[$s2];
+        $s1options = $this->staticStyles[$s1];
+        $s2options = $this->staticStyles[$s2];
 
-        foreach ($dynamicStyles as $targetAttribute => $content) {
-
+        foreach ($this->dynamicStyles as $targetAttribute => $content) {
             if (isset($attributes[$targetAttribute],
-                $dynamicStyles[$targetAttribute][$attributes[$targetAttribute]])
+                $this->dynamicStyles[$targetAttribute][$attributes[$targetAttribute]])
             ) {
+                if (isset($content[$attributes[$targetAttribute]]['base_style'][$geometryType])) {
+                    $style = $content[$attributes[$targetAttribute]]['base_style'][$geometryType];
 
-                if (isset($content[$attributes[$targetAttribute]]['base_style'][$type])) {
-                    $styleContent = $content[$attributes[$targetAttribute]]['base_style'][$type];
-
-                    $newBaseStyle = $s1 . $styleContent['code'];
-                    $s1options = array_merge($s1options, $styleContent['content']);
-                    $s1 = $newBaseStyle;
+                    $s1options = array_merge($s1options, $style['content']);
+                    $s1 .= $style['code'];
                 }
 
-                if (isset($content[$attributes[$targetAttribute]]['hover_style'][$type])) {
-                    $styleContent = $content[$attributes[$targetAttribute]]['hover_style'][$type];
+                if (isset($content[$attributes[$targetAttribute]]['hover_style'][$geometryType])) {
+                    $style = $content[$attributes[$targetAttribute]]['hover_style'][$geometryType];
 
-                    $newBaseStyle = $s2 . $styleContent['code'];
-                    $s2options = array_merge($s2options, $styleContent['content']);
-                    $s2 = $newBaseStyle;
+                    $s2options = array_merge($s2options, $style['content']);
+                    $s2 .= $style['code'];
                 }
             }
         }

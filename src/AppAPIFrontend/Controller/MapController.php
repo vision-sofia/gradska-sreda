@@ -123,22 +123,22 @@ class MapController extends AbstractController
 
         foreach ($dynamicStyles as $dynamicStyle) {
             $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['base_style'] = $dynamicStyle->getBaseStyle();
-            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['hover_style'] = $dynamicStyle->getBaseStyle();
+            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['hover_style'] = $dynamicStyle->getHoverStyle();
         }
 
-
-
+        $this->styleUtils->setDynamicStyles($ds);
+        $this->styleUtils->setStaticStyles($styles);
 
         foreach ($geoObjects as $row) {
-            #   $result[] = $this->process($row, $styles, $dynamicStyles);
+            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styles, $ds);
+            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
         }
 
         foreach ($userGeoCollection as $row) {
-            #  $result[] = $this->process($row, $styles, $dynamicStyles, $geo);
+            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
         }
 
         $this->logger->info('Map view', [
@@ -168,37 +168,12 @@ class MapController extends AbstractController
         ]);
     }
 
-    private function process($row, &$styles, $dynamicStyles, $geoCollectionUuid = null): array
+    private function process($row, &$styles, StyleUtils $styleUtils, $geoCollectionUuid = null): array
     {
         $geometry = json_decode($row['geometry'], true);
         $attributes = json_decode($row['attributes'], true);
 
-        /*
-        if (isset($attributes['urp']) && 1 === $attributes['urp']) {
-            $row['style_base'] = 'upr-c';
-            $row['style_hover'] = 'upr-c';
-        }
-
-        if (isset($attributes['urp']) && 0 === $attributes['urp']) {
-            $row['style_base'] = 'upr-uc';
-            $row['style_hover'] = 'upr-uc';
-        }
-        */
-        /*
-               foreach ($dynamicStyles as $item) {
-                  if (isset($attributes[$item['attr']], $styles[$item['style']])) {
-                       $newBaseStyle = $row['style_base'] . '-' . $item['style'];
-                       $styles[$newBaseStyle] = $styles[$item['style']] + $styles[$row['style_base']];
-                       $row['style_base'] = $newBaseStyle;
-
-                       $newHoverStyle = $row['style_hover'] . '-' . $item['style'];
-                       $styles[$newHoverStyle] = $styles[$item['style']] + $styles[$row['style_hover']];
-                       $row['style_hover'] = $newHoverStyle;
-                   }
-        }
-        */
-
-        $s = $this->styleUtils->inherit('line', $attributes, $row['style_base'], $row['style_hover'], $dynamicStyles, $styles);
+        $s = $styleUtils->inherit('line', $attributes, $row['style_base'], $row['style_hover']);
 
         if (isset($s['base_style_code'])) {
             $row['style_base'] = $s['base_style_code'];
@@ -217,24 +192,25 @@ class MapController extends AbstractController
         }
 
         /*
-                if ('Градоустройствена единица' === $row['type_name']) {
-                    $attributes['_zoom'] = 17;
-                }
-        
-                if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-                    $attributes['_zoom'] = 20;
-                }
+        if ('Градоустройствена единица' === $row['type_name']) {
+            $attributes['_zoom'] = 17;
+        }
+
+        if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+            $attributes['_zoom'] = 20;
+        }
         */
+
         return [
             'type' => 'Feature',
             'geometry' => $geometry,
             'properties' => [
-                    '_s1' => $row['style_base'],
-                    '_s2' => $row['style_hover'],
-                    'id' => $row['uuid'],
-                    'name' => $row['geo_name'],
-                    'type' => $row['type_name'],
-                ] + $attributes,
+                '_s1' => $row['style_base'],
+                '_s2' => $row['style_hover'],
+                'id' => $row['uuid'],
+                'name' => $row['geo_name'],
+                'type' => $row['type_name'],
+            ] + $attributes,
         ];
     }
 }
