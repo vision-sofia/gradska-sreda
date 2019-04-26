@@ -296,7 +296,7 @@ class StyleConditionFixtures extends Fixture
             ], [
                 'attribute' => '_gc',
                 'value' => 1,
-                'description' => 'маршрут',
+                'description' => 'Маршрут',
                 'is_dynamic' => true,
                 'priority' => 1,
                 'base_style' => [
