@@ -107,7 +107,7 @@ class StyleConditionController extends AbstractController
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.geospatial.style-condition.list');
+            return $this->redirectToRoute('manage.geospatial.style-condition.edit', ['id' => $styleCondition->getId()]);
         }
 
         return $this->render('manage/geospatial/style/condition/edit.html.twig', [
