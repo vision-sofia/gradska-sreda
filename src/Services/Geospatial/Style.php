@@ -103,7 +103,7 @@ class Style
                     $k = trim($k);
                     $v = trim($v);
 
-                    $styles['base'][$key] .= sprintf("%s:%s\n", $k, $v);
+                    $styles['base'][$key] .= sprintf("%s: %s\n", $k, $v);
                 }
             }
         }
