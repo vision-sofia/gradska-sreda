@@ -77,7 +77,7 @@ class GeoCollection
         $conn = $this->em->getConnection();
 
         $qb = $conn->createQueryBuilder()
-            ->select('ST_Extent(gb.coordinates::geometry) as w')
+            ->select('ST_Expand(ST_Extent(gb.coordinates::geometry), 0.00003) as w')
             ->from('x_survey.gc_collection', 'c')
             ->innerJoin('c', ' x_survey.gc_collection_content', 'cc', 'c.id = cc.geo_collection_id')
             ->innerJoin('cc', 'x_geospatial.geo_object', 'g', 'cc.geo_object_id = g.id')

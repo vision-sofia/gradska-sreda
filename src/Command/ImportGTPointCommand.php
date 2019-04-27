@@ -79,7 +79,8 @@ class ImportGTPointCommand extends Command
                 foreach ($item as $s) {
                     ++$i;
 
-                    if (!isset($s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1])) {
+                    if (!isset($s['geometry']['x'], $s['geometry']['y'])) {
+                        dump($s);
                         echo sprintf("Skip: %d\n", $sc++);
 
                         continue;
@@ -98,7 +99,7 @@ class ImportGTPointCommand extends Command
                     $stmtInsertGeoObject->execute();
 
                     $stmtInsGeometry->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmtInsGeometry->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
+                    $stmtInsGeometry->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['x'], $s['geometry']['y']));
                     $stmtInsGeometry->bindValue('uuid', Uuid::uuid4());
                     $stmtInsGeometry->execute();
                 }

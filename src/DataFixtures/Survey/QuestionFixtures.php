@@ -466,11 +466,11 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Хората само преминават или има и стоящи/седящи хора в момента?',
+                'question' => 'Има ли хора в тази зона?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да, сами',
+                        'title' => 'Да, има седящи/стоящи',
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -479,7 +479,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Да, в група от двама или повече',
+                        'title' => 'Да, има преминаващи',
                         'evaluation' => [
                             [
                                 'point' => 0.5,
@@ -488,7 +488,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не',
+                        'title' => 'Няма',
                     ],
                 ],
             ],

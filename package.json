@@ -50,6 +50,8 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.0",
-    "leaflet": "^1.4.0"
+    "leaflet": "^1.4.0",
+    "leaflet-geometryutil": "^0.9.1",
+    "leaflet-polyline": "git+https://github.com/FCOO/leaflet-polyline.git"
   }
 }

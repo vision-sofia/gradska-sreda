@@ -6,7 +6,9 @@ use App\AppMain\Entity\Geospatial\StyleCondition;
 use App\AppManage\Form\Type\StyleConditionType;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Geospatial\Style;
+use App\Services\Geospatial\StyleBuilder\StyleBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,15 +22,18 @@ class StyleConditionController extends AbstractController
     protected $styleService;
     protected $flashMessage;
     protected $translator;
+    protected $styleBuilder;
 
     public function __construct(
         Style $styleService,
         FlashMessage $flashMessage,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        StyleBuilder $styleBuilder
     ) {
         $this->styleService = $styleService;
         $this->flashMessage = $flashMessage;
         $this->translator = $translator;
+        $this->styleBuilder = $styleBuilder;
     }
 
     /**
@@ -39,6 +44,7 @@ class StyleConditionController extends AbstractController
         $styleConditions = $this->getDoctrine()
             ->getRepository(StyleCondition::class)
             ->findBy([], [
+                'isDynamic' => 'DESC',
                 'attribute' => 'DESC',
                 'value' => 'ASC',
             ])
@@ -47,6 +53,22 @@ class StyleConditionController extends AbstractController
         return $this->render('manage/geospatial/style/condition/list.html.twig', [
             'styleConditions' => $styleConditions,
         ]);
+    }
+
+    /**
+     * @Route("/rebuild", name="rebuild", methods="POST")
+     */
+    public function rebuildStyles(): RedirectResponse
+    {
+        // TODO: move to task queue
+       $this->styleBuilder->build();
+
+        $this->flashMessage->addSuccess(
+            '',
+            $this->translator->trans('flash.style.rebuild.success')
+        );
+
+        return $this->redirectToRoute('manage.geospatial.style-condition.list');
     }
 
     /**
@@ -85,7 +107,7 @@ class StyleConditionController extends AbstractController
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.geospatial.style-condition.list');
+            return $this->redirectToRoute('manage.geospatial.style-condition.edit', ['id' => $styleCondition->getId()]);
         }
 
         return $this->render('manage/geospatial/style/condition/edit.html.twig', [

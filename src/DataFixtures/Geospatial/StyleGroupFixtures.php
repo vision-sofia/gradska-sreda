@@ -14,6 +14,8 @@ class StyleGroupFixtures extends Fixture
             $objectType = new StyleGroup();
             $objectType->setCode($item['code']);
             $objectType->setStyle($item['style']);
+            $objectType->setDescription($item['description']);
+            $objectType->setIsForInternalSystem(true);
 
             $manager->persist($objectType);
         }
@@ -26,36 +28,28 @@ class StyleGroupFixtures extends Fixture
         return [
             [
                 'code' => 'on_dialog_line',
+                'description' => 'Селекция на обект тип линия',
                 'style' => [
                     'color' => '#00ffff',
                     'opacity' => 0.5,
                 ],
             ], [
                 'code' => 'on_dialog_point',
+                'description' => 'Селекция на обект тип точка',
                 'style' => [
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
             ], [
                 'code' => 'on_dialog_polygon',
+                'description' => 'Селекция на обект тип полигон',
                 'style' => [
                     'fillColor' => '#00ffff',
                     'opacity' => 0.5,
                 ],
             ], [
-                'code' => 'upr-c',
-                'style' => [
-                    'color' => '#000',
-                    'weight' => 2,
-                ],
-            ], [
-                'code' => 'upr-uc',
-                'style' => [
-                    'color' => '#000',
-                    'weight' => 1,
-                ],
-            ], [
-                'code' => 'gc_bounding_box',
+                'code' => 'gc_bbox',
+                'description' => 'Bounding box на маршрут',
                 'style' => [
                     'color' => '#FF0000',
                     'weight' => 1,

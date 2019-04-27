@@ -23,6 +23,7 @@ class Style
                 $result[$k]['code'] = $oldStyles[$k]['code'];
             }
 
+            /*
             foreach ($lines as $line) {
                 $lineParts = explode(':', trim($line));
 
@@ -31,6 +32,45 @@ class Style
                     $lineParts[1] = trim($lineParts[1]);
 
                     $result[$k]['content'][$lineParts[0]] = $lineParts[1];
+                }
+            }
+            */
+
+            foreach ($lines as $line) {
+                $lineParts = explode(':', trim($line));
+
+                if (isset($lineParts[0], $lineParts[1])) {
+                    $lineParts[0] = trim($lineParts[0]);
+                    $lineParts[1] = rtrim(trim($lineParts[1]), ',');
+                    $lineParts[1] = str_replace('"', '', $lineParts[1]);
+
+                    if (in_array($lineParts[0], [
+                        'border',
+                        'transparent',
+                        'hover',
+                        'onlyShowOnHover',
+                        'shadow',
+                        'shadowWhenInteractive',
+                        'shadowWhenPopupOpen',
+                        'addInteractiveLayerGroup',
+                        'addInteractive',
+                        'interactive',
+                        'fill',
+                    ])) {
+                        $result[$k]['content'][$lineParts[0]] = ('true' === $lineParts[1]);
+                    } elseif (in_array($lineParts[0], [
+                        'width',
+                        'borderWidth',
+                        'shadowWidth',
+                        'interactiveWidth',
+                        'opacity',
+                        'weight',
+                        'dashOffset',
+                    ])) {
+                        $result[$k]['content'][$lineParts[0]] = (int) $lineParts[1];
+                    } else {
+                        $result[$k]['content'][$lineParts[0]] = $lineParts[1];
+                    }
                 }
             }
         }
@@ -63,7 +103,7 @@ class Style
                     $k = trim($k);
                     $v = trim($v);
 
-                    $styles['base'][$key] .= sprintf("%s:%s\n", $k, $v);
+                    $styles['base'][$key] .= sprintf("%s: %s\n", $k, $v);
                 }
             }
         }
