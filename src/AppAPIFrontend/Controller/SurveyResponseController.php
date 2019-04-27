@@ -36,6 +36,8 @@ class SurveyResponseController extends AbstractController
         $this->responseQuestionService = $responseQuestionService;
     }
 
+    // TODO: refactor in to services
+    // TODO: caching
     /**
      * @Route("/{id}/survey", name="question.load", methods="GET")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})

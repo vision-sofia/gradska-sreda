@@ -49,6 +49,8 @@ class MapController extends AbstractController
         $this->styleUtils = $styleUtils;
     }
 
+    // TODO: refactor in to services
+    // TODO: caching
     /**
      * @Route("/map", name="api.map", methods="GET")
      */
