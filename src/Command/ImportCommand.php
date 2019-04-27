@@ -78,6 +78,8 @@ class ImportCommand extends Command
 
         $j = $i = 0;
 
+        $conn->beginTransaction();
+
         foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
@@ -121,6 +123,8 @@ class ImportCommand extends Command
             }
         }
 
+
+
         $stmt = $conn->prepare('
             INSERT INTO x_survey.survey_scope (
                 geo_object_id,
@@ -138,6 +142,8 @@ class ImportCommand extends Command
 
         $stmt->bindValue('name', 'Анкета-2');
         $stmt->execute();
+
+        $conn->commit();
 
         echo "Done {$j}/{$i}\n";
     }
