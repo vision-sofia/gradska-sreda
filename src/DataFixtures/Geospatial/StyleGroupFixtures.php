@@ -57,6 +57,7 @@ class StyleGroupFixtures extends Fixture
                 ],
             ], [
                 'code' => 'gc_mark',
+                'description' => '',
                 'style' => [
                     'color' => '#FF0000',
                     'weight' => 1,
