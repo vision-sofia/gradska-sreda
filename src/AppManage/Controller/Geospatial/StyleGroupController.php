@@ -38,7 +38,9 @@ class StyleGroupController extends AbstractController
     {
         $styleGroups = $this->getDoctrine()
             ->getRepository(StyleGroup::class)
-            ->findBy([], [
+            ->findBy([
+                'isForInternalSystem' => true
+            ], [
                 'code' => 'DESC',
             ]);
 

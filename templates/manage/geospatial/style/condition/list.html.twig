@@ -2,11 +2,16 @@
 {% import 'manage/macro/macros.html.twig' as macros %}
 
 {% block body %}
-    {% include 'manage/geospatial/style/partial/nav.html.twig' with {active: 'condition'} %}
-
-    <form method="post" action="{{ path('manage.geospatial.style-condition.rebuild') }}" class="mb-3">
-        <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-refresh"></i> Обнови стиловете</button>
-    </form>
+    <div class="d-flex justify-content-between">
+        <div>
+            {% include 'manage/geospatial/style/partial/nav.html.twig' with {active: 'condition'} %}
+        </div>
+        <div>
+            <form method="post" action="{{ path('manage.geospatial.style-condition.rebuild') }}" class="mb-3">
+                <button type="submit" class="btn btn-light btn-md"><i class="fa fa-refresh"></i> Обнови стиловете</button>
+            </form>
+        </div>
+    </div>
 
     <table class="table table-responsive-sm table-bordered table-sm bg-white">
         <thead>
