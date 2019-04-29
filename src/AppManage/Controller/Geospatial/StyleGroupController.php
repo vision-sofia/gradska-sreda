@@ -6,6 +6,7 @@ use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\AppManage\Form\Type\StyleGroupType;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Geospatial\Style;
+use App\Services\Geospatial\StyleBuilder\StyleBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,15 +21,18 @@ class StyleGroupController extends AbstractController
     protected $styleService;
     protected $flashMessage;
     protected $translator;
+    protected $styleBuilder;
 
     public function __construct(
         Style $styleService,
         FlashMessage $flashMessage,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        StyleBuilder $styleBuilder
     ) {
         $this->styleService = $styleService;
         $this->flashMessage = $flashMessage;
         $this->translator = $translator;
+        $this->styleBuilder = $styleBuilder;
     }
 
     /**
@@ -60,53 +64,7 @@ class StyleGroupController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $styles = $request->request->get('style');
 
-            $result = [];
-
-            $lines = explode("\n", $styles);
-
-            foreach ($lines as $line) {
-                $lineParts = explode(':', trim($line));
-
-                if (isset($lineParts[0], $lineParts[1])) {
-                    $lineParts[0] = trim($lineParts[0]);
-                    $lineParts[1] = rtrim(trim($lineParts[1]), ',');
-                    $lineParts[1] = str_replace('"', '', $lineParts[1]);
-
-                    if (in_array($lineParts[0], [
-                        'border',
-                        'transparent',
-                        'hover',
-                        'onlyShowOnHover',
-                        'shadow',
-                        'shadowWhenInteractive',
-                        'shadowWhenPopupOpen',
-                        'addInteractiveLayerGroup',
-                        'addInteractive',
-                        'interactive',
-                        'fill',
-                        'dashOffset',
-                    ])) {
-                        $result[$lineParts[0]] = ('true' === $lineParts[1]);
-                    } elseif (in_array($lineParts[0], [
-                        'width',
-                        'borderWidth',
-                        'shadowWidth',
-                        'interactiveWidth',
-                        'weight',
-                    ])) {
-                        $result[$lineParts[0]] = (int) $lineParts[1];
-                    } elseif (in_array($lineParts[0], [
-                        'opacity',
-                        'fillOpacity',
-                    ])) {
-                        $result[$lineParts[0]] = (float) $lineParts[1];
-                    } else {
-                        $result[$lineParts[0]] = $lineParts[1];
-                    }
-                }
-            }
-
-            $styleGroup->setStyle($result);
+            $styleGroup->setStyle($this->styleService->textToGroupStyle($styles));
 
             $this->getDoctrine()->getManager()->flush();
 
@@ -118,24 +76,9 @@ class StyleGroupController extends AbstractController
             return $this->redirectToRoute('manage.geospatial.style-group.edit', ['id' => $styleGroup->getId()]);
         }
 
-        $style = '';
-        foreach ($styleGroup->getStyle() as $k => $v) {
-            $k = trim($k);
-
-            if (is_bool($v)) {
-                $v = ($v === true ? 'true' : 'false');
-            } elseif (is_string($v)) {
-                $v = rtrim('"'. trim($v) . '"', ',');
-            } else {
-                $v = rtrim(trim($v), ',');
-            }
-
-            $style .= sprintf("%s: %s,\n", $k, $v);
-        }
-
         return $this->render('manage/geospatial/style/group/edit.html.twig', [
             'form' => $form->createView(),
-            'style' => $style,
+            'style' => $this->styleService->styleToText($styleGroup->getStyle()),
             'styleGroup' => $styleGroup
         ]);
     }

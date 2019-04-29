@@ -47,8 +47,7 @@ class StyleConditionController extends AbstractController
                 'isDynamic' => 'DESC',
                 'attribute' => 'DESC',
                 'value' => 'ASC',
-            ])
-        ;
+            ]);
 
         return $this->render('manage/geospatial/style/condition/list.html.twig', [
             'styleConditions' => $styleConditions,
@@ -61,7 +60,7 @@ class StyleConditionController extends AbstractController
     public function rebuildStyles(): RedirectResponse
     {
         // TODO: move to task queue
-       $this->styleBuilder->build();
+        $this->styleBuilder->build();
 
         $this->flashMessage->addSuccess(
             '',
@@ -83,7 +82,7 @@ class StyleConditionController extends AbstractController
             $styles = $request->request->get('styles');
 
             if (isset($styles['base'])) {
-                $baseStyles = $this->styleService->formatStyle(
+                $baseStyles = $this->styleService->formatConditionStyle(
                     $styles['base'],
                     $styleCondition->getBaseStyle()
                 );
@@ -92,7 +91,7 @@ class StyleConditionController extends AbstractController
             }
 
             if (isset($styles['hover'])) {
-                $hoverStyles = $this->styleService->formatStyle(
+                $hoverStyles = $this->styleService->formatConditionStyle(
                     $styles['hover'],
                     $styleCondition->getHoverStyle()
                 );
@@ -107,12 +106,14 @@ class StyleConditionController extends AbstractController
                 $this->translator->trans('flash.edit.success')
             );
 
-            return $this->redirectToRoute('manage.geospatial.style-condition.edit', ['id' => $styleCondition->getId()]);
+            return $this->redirectToRoute('manage.geospatial.style-condition.edit', [
+                'id' => $styleCondition->getId()
+            ]);
         }
 
         return $this->render('manage/geospatial/style/condition/edit.html.twig', [
             'form' => $form->createView(),
-            'styles' => $this->styleService->toText($styleCondition),
+            'styles' => $this->styleService->conditionStyleToText($styleCondition),
         ]);
     }
 }
