@@ -181,12 +181,12 @@ class StyleBuilder
     private function comp($style, array $sk, $type): array
     {
         if (isset($style['base_style'][$type]['content'])) {
-            $sk['s1'] = $style['base_style'][$type]['content'] + $sk['s1'];
+            $sk['s1'] = array_merge($style['base_style'][$type]['content'], $sk['s1']);
             $sk['key1'] .= $style['base_style'][$type]['code'];
         }
 
         if (isset($style['hover_style'][$type]['content'])) {
-            $sk['s2'] = $style['hover_style'][$type]['content'] + $sk['s2'];
+            $sk['s2'] = array_merge($style['hover_style'][$type]['content'], $sk['s2']);
             $sk['key2'] .= $style['hover_style'][$type]['code'];
         }
 
@@ -211,7 +211,7 @@ class StyleBuilder
                 :style
             )
             ON CONFLICT (code) DO UPDATE SET
-                style = excluded.style    
+                style = excluded.style
         ');
 
         foreach ($styleGroups as $code => $geoObject) {
