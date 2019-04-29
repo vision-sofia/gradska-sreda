@@ -1,16 +1,25 @@
 {% extends 'manage/base.html.twig' %}
 
 {% block body %}
+    <div class="card">
+        <div class="card-body">
+            <p>Редуциране на точките (vertices) съставящи геометриите (LINE, MULTILINE, POLYGON, MULTIPOLYGON) спрямо нивото на zoom в картата.</p>
+            <p class="mb-0"><strong>Толеранс</strong> - определя степента на опростяване на геометрията:<br />
+                по-висока стойност - по-голямо опростяване (по-малко vertices);<br />
+                по-малка стойност - по-малко опростяване (повече vertices);</p>
+        </div>
+    </div>
     <div class="progress mb-1" style="height: 30px;">
-        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 0;">(20) Най-близко </div>
-        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 80%;">Най-далече (1)</div>
+        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 0;">Близко (zoom 21) </div>
+        <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 80%;">Далече (zoom 1)</div>
     </div>
     {% for simplify in list %}
-        {% set margin = 100 - (simplify.minZoom / 20) * 100 %}
+        {% set margin = 100 - ((simplify.minZoom - 1) / 20) * 100 %}
         {% set width = ((simplify.minZoom - simplify.maxZoom) / 20) * 100 %}
+
         <div class="progress mb-1" style="height: 25px;">
             <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
-                <a href="{{ path('manage.geospatial.simplify.edit', {'id': simplify.uuid}) }}" class="text-white">{{ "%s"|format(simplify.tolerance) }}, {{ simplify.minZoom }}-{{ simplify.maxZoom }}</a>
+                <a href="{{ path('manage.geospatial.simplify.edit', {'id': simplify.uuid}) }}" class="text-white">{{ simplify.tolerance|number_format(6) }}, [{{ simplify.minZoom }},{{ simplify.maxZoom }}]</a>
             </div>
         </div>
     {% endfor %}
