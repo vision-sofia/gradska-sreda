@@ -48,6 +48,8 @@ class ImportCommand extends Command
             $objectTypes[$row['name']] = $row['id'];
         }
 
+        $conn->beginTransaction();
+
         $stmt = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
@@ -77,8 +79,6 @@ class ImportCommand extends Command
         ');
 
         $j = $i = 0;
-
-        $conn->beginTransaction();
 
         foreach ($content as $item) {
             if (\is_array($item)) {
@@ -123,8 +123,6 @@ class ImportCommand extends Command
             }
         }
 
-
-
         $stmt = $conn->prepare('
             INSERT INTO x_survey.survey_scope (
                 geo_object_id,
@@ -145,6 +143,6 @@ class ImportCommand extends Command
 
         $conn->commit();
 
-        echo "Done {$j}/{$i}\n";
+        echo sprintf("Import complete.\nSkipped objects: %d,\nImported objects: %d", $j, $i);
     }
 }

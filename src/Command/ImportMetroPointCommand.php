@@ -44,6 +44,8 @@ class ImportMetroPointCommand extends Command
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
 
+        $conn->beginTransaction();
+
         $stmtInsGeometry = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
@@ -104,6 +106,8 @@ class ImportMetroPointCommand extends Command
                 }
             }
         }
+
+        $conn->commit();
 
         echo sprintf("Done: %d/%d\n", $j, $i);
     }
