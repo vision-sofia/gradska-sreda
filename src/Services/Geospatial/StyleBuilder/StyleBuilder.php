@@ -127,10 +127,14 @@ class StyleBuilder
         $stmt = $conn->prepare('
             INSERT INTO x_geospatial.style_group(
                 code,
-                style
+                style,
+                is_for_internal_system,
+                description
             ) VALUES (
                 :code,
-                :style
+                :style,
+                false,
+                \'\'
             )
             ON CONFLICT (code) DO UPDATE SET
                 style = excluded.style    
