@@ -42,13 +42,13 @@ class Finder
                             g.style_base,
                             g.style_hover,
                             g.object_type_id,
-                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                            m.geometry AS geometry,
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
                             ) as attributes
                         FROM
-                            x_geometry.geometry_base m
+                            x_geometry.simplified_geo m
                                 INNER JOIN
                             x_geospatial.geo_object g ON m.geo_object_id = g.id
                                 INNER JOIN
@@ -63,6 +63,7 @@ class Finder
                             s.is_active = TRUE
                             AND m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND v.zoom @> :zoom::int
+                            AND m.simplify_tolerance = :simplify_tolerance
 
                         UNION ALL
 
@@ -73,14 +74,14 @@ class Finder
                             g.style_base,
                             g.style_hover,                            
                             g.object_type_id,
-                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                             m.geometry AS geometry,
                             jsonb_build_object(
                                 \'_behavior\', a.behavior,
                                 \'has_vhc_other\', g.attributes->\'has_vhc_other\',
                                 \'has_vhc_metro\', g.attributes->\'has_vhc_metro\'
                             ) as attributes
                         FROM
-                            x_geometry.geometry_base m
+                            x_geometry.simplified_geo m
                                 INNER JOIN
                             x_geospatial.geo_object g ON m.geo_object_id = g.id
                                 INNER JOIN
@@ -92,6 +93,7 @@ class Finder
                         WHERE
                             m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
                             AND v.zoom @> :zoom
+                            AND m.simplify_tolerance = :simplify_tolerance
                     ) as w
             )        
         ';
