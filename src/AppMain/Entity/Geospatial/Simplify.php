@@ -8,7 +8,13 @@ use App\Doctrine\ValueObject\IntRange;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="simplify", schema="x_geospatial")
+ * @ORM\Table(
+ *     name="simplify",
+ *     schema="x_geospatial",
+ *     indexes={
+ *         @ORM\Index(columns={"zoom"}, flags={"spatial"})
+ *     }
+ * )
  * @ORM\Entity()
  */
 class Simplify implements UuidInterface
