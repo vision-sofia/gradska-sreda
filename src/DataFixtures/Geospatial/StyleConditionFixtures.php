@@ -304,8 +304,8 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => bin2hex(random_bytes(2)),
                         'content' => [
-                            'color' => '#00FF00',
-                            'weight' => 1,
+                            'color' => '#FF00FF',
+                            'weight' => 7,
                             'opacity' => 1,
                         ],
                     ],
@@ -314,8 +314,8 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => bin2hex(random_bytes(2)),
                         'content' => [
-                            'weight' => 1,
-                            'opacity' => 1,
+                            'color' => '#AA00AA',
+                            'weight' => 7,
                         ],
                     ],
                 ],
