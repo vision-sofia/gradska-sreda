@@ -33,16 +33,18 @@ class StaticPageFixtures extends Fixture
                 'slug' => 'privacy-policy',
                 'title' => 'Политика за лични данни',
                 'content' => '# Политика за лични данни',
-            ],
-            [
+            ], [
                 'slug' => 'terms-and-conditions',
                 'title' => 'Условия за ползване',
                 'content' => '# Условия за ползване',
-            ],
-            [
+            ], [
                 'slug' => 'about',
                 'title' => 'За платформата',
                 'content' => '# За платформата',
+            ], [
+                'slug' => 'open-data',
+                'title' => 'Отворени данни',
+                'content' => '# Отворени данни',
             ],
         ];
     }
