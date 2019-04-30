@@ -3,9 +3,9 @@
         <div class="d-flex justify-content-between">
             <div>Проучване на градската среда</div>
             <div>
-                <a href="{{ path('app.site.terms-and-conditions') }}" class="mr-4">Условия за ползване</a>
-                <a href="{{ path('app.site.privacy-policy') }}" class="mr-4">Политика за лични данни</a>
-                <a href="" class="mr-4">Отворени данни</a>
+                <a href="{{ path('app.site.page', {'slug': 'terms-and-conditions'}) }}" class="mr-4">Условия за ползване</a>
+                <a href="{{ path('app.site.page', {'slug': 'privacy-policy'}) }}" class="mr-4">Политика за лични данни</a>
+                <a href="{{ path('app.site.page', {'slug': 'open-data'}) }}" class="mr-4">Отворени данни</a>
                 <a href="https://vizia.sofia.bg/" target="_blank">Визия за София</a>
             </div>
         </div>

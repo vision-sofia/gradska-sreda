@@ -21,60 +21,24 @@ class StaticPagerController extends AbstractController
     }
 
     /**
-     * @Route("/about", name="app.site.about", methods="GET")
+     * @Route(
+     *     "/site/{slug}",
+     *     name="app.site.page",
+     *     methods="GET",
+     *     requirements={"slug": "terms-and-conditions|privacy-policy|about|open-data"}
+     * )
      */
-    public function about(): Response
+    public function termsAndConditions(string $slug): Response
     {
+        /** @var StaticPage|null $page */
         $page = $this->getDoctrine()
             ->getRepository(StaticPage::class)
             ->findOneBy([
-                'slug' => 'about'
+                'slug' => $slug
             ]);
 
         return $this->render('front/static-page/index.html.twig', [
-            'content' => $this->getContent($page)
+            'content' => $page === null ? '' : $this->markdown->text($page->getContent())
         ]);
-    }
-
-    /**
-     * @Route("/privacy-policy", name="app.site.privacy-policy", methods="GET")
-     */
-    public function privacyPolicy(): Response
-    {
-        $page = $this->getDoctrine()
-            ->getRepository(StaticPage::class)
-            ->findOneBy([
-                'slug' => 'privacy-policy'
-            ]);
-
-        return $this->render('front/static-page/index.html.twig', [
-            'content' => $this->getContent($page)
-        ]);
-    }
-
-    /**
-     * @Route("/terms-and-conditions", name="app.site.terms-and-conditions", methods="GET")
-     */
-    public function termsAndConditions(): Response
-    {
-        $page = $this->getDoctrine()
-            ->getRepository(StaticPage::class)
-            ->findOneBy([
-                'slug' => 'terms-and-conditions'
-            ]);
-
-        return $this->render('front/static-page/index.html.twig', [
-            'content' => $this->getContent($page)
-        ]);
-    }
-
-
-    private function getContent(?StaticPage $staticPage): string
-    {
-        if ($staticPage === null) {
-            return '';
-        }
-
-        return $this->markdown->text($staticPage->getContent());
     }
 }
