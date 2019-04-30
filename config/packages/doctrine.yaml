@@ -10,10 +10,13 @@ doctrine:
         driver: 'pdo_pgsql'
         charset: utf8
         url: '%env(resolve:DATABASE_URL)%'
+        mapping_types:
+            int4range: int4range
         types:
             geography:  CrEOF\Spatial\DBAL\Types\GeographyType
             polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
             point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
+            int4range:  App\Doctrine\DBAL\Types\IntRangeType
 
     orm:
         auto_generate_proxy_classes: true

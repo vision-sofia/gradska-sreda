@@ -13,13 +13,15 @@
         <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 0;">Близко (zoom 21) </div>
         <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 80%;">Далече (zoom 1)</div>
     </div>
+    {# @var list \App\AppMain\Entity\Geospatial\Simplify[]  #}
     {% for simplify in list %}
-        {% set margin = 100 - ((simplify.minZoom - 1) / 20) * 100 %}
-        {% set width = ((simplify.minZoom - simplify.maxZoom) / 20) * 100 %}
+
+        {% set margin = 100 - ((simplify.zoom.end - 1) / 20) * 100 %}
+        {% set width = ((simplify.zoom.end - simplify.zoom.start) / 20) * 100 %}
 
         <div class="progress mb-1" style="height: 25px;">
             <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
-                <a href="{{ path('manage.geospatial.simplify.edit', {'id': simplify.uuid}) }}" class="text-white">{{ simplify.tolerance|number_format(6) }}, [{{ simplify.minZoom }},{{ simplify.maxZoom }}]</a>
+                <a href="{{ path('manage.geospatial.simplify.edit', {'id': simplify.uuid}) }}" class="text-white">{{ simplify.tolerance|number_format(6) }}, [{{ simplify.zoom.end }},{{ simplify.zoom.start }}]</a>
             </div>
         </div>
     {% endfor %}

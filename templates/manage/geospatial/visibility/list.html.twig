@@ -10,12 +10,13 @@
         <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 0;">Близко (zoom 21) </div>
         <div class="progress-bar bg-info font-sm" role="progressbar" style="width: 20%;margin-left: 80%;">Далече (zoom 1)</div>
     </div>
+    {# @var list \App\AppMain\Entity\Geospatial\ObjectTypeVisibility[]  #}
     {% for visibility in list %}
-        {% set margin = 100 - ((visibility.minZoom - 1) / 20) * 100 %}
-        {% set width = ((visibility.minZoom - visibility.maxZoom) / 20) * 100 %}
+        {% set margin = 100 - ((visibility.zoom.end - 1) / 20) * 100 %}
+        {% set width = ((visibility.zoom.end - visibility.zoom.start) / 20) * 100 %}
         <div class="progress mb-1" style="height: 25px;">
             <div class="progress-bar bg-success font-sm" role="progressbar" style="width: {{ width }}%;margin-left: {{ margin }}%;">
-                <a href="{{ path('manage.geospatial.object-type-visibility.edit', {'id': visibility.uuid}) }}" class="text-white">{{ visibility.objectType.name }}, {{ visibility.minZoom }}-{{ visibility.maxZoom }}</a>
+                <a href="{{ path('manage.geospatial.object-type-visibility.edit', {'id': visibility.uuid}) }}" class="text-white">{{ visibility.objectType.name }}, {{ visibility.zoom.end }}-{{ visibility.zoom.start }}</a>
             </div>
         </div>
     {% endfor %}

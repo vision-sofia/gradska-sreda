@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="bg" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="zoom.invalid_range">
+                <source>zoom.invalid_range</source>
+                <target>Невалиден обхват. Началната граница трябва да е по-висока от крайната</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

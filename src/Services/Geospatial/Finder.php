@@ -18,7 +18,7 @@ class Finder
         $this->utils = $utils;
     }
 
-    public function find(float $zoom, float $simplifyTolerance, string $in, UserInterface $user = null, string $collectionId = null): \Generator
+    public function find(int $zoom, float $simplifyTolerance, string $in, UserInterface $user = null, string $collectionId = null): \Generator
     {
         $conn = $this->em->getConnection();
 
@@ -62,7 +62,7 @@ class Finder
                         WHERE
                             s.is_active = TRUE
                             AND m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
-                            AND :zoom <= min_zoom AND :zoom > max_zoom
+                            AND v.zoom @> :zoom::int
 
                         UNION ALL
 
@@ -91,7 +91,7 @@ class Finder
                             x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
                         WHERE
                             m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
-                            AND :zoom <= min_zoom AND :zoom > max_zoom
+                            AND v.zoom @> :zoom
                     ) as w
             )        
         ';
@@ -105,7 +105,6 @@ class Finder
             'g.style_hover',
             'g.name as geo_name',
             't.name as type_name',
-
             'g.attributes',
             'g.geometry',
 
@@ -140,7 +139,7 @@ class Finder
         $stmt->bindValue('y_min', $this->utils->bbox($in, 1));
         $stmt->bindValue('x_max', $this->utils->bbox($in, 2));
         $stmt->bindValue('y_max', $this->utils->bbox($in, 3));
-        $stmt->bindValue('zoom', $zoom);
+        $stmt->bindValue('zoom', $zoom, \PDO::PARAM_INT);
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
 
 

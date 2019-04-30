@@ -3,6 +3,7 @@
 namespace App\DataFixtures\Geospatial;
 
 use App\AppMain\Entity\Geospatial\Simplify;
+use App\Doctrine\ValueObject\IntRange;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -12,8 +13,7 @@ class GeometrySimplifyFixtures extends Fixture
     {
         foreach ($this->data() as $item) {
             $simplify = new Simplify();
-            $simplify->setMinZoom($item['min_zoom']);
-            $simplify->setMaxZoom($item['max_zoom']);
+            $simplify->setZoom(new IntRange($item['max_zoom'], $item['min_zoom']));
             $simplify->setTolerance($item['tolerance']);
 
             $manager->persist($simplify);
