@@ -27,7 +27,7 @@ class IntRange
 
     public static function toString(IntRange $intRange): string
     {
-        return sprintf('[%s,%s]', $intRange->getStart(), $intRange->getEnd());
+        return sprintf('[%s,%s)', $intRange->getStart(), $intRange->getEnd());
     }
 
     public static function fromString($string): IntRange

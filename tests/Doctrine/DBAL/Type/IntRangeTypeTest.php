@@ -25,7 +25,7 @@ class IntRangeTypeTest extends TestCase
     {
         $range = new IntRange(2, 5);
         $this->assertEquals(
-            '[2,5]',
+            '[2,5)',
             $this->type->convertToDatabaseValue($range, $this->platform)
         );
         $this->assertNull(
