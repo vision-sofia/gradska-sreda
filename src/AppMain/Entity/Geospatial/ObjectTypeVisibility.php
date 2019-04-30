@@ -4,6 +4,7 @@ namespace App\AppMain\Entity\Geospatial;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use App\Doctrine\ValueObject\IntRange;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -28,14 +29,9 @@ class ObjectTypeVisibility implements UuidInterface
     private $objectType;
 
     /**
-     * @ORM\Column(type="decimal", precision=4, scale=2)
+     * @ORM\Column(type="int4range")
      */
-    private $minZoom;
-
-    /**
-     * @ORM\Column(type="decimal", precision=4, scale=2)
-     */
-    private $maxZoom;
+    private $zoom;
 
     public function getId(): ?int
     {
@@ -52,23 +48,13 @@ class ObjectTypeVisibility implements UuidInterface
         $this->objectType = $objectType;
     }
 
-    public function getMinZoom(): ?float
+    public function getZoom(): ?IntRange
     {
-        return $this->minZoom;
+        return $this->zoom;
     }
 
-    public function setMinZoom(float $minZoom): void
+    public function setZoom(IntRange $zoom): void
     {
-        $this->minZoom = $minZoom;
-    }
-
-    public function getMaxZoom(): ?float
-    {
-        return $this->maxZoom;
-    }
-
-    public function setMaxZoom(float $maxZoom): void
-    {
-        $this->maxZoom = $maxZoom;
+        $this->zoom = $zoom;
     }
 }

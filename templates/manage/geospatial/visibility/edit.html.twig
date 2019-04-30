@@ -1,4 +1,5 @@
 {% extends 'manage/base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
     <div class="row">
@@ -10,6 +11,7 @@
                 </div>
                 {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
                 <div class="card-body">
+                    {{ form_errors(form) }}
                     <div class="form-group row ">
                         <label class="col-md-3 col-form-label" for="password-input">Тип обект</label>
                         <div class="col-md-9 form-control-plaintext">
@@ -22,10 +24,12 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     {{ form_widget(form.minZoom, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.minZoom) }}
                                     <p class="help-block">от zoom level</p>
                                 </div>
                                 <div class="col-lg-6">
                                     {{ form_widget(form.maxZoom, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.maxZoom) }}
                                     <p class="help-block">до zoom level</p>
                                 </div>
                             </div>

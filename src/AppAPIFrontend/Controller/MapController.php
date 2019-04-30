@@ -67,13 +67,14 @@ class MapController extends AbstractController
 
         $zoom = (float)$zoom;
 
+        /** @var Simplify[] $simplify */
         $simplify = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
 
         $simplifyRanges = [];
         foreach ($simplify as $item) {
             $simplifyRanges[] = [
-                'min_zoom' => $item->getMinZoom(),
-                'max_zoom' => $item->getMaxZoom(),
+                'min_zoom' => $item->getZoom()->getStart(),
+                'max_zoom' => $item->getZoom()->getEnd(),
                 'tolerance' => $item->getTolerance(),
             ];
         }

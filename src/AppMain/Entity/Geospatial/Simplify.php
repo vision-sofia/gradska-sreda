@@ -4,6 +4,7 @@ namespace App\AppMain\Entity\Geospatial;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use App\Doctrine\ValueObject\IntRange;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,14 +28,9 @@ class Simplify implements UuidInterface
     private $tolerance;
 
     /**
-     * @ORM\Column(type="decimal", precision=3, scale=1)
+     * @ORM\Column(type="int4range")
      */
-    private $minZoom;
-
-    /**
-     * @ORM\Column(type="decimal", precision=3, scale=1)
-     */
-    private $maxZoom;
+    private $zoom;
 
     public function getId()
     {
@@ -51,23 +47,13 @@ class Simplify implements UuidInterface
         $this->tolerance = $tolerance;
     }
 
-    public function getMinZoom(): float
+    public function getZoom(): ?IntRange
     {
-        return $this->minZoom;
+        return $this->zoom;
     }
 
-    public function setMinZoom(float $minZoom): void
+    public function setZoom(IntRange $zoom): void
     {
-        $this->minZoom = $minZoom;
-    }
-
-    public function getMaxZoom(): float
-    {
-        return $this->maxZoom;
-    }
-
-    public function setMaxZoom(float $maxZoom): void
-    {
-        $this->maxZoom = $maxZoom;
+        $this->zoom = $zoom;
     }
 }

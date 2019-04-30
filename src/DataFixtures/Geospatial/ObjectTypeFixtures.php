@@ -4,6 +4,7 @@ namespace App\DataFixtures\Geospatial;
 
 use App\AppMain\Entity\Geospatial\ObjectType;
 use App\AppMain\Entity\Geospatial\ObjectTypeVisibility;
+use App\Doctrine\ValueObject\IntRange;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -20,8 +21,7 @@ class ObjectTypeFixtures extends Fixture
 
             $objectTypeVisibility = new ObjectTypeVisibility();
             $objectTypeVisibility->setObjectType($objectType);
-            $objectTypeVisibility->setMinZoom($item['min_zoom']);
-            $objectTypeVisibility->setMaxZoom($item['max_zoom']);
+            $objectTypeVisibility->setZoom(new IntRange($item['max_zoom'], $item['min_zoom']));
 
             $manager->persist($objectTypeVisibility);
             $manager->flush();
