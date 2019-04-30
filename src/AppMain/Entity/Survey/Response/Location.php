@@ -48,7 +48,7 @@ class Location implements UuidInterface
     private $geoObject;
 
     /**
-     * @ORM\Column(name="coordinates", type="point", nullable=true)
+     * @ORM\Column(name="coordinates", type="geography", options={"geometry_type"="POINT"}, nullable=true)
      */
     private $coordinates;
 

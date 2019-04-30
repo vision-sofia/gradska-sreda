@@ -13,9 +13,12 @@ doctrine:
         mapping_types:
             int4range: int4range
         types:
-            geography:  CrEOF\Spatial\DBAL\Types\GeographyType
-            polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
-            point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
+           #geography:  CrEOF\Spatial\DBAL\Types\GeographyType
+           #polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
+           #point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
+            geography:
+                class: Jsor\Doctrine\PostGIS\Types\GeographyType
+                commented: false
             int4range:  App\Doctrine\DBAL\Types\IntRangeType
 
     orm:

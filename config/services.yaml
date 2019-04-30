@@ -27,6 +27,10 @@ services:
         resource: '../src/AppManage/Controller'
         tags: ['controller.service_arguments']
 
+    Jsor\Doctrine\PostGIS\Event\ORMSchemaEventSubscriber:
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
     doctrineMigrationDiffListener:
         class: App\Doctrine\MigrationEventSubscriber
         tags:

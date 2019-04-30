@@ -8,7 +8,13 @@ use App\Doctrine\ValueObject\IntRange;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="object_type_visibility", schema="x_geospatial")
+ * @ORM\Table(
+ *     name="object_type_visibility",
+ *     schema="x_geospatial",
+ *     indexes={
+ *         @ORM\Index(columns={"zoom"}, flags={"spatial"})
+ *     }
+ * )
  * @ORM\Entity()
  */
 class ObjectTypeVisibility implements UuidInterface
