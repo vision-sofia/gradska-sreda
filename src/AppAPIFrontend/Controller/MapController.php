@@ -15,11 +15,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use PDO;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class MapController extends AbstractController
 {
@@ -30,6 +32,7 @@ class MapController extends AbstractController
     protected $session;
     protected $geoCollection;
     protected $styleUtils;
+    protected $cache;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -38,8 +41,10 @@ class MapController extends AbstractController
         Finder $finder,
         SessionInterface $session,
         GeoCollection $geoCollection,
-        StyleUtils $styleUtils
-    ) {
+        StyleUtils $styleUtils,
+        AdapterInterface $cache
+    )
+    {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
@@ -47,6 +52,7 @@ class MapController extends AbstractController
         $this->session = $session;
         $this->geoCollection = $geoCollection;
         $this->styleUtils = $styleUtils;
+        $this->cache = $cache;
     }
 
     // TODO: refactor in to services
@@ -65,21 +71,8 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
-        $zoom = (float)$zoom;
+        $simplifyTolerance = $this->simplifyTolerance((int)$zoom);
 
-        /** @var Simplify[] $simplify */
-        $simplify = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
-
-        $simplifyRanges = [];
-        foreach ($simplify as $item) {
-            $simplifyRanges[] = [
-                'min_zoom' => $item->getZoom()->getEnd(),
-                'max_zoom' => $item->getZoom()->getStart(),
-                'tolerance' => $item->getTolerance(),
-            ];
-        }
-
-        $simplifyTolerance = $this->utils->findTolerance($simplifyRanges, $zoom);
         $collectionId = $request->query->get('collection');
 
         $boundingBox = null;
@@ -97,26 +90,14 @@ class MapController extends AbstractController
             }
         }
 
-
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
-        $stylesGroups = $this->getDoctrine()
-            ->getRepository(StyleGroup::class)
-            ->findAll();
-
-        $styles = [];
-
-        foreach ($stylesGroups as $stylesGroup) {
-            $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
-        }
-
-        $userGeoCollectionLinks = $userGeoCollection = $userSubmitted = $result = [];
+        $userGeoCollection = $userSubmitted = $result = [];
         $bbox = [];
 
         if ($this->getUser()) {
             $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
             $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
-            $userGeoCollectionLinks = $this->finder->userGeoCollectionLinks($this->getUser()->getId(), $simplifyTolerance);
 
             $collectionBoundingBoxCollection = $this->geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
 
@@ -137,39 +118,26 @@ class MapController extends AbstractController
             }
         }
 
-        /** @var StyleCondition[] $dynamicStyles */
-        $dynamicStyles = $this->getDoctrine()->getRepository(StyleCondition::class)->findBy([
-            'isDynamic' => true
-        ]);
+        $dynamicStyles = $this->dynamicStyles();
+        $styleGroups = $this->styleGroups();
 
-        $ds = [];
-
-        foreach ($dynamicStyles as $dynamicStyle) {
-            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['base_style'] = $dynamicStyle->getBaseStyle();
-            $ds[$dynamicStyle->getAttribute()][$dynamicStyle->getValue()]['hover_style'] = $dynamicStyle->getHoverStyle();
-        }
-
-        $this->styleUtils->setDynamicStyles($ds);
-        $this->styleUtils->setStaticStyles($styles);
+        $this->styleUtils->setDynamicStyles($dynamicStyles);
+        $this->styleUtils->setStaticStyles($styleGroups);
 
         foreach ($geoObjects as $row) {
-            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
         foreach ($userGeoCollection as $row) {
-            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
-        }
-
-        foreach ($userGeoCollectionLinks as $row) {
-           # $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
         foreach ($bbox as $row) {
-            $result[] = $this->process($row, $styles, $this->styleUtils, $ds);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
         $this->logger->info('Map view', [
@@ -187,7 +155,7 @@ class MapController extends AbstractController
         return new JsonResponse([
             'settings' => [
                 'default_zoom' => 17,
-                'styles' => $styles,
+                'styles' => $styleGroups,
                 'dialog' => [
                     1 => 'Искате ли да оцените избраното пресичане',
                     2 => 'Искате ли да оцените избрания тротоар',
@@ -236,12 +204,75 @@ class MapController extends AbstractController
             'type' => 'Feature',
             'geometry' => $geometry,
             'properties' => [
-                '_s1' => $row['style_base'],
-                '_s2' => $row['style_hover'],
-                'id' => $row['uuid'],
-                'name' => $row['geo_name'],
-                'type' => $row['type_name'],
-            ] + $attributes,
+                    '_s1' => $row['style_base'],
+                    '_s2' => $row['style_hover'],
+                    'id' => $row['uuid'],
+                    'name' => $row['geo_name'],
+                    'type' => $row['type_name'],
+                ] + $attributes,
         ];
+    }
+
+    private function simplifyTolerance(int $zoom)
+    {
+        $simplifyTolerance = $this->cache->get('simplify-tolerance-' . $zoom, function (ItemInterface $item) use ($zoom) {
+            /** @var Simplify[] $simplify */
+            $simplifySet = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
+
+            $simplifyRanges = [];
+            foreach ($simplifySet as $simplify) {
+                $simplifyRanges[] = [
+                    'min_zoom' => $simplify->getZoom()->getEnd(),
+                    'max_zoom' => $simplify->getZoom()->getStart(),
+                    'tolerance' => $simplify->getTolerance(),
+                ];
+            }
+
+            return $this->utils->findTolerance($simplifyRanges, $zoom);
+        });
+
+        return $simplifyTolerance;
+    }
+
+    private function dynamicStyles()
+    {
+        $result = $this->cache->get('dynamic-styles', function (ItemInterface $item) {
+            /** @var StyleCondition[] $styleConditions */
+            $styleConditions = $this->getDoctrine()->getRepository(StyleCondition::class)->findBy([
+                'isDynamic' => true
+            ]);
+
+            $styles = [];
+
+            foreach ($styleConditions as $styleCondition) {
+                $styles[$styleCondition->getAttribute()][$styleCondition->getValue()]['base_style'] = $styleCondition->getBaseStyle();
+                $styles[$styleCondition->getAttribute()][$styleCondition->getValue()]['hover_style'] = $styleCondition->getHoverStyle();
+            }
+
+            return $styles;
+        });
+
+        return $result;
+    }
+
+    private function styleGroups()
+    {
+        $result = $this->cache->get('static-styles', function (ItemInterface $item)  {
+
+            /** @var StyleGroup[] $stylesGroups */
+            $stylesGroups = $this->getDoctrine()
+                ->getRepository(StyleGroup::class)
+                ->findAll();
+
+            $styles = [];
+
+            foreach ($stylesGroups as $stylesGroup) {
+                $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
+            }
+
+            return $styles;
+        });
+
+        return $result;
     }
 }
