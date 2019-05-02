@@ -1,59 +1,188 @@
 <!DOCTYPE html>
 <html lang="bg">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<meta name="description" content="">
-	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('front/images/icons/apple-touch-icon.png') }}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('front/images/icons/favicon-32x32.png') }}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('front/images/icons/favicon-16x16.png') }}">
-	<link rel="manifest" href="{{ asset('front/images/icons/site.webmanifest') }}">
-	<link rel="mask-icon" href="{{ asset('front/images/icons/safari-pinned-tab.svg') }}" color="#5bbad5">
-	<link rel="shortcut icon" href="{{ asset('front/images/icons/favicon.ico') }}">
-	<meta name="application-name" content="">
-	<meta name="msapplication-TileColor" content="#FFFFFF">
-	<meta name="msapplication-TileImage" content="{{ asset('front/images/icons/mstile-144x144.png') }}">
-	<meta name="msapplication-config" content="{{ asset('front/images/icons/browserconfig.xml') }}">
-	<meta name="theme-color" content="#ffffff">
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-title" content="">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta name="ogg" content="{{ app.request.uri }}">
-	<meta property="og:url" content="{{ app.request.uri }}">
-	<meta property="og:type" content="article">
-	<meta property="og:title" content="Градска среда">
-	<meta property="og:description" content="">
-	<meta property="og:image" content="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="description" content="">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('front/images/icons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('front/images/icons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('front/images/icons/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('front/images/icons/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ asset('front/images/icons/safari-pinned-tab.svg') }}" color="#5bbad5">
+    <link rel="shortcut icon" href="{{ asset('front/images/icons/favicon.ico') }}">
+    <meta name="application-name" content="">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="{{ asset('front/images/icons/mstile-144x144.png') }}">
+    <meta name="msapplication-config" content="{{ asset('front/images/icons/browserconfig.xml') }}">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="ogg" content="{{ app.request.uri }}">
+    <meta property="og:url" content="{{ app.request.uri }}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Градска среда">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
     <title>Градска среда - Визия за София</title>
-	<!-- Foreign CSS stuff -->
-	<link rel='stylesheet' id='thegem-google-fonts-css'  href='//fonts.googleapis.com/css?family=Source+Sans+Pro%3Aregular%2C300%7CMontserrat%3A700%2Cregular&#038;subset=greek-ext%2Clatin%2Ccyrillic-ext%2Ccyrillic%2Cgreek%2Clatin-ext%2Cvietnamese&#038;ver=4.9.8' type='text/css' media='all' />
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-	<!-- Core CSS -->
-	<link rel="stylesheet" href="{{ asset('front/css/vendor.css') }}?{{ "now"|date("U") }}" type="text/css">
-	<link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <!-- Foreign CSS stuff -->
+    <link rel='stylesheet' id='thegem-google-fonts-css'
+          href='//fonts.googleapis.com/css?family=Source+Sans+Pro%3Aregular%2C300%7CMontserrat%3A700%2Cregular&#038;subset=greek-ext%2Clatin%2Ccyrillic-ext%2Ccyrillic%2Cgreek%2Clatin-ext%2Cvietnamese&#038;ver=4.9.8'
+          type='text/css' media='all'/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ asset('front/css/vendor.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ "now"|date("U") }}" type="text/css">
 
 
-	<link rel="stylesheet" href="{{ asset('front/css/custom.css') }}?{{ "now"|date("U") }}" type="text/css">
-	<link rel="stylesheet" href="{{ asset('front/css/typography.css') }}?{{ "now"|date("U") }}" type="text/css">
-	<link rel="stylesheet" href="https://vizia.sofia.bg/wp-content/themes/thegem/css/thegem-header.css?ver=4.9.8" type="text/css">
+    <link rel="stylesheet" href="{{ asset('front/css/custom.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('front/css/typography.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="https://vizia.sofia.bg/wp-content/themes/thegem/css/thegem-header.css?ver=4.9.8"
+          type="text/css">
 </head>
 <body>
-	{% include 'front/partial/header.html.twig' %}
-	<main>
-	{% block body %}{% endblock %}
-	{% if app.request.get('_route') != 'app.map'
-		and not (app.request.get('_route') starts with 'app.geo-collection') %}
-	{% include 'front/partial/footer.html.twig' %}
-	{% endif %}
-	</main>
+{% include 'front/partial/header.html.twig' %}
+<main>
+    {% block body %}{% endblock %}
+    {% if app.request.get('_route') != 'app.map'
+        and not (app.request.get('_route') starts with 'app.geo-collection') %}
+        {% include 'front/partial/footer.html.twig' %}
+    {% endif %}
+</main>
 
-	<script type="text/javascript" src="{{ asset('front/js/vendor.js') }}"></script>
-	<script type="text/javascript" src="{{ asset('front/js/bundle.js') }}"></script>
+<script>
 
-	{% if app.debug %}
-	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
-	{% endif %}
+
+    $(document).ready(function () {
+
+        $('.wtf').click(function () {
+            alert("zz" + this.value);
+        });
+
+    });
+</script>
+<script type="text/javascript" src="{{ asset('front/js/vendor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('front/js/bundle.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        function questions() {
+            $.ajax({
+                url: "/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q",
+
+                success: function (result) {
+
+                    let html = ``;
+                    let survey = result.survey;
+                    let progress = result.progress;
+                    let pa = false;
+                    Object.keys(survey).forEach(function (item) {
+                        let answers = survey[item].answers;
+                        let question = survey[item];
+
+                        html += `
+
+					 	<div class="mb-4">
+                            <i class="fa fa-star ` + (question.isAnswered ? 'text-warning' : 'text-black-50') + `"></i> <h5
+                                    class="d-inline">` + question.title + `</h5>`;
+
+                        Object.keys(answers).forEach(function (answer) {
+                            let isSelected = '';
+
+                            if (answers[answer].isSelected) {
+                                isSelected = 'checked="checked"';
+                            }
+
+                            if (answers[answer].parent === null) {
+                                pa = question.answers[answer].isSelected;
+
+                                html += `<p class="mb-0"><label><input class="answer" type="radio"
+									name="answers[option][` + question.uuid + `][]"
+                                    ` + isSelected + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></p>`;
+                            } else {
+
+                                if (pa === true) {
+                                    html += `<div style="padding-left:20px;"><label class="ml-4"><input class="answer" type="checkbox"
+									name="answers[option][` + question.uuid + `][]"
+                                    ` + isSelected + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></div>`;
+                                }
+                            }
+
+
+                        });
+
+                        if (question.isAnswered) {
+                            html += `<button type="button" class="rem btn btn-sm btn-danger" name="answers[option][` + question.uuid + `][]" value="` + question.uuid + `"> Изчисти</button>`;
+                        }
+
+                        html += `</div>`;
+                    });
+
+                    $("#dc").html(html);
+
+                    let progressbar = `<div class="progress mb-4">
+                                    <div class="progress-bar ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ` + progress.percentage + `%;"
+                                         aria-valuenow="` + progress.percentage + `" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>`;
+
+
+                    $("#progress").html(progressbar);
+
+
+                }
+            });
+
+
+        }
+
+        questions();
+
+        $(document).on('click', '.answer', function () {
+            let value = this.value;
+            $.ajax({
+                type: "POST",
+                url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q',
+                data: {
+                    'answer': value,
+                },
+                success: function () {
+                    questions();
+                }
+            });
+        });
+
+        $(document).on('click', '.rem', function () {
+            let value = this.value;
+            $.ajax({
+                type: "POST",
+                url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/clear/' + value,
+                success: function () {
+                    questions();
+                }
+            });
+        });
+
+        /* $(".answer").on("click", function () {
+             let value = this.value;
+             $.ajax({
+                 type: "POST",
+                 url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q',
+                 data: {
+                     'answer': value,
+                 },
+                 success: function () {
+                     let html = questions();
+
+                 }
+             });
+         });*/
+    });
+</script>
+{% if app.debug %}
+    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+{% endif %}
 
 </body>
 </html>

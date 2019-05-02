@@ -115,6 +115,8 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     }).addTo(map);
 
     setInitialMapView();
+    geoCollection();
+
 
     function updateMap(center, fn = () => {
     }) {
@@ -165,7 +167,9 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         $.ajax({
             data: a,
             url: "/map/z",
-            success: function (results) {
+            success: function () {
+
+
 
             }
         });
@@ -295,10 +299,15 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                     'collection': collection
                 },
                 success: function () {
-                    updateMap();
+                    let center = map.getCenter();
+                    updateMap(center);
                 }
             });
+
+            geoCollection();
         }
+
+
         /*
                 $(".m-form").submit(function(e) {
                     var form = $(this);
@@ -320,6 +329,41 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                     e.preventDefault();
                 });
         */
+    }
+
+    function geoCollection() {
+        $.ajax({
+            url: "http://gradska-sreda.localhost/geo-collection/"+ gcOpen + "/info",
+            success: function (result) {
+                let html = `<ul class="mt-4 pl-4">`;
+
+                Object.keys(result).forEach(function (item) {
+                    html += `<li class="mb-2">
+							<a href="/geo-collection/${result[item].collection_uuid}" class="font-weight-bold">Маршрут</a>`;
+
+                    if(gcOpen === result[item].collection_uuid) {
+                        html += ` [<span class="text-success">активен</span>]
+							<form method="post" class="float-right">
+								<button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0"><i class="fa fa-trash"></i> </button>
+							</form>`;
+
+                    }
+
+                    html += `<div>
+							дължина: ${result[item].length} м<br />
+							оценен: ${result[item].completion.percentage} %<br />
+								<div class="progress" style="height: 3px;">
+									<div class="progress-bar" role="progressbar" style="width: ${result[item].completion.percentage}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+							</div>
+						</li>`;
+                });
+
+                html += `</ul>`;
+
+                $("#div3").html(html);
+            }
+        });
     }
 
     function openConfirmModal(layer) {

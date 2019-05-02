@@ -17,6 +17,56 @@ class GeoCollection
         $this->em = $em;
     }
 
+    public function findCompletion(int $collectionId): array
+    {
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                COUNT(*) as total,
+                COUNT(*) FILTER ( WHERE uc.is_completed = TRUE ) as completed
+            FROM
+                x_survey.gc_collection c
+                    INNER JOIN
+                x_survey.gc_collection_content gc ON c.id = gc.geo_collection_id
+                    LEFT JOIN
+                x_survey.result_user_completion uc ON uc.geo_object_id = gc.geo_object_id AND uc.user_id = c.user_id
+            WHERE
+                gc.geo_collection_id = :geo_collection_id
+        ');
+
+        $stmt->bindValue('geo_collection_id', $collectionId);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+
+        return [
+            'total' => $result['total'],
+            'completed' => $result['completed'],
+            'percentage' => round(($result['completed'] / $result['total']) * 100, 1)
+        ];
+    }
+
+    public function findLength(int $collectionId): float
+    {
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                SUM(ST_Length(gb.coordinates))
+            FROM
+                x_survey.gc_collection_content gc
+                    INNER JOIN
+                x_geometry.geometry_base gb ON gb.geo_object_id = gc.geo_object_id
+            WHERE
+                gc.geo_collection_id = ?
+        ');
+
+        $stmt->execute([$collectionId]);
+
+        return round($stmt->fetchColumn(), 2);
+    }
+
     public function findCollectionBoundingBox(int $userId, string $collectionUuid): BoundingBoxDTO
     {
         $conn = $this->em->getConnection();
@@ -83,8 +133,7 @@ class GeoCollection
             ->innerJoin('cc', 'x_geospatial.geo_object', 'g', 'cc.geo_object_id = g.id')
             ->innerJoin('g', 'x_geometry.geometry_base', 'gb', 'g.id = gb.geo_object_id')
             ->andWhere('c.user_id = :user_id')
-            ->groupBy('c.id')
-        ;
+            ->groupBy('c.id');
 
         $sql = '
             WITH z AS (

@@ -14,6 +14,9 @@ class QuestionDTO
     protected $answers;
     protected $is_answered = false;
 
+    /**
+     * @return QuestionAnswerDTO[]
+     */
     public function getAnswers()
     {
         return $this->answers;

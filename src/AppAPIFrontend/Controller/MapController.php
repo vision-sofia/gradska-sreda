@@ -128,15 +128,15 @@ class MapController extends AbstractController
             $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
-        foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
-        }
-
         foreach ($userGeoCollection as $row) {
             $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 
         foreach ($bbox as $row) {
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
+        }
+
+        foreach ($userSubmitted as $row) {
             $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
         }
 

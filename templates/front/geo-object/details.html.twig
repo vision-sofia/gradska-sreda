@@ -30,6 +30,9 @@
                     </div>
                 </div>
 
+                <div id="progress"></div>
+                <div id="dc"></div>
+{#
                 <div class="progress mb-4">
                     <div class="progress-bar {{ progress.percentage == 100 ? 'bg-success' : '' }}" role="progressbar" style="width: {{ progress.percentage }}%;"
                          aria-valuenow="{{ progress.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -88,7 +91,7 @@
                                 {% endfor %}
 
                                 {% if question.isAnswered %}
-                                    <label class="text-danger"><input type="radio" name="answers[option][{{ question.uuid }}][]" value=""> Изчисти</label>
+                                    <label class="text-danger"><button type="button" name="answers[option][{{ question.uuid }}][]" value=""> Изчисти</label>
                                 {% endif %}
                             </div>
                         </div>
@@ -99,7 +102,7 @@
                         </button>
                     </div>
                 </form>
-
+#}
             </div>
             <div class="col-lg-5">
                 <h4>Рейтинг</h4>

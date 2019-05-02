@@ -215,7 +215,8 @@ class Finder
                 c.uuid as geo_collection_uuid,     
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
-                    \'_gc\', 1
+                    \'_gc\', 1,
+                    \'_behavior\', \'survey\'
                 ) as attributes
             FROM
                 x_survey.gc_collection c
@@ -228,7 +229,7 @@ class Finder
                     INNER JOIN
                 x_geospatial.object_type t ON g.object_type_id = t.id
             WHERE
-                user_id = :user_id
+                c.user_id = :user_id
         ');
 
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
