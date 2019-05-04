@@ -52,17 +52,6 @@
     {% endif %}
 </main>
 
-<script>
-
-
-    $(document).ready(function () {
-
-        $('.wtf').click(function () {
-            alert("zz" + this.value);
-        });
-
-    });
-</script>
 <script type="text/javascript" src="{{ asset('front/js/vendor.js') }}"></script>
 <script type="text/javascript" src="{{ asset('front/js/bundle.js') }}"></script>
 <script type="text/javascript">
@@ -108,8 +97,6 @@
                                     }
                                 }
                             }
-
-
                         });
 
                         if (question.isAnswered) {
@@ -201,21 +188,6 @@
                 }
             });
         });
-
-        /* $(".answer").on("click", function () {
-             let value = this.value;
-             $.ajax({
-                 type: "POST",
-                 url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q',
-                 data: {
-                     'answer': value,
-                 },
-                 success: function () {
-                     let html = questions();
-
-                 }
-             });
-         });*/
     });
 </script>
 {% if app.debug %}
