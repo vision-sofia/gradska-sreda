@@ -11,18 +11,37 @@
             <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
         </form>
 
-        Избереше маршрут:
-
-        <ul class="mt-2 pl-4">
+        <p>Натиснете на отсечка от картата за да я добавите към маршрут. Натиснете повторно на отсечка от маршрута за да я извадите.</p>
+        <div id="div1"></div>
+        <div id="div2"></div>
+        <div id="div3"></div>
+        {#<ul class="mt-4 pl-4">
             {% set m = 0 %}
             {% for collectionItem in collections %}
                 {% set m = m + 1 %}
-                <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
+                <li class="mb-2">
+                    <a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
                        class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
-                    {% if collection is defined and collectionItem.uuid == collection.uuid %}[<span class="text-success"> активен</span>]{% endif %}
+                    {% if collection is defined and collectionItem.uuid == collection.uuid %}
+
+                        [<span class="text-success">активен</span>]
+                        <form method="post" class="float-right">
+                            <button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0"><i class="fa fa-trash"></i> </button>
+                        </form>
+
+                    {% endif %}
+
+                    <div>
+                        дължина: xx м<br />
+                        оценен: xx %<br />
+                        <div class="progress" style="height: 3px;">
+                            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
                 </li>
+
             {% endfor %}
-        </ul>
+        </ul>#}
     </div>
     {#
     <div class="container">
@@ -64,6 +83,7 @@
     </div>
     #}
     <script>
+        let gcOpen = '{{ collection.uuid }}';
         let mapOption = {
             {% if collection is defined %}
             collection: '{{ collection.uuid }}',

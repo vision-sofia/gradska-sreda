@@ -5,11 +5,17 @@ namespace App\Services\Survey;
 
 
 use App\AppMain\DTO\QuestionAnswerDTO;
+use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use Iterator;
 
 class Question
 {
+    /**
+     * @param Iterator|QuestionDTO[] $questions
+     * @param array $responseAnswers
+     * @return array
+     */
     public function build(Iterator $questions, array $responseAnswers) {
         $re = [];
 
