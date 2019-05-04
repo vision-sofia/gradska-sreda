@@ -1,6 +1,7 @@
 import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
 (() => {
+
     if (!document.getElementById('mapMini')) {
         return;
     }
@@ -332,6 +333,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     }
 
     function geoCollection() {
+        if(typeof gcOpen !== 'undefined') {
         $.ajax({
             url: "http://gradska-sreda.localhost/geo-collection/"+ gcOpen + "/info",
             success: function (result) {
@@ -364,6 +366,8 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 $("#div3").html(html);
             }
         });
+
+        }
     }
 
     function openConfirmModal(layer) {
