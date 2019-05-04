@@ -69,6 +69,7 @@
     $(document).ready(function () {
 
         function questions() {
+
             $.ajax({
                 url: "/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q",
 
@@ -77,36 +78,34 @@
                     let html = ``;
                     let survey = result.survey;
                     let progress = result.progress;
-                    let pa = false;
+                    let isSelectedParent = false;
                     Object.keys(survey).forEach(function (item) {
                         let answers = survey[item].answers;
                         let question = survey[item];
 
-                        html += `
-
-					 	<div class="mb-4">
-                            <i class="fa fa-star ` + (question.isAnswered ? 'text-warning' : 'text-black-50') + `"></i> <h5
+                        html += `<div class="mb-4 " >
+                            <i class="fas ` + (question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i> <h5
                                     class="d-inline">` + question.title + `</h5>`;
 
                         Object.keys(answers).forEach(function (answer) {
-                            let isSelected = '';
-
-                            if (answers[answer].isSelected) {
-                                isSelected = 'checked="checked"';
-                            }
-
                             if (answers[answer].parent === null) {
-                                pa = question.answers[answer].isSelected;
+                                isSelectedParent = question.answers[answer].isSelected;
 
-                                html += `<p class="mb-0"><label><input class="answer" type="radio"
-									name="answers[option][` + question.uuid + `][]"
-                                    ` + isSelected + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></p>`;
+                                html += `<p class="mb-0"><label id="` + answers[answer].uuid + `"><input class="answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + question.uuid + `][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></p>`;
+
+                                if (question.answers[answer].isFreeAnswer) {
+                                    html += `<textarea></textarea>`;
+                                }
                             } else {
-
-                                if (pa === true) {
-                                    html += `<div style="padding-left:20px;"><label class="ml-4"><input class="answer" type="checkbox"
+                                if (isSelectedParent === true) {
+                                    html += `<div style="padding-left:20px;"><label class="ml-4" id="` + answers[answer].uuid + `"><input class="answer" type="checkbox"
 									name="answers[option][` + question.uuid + `][]"
-                                    ` + isSelected + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></div>`;
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></div>`;
+
+                                    if (answers[answer].isSelected && question.answers[answer].isFreeAnswer) {
+                                        html += `<textarea id="textarea-` + question.answers[answer].uuid + `]">` + question.answers[answer].explanation + `</textarea>`;
+                                    }
                                 }
                             }
 
@@ -127,17 +126,50 @@
                                          aria-valuenow="` + progress.percentage + `" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>`;
 
-
                     $("#progress").html(progressbar);
-
-
                 }
             });
-
-
         }
 
         questions();
+
+        function saveExplanation(id, value) {
+
+            $.ajax({
+                type: "POST",
+                url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q',
+                data: {
+                    'explanation': {
+                        "answer": id,
+                        "text": value,
+                    }
+                },
+                beforeSend: function () {
+                    if (document.getElementById(id)) {
+                        document.getElementById(id).style.backgroundColor = "green";
+                        setTimeout(function () {
+                            document.getElementById(id).style.backgroundColor = "white";
+                        }, 200);
+                    }
+                },
+                success: function (data) {
+
+                },
+            });
+        }
+
+        let timeoutId;
+
+        $(document).on('input propertychange change', 'textarea', function () {
+            let $this = $(this);
+
+            clearTimeout(timeoutId);
+
+            timeoutId = setTimeout(function () {
+                saveExplanation($this.attr("id"), $this.val());
+            }, 1000);
+        });
+
 
         $(document).on('click', '.answer', function () {
             let value = this.value;
@@ -146,6 +178,11 @@
                 url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/q',
                 data: {
                     'answer': value,
+                },
+                beforeSend: function () {
+                    if (document.getElementById(value)) {
+                        document.getElementById(value).style.color = "green";
+                    }
                 },
                 success: function () {
                     questions();
@@ -158,6 +195,7 @@
             $.ajax({
                 type: "POST",
                 url: '/geo/19b9083c-6f39-4956-a03b-cc41d90822e6/clear/' + value,
+
                 success: function () {
                     questions();
                 }

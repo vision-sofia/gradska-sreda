@@ -22,9 +22,13 @@ class QuestionV2
     {
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => $answerUuid,
-        ])
-        ;
-
+        ]);
+        /*
+                if($answer) {
+                    $conn = $this->entityManager->getConnection();
+                    $conn
+                }
+        */
         /** @var Survey\Question\Question $question */
         $question = $answer->getQuestion();
 
@@ -49,11 +53,10 @@ class QuestionV2
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
             ->findOneBy([
-                'geoObject'   => $geoObject,
-                'user'        => $user,
+                'geoObject' => $geoObject,
+                'user' => $user,
                 'coordinates' => null,
-            ])
-        ;
+            ]);
 
         if (null === $location) {
             $location = new Survey\Response\Location();
@@ -62,12 +65,11 @@ class QuestionV2
         }
 
         $responseQuestion = $this->entityManager->getRepository(Survey\Response\Question::class)
-                                                ->findOneBy([
-                                                    'user'      => $user,
-                                                    'geoObject' => $geoObject,
-                                                    'question'  => $answer->getQuestion(),
-                                                ])
-        ;
+            ->findOneBy([
+                'user' => $user,
+                'geoObject' => $geoObject,
+                'question' => $answer->getQuestion(),
+            ]);
 
         if (null === $responseQuestion) {
             // BEFORE INSERT trigger simulation
@@ -82,7 +84,7 @@ class QuestionV2
                     AND question_id = :question_id
                     AND geo_object_id = :geo_object_id
                     AND is_latest = TRUE
-        ');
+            ');
 
             $stmt->bindValue('user_id', $user->getId());
             $stmt->bindValue('question_id', $question->getId());
@@ -95,24 +97,56 @@ class QuestionV2
             $responseQuestion->setQuestion($answer->getQuestion());
             $responseQuestion->setIsLatest(true);
             $responseQuestion->setLocation($location);
+
+            $responseAnswer = new Survey\Response\Answer();
+            $responseAnswer->setAnswer($answer);
+
+            if (isset($extra['explanation'])) {
+                $responseAnswer->setExplanation($extra['explanation']);
+            }
+
+            if (isset($extra['photo']) && $extra['photo'] instanceof UploadedFile) {
+                /** @var UploadedFile $photo */
+                $photo = $extra['photo'];
+                $responseAnswer->setPhoto($photo->getClientOriginalName());
+            }
+
+            $responseQuestion->addAnswer($responseAnswer);
+
+            $this->entityManager->persist($responseQuestion);
+
+        } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
+
+            $z = $this->entityManager->getRepository(Survey\Response\Answer::class)
+                ->findOneBy([
+                    'question' => $responseQuestion
+                ]);
+
+            if ($z) {
+                $z->setAnswer($answer);
+                $z->setExplanation('');
+                $z->setPhoto(null);
+            }
+
+        } else {
+            $responseAnswer = new Survey\Response\Answer();
+            $responseAnswer->setAnswer($answer);
+
+            if (isset($extra['explanation'])) {
+                $responseAnswer->setExplanation($extra['explanation']);
+            }
+
+            if (isset($extra['photo']) && $extra['photo'] instanceof UploadedFile) {
+                /** @var UploadedFile $photo */
+                $photo = $extra['photo'];
+                $responseAnswer->setPhoto($photo->getClientOriginalName());
+            }
+
+            $responseQuestion->addAnswer($responseAnswer);
+
+            $this->entityManager->persist($responseQuestion);
         }
 
-        $responseAnswer = new Survey\Response\Answer();
-        $responseAnswer->setAnswer($answer);
-
-        if (isset($extra['explanation'])) {
-            $responseAnswer->setExplanation($extra['explanation']);
-        }
-
-        if (isset($extra['photo']) && $extra['photo'] instanceof UploadedFile) {
-            /** @var UploadedFile $photo */
-            $photo = $extra['photo'];
-            $responseAnswer->setPhoto($photo->getClientOriginalName());
-        }
-
-        $responseQuestion->addAnswer($responseAnswer);
-
-        $this->entityManager->persist($responseQuestion);
         $this->entityManager->flush();
     }
 
@@ -128,7 +162,7 @@ class QuestionV2
                     x_survey.q_answer
                 WHERE
                     id = :answer_id
-                    AND  question_id = :question_id
+                    AND question_id = :question_id
             )                          
         ');
 

@@ -10,6 +10,7 @@ use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Question;
 use App\Services\Survey\Response\Compose;
 use App\Services\Survey\Response\QuestionV2;
+use App\Services\Survey\Response\QuestionV3;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -106,6 +107,7 @@ class ItemController extends AbstractController
                 'uuid' => $question->getUuid(),
                 'title' => $question->getTitle(),
                 'isAnswered' => $question->isAnswered(),
+                'hasMultipleAnswers' => $question->getHasMultipleAnswers(),
                 'answers' => $answers
             ];
         }
@@ -156,9 +158,43 @@ class ItemController extends AbstractController
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function q2(Request $request, GeoObject $geoObject, QuestionV2 $question)
+    public function q2(Request $request, GeoObject $geoObject, QuestionV3 $questionV3): JsonResponse
     {
-        $question->response($request->request->get('answer'), [], $geoObject, $this->getUser());
+        $text = $request->request->get('explanation');
+
+        if(isset($text)) {
+            /** @var Connection $conn */
+            $conn = $this->entityManager->getConnection();
+
+            $stmt = $conn->prepare(
+                'UPDATE x_survey.response_answer SET explanation = ?'
+
+            );
+
+            $stmt->execute([$text['text']]);
+            return new JsonResponse([]);
+        }
+
+        $answerUuid = $request->request->get('answer');
+
+        $userId = $this->getUser()->getId();
+        $geoObjectId = $geoObject->getId();
+
+        if ($questionV3->isAnsweredAndMultipleAnswers($answerUuid, $userId, $geoObjectId)) {
+            $questionV3->uncheck($answerUuid, $userId, $geoObjectId);
+            $questionV3->clearDetached($userId, $geoObjectId);
+            $questionV3->clearEmptyQuestions($userId, $geoObjectId);
+
+            return new JsonResponse([]);
+        }
+
+        if ($questionV3->isAnsweredAndSingleAnswer($answerUuid, $userId, $geoObjectId)) {
+            return new JsonResponse([]);
+        }
+
+        $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
+
+        $questionV3->clearDetached($userId, $geoObjectId);
 
         return new JsonResponse([]);
     }
@@ -168,7 +204,7 @@ class ItemController extends AbstractController
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function clearQuestion(Request $request, GeoObject $geoObject, string $question)
+    public function clearQuestion(Request $request, GeoObject $geoObject, string $question): JsonResponse
     {
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
