@@ -57,6 +57,21 @@ class Answer implements UuidInterface
      */
     private $isPhotoEnabled;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" = false})
+     */
+    private $isChildAnswerRequired = false;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default" = false})
+     */
+    private $isExplanationRequired = false;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default" = false})
+     */
+    private $isPhotoRequired = false;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
@@ -125,5 +140,35 @@ class Answer implements UuidInterface
     public function setIsPhotoEnabled(bool $isPhotoEnabled): void
     {
         $this->isPhotoEnabled = $isPhotoEnabled;
+    }
+
+    public function getIsChildAnswerRequired(): bool
+    {
+        return $this->isChildAnswerRequired;
+    }
+
+    public function setIsChildAnswerRequired(bool $isChildAnswerRequired): void
+    {
+        $this->isChildAnswerRequired = $isChildAnswerRequired;
+    }
+
+    public function getIsExplanationRequired(): bool
+    {
+        return $this->isExplanationRequired;
+    }
+
+    public function setIsExplanationRequired(bool $isExplanationRequired): void
+    {
+        $this->isExplanationRequired = $isExplanationRequired;
+    }
+
+    public function getIsPhotoRequired(): bool
+    {
+        return $this->isPhotoRequired;
+    }
+
+    public function setIsPhotoRequired(bool $isPhotoRequired): void
+    {
+        $this->isPhotoRequired = $isPhotoRequired;
     }
 }

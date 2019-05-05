@@ -52,6 +52,11 @@ class Answer implements UuidInterface
      */
     private $photo;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" = false})
+     */
+    private $isCompleted = false;
+
     public function getId(): int
     {
         return $this->id;

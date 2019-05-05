@@ -25,9 +25,8 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
         foreach ($this->data() as $question) {
             $category = $manager->getRepository(Category::class)
                 ->findOneBy([
-                                    'name' => $question['category'],
-                                ])
-            ;
+                    'name' => $question['category'],
+                ]);
 
             $questionObject = new Question();
             $questionObject->setCategory($category);
@@ -41,8 +40,9 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 $answerObject = new Answer();
                 $answerObject->setTitle($answer['title']);
                 $answerObject->setQuestion($questionObject);
+                $answerObject->setIsChildAnswerRequired($answer['is_child_answer_required'] ?? false);
                 $answerObject->setIsFreeAnswer(false);
-                $answerObject->setIsPhotoEnabled(isset($answer['is_photo_enabled']) ? $answer['is_photo_enabled'] : false);
+                $answerObject->setIsPhotoEnabled($answer['is_photo_enabled'] ?? false);
 
                 $manager->persist($answerObject);
                 $manager->flush();
@@ -54,7 +54,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         $answerChild->setQuestion($questionObject);
                         $answerChild->setParent($answerObject);
                         $answerChild->setIsFreeAnswer(isset($item['is_free_answer']) && true === $item['is_free_answer']);
-                        $answerChild->setIsPhotoEnabled(isset($answer['is_photo_enabled']) ? $answer['is_photo_enabled'] : false);
+                        $answerChild->setIsPhotoEnabled($answer['is_photo_enabled'] ?? false);
 
                         $manager->persist($answerChild);
                         $manager->flush();
@@ -66,8 +66,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         $criterionSubject = $manager->getRepository(Subject\Criterion::class)->findOneBy([
                             'name' => $item['criterion'],
                             'category' => $category,
-                        ])
-                        ;
+                        ]);
                         $criterionDefinition = new Definition\Criterion();
                         $criterionDefinition->setValue($item['point']);
                         $criterionDefinition->setSubject($criterionSubject);
@@ -190,6 +189,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                                 'criterion' => 'Достъпност и проходимост',
                             ],
                         ],
+                        'is_child_answer_required' => true,
                         'child' => [
                             [
                                 'title' => 'Скосени бордюри / повдигната пешеходна повърхност',
@@ -213,6 +213,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Да',
                         'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
                         'child' => [
                             [
                                 'title' => 'Паркирани коли',
@@ -267,6 +268,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Да, по цялото продължение на отсечката',
                         'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
                         'child' => [
                             [
                                 'title' => 'Паркирани коли',
@@ -349,6 +351,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Да',
                         'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
                         'child' => [
                             [
                                 'title' => 'Има много неравности',
@@ -629,6 +632,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     [
                         'title' => 'Да',
                         'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
                         'child' => [
                             [
                                 'title' => 'Има много неравности',

@@ -13,6 +13,7 @@ class QuestionDTO
     protected $has_multiple_answers;
     protected $answers;
     protected $is_answered = false;
+    protected $is_completed = false;
 
     /**
      * @return QuestionAnswerDTO[]
@@ -75,5 +76,15 @@ class QuestionDTO
     public function setIsAnswered(bool $isAnswered): void
     {
         $this->is_answered = $isAnswered;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->is_completed;
+    }
+
+    public function setIsCompleted(bool $isCompleted): void
+    {
+        $this->is_completed = $isCompleted;
     }
 }

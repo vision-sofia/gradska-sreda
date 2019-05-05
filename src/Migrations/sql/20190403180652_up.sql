@@ -9,19 +9,52 @@ SELECT
     s.is_active as survey_is_active,
     c.id as survey_category_id,
     (SELECT
-        jsonb_agg(row_to_json(z))
+         jsonb_agg(row_to_json(z))
     FROM
-        (SELECT
-             a.id,
-             a.uuid,
-             a.title,
-             a.is_photo_enabled,
-             a.is_free_answer,
-             a.parent
+        (WITH RECURSIVE rel_tree as (
+            SELECT
+                p.id,
+                p.uuid,
+                p.title,
+                p.is_photo_enabled,
+                p.is_free_answer,
+                p.parent,
+                array[id] as path
+            FROM
+                 x_survey.q_answer p
+            WHERE
+                p.parent is null
+                AND p.question_id = q.id
+
+            UNION ALL
+
+            SELECT
+                c.id,
+                c.uuid,
+                c.title,
+                c.is_photo_enabled,
+                c.is_free_answer,
+                c.parent,
+                p.path||c.parent as path
+            FROM
+                x_survey.q_answer c
+                    JOIN
+                rel_tree p on c.parent = p.id
+            WHERE
+                p.parent is null
+                AND c.question_id = q.id
+        )
+        SELECT
+            a.id,
+            a.uuid,
+            a.title,
+            a.is_photo_enabled,
+            a.is_free_answer,
+            a.parent
         FROM
-             x_survey.q_answer a
-        WHERE
-             a.question_id = q.id
+            rel_tree a
+        ORDER BY
+            path, id ASC
         ) z
     ) as question_answers
 FROM

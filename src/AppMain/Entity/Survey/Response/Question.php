@@ -80,6 +80,11 @@ class Question implements UuidInterface
      */
     private $isLatest = false;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" = false})
+     */
+    private $isCompleted = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -107,7 +112,7 @@ class Question implements UuidInterface
         $this->user = $user;
     }
 
-    public function getQuestion():? Survey\Question\Question
+    public function getQuestion(): ?Survey\Question\Question
     {
         return $this->question;
     }
@@ -137,7 +142,7 @@ class Question implements UuidInterface
         return $this->updatedAt;
     }
 
-    public function getIsLatest():bool
+    public function getIsLatest(): bool
     {
         return $this->isLatest;
     }
@@ -155,6 +160,17 @@ class Question implements UuidInterface
     public function setLocation($location): void
     {
         $this->location = $location;
+    }
+
+
+    public function getIsCompleted(): ?bool
+    {
+        return $this->isCompleted;
+    }
+
+    public function setIsCompleted(bool $isCompleted): void
+    {
+        $this->isCompleted = $isCompleted;
     }
 
     /**

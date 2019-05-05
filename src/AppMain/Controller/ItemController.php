@@ -124,6 +124,7 @@ class ItemController extends AbstractController
                 WHERE
                   q.geo_object_id = :geo_object_id
                   AND q.user_id = :user_id
+                  AND q.is_completed = TRUE
             )
             SELECT total, complete FROM z, d        
         ');
@@ -191,6 +192,8 @@ class ItemController extends AbstractController
             $questionV3->clearDetached($userId, $geoObjectId);
             $questionV3->clearEmptyQuestions($userId, $geoObjectId);
 
+            $questionV3->mark($userId, $geoObjectId);
+
             return new JsonResponse($this->surveyResult($geoObject));
         }
 
@@ -198,9 +201,11 @@ class ItemController extends AbstractController
             return new JsonResponse($this->surveyResult($geoObject));
         }
 
+        $questionV3->clearOut($answerUuid, $userId, $geoObjectId);
         $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
 
         $questionV3->clearDetached($userId, $geoObjectId);
+        $questionV3->mark($userId, $geoObjectId);
 
         return new JsonResponse($this->surveyResult($geoObject));
     }
