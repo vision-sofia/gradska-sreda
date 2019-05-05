@@ -94,7 +94,10 @@ class QuestionRepository extends EntityRepository
                 FROM
                     x_survey.geo_object_question gq   
                         LEFT JOIN 
-                    x_survey.response_question rq ON rq.question_id = gq.question_id
+                    x_survey.response_question rq 
+                        ON rq.question_id = gq.question_id
+                        AND rq.geo_object_id = :geo_object_id 
+                        AND rq.user_id = :user_id 
                 WHERE
                     gq.geo_object_type_id = :object_type_id
                     AND gq.survey_is_active = TRUE
