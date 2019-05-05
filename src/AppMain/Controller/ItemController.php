@@ -44,12 +44,7 @@ class ItemController extends AbstractController
         $this->question = $question;
     }
 
-    /**
-     * @Route("geo/{id}/q", name="app.geo-object.details.q", methods={"GET"})
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
-     */
-    public function qq(GeoObject $geoObject)
+    private function surveyResult($geoObject)
     {
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)
@@ -146,10 +141,20 @@ class ItemController extends AbstractController
             'percentage' => round(($result['complete'] / $result['total']) * 100),
         ];
 
-        return new JsonResponse([
+        return [
             'survey' => $survey,
             'progress' => $progress
-        ]);
+        ];
+    }
+
+    /**
+     * @Route("geo/{id}/q", name="app.geo-object.details.q", methods={"GET"})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function qq(GeoObject $geoObject): JsonResponse
+    {
+        return new JsonResponse($this->surveyResult($geoObject));
     }
 
 
@@ -162,7 +167,7 @@ class ItemController extends AbstractController
     {
         $text = $request->request->get('explanation');
 
-        if(isset($text)) {
+        if (isset($text)) {
             /** @var Connection $conn */
             $conn = $this->entityManager->getConnection();
 
@@ -172,7 +177,8 @@ class ItemController extends AbstractController
             );
 
             $stmt->execute([$text['text']]);
-            return new JsonResponse([]);
+
+            return new JsonResponse($this->surveyResult($geoObject));
         }
 
         $answerUuid = $request->request->get('answer');
@@ -185,18 +191,18 @@ class ItemController extends AbstractController
             $questionV3->clearDetached($userId, $geoObjectId);
             $questionV3->clearEmptyQuestions($userId, $geoObjectId);
 
-            return new JsonResponse([]);
+            return new JsonResponse($this->surveyResult($geoObject));
         }
 
         if ($questionV3->isAnsweredAndSingleAnswer($answerUuid, $userId, $geoObjectId)) {
-            return new JsonResponse([]);
+            return new JsonResponse($this->surveyResult($geoObject));
         }
 
         $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
 
         $questionV3->clearDetached($userId, $geoObjectId);
 
-        return new JsonResponse([]);
+        return new JsonResponse($this->surveyResult($geoObject));
     }
 
     /**
