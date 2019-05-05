@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container">
-        <div class="row mt-4">
+        <div class="row">
             <div class="col-lg-5">
                 <div class="mb-4">
                     <div id="mapMini" class="map-wide"></div>
@@ -20,14 +20,15 @@
                         </div>
                     </div>
                 </div>
-
-                Попълнена анкета
+            </div>
+            <div class="survay m-3 mt-0 col-lg-7">
+                    Попълнена анкета
                 <div id="surveyProgressBar"></div>
 
                 <div class="row">
                     <div class="col">
                         <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
-                        <h5 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
+                        <h5 class="mb-4">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
                     </div>
                 </div>
 
@@ -39,8 +40,8 @@
                         <div class="col-lg-6">
                             <div class="progress mb-4">
                                 <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                     aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                     aria-valuemax="100">{{ c.rating|number_format(1) }}
+                                        aria-valuenow="{{ percentage }}" aria-valuemin="0"
+                                        aria-valuemax="100">{{ c.rating|number_format(1) }}
                                     / {{ c.max_points|number_format(0) }}</div>
                             </div>
                         </div>
@@ -57,8 +58,8 @@
                             <div class="col-lg-6">
                                 <div class="progress mb-4">
                                     <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                         aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                         aria-valuemax="100">{{ c.rating|number_format(1) }}
+                                            aria-valuenow="{{ percentage }}" aria-valuemin="0"
+                                            aria-valuemax="100">{{ c.rating|number_format(1) }}
                                         / {{ c.max_points|number_format(0) }}</div>
                                 </div>
 
@@ -66,10 +67,8 @@
                         </div>
                     {% endfor %}
                 {% endfor %}#}
-            </div>
-            <div class="col-lg-7">
 
-                <div id="survey"></div>
+                <form id="survayForm"></form>
             </div>
         </div>
     </div>

@@ -1,0 +1,13 @@
+.survay {
+    flex: 1 0 50%;
+    
+    &-question {
+        &-option {
+            cursor: pointer;
+
+            &.is-answered {
+                color: green;
+            }
+        }
+    }
+}
