@@ -85,13 +85,16 @@ class QuestionRepository extends EntityRepository
 
         $stmt = $conn->prepare('
                 SELECT
-                    question_id as id,
-                    question_uuid as uuid,
-                    question_title as title,
-                    question_has_multiple_answers as has_multiple_answers,
-                    question_answers as answers
+                    gq.question_id as id,
+                    gq.question_uuid as uuid,
+                    gq.question_title as title,
+                    gq.question_has_multiple_answers as has_multiple_answers,
+                    gq.question_answers as answers,
+                    COALESCE(rq.is_completed, FALSE) as is_completed
                 FROM
-                    x_survey.geo_object_question gq       
+                    x_survey.geo_object_question gq   
+                        LEFT JOIN 
+                    x_survey.response_question rq ON rq.question_id = gq.question_id
                 WHERE
                     gq.geo_object_type_id = :object_type_id
                     AND gq.survey_is_active = TRUE

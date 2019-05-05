@@ -23,6 +23,10 @@ final class Version20190505115247 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
         $this->addSql('ALTER TABLE x_survey.response_question ADD is_completed BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.response_answer ADD is_completed BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_child_answer_required BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_explanation_required BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_photo_required BOOLEAN DEFAULT \'false\' NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -31,5 +35,9 @@ final class Version20190505115247 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
         $this->addSql('ALTER TABLE x_survey.response_question DROP is_completed');
+        $this->addSql('ALTER TABLE x_survey.response_answer DROP is_completed');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_child_answer_required BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_explanation_required BOOLEAN DEFAULT \'false\' NOT NULL');
+        $this->addSql('ALTER TABLE x_survey.q_answer ADD is_photo_required BOOLEAN DEFAULT \'false\' NOT NULL');
     }
 }

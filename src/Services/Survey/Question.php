@@ -24,7 +24,7 @@ class Question
 
             $question->setIsAnswered(isset($responseAnswers[$question->getId()]));
 
-            foreach (json_decode($question->getAnswers()) as $object) {
+            foreach (json_decode($question->getAnswers(), false) as $object) {
                 $answerDTO = QuestionAnswerDTO::fromStd($object);
 
                 if (isset($responseAnswers[$question->getId()][$answerDTO->getId()])) {

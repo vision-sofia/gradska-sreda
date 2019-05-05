@@ -68,6 +68,79 @@ class QuestionV3
         $stmt->execute();
     }
 
+    public function mark(int $userId, int $geoObjectId): void
+    {
+        /** @var Connection $conn */
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('
+            WITH z AS (
+                SELECT
+                    a.id,
+                    a.parent,
+                    ra.question_id,
+                    ra.id as response_answer_id,
+                    ra.answer_id,
+                    EXISTS((
+                        SELECT
+                            *
+                        FROM
+                            x_survey.response_answer sra
+                                INNER JOIN
+                            x_survey.q_answer sa ON sra.answer_id = sa.id
+                        WHERE
+                            sra.question_id = ra.question_id
+                            AND ra.answer_id = sa.parent
+                    )) as w,
+                    a.is_child_answer_required
+                FROM
+                    x_survey.response_answer ra
+                        INNER JOIN
+                    x_survey.q_answer a ON ra.answer_id = a.id
+                        INNER JOIN
+                    x_survey.response_question rq ON ra.question_id = rq.id
+                WHERE
+                    
+                    rq.user_id = :user_id
+                    AND rq.geo_object_id = :geo_object_id
+            )
+            UPDATE
+                x_survey.response_answer raa
+            SET
+                is_completed = ((w = TRUE AND is_child_answer_required = TRUE) OR is_child_answer_required = FALSE)
+                    FROM
+                z
+            WHERE
+                z.question_id = raa.question_id  
+                AND raa.id = z.response_answer_id      
+        ');
+
+        #$stmt->bindValue('answer_uuid', $answerUuid);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_question rq
+            SET
+                is_completed = (SELECT bool_and(is_completed) FROM x_survey.response_answer ira WHERE ira.question_id = rq.id)
+            FROM
+                x_survey.response_answer ra
+                    INNER JOIN
+                x_survey.q_answer a ON ra.answer_id = a.id
+            WHERE
+                rq.id = ra.question_id 
+                AND rq.user_id = :user_id
+                AND rq.geo_object_id = :geo_object_id
+        ');
+
+        #   $stmt->bindValue('answer_uuid', $answerUuid);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+    }
+
     public function isAnsweredAndMultipleAnswers(string $answerUuid, int $userId, int $geoObjectId)
     {
         /** @var Connection $conn */
@@ -301,7 +374,7 @@ class QuestionV3
 
             $this->entityManager->persist($responseQuestion);
 
-        } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
+     /*   } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
 
             $z = $this->entityManager->getRepository(Survey\Response\Answer::class)
                 ->findOneBy([
@@ -312,7 +385,7 @@ class QuestionV3
                 $z->setAnswer($answer);
                 $z->setExplanation('');
                 $z->setPhoto(null);
-            }
+            }*/
 
         } else {
             $responseAnswer = new Survey\Response\Answer();
