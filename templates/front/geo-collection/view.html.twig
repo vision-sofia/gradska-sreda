@@ -7,7 +7,7 @@
     <div class="gc-sidebar-wrapper pl-5">
         <p>Отбележете своя маршрут до спирка на градския трансопрт.</p>
 
-        <form action="{{ path('app.geo-collection.add') }}" class="mb-4">
+        <form action="{{ path('app.geo-collection.add') }}" method="post" class="mb-4">
             <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
         </form>
 
@@ -15,73 +15,7 @@
         <div id="div1"></div>
         <div id="div2"></div>
         <div id="div3"></div>
-        {#<ul class="mt-4 pl-4">
-            {% set m = 0 %}
-            {% for collectionItem in collections %}
-                {% set m = m + 1 %}
-                <li class="mb-2">
-                    <a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
-                       class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
-                    {% if collection is defined and collectionItem.uuid == collection.uuid %}
-
-                        [<span class="text-success">активен</span>]
-                        <form method="post" class="float-right">
-                            <button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0"><i class="fa fa-trash"></i> </button>
-                        </form>
-
-                    {% endif %}
-
-                    <div>
-                        дължина: xx м<br />
-                        оценен: xx %<br />
-                        <div class="progress" style="height: 3px;">
-                            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                </li>
-
-            {% endfor %}
-        </ul>#}
     </div>
-    {#
-    <div class="container">
-        <h3>Маршрути</h3>
-        <div class="row">
-            <div class="col-lg-3">
-                <form action="{{ path('app.geo-collection.add') }}">
-                    <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
-                </form>
-                <ul class="mt-4 pl-4">
-                    {% set m = 0 %}
-                    {% for collectionItem in collections %}
-                        {% set m = m + 1 %}
-                        <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}" class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col-lg-9" style="height: 600px;">
-                <div id="mapMini" data-locate-on-load="true"></div>
-                <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
-                    <div class="container py-4">
-                        <div class="row">
-                            <div class="col-12 text-center">
-                                <h5 class="font-weight-bold mb-3" data-confirm-title>Искате ли да оцените?</h5>
-                            </div>
-                            <div class="col-12 text-center">
-                                <a href="#" data-confirm-link class="btn btn-success mr-3 px-4">ДА</a>
-                                <span data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="loading d-none">
-                    <h3 class="mb-4">Локализиране...</h3>
-                    <img src="{{ asset('images/loading.svg', 'front') }}" class="img-fluid" alt="">
-                </div>
-            </div>
-        </div>
-    </div>
-    #}
     <script>
         let gcOpen = '{{ collection.uuid }}';
         let mapOption = {
@@ -89,7 +23,7 @@
             collection: '{{ collection.uuid }}',
             {% endif %}
             survey: false,
-            {% if boundingBox is not empty %}bbox: {{ boundingBox }}{% endif %}
+        {# {% if boundingBox is not empty %}bbox: {{ boundingBox }}{% endif %} #}
         }
     </script>
 {% endblock %}

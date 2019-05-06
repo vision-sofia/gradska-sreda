@@ -171,7 +171,6 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
             success: function () {
 
 
-
             }
         });
     }
@@ -333,22 +332,23 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     }
 
     function geoCollection() {
-        if(typeof gcOpen !== 'undefined') {
         $.ajax({
-            url: "http://gradska-sreda.localhost/geo-collection/"+ gcOpen + "/info",
+            url: "/geo-collection/info",
             success: function (result) {
                 let html = `<ul class="mt-4 pl-4">`;
 
                 Object.keys(result).forEach(function (item) {
                     html += `<li class="mb-2">
 							<a href="/geo-collection/${result[item].collection_uuid}" class="font-weight-bold">Маршрут</a>`;
-
-                    if(gcOpen === result[item].collection_uuid) {
-                        html += ` [<span class="text-success">активен</span>]
+                    if (typeof gcOpen !== 'undefined') {
+                        if (gcOpen === result[item].collection_uuid) {
+                            html += ` [<span class="text-success">активен</span>]
 							<form method="post" class="float-right">
+							    <input type="hidden" name="_method" value="delete">
 								<button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0"><i class="fa fa-trash"></i> </button>
 							</form>`;
 
+                        }
                     }
 
                     html += `<div>
@@ -366,8 +366,6 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 $("#div3").html(html);
             }
         });
-
-        }
     }
 
     function openConfirmModal(layer) {

@@ -37,7 +37,7 @@ class Collection implements UuidInterface
     private $survey;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\GeoCollection\Entry", mappedBy="collection")
+     * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\GeoCollection\Entry", mappedBy="collection", cascade={"remove"})
      */
     private $entries;
 

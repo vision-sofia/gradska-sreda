@@ -40,10 +40,14 @@ class GeoCollection
 
         $result = $stmt->fetch();
 
+        if ($result['total'] > 0) {
+            $percentage = round(($result['completed'] / $result['total']) * 100, 1);
+        }
+
         return [
             'total' => $result['total'],
             'completed' => $result['completed'],
-            'percentage' => round(($result['completed'] / $result['total']) * 100, 1)
+            'percentage' => $percentage ?? 0
         ];
     }
 
