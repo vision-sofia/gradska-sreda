@@ -114,7 +114,7 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_behavior',
                 'value' => 'survey',
-                'description' => 'Географски обекти които са обект на проучване',
+                'description' => 'Географски обекти които са цел на проучване',
                 'is_dynamic' => false,
                 'priority' => 4,
                 'base_style' => [
