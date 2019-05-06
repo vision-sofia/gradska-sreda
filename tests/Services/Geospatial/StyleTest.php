@@ -2,7 +2,7 @@
 
 namespace App\Tests\Services\Geospatial\StyleBuilder;
 
-use App\Services\Geospatial\Style;
+use App\Services\Geospatial\StyleConverter;
 use PHPUnit\Framework\TestCase;
 
 class StyleTest extends TestCase
@@ -20,7 +20,7 @@ class StyleTest extends TestCase
         $expect .= "opacity: 0.9,\n";
         $expect .= "fill: false,\n";
 
-        $styleService = new Style();
+        $styleService = new StyleConverter();
 
         $this->assertEquals($expect, $styleService->styleToText($styleArray));
     }
@@ -38,7 +38,7 @@ class StyleTest extends TestCase
             'fill' => false
         ];
 
-        $styleService = new Style();
+        $styleService = new StyleConverter();
 
         $this->assertEquals($expect, $styleService->textToGroupStyle($text));
     }

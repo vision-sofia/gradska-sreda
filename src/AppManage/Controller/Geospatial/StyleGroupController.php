@@ -5,7 +5,7 @@ namespace App\AppManage\Controller\Geospatial;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\AppManage\Form\Type\StyleGroupType;
 use App\Services\FlashMessage\FlashMessage;
-use App\Services\Geospatial\Style;
+use App\Services\Geospatial\StyleConverter;
 use App\Services\Geospatial\StyleBuilder\StyleBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +24,7 @@ class StyleGroupController extends AbstractController
     protected $styleBuilder;
 
     public function __construct(
-        Style $styleService,
+        StyleConverter $styleService,
         FlashMessage $flashMessage,
         TranslatorInterface $translator,
         StyleBuilder $styleBuilder

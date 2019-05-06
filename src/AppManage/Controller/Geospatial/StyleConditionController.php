@@ -4,10 +4,14 @@ namespace App\AppManage\Controller\Geospatial;
 
 use App\AppMain\Entity\Geospatial\StyleCondition;
 use App\AppManage\Form\Type\StyleConditionType;
+use App\Event\Events;
 use App\Services\FlashMessage\FlashMessage;
-use App\Services\Geospatial\Style;
+use App\Services\Geospatial\StyleConverter;
 use App\Services\Geospatial\StyleBuilder\StyleBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,18 +26,19 @@ class StyleConditionController extends AbstractController
     protected $styleService;
     protected $flashMessage;
     protected $translator;
-    protected $styleBuilder;
+    protected $eventDispatcher;
 
     public function __construct(
-        Style $styleService,
+        StyleConverter $styleService,
         FlashMessage $flashMessage,
         TranslatorInterface $translator,
-        StyleBuilder $styleBuilder
-    ) {
+        EventDispatcherInterface $eventDispatcher
+    )
+    {
         $this->styleService = $styleService;
         $this->flashMessage = $flashMessage;
         $this->translator = $translator;
-        $this->styleBuilder = $styleBuilder;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -59,8 +64,8 @@ class StyleConditionController extends AbstractController
      */
     public function rebuildStyles(): RedirectResponse
     {
-        // TODO: move to task queue
-        $this->styleBuilder->build();
+        $event = new GenericEvent();
+        $this->eventDispatcher->dispatch(Events::STYLES_REBUILD, $event);
 
         $this->flashMessage->addSuccess(
             '',
@@ -100,6 +105,11 @@ class StyleConditionController extends AbstractController
             }
 
             $this->getDoctrine()->getManager()->flush();
+
+            if ($styleCondition->getIsDynamic()) {
+                $event = new GenericEvent();
+                $this->eventDispatcher->dispatch(Events::DYNAMIC_STYLE_TOUCH, $event);
+            }
 
             $this->flashMessage->addSuccess(
                 '',

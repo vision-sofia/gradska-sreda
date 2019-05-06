@@ -2,17 +2,14 @@
 
 namespace App\AppAPIFrontend\Controller;
 
-use App\AppMain\DTO\BoundingBoxDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
-use App\AppMain\Entity\Geospatial\StyleCondition;
-use App\AppMain\Entity\Geospatial\StyleGroup;
+use App\Services\Cache\Keys as CacheKeys;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
+use App\Services\Geospatial\Style;
 use App\Services\Geospatial\StyleBuilder\StyleUtils;
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use PDO;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
@@ -33,6 +30,7 @@ class MapController extends AbstractController
     protected $geoCollection;
     protected $styleUtils;
     protected $cache;
+    protected $styleService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -42,7 +40,8 @@ class MapController extends AbstractController
         SessionInterface $session,
         GeoCollection $geoCollection,
         StyleUtils $styleUtils,
-        AdapterInterface $cache
+        AdapterInterface $cache,
+        Style $styleService
     )
     {
         $this->entityManager = $entityManager;
@@ -53,10 +52,10 @@ class MapController extends AbstractController
         $this->geoCollection = $geoCollection;
         $this->styleUtils = $styleUtils;
         $this->cache = $cache;
+        $this->styleService = $styleService;
     }
 
     // TODO: refactor in to services
-    // TODO: caching
     /**
      * @Route("/map", name="api.map", methods="GET")
      */
@@ -118,11 +117,21 @@ class MapController extends AbstractController
             }
         }
 
-        $dynamicStyles = $this->dynamicStyles();
-        $styleGroups = $this->styleGroups();
+        $dynamicStyles = $this->cache->get(CacheKeys::DYNAMIC_STYLES, function () {
+            return $this->styleService->getDynamicStyles();
+        });
 
-        $this->styleUtils->setDynamicStyles($dynamicStyles);
-        $this->styleUtils->setStaticStyles($styleGroups);
+        $styleGroups = $this->cache->get(CacheKeys::COMPILED_STYLES, function () {
+            return $this->styleService->getCompiledStyles();
+        });
+
+        if ($dynamicStyles) {
+            $this->styleUtils->setDynamicStyles($dynamicStyles);
+        }
+
+        if ($styleGroups) {
+            $this->styleUtils->setStaticStyles($styleGroups);
+        }
 
         foreach ($geoObjects as $row) {
             $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
@@ -232,47 +241,5 @@ class MapController extends AbstractController
         });
 
         return $simplifyTolerance;
-    }
-
-    private function dynamicStyles()
-    {
-        $result = $this->cache->get('dynamic-styles', function (ItemInterface $item) {
-            /** @var StyleCondition[] $styleConditions */
-            $styleConditions = $this->getDoctrine()->getRepository(StyleCondition::class)->findBy([
-                'isDynamic' => true
-            ]);
-
-            $styles = [];
-
-            foreach ($styleConditions as $styleCondition) {
-                $styles[$styleCondition->getAttribute()][$styleCondition->getValue()]['base_style'] = $styleCondition->getBaseStyle();
-                $styles[$styleCondition->getAttribute()][$styleCondition->getValue()]['hover_style'] = $styleCondition->getHoverStyle();
-            }
-
-            return $styles;
-        });
-
-        return $result;
-    }
-
-    private function styleGroups()
-    {
-        $result = $this->cache->get('static-styles', function (ItemInterface $item)  {
-
-            /** @var StyleGroup[] $stylesGroups */
-            $stylesGroups = $this->getDoctrine()
-                ->getRepository(StyleGroup::class)
-                ->findAll();
-
-            $styles = [];
-
-            foreach ($stylesGroups as $stylesGroup) {
-                $styles[$stylesGroup->getCode()] = $stylesGroup->getStyle();
-            }
-
-            return $styles;
-        });
-
-        return $result;
     }
 }
