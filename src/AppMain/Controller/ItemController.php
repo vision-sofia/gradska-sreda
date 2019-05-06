@@ -102,6 +102,7 @@ class ItemController extends AbstractController
                 'uuid' => $question->getUuid(),
                 'title' => $question->getTitle(),
                 'isAnswered' => $question->isAnswered(),
+                'isCompleted' => $question->isCompleted(),
                 'hasMultipleAnswers' => $question->getHasMultipleAnswers(),
                 'answers' => $answers
             ];

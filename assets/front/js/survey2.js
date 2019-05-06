@@ -13,29 +13,37 @@
                 Object.keys(survey).forEach(function (item) {
                     let answers = survey[item].answers;
                     let question = survey[item];
+                    let indicatorStyle;
+
+                    if(question.isAnswered && question.isCompleted) {
+                        indicatorStyle = 'text-success';
+                    } else if(question.isAnswered && !question.isCompleted) {
+                        indicatorStyle = 'text-warning';
+                    } else {
+                        indicatorStyle = 'text-black-50';
+                    }
 
                     html += `<div class="mb-4 " >
-                            <i class="fas ` + (question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i> <h5
-                                    class="d-inline">` + question.title + `</h5>`;
+                            <i class="fas fa-check ${indicatorStyle}"></i> <h5 class="d-inline">${question.title}</h5>`;
 
                     Object.keys(answers).forEach(function (answer) {
                         if (answers[answer].parent === null) {
                             isSelectedParent = question.answers[answer].isSelected;
 
-                            html += `<p class="mb-0"><label id="` + answers[answer].uuid + `"><input class="answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + question.uuid + `][]"
-                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label></p>`;
+                            html += `<p class="mb-0"><label id="${answers[answer].uuid}"><input class="answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][${question.uuid}][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label></p>`;
 
                             if (question.answers[answer].isFreeAnswer) {
                                 html += `<textarea></textarea>`;
                             }
                         } else {
                             if (isSelectedParent === true) {
-                                html += `<div style="padding-left:32px;"><label class="" id="` + answers[answer].uuid + `"><input class="answer" type="checkbox"
-									name="answers[option][` + question.uuid + `][]"
-                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `</label>`;
+                                html += `<div style="padding-left:32px;"><label class="" id="${answers[answer].uuid}"><input class="answer" type="checkbox"
+									name="answers[option][${question.uuid}][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label>`;
 
                                 if (answers[answer].isSelected && question.answers[answer].isFreeAnswer) {
-                                    html += `<textarea class="d-block" id="textarea-` + question.answers[answer].uuid + `]">` + question.answers[answer].explanation + `</textarea>`;
+                                    html += `<textarea class="d-block" id="textarea-${question.answers[answer].uuid}]">${question.answers[answer].explanation}</textarea>`;
                                 }
 
                                 html += '</div>';
@@ -44,7 +52,7 @@
                     });
 
                     if (question.isAnswered) {
-                        html += `<button type="button" class="rem btn btn-sm btn-danger" name="answers[option][` + question.uuid + `][]" value="` + question.uuid + `"> Изчисти</button>`;
+                        html += `<button type="button" class="rem btn btn-sm btn-danger" name="answers[option][${question.uuid}][]" value="${question.uuid}"> Изчисти</button>`;
                     }
 
                     html += `</div>`;
