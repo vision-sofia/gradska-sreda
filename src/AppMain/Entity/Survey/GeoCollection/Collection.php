@@ -6,6 +6,7 @@ use App\AppMain\Entity\Survey\Survey\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\User\UserInterface;
 use App\AppMain\Entity\UuidInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -46,6 +47,11 @@ class Collection implements UuidInterface
      */
     private $createdAt;
 
+    public function __construct()
+    {
+        $this->entries = new ArrayCollection();
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -71,7 +77,7 @@ class Collection implements UuidInterface
         $this->survey = $survey;
     }
 
-    public function getEntries()
+    public function getEntries(): \Doctrine\Common\Collections\Collection
     {
         return $this->entries;
     }

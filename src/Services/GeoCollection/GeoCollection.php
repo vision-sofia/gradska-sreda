@@ -5,6 +5,7 @@ namespace App\Services\GeoCollection;
 
 use App\AppMain\DTO\BoundingBoxDTO;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use PDO;
 
@@ -171,5 +172,116 @@ class GeoCollection
             }
         } catch (DBALException $e) {
         }
+    }
+
+    public function userGeoCollectionLinks(int $userId, float $simplifyTolerance): \Generator
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            WITH z AS (
+                SELECT
+                    g.id,
+                    gb.coordinates
+                FROM
+                    x_survey.gc_collection c
+                        INNER JOIN
+                    x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                        INNER JOIN
+                    x_geospatial.geo_object g ON cc.geo_object_id = g.id
+                        INNER JOIN
+                    x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                WHERE
+                    user_id = :user_id
+            )
+            SELECT
+                g.id,
+                g.uuid,
+                g.style_base,
+                g.style_hover,
+                g.name as geo_name,
+                \'\' as type_name,
+                g.attributes,
+                ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                jsonb_build_object(
+                    \'gc_edge\', 0
+                ) as attributes
+            FROM
+                x_geospatial.geo_object g
+                    INNER JOIN
+                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                    CROSS JOIN z
+            WHERE
+                st_touches(gb.coordinates::geometry, z.coordinates::geometry)
+                AND NOT EXISTS(SELECT * FROM x_survey.gc_collection_content c WHERE c.geo_object_id = gb.geo_object_id)
+        ');
+
+        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            yield $row;
+        }
+    }
+
+    public function countInterconnectedClusters(string $geoCollectionUuid): ?int
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                array_length(ST_ClusterIntersecting(gb.coordinates::geometry), 1)
+            FROM  
+                x_survey.gc_collection c
+                    INNER JOIN
+                x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                    INNER JOIN
+                x_geospatial.geo_object go ON cc.geo_object_id = go.id
+                    INNER JOIN
+                x_geometry.geometry_base gb ON go.id = gb.geo_object_id
+            WHERE 
+                c.uuid = ?
+        ');
+
+        $stmt->execute([$geoCollectionUuid]);
+
+        return $stmt->fetchColumn();
+    }
+
+    public function isTouchingGeoCollection(string $geoCollectionUuid, int $geoCollectionOwnerId, string $targetObjectUuid): bool
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT EXISTS(
+                SELECT
+                    *
+                FROM
+                    x_survey.gc_collection_content cc
+                        INNER JOIN
+                    x_survey.gc_collection c ON cc.geo_collection_id = c.id
+                        INNER JOIN
+                    x_geometry.geometry_base g ON g.geo_object_id = cc.geo_object_id
+                        LEFT JOIN
+                    x_geospatial.geo_object g1 ON g1.uuid = :geo_object_uuid
+                        INNER JOIN
+                    x_geometry.geometry_base gb1 ON g1.id = gb1.geo_object_id
+                WHERE
+                    c.uuid = :geo_collection_uuid
+                    AND c.user_id = :user_id
+                    AND ST_Touches(g.coordinates::geometry, gb1.coordinates::geometry)
+            )
+        ');
+
+        $stmt->bindValue('geo_object_uuid', $targetObjectUuid);
+        $stmt->bindValue('geo_collection_uuid', $geoCollectionUuid);
+        $stmt->bindValue('user_id', $geoCollectionOwnerId);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
     }
 }

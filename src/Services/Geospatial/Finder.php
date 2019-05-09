@@ -241,55 +241,5 @@ class Finder
         }
     }
 
-    public function userGeoCollectionLinks(int $userId, float $simplifyTolerance): \Generator
-    {
-        /** @var Connection $conn */
-        $conn = $this->em->getConnection();
 
-        $stmt = $conn->prepare('
-            WITH z AS (
-                SELECT
-                    g.id,
-                    gb.coordinates
-                FROM
-                    x_survey.gc_collection c
-                        INNER JOIN
-                    x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
-                        INNER JOIN
-                    x_geospatial.geo_object g ON cc.geo_object_id = g.id
-                        INNER JOIN
-                    x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-                WHERE
-                    user_id = :user_id
-            )
-            SELECT
-                g.id,
-                g.uuid,
-                g.style_base,
-                g.style_hover,
-                g.name as geo_name,
-                \'\' as type_name,
-                g.attributes,
-                ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
-                jsonb_build_object(
-                    \'gc_edge\', 0
-                ) as attributes
-            FROM
-                x_geospatial.geo_object g
-                    INNER JOIN
-                x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-                    CROSS JOIN z
-            WHERE
-                st_touches(gb.coordinates::geometry, z.coordinates::geometry)
-                AND NOT EXISTS(SELECT * FROM x_survey.gc_collection_content c WHERE c.geo_object_id = gb.geo_object_id)
-        ');
-
-        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
-        $stmt->bindValue('user_id', $userId);
-        $stmt->execute();
-
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            yield $row;
-        }
-    }
 }

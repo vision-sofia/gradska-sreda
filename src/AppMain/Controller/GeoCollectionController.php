@@ -133,13 +133,15 @@ class GeoCollectionController extends AbstractController
         $result = [];
 
         foreach ($collections as $item) {
+            // TODO: cache metadata on collection change
             $completion = $this->geoCollection->findCompletion($item->getId());
             $length = $this->geoCollection->findLength($item->getId());
 
             $result[] = [
-                'collection_uuid' => $item->getUuid(),
+                'collectionUuid' => $item->getUuid(),
                 'length' => $length,
-                'completion' => $completion
+                'completion' => $completion,
+                'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
             ];
         }
 
