@@ -10,9 +10,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ImportSGCommand extends Command
+class ImportSGRCommand extends Command
 {
-    protected static $defaultName = 'app:import-sg';
+    protected static $defaultName = 'app:import-sgr';
 
     protected $entityManager;
     protected $container;
@@ -26,15 +26,19 @@ class ImportSGCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/Stroitelna_Granitsa.json');
-        $content = json_decode($string, true);
+        $file = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/Stroitelna_Granitsa.json');
+        $content = json_decode($file, true);
         $geometry = $content['features'][0]['geometry']['rings'][0];
+
+        $pieces = [];
+
+        foreach ($geometry as $points) {
+            $pieces[] = implode(' ', $points);
+        }
+
+        $geometryAsText = implode(',', $pieces);
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
@@ -43,14 +47,6 @@ class ImportSGCommand extends Command
         $stmt->execute(['Строителна граница']);
 
         $objectType = $stmt->fetchColumn();
-
-        $p = [];
-
-        foreach ($geometry as $points) {
-            $p[] = implode(' ', $points);
-        }
-
-        $geometryAsText = implode(',', $p);
 
         $conn->beginTransaction();
 
@@ -95,6 +91,6 @@ class ImportSGCommand extends Command
 
         $conn->commit();
 
-        echo sprintf('Import complete.');
+        echo  "Import complete.\n";
     }
 }
