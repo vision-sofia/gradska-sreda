@@ -78,6 +78,9 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
                     ], [
                         'object_type_name' => 'Спирка на градски транспорт',
                         'behavior' => 'info',
+                    ],[
+                        'object_type_name' => 'Строителна граница',
+                        'behavior' => 'info',
                     ],/* [
                         'object_type_name' => 'Градоустройствена единица',
                         'behavior' => 'navigation',

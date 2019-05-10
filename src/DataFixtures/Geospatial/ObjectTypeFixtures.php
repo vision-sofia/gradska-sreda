@@ -91,6 +91,10 @@ class ObjectTypeFixtures extends Fixture
                 'name' => 'Административен райони',
                 'min_zoom' => 15,
                 'max_zoom' => 4,
+            ], [
+                'name' => 'Строителна граница',
+                'min_zoom' => 15,
+                'max_zoom' => 4,
             ],
         ];
     }
