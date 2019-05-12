@@ -176,6 +176,11 @@ class MapController extends AbstractController
             'settings' => [
                 'default_zoom' => 17,
                 'styles' => $styleGroups,
+                'dialog' => [
+                    1 => 'Искате ли да оцените избраното пресичане',
+                    2 => 'Искате ли да оцените избрания тротоар',
+                    3 => 'Искате ли да оцените избраната алея',
+                ],
             ]
         ];
 
