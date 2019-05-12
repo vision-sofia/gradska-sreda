@@ -1,4 +1,7 @@
-import {mapBoxAttribution, mapBoxUrl} from './map-config';
+import { mapBoxAttribution, mapBoxUrl, apiEndpoints } from './map-config';
+import { Survey }  from './survey';
+
+const pathVoteSurvey = new Survey();
 
 (() => {
     if (!document.getElementById('mapMain')) {
@@ -6,6 +9,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     }
     const loading = $('.loading');
     const confirmModal = $('.confirm');
+
     $(document).on('click', '[data-confirm-cancel]', function () {
         removeAllPopups();
     });
@@ -239,6 +243,10 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
     }
 
     function openLayerPopup(layer, ev) {
+        pathVoteSurvey.geoObjectUUID = layer.feature.properties.id;
+        pathVoteSurvey.layer = layer;
+        pathVoteSurvey.getQuestions();
+
         setLayerActiveStyle(layer);
         removeAllPopups();
         layer.feature.properties.activePopup = true;
@@ -249,7 +257,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         if (layer.feature.properties._behavior === 'survey') {
             coordinates = map.mouseEventToLatLng(ev.originalEvent);
             if (mapOption.survey === true) {
-                openConfirmModal(layer);
+                // openConfirmModal(layer);
             }
         } else {
             coordinates = ev.latlng;
@@ -263,7 +271,31 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
             radius: 1
         }).addTo(popusLayerGroup);
 
-        let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+        const surveyTemplate = `
+            <p class="text-center">
+                <!-- <form method="post" class="m-form" action="/front-end/geo-collection/add">
+                    <input type="hidden" name="geo-object" value="${layer.feature.properties.id}">
+                    <button type="submit">${layer.feature.properties.id}</button>
+                </form> -->
+                ${layer.feature.properties.type}<br />${layer.feature.properties.name}
+            </p>
+            <div class="">
+                <div class="container py-4">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h5 class="font-weight-bold mb-3" data-confirm-title>
+                                ${ objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените' }
+                            </h5>
+                        </div>
+                        <div class="col-12 text-center">
+                            <button data-survey-request data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
+                            <button data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        const popupContent = surveyTemplate;
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
@@ -272,6 +304,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
             layer.feature.properties.activePopup = false;
             setLayerDefaultStyle(layer);
             removeAllPopups();
+            pathVoteSurvey.close();
         }).openPopup();
 
         let collection = mapOption.collection;
@@ -312,14 +345,6 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         */
     }
 
-    function openConfirmModal(layer) {
-        let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
-        let dialogLink = '/geo/' + layer.feature.properties.id;
-        confirmModal.removeClass('d-none');
-        confirmModal.find('[data-confirm-title]').html(`${dialogTitle}?`);
-        confirmModal.find('[data-confirm-link]').attr('href', dialogLink);
-    }
-
     function removeAllPopups() {
         map.closePopup();
         popusLayerGroup.eachLayer((layer) => {
@@ -348,4 +373,6 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
                 break;
         }
     }
+
+
 })();

@@ -1,6 +1,14 @@
 .survay {
-    flex: 1 0 50%;
-    
+    position: absolute;
+    top: 100%;
+    background-color: #fff;
+    width: 100%;
+    transition: top 0.3s ease;
+
+    &.active {
+        top: 38%;
+    }
+
     &-question {
         &-option {
             cursor: pointer;

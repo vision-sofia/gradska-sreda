@@ -1,34 +1,19 @@
-{% extends 'front/geo-object/layout.html.twig' %}
-
 {% block content %}
-    <div class="container">
-        <div class="row">
+    <div id="path-vote-suevey" class="survay d-flex justify-content-sm-center">
+        <div class="row container">
             <div class="col-lg-5">
                 <div class="mb-4">
-                    <div id="mapMini" class="map-wide"></div>
-                    <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
-                        <div class="container py-4">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <h5 class="font-weight-bold mb-3" data-confirm-title>Искате ли да оцените?</h5>
-                                </div>
-                                <div class="col-12 text-center">
-                                    <a href="#" data-confirm-link class="btn btn-success mr-3 px-4">ДА</a>
-                                    <span data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {# <div id="mapMini" class="map-wide"></div> #}
                 </div>
             </div>
-            <div class="survay m-3 mt-0 col-lg-7">
+            <div class=" m-3 mt-0 col-lg-7">
                     Попълнена анкета
                 <div id="surveyProgressBar"></div>
 
                 <div class="row">
                     <div class="col">
-                        <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
-                        <h5 class="mb-4">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
+                        <h5>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h5>
+                        <h5 class="mb-4">Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h5>
                     </div>
                 </div>
 
@@ -68,16 +53,9 @@
                     {% endfor %}
                 {% endfor %}#}
 
-                <form id="survayForm"></form>
+                <form id="surveyForm"></form>
             </div>
         </div>
     </div>
-    <script>
-        let mapOption = {
-            survey: true,
-            g: '{{ geo_object.uuid }}'
-        };
-
-        let geoObject = '{{ geo_object.uuid }}'
-    </script>
+  
 {% endblock %}

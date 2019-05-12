@@ -1,69 +1,91 @@
-(() => {
-    const surveayForm = $('#survayForm');
+export class Survey {
+    surveayForm;
+    geoObjectUUID = ''; 
+    timeoutId;
+    layer;
 
-    function getQuestions() {
+    constructor() {
+        this.pathVoteSurveyContaineEl = document.getElementById('path-vote-suevey');
+        this.surveayForm = this.pathVoteSurveyContaineEl.querySelector('#surveyForm');
+        this.events();
+    }
 
+    events() {
+        $(document).on('click', '[data-survey-request]', () => {
+            this.open();
+        });
+        
+        $(document).on('input propertychange', '.answer', () => {
+            let data = {};
+            let debounceTime = 0;
+    
+            if (this.tagName === 'TEXTAREA') {
+                data = {
+                    'explanation': {
+                        "answer": this.id,
+                        "text": this.value,
+                    }
+                };
+    
+                debounceTime = 400;
+            } else {
+                data =  {
+                    'answer': this.value,
+                };
+            }
+           
+            clearTimeout(this.timeoutId); 
+    
+            this.timeoutId = setTimeout(() => {
+                this.submitSurvay(data, this.value)
+            }, debounceTime);
+        });
+
+        $(document).on('click', '.rem', () => {
+            let value = this.value;
+            $.ajax({
+                type: "POST",
+                url: '/geo/' + this.geoObjectUUID + '/clear/' + value,
+    
+                success: () => {
+                    getQuestions();
+                }
+            });
+        });
+    }
+
+   getQuestions() {
         $.ajax({
-            url: '/geo/' + geoObject + '/q',
-            success: function (result) {
-               onSuccess(result);
+            url: '/geo/' + this.geoObjectUUID + '/q',
+            success: (result) => {
+               this.onSuccess(result);
             }
         });
     }
 
-    getQuestions();
-
-    let timeoutId;
-
-    $(document).on('input propertychange', '.answer', function () {
-        let data = {};
-        let debounceTime = 0;
-
-        if (this.tagName === 'TEXTAREA') {
-            data = {
-                'explanation': {
-                    "answer": this.id,
-                    "text": this.value,
-                }
-            };
-
-            debounceTime = 400;
-        } else {
-            data =  {
-                'answer': this.value,
-            };
-        }
-       
-        clearTimeout(timeoutId);
-
-        timeoutId = setTimeout(function () {
-            submitSurvay(data, this.value)
-        }, debounceTime);
-    });
-
-    function submitSurvay(data, value) {
+    submitSurvay(data, value) {
         $.ajax({
             type: 'POST',
-            url: '/geo/' + geoObject + '/q',
+            url: '/geo/' + this.geoObjectUUID + '/q',
             data: data,
-            beforeSend: function () {
+            beforeSend: () => {
                 if (document.getElementById(value)) {
                     document.getElementById(value).style.color = "green";
                 }
             },
-            success: function (result) {
-                onSuccess(result);
+            success: (result) => {
+                this.onSuccess(result);
             }
         });
     }
 
-    function onSuccess(result) {
+    onSuccess(result) {
         let html = ``;
         let survey = result.survey;
         let progress = result.progress;
         let isSelectedParent = false;
 
-        Object.keys(survey).forEach(function (item) {
+        Object.keys(survey).forEach((item) => {
             let answers = survey[item].answers;
             let question = survey[item];
 
@@ -74,7 +96,7 @@
                         </div>
                         <div class="survay-question pl-4">`;
 
-            Object.keys(answers).forEach(function (answer) {
+            Object.keys(answers).forEach((answer) => {
                 if (answers[answer].parent === null) {
                     isSelectedParent = question.answers[answer].isSelected;
 
@@ -119,7 +141,7 @@
                     `;
         });
 
-        surveayForm.html(html);
+        this.surveayForm.innerHTML = html;
 
         let progressbar = `<div class="progress mb-4">
                             <div class="progress-bar ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ` + progress.percentage + `%;"
@@ -129,16 +151,14 @@
         $("#surveyProgressBar").html(progressbar);
     }
 
-    $(document).on('click', '.rem', function () {
-        let value = this.value;
-        $.ajax({
-            type: "POST",
-            url: '/geo/' + geoObject + '/clear/' + value,
+    open() {
+        this.pathVoteSurveyContaineEl.classList.add('active');
+        this.pathVoteSurveyContaineEl.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
+        this.pathVoteSurveyContaineEl.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
+    }
 
-            success: function () {
-                getQuestions();
-            }
-        });
-    });
-
-})();
+    close() {
+        this.pathVoteSurveyContaineEl.classList.add('close');
+        this.surveayForm.innerHTML = '';
+    }
+};
