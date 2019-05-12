@@ -52,12 +52,11 @@ class StyleUtilsTest extends TestCase
             ]
         ];
 
-        $geoObjectAttributes = [
-            '_s1' => 's',
-            '_s2' => 'h',
-            '_gc' => 1,
-            '_gg' => 1,
-        ];
+        $geoObjectAttributes = new \StdClass();
+        $geoObjectAttributes->_s1 = 's';
+        $geoObjectAttributes->_s2 = 'h';
+        $geoObjectAttributes->_gc = 1;
+        $geoObjectAttributes->_gg = 1;
 
         $s = new StyleUtils();
         $s->setDynamicStyles($dynamicStyles);
