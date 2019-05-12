@@ -2,6 +2,9 @@
 
 namespace App\AppAPIFrontend\Controller;
 
+use App\AppMain\DTO\GeoJsonDTO;
+use App\AppMain\DTO\GeoObjectDTO;
+use App\AppMain\DTO\GeoObjectPropertyDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\Services\Cache\Keys as CacheKeys;
 use App\Services\GeoCollection\GeoCollection;
@@ -18,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Contracts\Cache\ItemInterface;
 
 class MapController extends AbstractController
@@ -56,26 +60,30 @@ class MapController extends AbstractController
     }
 
     // TODO: refactor in to services
+
     /**
      * @Route("/map", name="api.map", methods="GET")
      */
     public function index(Request $request): Response
     {
+
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
-        $center = $request->query->get('c');
-        $geo = $request->query->get('g');
 
         if (null === $in || null === $zoom) {
             return new JsonResponse(['Missing parameters'], 400);
         }
+
+        $center = $request->query->get('c');
+        $select = $request->query->get('select');
+
 
         $simplifyTolerance = $this->simplifyTolerance((int)$zoom);
 
         $collectionId = $request->query->get('collection');
 
         $boundingBox = null;
-
+/*
         if ($collectionId) {
             $collectionBoundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
 
@@ -88,6 +96,7 @@ class MapController extends AbstractController
                 );
             }
         }
+*/
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
@@ -101,19 +110,13 @@ class MapController extends AbstractController
             $collectionBoundingBoxCollection = $this->geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
 
             foreach ($collectionBoundingBoxCollection as $collectionBoundingBox) {
-                $j = $collectionBoundingBox->getPolygon();
+                $geoObject = new GeoObjectDTO();
+                $geoObject->geometry = $collectionBoundingBox->getPolygon();
+                $geoObject->style_base = 'gc_bbox';
+                $geoObject->style_hover = 'gc_bbox';
+                $geoObject->properties = '{}';
 
-                $k = [
-                    'geometry' => $j,
-                    'attributes' => '{}',
-                    'type_name' => '',
-                    'style_base' => 'gc_bbox',
-                    'style_hover' => 'gc_bbox',
-                    'uuid' => '',
-                    'geo_name' => '',
-                ];
-
-                $bbox[] = $k;
+                $bbox[] = $geoObject;
             }
         }
 
@@ -134,19 +137,27 @@ class MapController extends AbstractController
         }
 
         foreach ($geoObjects as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userGeoCollection as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($bbox as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils, $dynamicStyles);
+            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
+        }
+
+        if ($select) {
+            $geo = $this->finder->findSelected($select);
+
+            if ($geo) {
+                $result[] = $this->process($geo, $styleGroups, $this->styleUtils);
+            }
         }
 
         $this->logger->info('Map view', [
@@ -171,55 +182,45 @@ class MapController extends AbstractController
                     3 => 'Искате ли да оцените избраната алея',
                 ],
             ],
-            'bbox' => $boundingBox,
             'objects' => $result,
         ]);
     }
 
-    private function process($row, &$styles, StyleUtils $styleUtils, $geoCollectionUuid = null): array
+    private function process(GeoObjectDTO $row, &$styles, StyleUtils $styleUtils): GeoJsonDTO
     {
-        $geometry = json_decode($row['geometry'], true);
-        $attributes = json_decode($row['attributes'], true);
+        $geometry = json_decode($row->geometry, false);
+        $properties = json_decode($row->properties, false);
 
-        $s = $styleUtils->inherit('line', $attributes, $row['style_base'], $row['style_hover']);
+        $properties->_s1 = $row->style_base ?? null;
+        $properties->_s2 = $row->style_hover ?? null;
+        $properties->name = $row->geo_name ?? null;
+        $properties->type = $row->type_name ?? null;
+        $properties->id = $row->uuid ?? null;
+
+        $s = $styleUtils->inherit('line', $properties, $row->style_base, $row->style_hover);
 
         if (isset($s['base_style_code'])) {
-            $row['style_base'] = $s['base_style_code'];
+            $properties->_s1 = $s['base_style_code'];
             $styles[$s['base_style_code']] = $s['base_style_content'];
         }
 
         if (isset($s['hover_style_code'])) {
-            $row['style_hover'] = $s['hover_style_code'];
+            $properties->_s2 = $s['hover_style_code'];
             $styles[$s['hover_style_code']] = $s['hover_style_content'];
-        }
-
-        if (isset($row['geo_collection_uuid'], $geoCollectionUuid, $styles[$row['style_base']]) && $row['geo_collection_uuid'] === $geoCollectionUuid) {
-            $newBaseStyle = $row['style_base'] . '-zz';
-            $styles[$newBaseStyle] = array_merge($styles[$row['style_base']], ['color' => '#FF00FF']);
-            $row['style_base'] = $newBaseStyle;
         }
 
         /*
         if ('Градоустройствена единица' === $row['type_name']) {
             $attributes['_zoom'] = 17;
         }
-
-        if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-            $attributes['_zoom'] = 20;
-        }
+        */
+        /*
+                if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
+                    $attributes['_zoom'] = 20;
+                }
         */
 
-        return [
-            'type' => 'Feature',
-            'geometry' => $geometry,
-            'properties' => [
-                    '_s1' => $row['style_base'],
-                    '_s2' => $row['style_hover'],
-                    'id' => $row['uuid'],
-                    'name' => $row['geo_name'],
-                    'type' => $row['type_name'],
-                ] + $attributes,
-        ];
+        return new GeoJsonDTO($geometry, $properties);
     }
 
     private function simplifyTolerance(int $zoom)

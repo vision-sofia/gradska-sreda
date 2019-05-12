@@ -21,54 +21,17 @@
                     </div>
                 </div>
 
-                Попълнена анкета
-                <div id="surveyProgressBar"></div>
-
                 <div class="row">
                     <div class="col">
-                        <h5>Обект: <strong>{{ geo_object.attributes.name }}</strong></h5>
-                        <h5 class="m-0">Тип: <strong>{{ geo_object.attributes.type }}</strong></h5>
+                        <h5>Обект: <strong>{{ geoObject.attributes.name }}</strong></h5>
+                        <h5 class="m-0">Тип: <strong>{{ geoObject.attributes.type }}</strong></h5>
                     </div>
                 </div>
 
-                {#<h4>Рейтинг</h4>
-                {% for c in rating %}
-                    {% set percentage = (c.rating / c.max_points) * 100 %}
-                    <div class="row">
-                        <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
-                        <div class="col-lg-6">
-                            <div class="progress mb-4">
-                                <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                     aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                     aria-valuemax="100">{{ c.rating|number_format(1) }}
-                                    / {{ c.max_points|number_format(0) }}</div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-
-                <h4 class="mt-4">Оценки от хората</h4>
-                {% for u, r in resultByUsers %}
-                    <strong>{{ u }}</strong>
-                    {% for c in r %}
-                        {% set percentage = (c.rating / c.max_points) * 100 %}
-                        <div class="row">
-                            <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
-                            <div class="col-lg-6">
-                                <div class="progress mb-4">
-                                    <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                         aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                         aria-valuemax="100">{{ c.rating|number_format(1) }}
-                                        / {{ c.max_points|number_format(0) }}</div>
-                                </div>
-
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endfor %}#}
+                <div id="surveyProgress" data-object-id="{{ geoObject.uuid }}" class="mt-3"></div>
             </div>
-            <div class="col-lg-7">
 
+            <div class="col-lg-7">
                 <div id="survey"></div>
             </div>
         </div>
@@ -76,9 +39,9 @@
     <script>
         let mapOption = {
             survey: true,
-            g: '{{ geo_object.uuid }}'
+            geoObject: '{{ geoObject.uuid }}'
         };
 
-        let geoObject = '{{ geo_object.uuid }}'
+        let geoObject = '{{ geoObject.uuid }}'
     </script>
 {% endblock %}

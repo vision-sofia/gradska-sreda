@@ -1,3 +1,3 @@
 import 'map-main'
 import 'map-mini'
-import 'survey2'
+import 'survey'

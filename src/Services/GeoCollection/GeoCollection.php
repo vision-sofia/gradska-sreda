@@ -127,6 +127,9 @@ class GeoCollection
         return new BoundingBoxDTO();
     }
 
+    /**
+     * @return BoundingBoxDTO[]|\Generator
+     */
     public function findCollectionBoundingBoxByUser(int $userId): \Generator
     {
         $conn = $this->em->getConnection();
@@ -202,11 +205,10 @@ class GeoCollection
                 g.style_hover,
                 g.name as geo_name,
                 \'\' as type_name,
-                g.attributes,
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'gc_edge\', 0
-                ) as attributes
+                ) as properties
             FROM
                 x_geospatial.geo_object g
                     INNER JOIN

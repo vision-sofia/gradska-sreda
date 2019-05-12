@@ -1,152 +1,154 @@
 (() => {
-    if (!document.getElementById('surveyForm')) {
-        return;
-    }
 
-    $(document).on('change', '[data-parent]', function () {
-        let parentId = $(this).data('parent');
+    function questions() {
 
-        $(`#${parentId}`).prop('checked', true);
-
-        deselectIrrelevant(parentId);
-    });
-
-    $(document).on('blur keyup', 'textarea[data-parent]', function () {
-        if (!$(this).val()) { return; }
-
-        let parentId = $(this).data('parent');
-
-        $(`#${parentId}`).prop('checked', true);
-
-        deselectIrrelevant(parentId);
-    });
-
-    $(document).on('change', '.custom-file-input', function () {
-        let fileName = $(this).val().replace('C:\\fakepath\\', '');
-        $(this).next('.custom-file-label').html(fileName);
-    });
-
-    function deselectIrrelevant(parentId) {
-        [...document.querySelectorAll(`[data-parent`)].forEach((e) => {
-            if (e.dataset.parent !== parentId) {
-                e.checked = false;
-                e.value = '';
-
-                if (e.getAttribute('type') === 'file') {
-                    $(e).next('.custom-file-label').html('Качете снимка');
-                }
-            }
-        });
-    }
-
-    $(document).on('submit', '#surveyForm', function (e) {
-        e.preventDefault();
-        $('.loading').removeClass('d-none');
-        postForm();
-    });
-
-    const objectId = $('#surveyForm').data('objectId');
-    const surveyFormHolder = $('#surveyFormContent');
-
-    getNewQuestion();
-
-    function getNewQuestion() {
-        $('.loading').removeClass('d-none');
         $.ajax({
-            url: `/front-end/geo-object/${objectId}/survey`,
-            success: function (results) {
-                $('.loading').addClass('d-none');
-                if (Object.keys(results).length > 0) {
-                    if (results.status && results.status === 'no_question') {
-                        printMessage(results.message || 'Няма повече въпроси');
+            url: '/geo/' + geoObject + '/q',
+
+            success: function (result) {
+                let html = ``;
+                let survey = result.survey;
+                let progress = result.progress;
+                let isSelectedParent = false;
+                Object.keys(survey).forEach(function (item) {
+                    let answers = survey[item].answers;
+                    let question = survey[item];
+                    let indicatorStyle;
+
+                    if (question.isAnswered && question.isCompleted) {
+                        indicatorStyle = 'text-success';
+                    } else if (question.isAnswered && !question.isCompleted) {
+                        indicatorStyle = 'text-warning';
                     } else {
-                        questionPrinter(results);
+                        indicatorStyle = 'text-black-50';
                     }
+
+                    html += `<div class="mb-4 " >
+                            <i class="fas fa-check ${indicatorStyle}"></i> <h5 class="d-inline">${question.title}</h5>`;
+
+                    Object.keys(answers).forEach(function (answer) {
+                        if (answers[answer].parent === null) {
+                            isSelectedParent = question.answers[answer].isSelected;
+
+                            html += `<p class="mb-0"><label id="${answers[answer].uuid}"><input class="answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][${question.uuid}][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label></p>`;
+
+                            if (question.answers[answer].isFreeAnswer) {
+                                html += `<textarea></textarea>`;
+                            }
+                        } else {
+                            if (isSelectedParent === true) {
+                                html += `<div style="padding-left:32px;"><label class="" id="${answers[answer].uuid}"><input class="answer" type="checkbox"
+									name="answers[option][${question.uuid}][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label>`;
+
+                                if (answers[answer].isSelected && question.answers[answer].isFreeAnswer) {
+                                    html += `<textarea class="d-block" id="textarea-${question.answers[answer].uuid}]">${question.answers[answer].explanation}</textarea>`;
+                                }
+
+                                html += '</div>';
+                            }
+                        }
+                    });
+
+                    if (question.isAnswered) {
+                        html += `<button type="button" class="rem btn btn-sm btn-danger rounded-0" name="answers[option][${question.uuid}][]" value="${question.uuid}"> Изчисти отговора</button>`;
+                    }
+
+                    html += `</div>`;
+                });
+
+                $("#survey").html(html);
+
+                const article = document.querySelector('#surveyProgress');
+
+                let progressHtml = `
+                                Попълнена анкета ${progress.percentage}%<br/> 
+                                <div class="progress mb-4 rounded-0">
+                                    <div class="progress-bar rounded-0 pt-1 ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ${progress.percentage}%;"
+                                         aria-valuenow="${progress.percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>`;
+
+                if (progress.percentage === 100) {
+                    progressHtml += `<div class="mt-3">
+                                        <a href="/geo/${article.dataset.objectId}/result" class="btn btn-primary rounded-0 pt-2">Виж рейтинга</a>
+                                    </div>`;
                 }
+
+                $("#surveyProgress").html(progressHtml);
             }
         });
     }
 
-    function postForm() {
-        let form = new FormData();
+    questions();
 
-        [...document.querySelectorAll('#surveyForm [name]')].forEach(el => {
-            let name = el.getAttribute('name');
-            let type = el.getAttribute('type');
-            let isFile = type === 'file';
-            let value = isFile ? (el.files[0] || null) : el.value;
-
-            if ((type === 'checkbox' || type === 'radio') && !el.checked) {
-                return;
-            }
-
-            form.append(name, value);
-        });
+    function saveExplanation(id, value) {
 
         $.ajax({
-            method: 'POST',
-            data: form,
-            cache: false,
-            contentType: false,
-            processData: false,
-            url: `/front-end/geo-object/${objectId}/survey`,
+            type: "POST",
+            url: '/geo/' + geoObject + '/q',
+            data: {
+                'explanation': {
+                    "answer": id,
+                    "text": value,
+                }
+            },
+            beforeSend: function () {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).style.backgroundColor = "green";
+                    setTimeout(function () {
+                        document.getElementById(id).style.backgroundColor = "white";
+                    }, 200);
+                }
+            },
+            success: function (data) {
+
+            },
+        });
+    }
+
+    let timeoutId;
+
+    $(document).on('input propertychange change', 'textarea', function () {
+        let $this = $(this);
+
+        clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(function () {
+            saveExplanation($this.attr("id"), $this.val());
+        }, 600);
+    });
+
+
+    $(document).on('click', '.answer', function () {
+        let value = this.value;
+        $.ajax({
+            type: "POST",
+            url: '/geo/' + geoObject + '/q',
+            data: {
+                'answer': value,
+            },
+            beforeSend: function () {
+                if (document.getElementById(value)) {
+                    document.getElementById(value).style.color = "green";
+                }
+            },
             success: function () {
-                getNewQuestion();
+                questions();
             }
         });
-    }
+    });
 
-    function printMessage(msg) {
-        let formParent = $('#surveyForm').parent();
-        let html = `<div class="row">
-                        <div class="col">
-                            <h3>${msg}</h3>
-                        </div>
-                    </div>`;
-        formParent.html(html);
-    }
+    $(document).on('click', '.rem', function () {
+        let value = this.value;
+        $.ajax({
+            type: "POST",
+            url: '/geo/' + geoObject + '/clear/' + value,
 
-    function questionPrinter(results) {
-        let html = `<div class="form-group">
-                        <h5 class="font-weight-bold m-0">${results.question}</h5>
-                    </div>`;
-        html += `<div class="py-3">`;
-        results.answers.forEach((answer) =>{
-            if (!answer.parent) {
-                html += `<div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="${answer.id}" data-parent="${answer.id}" name="answers[][id]" value="${answer.id}" class="custom-control-input">
-                                <label class="custom-control-label" for="${answer.id}">${answer.title}</label>
-                            </div>
-                        </div>`;
-
-                if (answer.is_photo_enabled) {
-                    html += `<div class="form-group pl-4">
-                                <div class="custom-file">
-                                    <input type="file" name="answers[][${answer.id }][photo]" data-parent="${answer.id}" class="custom-file-input" id="file_${answer.id }">
-                                    <label class="custom-file-label" for="file_${answer.id }">Качете снимка</label>
-                                </div>
-                             </div>`;
-                }
-            } else {
-                if (answer.is_free_answer) {
-                    html += `<div class="form-group pl-4">
-                                <label for="${answer.id }">${answer.title}</label>
-                                <textarea name="answers[][${answer.id }][explanation]" id="${answer.id}" data-parent="${answer.parent}" rows="3" class="form-control w-100"></textarea>
-                            </div>`;
-                }
-                else {
-                    html += `<div class="form-group pl-4">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" id="${answer.id}" data-parent="${answer.parent}" name="answers[][id]" value="${answer.id}" class="custom-control-input">
-                                    <label class="custom-control-label" for="${answer.id}">${answer.title}</label>
-                                </div>
-                            </div>`;
-                }
+            success: function () {
+                questions();
             }
         });
-        html += `</div>`;
+    });
 
-        surveyFormHolder.html(html);
-    }
 })();
