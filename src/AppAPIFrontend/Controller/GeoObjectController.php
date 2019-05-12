@@ -6,6 +6,7 @@ use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\Services\ApiFrontend\GeoObjectRating;
 use App\Services\Survey\Question;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
@@ -28,18 +29,21 @@ class GeoObjectController extends AbstractController
     protected $eventDispatcher;
     protected $uploaderHelper;
     protected $question;
+    protected $geoObjectRating;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
         UploaderHelper $uploaderHelper,
-        Question $question
+        Question $question,
+        GeoObjectRating $geoObjectRating
     )
     {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
         $this->question = $question;
+        $this->geoObjectRating = $geoObjectRating;
     }
 
     /**
@@ -170,5 +174,22 @@ class GeoObjectController extends AbstractController
             'questions' => $survey,
             'progress' => $progress
         ];
+    }
+
+    /**
+     * @Route("{id}/result", name="result")
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     */
+    public function result(GeoObject $geoObject): Response
+    {
+        return new JsonResponse([
+            'geoObject' => [
+                'id' => $geoObject->getUuid(),
+                'name' => $geoObject->getName(),
+                'type' => $geoObject->getType()->getName(),
+            ],
+            'rating' => $this->geoObjectRating->getOverallRating($geoObject->getId()),
+            'respondents' => $this->geoObjectRating->getRatingByUser($geoObject->getId()),
+        ]);
     }
 }
