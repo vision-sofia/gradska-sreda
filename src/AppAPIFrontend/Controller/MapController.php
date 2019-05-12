@@ -2,9 +2,7 @@
 
 namespace App\AppAPIFrontend\Controller;
 
-use App\AppMain\DTO\GeoJsonDTO;
 use App\AppMain\DTO\GeoObjectDTO;
-use App\AppMain\DTO\GeoObjectPropertyDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\Services\Cache\Keys as CacheKeys;
 use App\Services\GeoCollection\GeoCollection;
@@ -21,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Contracts\Cache\ItemInterface;
 
 class MapController extends AbstractController
@@ -35,6 +32,7 @@ class MapController extends AbstractController
     protected $styleUtils;
     protected $cache;
     protected $styleService;
+    protected $jsonUtils;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -45,7 +43,8 @@ class MapController extends AbstractController
         GeoCollection $geoCollection,
         StyleUtils $styleUtils,
         AdapterInterface $cache,
-        Style $styleService
+        Style $styleService,
+        \App\Services\JsonUtils $jsonUtils
     )
     {
         $this->entityManager = $entityManager;
@@ -57,6 +56,7 @@ class MapController extends AbstractController
         $this->styleUtils = $styleUtils;
         $this->cache = $cache;
         $this->styleService = $styleService;
+        $this->jsonUtils = $jsonUtils;
     }
 
     // TODO: refactor in to services
@@ -83,24 +83,24 @@ class MapController extends AbstractController
         $collectionId = $request->query->get('collection');
 
         $boundingBox = null;
-/*
-        if ($collectionId) {
-            $collectionBoundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
+        /*
+                if ($collectionId) {
+                    $collectionBoundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
 
-            if ($collectionBoundingBox->getYMin()) {
-                $boundingBox = Utils::buildBbox(
-                    $collectionBoundingBox->getXMin(),
-                    $collectionBoundingBox->getYMin(),
-                    $collectionBoundingBox->getXMax(),
-                    $collectionBoundingBox->getYMax()
-                );
-            }
-        }
-*/
+                    if ($collectionBoundingBox->getYMin()) {
+                        $boundingBox = Utils::buildBbox(
+                            $collectionBoundingBox->getXMin(),
+                            $collectionBoundingBox->getYMin(),
+                            $collectionBoundingBox->getXMax(),
+                            $collectionBoundingBox->getYMax()
+                        );
+                    }
+                }
+        */
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
 
-        $userGeoCollection = $userSubmitted = $result = [];
+        $userGeoCollection = $userSubmitted = $objects = [];
         $bbox = [];
 
         if ($this->getUser()) {
@@ -137,26 +137,26 @@ class MapController extends AbstractController
         }
 
         foreach ($geoObjects as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userGeoCollection as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($bbox as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userSubmitted as $row) {
-            $result[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         if ($select) {
             $geo = $this->finder->findSelected($select);
 
             if ($geo) {
-                $result[] = $this->process($geo, $styleGroups, $this->styleUtils);
+                $objects[] = $this->process($geo, $styleGroups, $this->styleUtils);
             }
         }
 
@@ -172,23 +172,23 @@ class MapController extends AbstractController
         $this->session->set('center', $center);
         $this->session->set('zoom', $zoom);
 
-        return new JsonResponse([
+        $settings = [
             'settings' => [
                 'default_zoom' => 17,
                 'styles' => $styleGroups,
-                'dialog' => [
-                    1 => 'Искате ли да оцените избраното пресичане',
-                    2 => 'Искате ли да оцените избрания тротоар',
-                    3 => 'Искате ли да оцените избраната алея',
-                ],
-            ],
-            'objects' => $result,
-        ]);
+            ]
+        ];
+
+        $content = $this->jsonUtils->concatString($settings, 'objects', $this->jsonUtils->joinArray($objects));
+
+        $response = new Response($content);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 
-    private function process(GeoObjectDTO $row, &$styles, StyleUtils $styleUtils): GeoJsonDTO
+    private function process(GeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
     {
-        $geometry = json_decode($row->geometry, false);
         $properties = json_decode($row->properties, false);
 
         $properties->_s1 = $row->style_base ?? null;
@@ -220,7 +220,13 @@ class MapController extends AbstractController
                 }
         */
 
-        return new GeoJsonDTO($geometry, $properties);
+        return $this->jsonUtils->concatString([
+            'type' => 'Feature',
+            'properties' => $properties,
+        ],
+            'geometry',
+            $row->geometry
+        );
     }
 
     private function simplifyTolerance(int $zoom)
