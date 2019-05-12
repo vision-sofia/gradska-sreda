@@ -42,9 +42,9 @@ class StyleUtils
             $s2options = $this->staticStyles[$s2];
 
             foreach ($this->dynamicStyles as $targetAttribute => $content) {
-                $target = $attributes->{$targetAttribute} ?? null;
+                $target = isset($attributes->{$targetAttribute}) ? $attributes->{$targetAttribute} : null;
 
-                if ($target && isset($this->dynamicStyles[$targetAttribute][$target])) {
+                if (isset($attributes->{$targetAttribute}, $this->dynamicStyles[$targetAttribute][$target])) {
                     if (isset($content[$target]['base_style'][$geometryType])) {
                         $style = $content[$target]['base_style'][$geometryType];
 
