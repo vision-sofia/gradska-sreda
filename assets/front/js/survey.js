@@ -6,38 +6,46 @@ export class Survey {
 
     constructor() {
         this.pathVoteSurveyContaineEl = document.getElementById('path-vote-suevey');
+        if (!this.pathVoteSurveyContaineEl) {
+            return;
+        }
         this.surveayForm = this.pathVoteSurveyContaineEl.querySelector('#surveyForm');
         this.events();
     }
 
     events() {
-        $(document).on('click', '[data-survey-request]', () => {
+        $(document).on('click', '[data-survey-open]', () => {
             this.open();
         });
+
+        $(document).on('click', '[data-survey-close]', () => {
+            this.close();
+        });
         
-        $(document).on('input propertychange', '.answer', () => {
+        $(document).on('input propertychange', '.answer', (e) => {
+            const target = e.target;
             let data = {};
             let debounceTime = 0;
     
-            if (this.tagName === 'TEXTAREA') {
+            if (target.tagName === 'TEXTAREA') {
                 data = {
                     'explanation': {
-                        "answer": this.id,
-                        "text": this.value,
+                        "answer": target.id,
+                        "text": target.value,
                     }
                 };
     
                 debounceTime = 400;
             } else {
-                data =  {
-                    'answer': this.value,
+                data = {
+                    'answer': target.value,
                 };
             }
            
             clearTimeout(this.timeoutId); 
     
             this.timeoutId = setTimeout(() => {
-                this.submitSurvay(data, this.value)
+                this.submitSurvay(data, target.value)
             }, debounceTime);
         });
 
@@ -77,7 +85,7 @@ export class Survey {
                 this.onSuccess(result);
             }
         });
-    }
+    };
 
     onSuccess(result) {
         let html = ``;
@@ -143,12 +151,17 @@ export class Survey {
 
         this.surveayForm.innerHTML = html;
 
-        let progressbar = `<div class="progress mb-4">
-                            <div class="progress-bar ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ` + progress.percentage + `%;"
+        let progressHTML = `<div class="progress mb-4">
+                                <div class="progress-bar ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ` + progress.percentage + `%;"
                                  aria-valuenow="` + progress.percentage + `" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>`;
+                            </div>`;
+        if (progress.percentage === 100) {
+            progressHTML += `<div class="mt-3">
+                                <a href="/geo/${ this.geoObjectUUID }/result" class="btn btn-primary rounded-0 pt-2">Виж рейтинга</a>
+                            </div>`;
+        }
 
-        $("#surveyProgressBar").html(progressbar);
+        $('#surveyProgressBar').html(progressHTML);
     }
 
     open() {
@@ -158,7 +171,6 @@ export class Survey {
     }
 
     close() {
-        this.pathVoteSurveyContaineEl.classList.add('close');
-        this.surveayForm.innerHTML = '';
+        this.pathVoteSurveyContaineEl.classList.remove('active');
     }
 };

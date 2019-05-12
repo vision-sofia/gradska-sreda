@@ -4,6 +4,8 @@
     background-color: #fff;
     width: 100%;
     transition: top 0.3s ease;
+    height: 62%;
+    overflow: auto;
 
     &.active {
         top: 38%;

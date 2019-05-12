@@ -2,6 +2,7 @@
 
 namespace App\Services\Geospatial;
 
+use App\AppMain\DTO\GeoObjectDTO;
 use App\AppMain\Entity\User\UserInterface;
 use App\Services\Geometry\Utils;
 use Doctrine\DBAL\Driver\Connection;
@@ -32,7 +33,7 @@ class Finder
                     style_hover,
                     object_type_id,
                     geometry,
-                    jsonb_strip_nulls(attributes) as attributes
+                    jsonb_strip_nulls(properties) as properties
                 FROM
                     (
                         SELECT
@@ -46,7 +47,7 @@ class Finder
                             jsonb_build_object(
                                 \'_sca\', c.name,
                                 \'_behavior\', \'survey\'
-                            ) as attributes
+                            ) as properties
                         FROM
                             x_geometry.simplified_geo m
                                 INNER JOIN
@@ -79,7 +80,7 @@ class Finder
                                 \'_behavior\', a.behavior,
                                 \'has_vhc_other\', g.attributes->\'has_vhc_other\',
                                 \'has_vhc_metro\', g.attributes->\'has_vhc_metro\'
-                            ) as attributes
+                            ) as properties
                         FROM
                             x_geometry.simplified_geo m
                                 INNER JOIN
@@ -107,7 +108,7 @@ class Finder
             'g.style_hover',
             'g.name as geo_name',
             't.name as type_name',
-            'g.attributes',
+            'g.properties',
             'g.geometry',
 
         ]);
@@ -153,8 +154,9 @@ class Finder
         }
 
         $stmt->execute();
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
 
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
@@ -172,11 +174,10 @@ class Finder
                 g.style_hover,
                 g.name as geo_name,
                 t.name as type_name,
-                g.attributes,
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'_geo_comp\', uc.is_completed::int
-                ) as attributes
+                ) as properties
             FROM
                 x_survey.result_user_completion uc
                     INNER JOIN
@@ -193,7 +194,8 @@ class Finder
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
@@ -211,13 +213,12 @@ class Finder
                 g.style_hover,
                 g.name as geo_name,
                 t.name as type_name,
-                g.attributes,
                 c.uuid as geo_collection_uuid,     
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'_gc\', 1,
                     \'_behavior\', \'survey\'
-                ) as attributes
+                ) as properties
             FROM
                 x_survey.gc_collection c
                     INNER JOIN
@@ -236,60 +237,43 @@ class Finder
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
 
-    public function userGeoCollectionLinks(int $userId, float $simplifyTolerance): \Generator
+    public function findSelected(string $geoCollectionUuid): ?GeoObjectDTO
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
 
         $stmt = $conn->prepare('
-            WITH z AS (
-                SELECT
-                    g.id,
-                    gb.coordinates
-                FROM
-                    x_survey.gc_collection c
-                        INNER JOIN
-                    x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
-                        INNER JOIN
-                    x_geospatial.geo_object g ON cc.geo_object_id = g.id
-                        INNER JOIN
-                    x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-                WHERE
-                    user_id = :user_id
-            )
             SELECT
                 g.id,
                 g.uuid,
-                g.style_base,
-                g.style_hover,
+                --g.style_base,
+                --g.style_hover,
+                \'on_dialog_line\' as style_base,
+                \'on_dialog_line\' as style_hover,
                 g.name as geo_name,
-                \'\' as type_name,
-                g.attributes,
-                ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
+                g.name as type_name,
+                ST_AsGeoJSON(gb.coordinates::geometry) AS geometry,
                 jsonb_build_object(
-                    \'gc_edge\', 0
-                ) as attributes
+                    \'_behavior\', \'survey\'
+                ) as properties
             FROM
                 x_geospatial.geo_object g
                     INNER JOIN
                 x_geometry.geometry_base gb ON g.id = gb.geo_object_id
-                    CROSS JOIN z
             WHERE
-                st_touches(gb.coordinates::geometry, z.coordinates::geometry)
-                AND NOT EXISTS(SELECT * FROM x_survey.gc_collection_content c WHERE c.geo_object_id = gb.geo_object_id)
+                g.uuid = ?
         ');
 
-        $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
-        $stmt->bindValue('user_id', $userId);
-        $stmt->execute();
 
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            yield $row;
-        }
+        $stmt->execute([$geoCollectionUuid]);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+
+        return $stmt->fetch();
     }
 }

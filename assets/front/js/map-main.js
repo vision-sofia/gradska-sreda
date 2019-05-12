@@ -3,7 +3,7 @@ import { Survey }  from './survey';
 
 const pathVoteSurvey = new Survey();
 
-(() => {
+function Map() {
     if (!document.getElementById('mapMain')) {
         return;
     }
@@ -13,7 +13,6 @@ const pathVoteSurvey = new Survey();
     $(document).on('click', '[data-confirm-cancel]', function () {
         removeAllPopups();
     });
-
     //const mapCenter = mapOption.center;
     //const mapZoom = mapOption.zoom;
 
@@ -271,6 +270,7 @@ const pathVoteSurvey = new Survey();
             radius: 1
         }).addTo(popusLayerGroup);
 
+
         const surveyTemplate = `
             <p class="text-center">
                 <!-- <form method="post" class="m-form" action="/front-end/geo-collection/add">
@@ -279,16 +279,16 @@ const pathVoteSurvey = new Survey();
                 </form> -->
                 ${layer.feature.properties.type}<br />${layer.feature.properties.name}
             </p>
-            <div class="">
+            <div class="survey-modal">
                 <div class="container py-4">
                     <div class="row">
                         <div class="col-12 text-center">
                             <h5 class="font-weight-bold mb-3" data-confirm-title>
-                                ${ objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените' }
+                              Искате ли да оцените
                             </h5>
                         </div>
                         <div class="col-12 text-center">
-                            <button data-survey-request data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
+                            <button data-survey-open data-confirm-cancel data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
                             <button data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</button>
                         </div>
                     </div>
@@ -304,7 +304,6 @@ const pathVoteSurvey = new Survey();
             layer.feature.properties.activePopup = false;
             setLayerDefaultStyle(layer);
             removeAllPopups();
-            pathVoteSurvey.close();
         }).openPopup();
 
         let collection = mapOption.collection;
@@ -375,4 +374,6 @@ const pathVoteSurvey = new Survey();
     }
 
 
-})();
+};
+
+Map();

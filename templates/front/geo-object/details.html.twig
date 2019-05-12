@@ -1,5 +1,8 @@
 {% block content %}
-    <div id="path-vote-suevey" class="survay d-flex justify-content-sm-center">
+    <div id="path-vote-suevey" class="survay d-flex flex-column align-items-center justify-content-start">
+        <div class="row">
+            <button data-survey-close class="btn btn-danger cursor-pointer">X</button>
+        </div>
         <div class="row container">
             <div class="col-lg-5">
                 <div class="mb-4">
@@ -7,7 +10,7 @@
                 </div>
             </div>
             <div class=" m-3 mt-0 col-lg-7">
-                    Попълнена анкета
+                Попълнена анкета
                 <div id="surveyProgressBar"></div>
 
                 <div class="row">
