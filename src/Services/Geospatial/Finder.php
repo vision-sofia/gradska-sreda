@@ -20,6 +20,7 @@ class Finder
 
     public function find(int $zoom, float $simplifyTolerance, string $in, int $surveyId): \Generator
     {
+        /** @var Connection $conn */
         $conn = $this->em->getConnection();
 
         $sql = /** @lang PostgreSQL */
@@ -94,8 +95,8 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
-
         $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+
         while ($row = $stmt->fetch()) {
             yield $row;
         }
@@ -137,14 +138,14 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
-
         $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+
         while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
 
-    public function findSelected(string $geoCollectionUuid): ?GeoObjectDTO
+    public function findSelected(string $geoObjectUuid): ?GeoObjectDTO
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
@@ -171,8 +172,7 @@ class Finder
                 g.uuid = ?
         ');
 
-
-        $stmt->execute([$geoCollectionUuid]);
+        $stmt->execute([$geoObjectUuid]);
         $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
 
         return $stmt->fetch();
