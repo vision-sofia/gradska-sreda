@@ -43,14 +43,28 @@ class ImportSGRCommand extends Command
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
 
-        $stmt = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
-        $stmt->execute(['Строителна граница']);
+        $stmtSpatial = $conn->prepare('SELECT id FROM x_geospatial.object_type WHERE name = ?');
+        $stmtSpatial->execute(['Строителна граница']);
 
-        $objectType = $stmt->fetchColumn();
+        $objectType = $stmtSpatial->fetchColumn();
 
         $conn->beginTransaction();
 
-        $stmt = $conn->prepare('
+        $stmtGeo = $conn->prepare('
+            INSERT INTO x_geospatial.geo_object (
+                local_properties,
+                uuid,
+                object_type_id,
+                name
+            ) VALUES (     
+                :local_properties,
+                :uuid,
+                :object_type_id,
+                :name                 
+            )
+        ');
+
+        $stmtSpatial = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
@@ -64,30 +78,20 @@ class ImportSGRCommand extends Command
             )
         ');
 
-        $stmtSPO = $conn->prepare('
-            INSERT INTO x_geospatial.geo_object (
-                attributes,
-                uuid,
-                object_type_id,
-                name
-            ) VALUES (
-                :attr,        
-                :uuid,
-                :object_type_id,
-                :name                 
-            )
-        ');
+        $localProperties = [
+            '_tc' => 'sgr'
+        ];
 
-        $stmtSPO->bindValue('attr', json_encode([]));
-        $stmtSPO->bindValue('uuid', Uuid::uuid4());
-        $stmtSPO->bindValue('name', 'Строителна граница');
-        $stmtSPO->bindValue('object_type_id', $objectType);
-        $stmtSPO->execute();
+        $stmtGeo->bindValue('local_properties',json_encode($localProperties));
+        $stmtGeo->bindValue('uuid', Uuid::uuid4());
+        $stmtGeo->bindValue('name', 'Строителна граница');
+        $stmtGeo->bindValue('object_type_id', $objectType);
+        $stmtGeo->execute();
 
-        $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
-        $stmt->bindValue('geography', 'MULTILINESTRING((' . $geometryAsText . '))');
-        $stmt->bindValue('uuid', Uuid::uuid4());
-        $stmt->execute();
+        $stmtSpatial->bindValue('spatial_object_id', $conn->lastInsertId());
+        $stmtSpatial->bindValue('geography', 'MULTILINESTRING((' . $geometryAsText . '))');
+        $stmtSpatial->bindValue('uuid', Uuid::uuid4());
+        $stmtSpatial->execute();
 
         $conn->commit();
 

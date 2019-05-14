@@ -21,14 +21,11 @@ class ImportGRCommand extends Command
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    ) {
+    )
+    {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): void
@@ -45,7 +42,7 @@ class ImportGRCommand extends Command
 
         $conn->beginTransaction();
 
-        $stmt = $conn->prepare('
+        $stmtSpatial = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
@@ -59,14 +56,14 @@ class ImportGRCommand extends Command
             )
         ');
 
-        $stmtSPO = $conn->prepare('
+        $stmtGeo = $conn->prepare('
             INSERT INTO x_geospatial.geo_object (
-                attributes,
+                properties,
                 uuid,
                 object_type_id,
                 name
             ) VALUES (
-                :attr,        
+                :properties,           
                 :uuid,
                 :object_type_id,
                 :name                 
@@ -95,18 +92,18 @@ class ImportGRCommand extends Command
 
                     $im = implode(',', $p);
 
-                    $name = isset($s['attributes']['RegName']) ? $s['attributes']['RegName'] : '';
+                    $name = $s['attributes']['RegName'] ?? '';
 
-                    $stmtSPO->bindValue('attr', json_encode($s['attributes']));
-                    $stmtSPO->bindValue('uuid', Uuid::uuid4());
-                    $stmtSPO->bindValue('name', $name);
-                    $stmtSPO->bindValue('object_type_id', $objectType->getId());
-                    $stmtSPO->execute();
+                    $stmtGeo->bindValue('properties', json_encode($s['attributes'] ?? []));
+                    $stmtGeo->bindValue('uuid', Uuid::uuid4());
+                    $stmtGeo->bindValue('name', $name);
+                    $stmtGeo->bindValue('object_type_id', $objectType->getId());
+                    $stmtGeo->execute();
 
-                    $stmt->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmt->bindValue('geography', 'POLYGON((' . $im . '))');
-                    $stmt->bindValue('uuid', Uuid::uuid4());
-                    $stmt->execute();
+                    $stmtSpatial->bindValue('spatial_object_id', $conn->lastInsertId());
+                    $stmtSpatial->bindValue('geography', 'POLYGON((' . $im . '))');
+                    $stmtSpatial->bindValue('uuid', Uuid::uuid4());
+                    $stmtSpatial->execute();
                 }
             }
         }

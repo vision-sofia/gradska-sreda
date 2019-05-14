@@ -3,7 +3,7 @@ SELECT
     g.geo_object_id,
     s.tolerance as simplify_tolerance,
     ST_AsGeoJSON(ST_Simplify(g.coordinates::geometry, s.tolerance, true)) geometry,
-    g.coordinates
+    g.coordinates::geometry
 FROM
     x_geometry.geometry_base g
         CROSS JOIN

@@ -36,6 +36,32 @@ class StyleConditionFixtures extends Fixture
     {
         return [
             [
+                'attribute' => '_tc',
+                'value' => 'sgr',
+                'description' => 'Строителна граница',
+                'is_dynamic' => false,
+                'priority' => 1,
+                'base_style' => [
+                    'line' => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'color' => '#5655a4',
+                            'weight' => 7,
+                            'opacity' => 0.9,
+                        ],
+                    ],
+                ],
+                'hover_style' => [
+                    'line' => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
                 'attribute' => '_sca',
                 'value' => 'Пешеходни отсечки',
                 'description' => 'Обект от категория "пешеходна отсечка"',
@@ -45,7 +71,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a1',
                         'content' => [
-                            'color' => '#062978',
+                            'color' => '#C08055',
                             'weight' => 7,
                             'opacity' => 0.9,
                         ],
@@ -71,7 +97,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a4',
                         'content' => [
-                            'color' => '#9FA3AD',
+                            'color' => '#F6AE7B',
                             'weight' => 7,
                         ],
                     ],
@@ -96,7 +122,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'a7',
                         'content' => [
-                            'color' => '#828FAF',
+                            'color' => '#F6AE7B',
                             'weight' => 7,
                         ],
                     ],
@@ -121,8 +147,8 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => 'op',
                         'content' => [
-                            'weight' => 8,
-                            'opacity' => 0.7,
+                            'weight' => 4,
+                            'opacity' => 0.9,
                         ],
                     ],
                 ],
@@ -304,7 +330,7 @@ class StyleConditionFixtures extends Fixture
                     'line' => [
                         'code' => bin2hex(random_bytes(2)),
                         'content' => [
-                            'color' => '#FF00FF',
+                            'color' => '#00FF00',
                             'weight' => 7,
                             'opacity' => 1,
                         ],

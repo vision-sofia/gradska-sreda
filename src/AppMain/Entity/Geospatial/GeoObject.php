@@ -23,9 +23,14 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     private $id;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json_array", options={"jsonb": true, "default" = "{}"})
      */
-    private $attributes;
+    private $properties;
+
+    /**
+     * @ORM\Column(type="json_array", options={"jsonb": true, "default" = "{}"})
+     */
+    private $localProperties;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Geometry\GeometryBase", mappedBy="geoObject")
@@ -48,16 +53,6 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      */
     private $metadata;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $styleBase;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $styleHover;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -71,16 +66,6 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    public function setAttributes($attributes): void
-    {
-        $this->attributes = $attributes;
     }
 
     public function getGeography(): ?GeometryBase
@@ -118,23 +103,20 @@ class GeoObject implements UuidInterface, GeoObjectInterface
         $this->objectType = $objectType;
     }
 
-    public function getStyleBase(): ?string
+    public function getProperties(): array
     {
-        return $this->styleBase;
+        return $this->properties;
     }
 
-    public function setStyleBase(?string $styleBase): void
+    public function getLocalProperties(): ?array
     {
-        $this->styleBase = $styleBase;
+        return $this->localProperties;
     }
 
-    public function getStyleHover(): ?string
+    public function setLocalProperties($localProperties): void
     {
-        return $this->styleHover;
+        $this->localProperties = $localProperties;
     }
 
-    public function setStyleHover(?string $styleHover): void
-    {
-        $this->styleHover = $styleHover;
-    }
+
 }

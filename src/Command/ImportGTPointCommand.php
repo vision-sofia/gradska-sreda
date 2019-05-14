@@ -21,14 +21,11 @@ class ImportGTPointCommand extends Command
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    ) {
+    )
+    {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): void
@@ -38,15 +35,14 @@ class ImportGTPointCommand extends Command
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Спирка на градски транспорт'])
-        ;
+            ->findOneBy(['name' => 'Спирка на градски транспорт']);
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
 
         $conn->beginTransaction();
 
-        $stmtInsGeometry = $conn->prepare('
+        $stmtSpatial = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
@@ -60,14 +56,16 @@ class ImportGTPointCommand extends Command
             )
         ');
 
-        $stmtInsertGeoObject = $conn->prepare('
+        $stmtGeo = $conn->prepare('
             INSERT INTO x_geospatial.geo_object (
-                attributes,
+                properties,
+                local_properties,
                 uuid,
                 object_type_id,
                 name
             ) VALUES (
-                :attr,        
+                :properties,        
+                :local_properties,        
                 :uuid,
                 :object_type_id,
                 :name                 
@@ -82,7 +80,6 @@ class ImportGTPointCommand extends Command
                     ++$i;
 
                     if (!isset($s['geometry']['x'], $s['geometry']['y'])) {
-                        dump($s);
                         echo sprintf("Skip: %d\n", $sc++);
 
                         continue;
@@ -90,20 +87,26 @@ class ImportGTPointCommand extends Command
 
                     ++$j;
 
-                    $name = isset($s['properties']['ИМЕ__1']) ? $s['properties']['ИМЕ__1'] : '';
+                    $name = '';
+                    $name .= $s['attributes']['КОД_С'] . ' - ' ?? '';
+                    $name .= $s['attributes']['ИМЕ_С'] . ' ' ?? '';
+                    $name = trim($name);
 
-                    $s['properties']['has_vhc_other'] = 1;
+                    $localProperties = [
+                        'has_vhc_other' => 1
+                    ];
 
-                    $stmtInsertGeoObject->bindValue('attr', json_encode($s['properties']));
-                    $stmtInsertGeoObject->bindValue('uuid', Uuid::uuid4());
-                    $stmtInsertGeoObject->bindValue('name', $name);
-                    $stmtInsertGeoObject->bindValue('object_type_id', $objectType->getId());
-                    $stmtInsertGeoObject->execute();
+                    $stmtGeo->bindValue('properties', json_encode($s['attributes'] ?? []));
+                    $stmtGeo->bindValue('local_properties', json_encode($localProperties));
+                    $stmtGeo->bindValue('uuid', Uuid::uuid4());
+                    $stmtGeo->bindValue('name', $name);
+                    $stmtGeo->bindValue('object_type_id', $objectType->getId());
+                    $stmtGeo->execute();
 
-                    $stmtInsGeometry->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmtInsGeometry->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['x'], $s['geometry']['y']));
-                    $stmtInsGeometry->bindValue('uuid', Uuid::uuid4());
-                    $stmtInsGeometry->execute();
+                    $stmtSpatial->bindValue('spatial_object_id', $conn->lastInsertId());
+                    $stmtSpatial->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['x'], $s['geometry']['y']));
+                    $stmtSpatial->bindValue('uuid', Uuid::uuid4());
+                    $stmtSpatial->execute();
                 }
             }
         }
