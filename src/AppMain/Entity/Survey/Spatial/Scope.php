@@ -1,12 +1,13 @@
 <?php
 
-namespace App\AppMain\Entity\Survey\Survey;
+namespace App\AppMain\Entity\Survey\Spatial;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="survey_scope", schema="x_survey")
+ * @ORM\Table(name="spatial_scope", schema="x_survey")
  * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\ScopeRepository")
  */
 class Scope

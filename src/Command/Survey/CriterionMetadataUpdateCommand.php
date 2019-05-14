@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Survey;
 
 use App\Services\Survey\CriterionSubject\CriterionSubjectMetadata;
 use Symfony\Component\Console\Command\Command;
@@ -10,27 +10,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CriterionMetadataUpdateCommand extends Command
 {
-    protected static $defaultName = 'metadata:cr:update';
+    protected static $defaultName = 'survey:metadata:update';
 
     protected $criterionSubjectMetadata;
+
     public function __construct(CriterionSubjectMetadata $criterionSubjectMetadata)
     {
         $this->criterionSubjectMetadata = $criterionSubjectMetadata;
         parent::__construct();
     }
 
-
-    protected function configure()
-    {
-
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+        $io->text('Start: survey metadata update');
+
         $this->criterionSubjectMetadata->updateMaxPoints();
         $this->criterionSubjectMetadata->sync();
 
-        $io = new SymfonyStyle($input, $output);
-        $io->success('Done');
+        $io->success('Complete');
     }
 }

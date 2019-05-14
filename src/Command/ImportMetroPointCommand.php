@@ -27,10 +27,6 @@ class ImportMetroPointCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/metro.json');
@@ -46,7 +42,7 @@ class ImportMetroPointCommand extends Command
 
         $conn->beginTransaction();
 
-        $stmtInsGeometry = $conn->prepare('
+        $stmtSpatial = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
                 coordinates, 
@@ -60,14 +56,16 @@ class ImportMetroPointCommand extends Command
             )
         ');
 
-        $stmtInsGeoObject = $conn->prepare('
+        $stmtGeo = $conn->prepare('
             INSERT INTO x_geospatial.geo_object (
-                attributes,
+                properties,
+                local_properties,
                 uuid,
                 object_type_id,
                 name
             ) VALUES (
-                :attr,        
+                :properties,        
+                :local_properties,        
                 :uuid,
                 :object_type_id,
                 :name                 
@@ -93,16 +91,23 @@ class ImportMetroPointCommand extends Command
 
                     $s['properties']['has_vhc_metro'] = 1;
 
-                    $stmtInsGeoObject->bindValue('attr', json_encode($s['properties']));
-                    $stmtInsGeoObject->bindValue('uuid', Uuid::uuid4());
-                    $stmtInsGeoObject->bindValue('name', $name);
-                    $stmtInsGeoObject->bindValue('object_type_id', $objectType->getId());
-                    $stmtInsGeoObject->execute();
+                    $properties = $s['properties'] ?? [];
 
-                    $stmtInsGeometry->bindValue('spatial_object_id', $conn->lastInsertId());
-                    $stmtInsGeometry->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
-                    $stmtInsGeometry->bindValue('uuid', Uuid::uuid4());
-                    $stmtInsGeometry->execute();
+                    $localProperties = [
+                        'has_vhc_metro' => 1
+                    ];
+
+                    $stmtGeo->bindValue('properties', json_encode($properties));
+                    $stmtGeo->bindValue('local_properties', json_encode($localProperties));
+                    $stmtGeo->bindValue('uuid', Uuid::uuid4());
+                    $stmtGeo->bindValue('name', $name);
+                    $stmtGeo->bindValue('object_type_id', $objectType->getId());
+                    $stmtGeo->execute();
+
+                    $stmtSpatial->bindValue('spatial_object_id', $conn->lastInsertId());
+                    $stmtSpatial->bindValue('geography', sprintf('POINT(%s %s)', $s['geometry']['coordinates'][0], $s['geometry']['coordinates'][1]));
+                    $stmtSpatial->bindValue('uuid', Uuid::uuid4());
+                    $stmtSpatial->execute();
                 }
             }
         }

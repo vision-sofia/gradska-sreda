@@ -17,7 +17,7 @@ class GeoObjectRepository extends EntityRepository
                 SELECT
                     *
                 FROM 
-                    x_survey.survey_scope sc
+                    x_survey.spatial_scope sc
                         INNER JOIN
                     x_survey.survey s ON sc.survey_id = s.id
                 WHERE

@@ -66,7 +66,6 @@ class MapController extends AbstractController
      */
     public function index(Request $request): Response
     {
-
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
 
@@ -77,10 +76,7 @@ class MapController extends AbstractController
         $center = $request->query->get('c');
         $select = $request->query->get('select');
 
-
         $simplifyTolerance = $this->simplifyTolerance((int)$zoom);
-
-        $collectionId = $request->query->get('collection');
 
         $boundingBox = null;
         /*
@@ -98,7 +94,11 @@ class MapController extends AbstractController
                 }
         */
 
-        $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $this->getUser(), $collectionId);
+        $conn = $this->getDoctrine()->getConnection();
+        $stmt = $conn->query('SELECT id FROM x_survey.survey WHERE is_active = TRUE');
+        $surveyId = $stmt->fetchColumn();
+
+        $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $surveyId);
 
         $userGeoCollection = $userSubmitted = $objects = [];
         $bbox = [];
@@ -112,8 +112,8 @@ class MapController extends AbstractController
             foreach ($collectionBoundingBoxCollection as $collectionBoundingBox) {
                 $geoObject = new GeoObjectDTO();
                 $geoObject->geometry = $collectionBoundingBox->getPolygon();
-                $geoObject->style_base = 'gc_bbox';
-                $geoObject->style_hover = 'gc_bbox';
+                $geoObject->base_style = 'gc_bbox';
+                $geoObject->hover_style = 'gc_bbox';
                 $geoObject->properties = '{}';
 
                 $bbox[] = $geoObject;
@@ -151,7 +151,7 @@ class MapController extends AbstractController
         foreach ($userSubmitted as $row) {
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
-
+/*
         if ($select) {
             $geo = $this->finder->findSelected($select);
 
@@ -159,7 +159,7 @@ class MapController extends AbstractController
                 $objects[] = $this->process($geo, $styleGroups, $this->styleUtils);
             }
         }
-
+*/
         $this->logger->info('Map view', [
             'mem' => round(memory_get_usage() / 1024 / 1024, 2),
             'zoom' => $zoom,
@@ -195,14 +195,18 @@ class MapController extends AbstractController
     private function process(GeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
     {
         $properties = json_decode($row->properties, false);
-
-        $properties->_s1 = $row->style_base ?? null;
-        $properties->_s2 = $row->style_hover ?? null;
+        $properties->_s1 = $row->base_style ?? null;
+        $properties->_s2 = $row->hover_style ?? null;
         $properties->name = $row->geo_name ?? null;
         $properties->type = $row->type_name ?? null;
         $properties->id = $row->uuid ?? null;
 
-        $s = $styleUtils->inherit('line', $properties, $row->style_base, $row->style_hover);
+        // TODO: add _zoom in 'properties' field in database
+        if (isset($properties->_sca) && 'Пресичания' === $properties->_sca) {
+            $properties->_zoom = 20;
+        }
+
+        $s = $styleUtils->inherit('line', $properties, $row->base_style, $row->hover_style);
 
         if (isset($s['base_style_code'])) {
             $properties->_s1 = $s['base_style_code'];
@@ -213,17 +217,6 @@ class MapController extends AbstractController
             $properties->_s2 = $s['hover_style_code'];
             $styles[$s['hover_style_code']] = $s['hover_style_content'];
         }
-
-        /*
-        if ('Градоустройствена единица' === $row['type_name']) {
-            $attributes['_zoom'] = 17;
-        }
-        */
-        /*
-                if (isset($attributes['_sca']) && 'Пресичания' === $attributes['_sca']) {
-                    $attributes['_zoom'] = 20;
-                }
-        */
 
         return $this->jsonUtils->concatString([
             'type' => 'Feature',

@@ -20,14 +20,11 @@ class ImportCommand extends Command
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    ) {
+    )
+    {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): void
@@ -66,12 +63,12 @@ class ImportCommand extends Command
 
         $stmtSPO = $conn->prepare('
             INSERT INTO x_geospatial.geo_object (
-                attributes,
+                properties,
                 uuid,
                 object_type_id,
                 name
             ) VALUES (
-                :attr,        
+                :properties,        
                 :uuid,
                 :object_type_id,
                 :name                 
@@ -97,9 +94,9 @@ class ImportCommand extends Command
                             $objectTypeId = $objectTypes[$s['attributes']['type']];
                         }
 
-                        $name = isset($s['attributes']['name']) ? $s['attributes']['name'] : '';
+                        $name = $s['attributes']['name'] ?? '';
 
-                        $stmtSPO->bindValue('attr', json_encode($s['attributes']));
+                        $stmtSPO->bindValue('properties', json_encode($s['attributes'] ?? []));
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
                         $stmtSPO->bindValue('name', $name);
                         $stmtSPO->bindValue('object_type_id', $objectTypeId);
@@ -124,7 +121,7 @@ class ImportCommand extends Command
         }
 
         $stmt = $conn->prepare('
-            INSERT INTO x_survey.survey_scope (
+            INSERT INTO x_survey.spatial_scope (
                 geo_object_id,
                 survey_id
             )

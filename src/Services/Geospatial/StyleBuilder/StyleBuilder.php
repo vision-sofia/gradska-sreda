@@ -46,16 +46,17 @@ class StyleBuilder
         $styleGroups = [];
 
         $conn = $this->em->getConnection();
-        $conn->query('
+/*        $conn->query('
             UPDATE 
                 x_geospatial.geo_object 
             SET 
                 style_base = NULL, 
                 style_hover = NULL 
-        ');
+        ');*/
 
         $conn->beginTransaction();
 
+        $conn->query('DROP TABLE IF EXISTS temp_style');
         $conn->query('CREATE TEMP TABLE temp_style (id INT, style_base VARCHAR(32), style_hover VARCHAR(32))');
 
         $insertStmt = $conn->prepare($this->buildInsertSQL($chunkSize));
@@ -75,7 +76,7 @@ class StyleBuilder
             ];
 
             $geometryType = json_decode($geoObject['geometry'], true)['type'];
-            $attributes = json_decode($geoObject['attributes'], true);
+            $attributes = json_decode($geoObject['properties'], true);
 
             if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
                 $sk = $this->chk($attributes, $styles, $sk, 'line');
@@ -112,14 +113,14 @@ class StyleBuilder
 
         $conn->query('
             UPDATE 
-                x_geospatial.geo_object g 
+                x_survey.spatial_geo_object g 
             SET 
-                style_base = s.style_base,
-                style_hover = s.style_hover
+                base_style = s.style_base,
+                hover_style = s.style_hover
             FROM 
                 temp_style s 
             WHERE 
-                s.id = g.id 
+                s.id = g.geo_object_id 
         ');
 
         $conn->commit();
@@ -230,83 +231,24 @@ class StyleBuilder
         $conn = $this->em->getConnection();
 
         $stmt = $conn->prepare('
-            WITH g AS (
-                SELECT
-                    id,
-                    uuid,
-                    name,
-                    object_type_id,
-                    geometry,
-                    jsonb_strip_nulls(attributes) as attributes
-                FROM
-                    (
-                        SELECT
-                            g.id,
-                            g.uuid,
-                            g.name,
-                            g.object_type_id,
-                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
-                            jsonb_build_object(
-                                \'_sca\', c.name,
-                                \'_behavior\', \'survey\'
-                            ) as attributes
-                        FROM
-                            x_geometry.geometry_base m
-                                INNER JOIN
-                            x_geospatial.geo_object g ON m.geo_object_id = g.id
-                                INNER JOIN
-                            x_survey.survey_element e ON g.object_type_id = e.object_type_id
-                                INNER JOIN
-                            x_survey.survey_category c ON e.category_id = c.id
-                                INNER JOIN
-                            x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
-                                INNER JOIN
-                            x_survey.survey s ON c.survey_id = s.id
-                        WHERE
-                            s.is_active = TRUE    
-                                    
-                        UNION ALL
-            
-                        SELECT
-                            g.id,
-                            g.uuid,
-                            g.name,
-                            g.object_type_id,
-                            ST_AsGeoJSON(ST_Simplify(m.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
-                            jsonb_build_object(
-                                \'_behavior\', a.behavior,
-                                \'has_vhc_other\', g.attributes->\'has_vhc_other\',
-                                \'has_vhc_metro\', g.attributes->\'has_vhc_metro\'
-                            ) as attributes
-                        FROM
-                            x_geometry.geometry_base m
-                                INNER JOIN
-                            x_geospatial.geo_object g ON m.geo_object_id = g.id
-                                INNER JOIN
-                            x_survey.survey_auxiliary_object_type a ON g.object_type_id = a.object_type_id
-                                LEFT JOIN
-                            x_survey.survey s ON a.survey_id = s.id AND s.is_active = TRUE
-                                INNER JOIN
-                            x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
-                      --  WHERE
-                      --      s.is_active = TRUE                             
-
-                    ) as w
-            )
             SELECT
-                g.id,
-                g.uuid,
-                g.name as geo_name,
-                t.name as type_name,
-                g.attributes,
-                g.geometry
+                g.geo_object_id as id,
+                g.geo_object_name as geo_name,
+                g.base_style,
+                g.hover_style,
+                g.object_type_name as type_name,
+                g.properties,
+                st_asgeojson(gb.coordinates) as geometry
             FROM
-                g
+                x_survey.spatial_geo_object g
                     INNER JOIN
-                x_geospatial.object_type t ON t.id = g.object_type_id
+                x_geometry.geometry_base gb ON gb.geo_object_id = g.geo_object_id
+                    INNER JOIN
+                x_survey.survey s ON g.survey_id = s.id AND s.is_active = TRUE
+          
         ');
 
-        $stmt->bindValue('simplify_tolerance', 0.1);
+
         $stmt->execute();
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {

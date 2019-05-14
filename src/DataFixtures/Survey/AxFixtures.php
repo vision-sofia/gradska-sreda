@@ -60,13 +60,13 @@ class AxFixtures extends Fixture implements DependentFixtureInterface
             [
                 'survey' => 'Анкета',
                 'auxiliary_object' => [
-                    [
+                  /*  [
                         'object_type_name' => 'Подлез',
                         'behavior' => 'info',
                     ], [
                         'object_type_name' => 'Стълбище',
                         'behavior' => 'info',
-                    ], [
+                    ], */ [
                         'object_type_name' => 'Паркинг',
                         'behavior' => 'info',
                     ], [

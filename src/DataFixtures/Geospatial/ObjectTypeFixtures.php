@@ -93,7 +93,7 @@ class ObjectTypeFixtures extends Fixture
                 'max_zoom' => 4,
             ], [
                 'name' => 'Строителна граница',
-                'min_zoom' => 15,
+                'min_zoom' => 17,
                 'max_zoom' => 4,
             ],
         ];
