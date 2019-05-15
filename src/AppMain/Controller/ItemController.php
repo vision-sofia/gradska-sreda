@@ -8,8 +8,7 @@ use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Question;
-use App\Services\Survey\Response\Compose;
-use App\Services\Survey\Response\QuestionV2;
+use App\Services\Survey\Response\Question as QuestionResponseService;
 use App\Services\Survey\Response\QuestionV3;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
@@ -30,18 +29,22 @@ class ItemController extends AbstractController
     protected $eventDispatcher;
     protected $uploaderHelper;
     protected $question;
+    protected $questionResponseService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
         UploaderHelper $uploaderHelper,
+        QuestionResponseService $questionResponseService,
         Question $question
+
     )
     {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
         $this->question = $question;
+        $this->questionResponseService = $questionResponseService;
     }
 
     private function surveyResult($geoObject)
@@ -159,7 +162,6 @@ class ItemController extends AbstractController
         return new JsonResponse($this->surveyResult($geoObject));
     }
 
-
     /**
      * @Route("geo/{id}/q", name="app.geo-object.details.qz", methods={"POST"})
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
@@ -175,7 +177,6 @@ class ItemController extends AbstractController
 
             $stmt = $conn->prepare(
                 'UPDATE x_survey.response_answer SET explanation = ?'
-
             );
 
             $stmt->execute([$text['text']]);
@@ -224,25 +225,14 @@ class ItemController extends AbstractController
      */
     public function clearQuestion(Request $request, GeoObject $geoObject, string $question): JsonResponse
     {
-        /** @var Connection $conn */
-        $conn = $this->getDoctrine()->getConnection();
+        # TODO: csrf check
 
-        $stmt = $conn->prepare('
-            DELETE FROM 
-                x_survey.response_question r
-                    USING 
-                x_survey.q_question q
-            WHERE
-                r.question_id = q.id
-                AND q.uuid = :question_uuid
-                AND user_id = :user_id
-        ');
+        $this->questionResponseService->clear(
+            $question,
+            $this->getUser()->getId()
+        );
 
-        $stmt->bindValue('question_uuid', $question);
-        $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->execute();
-
-        return new JsonResponse([]);
+        return new JsonResponse([], 200);
     }
 
     /**
@@ -252,6 +242,8 @@ class ItemController extends AbstractController
      */
     public function result(GeoObject $geoObject, SessionInterface $session): Response
     {
+        # TODO: cache
+
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
 
@@ -339,98 +331,18 @@ class ItemController extends AbstractController
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function details(GeoObject $geoObject, string $mediaDir, SessionInterface $session): Response
+    public function details(GeoObject $geoObject): Response
     {
         $isAvailableForSurvey = $this->getDoctrine()
-            ->getRepository(GeoObject::class)
-            ->isAvailableForSurvey($geoObject);
+            ->getRepository(Survey\Spatial\SurveyGeoObject::class)
+            ->isInScope($geoObject);
 
         if (!$isAvailableForSurvey) {
             return $this->redirectToRoute('app.map');
         }
 
-        $questions = $this->getDoctrine()
-            ->getRepository(Survey\Question\Question::class)
-            ->findQuestions($this->getUser(), $geoObject);
-
-        /** @var Connection $conn */
-        $conn = $this->getDoctrine()->getConnection();
-        $stmt = $conn->prepare('
-                SELECT
-                    ra.answer_id as id,
-                    ra.explanation,
-                    ra.photo,
-                    rq.question_id 
-                FROM
-                    x_survey.response_answer ra
-                        INNER JOIN
-                    x_survey.response_question rq ON ra.question_id = rq.id
-                WHERE
-                    rq.geo_object_id = :geo_object_id
-                    AND rq.user_id = :user_id
-            ');
-
-        $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->bindValue('geo_object_id', $geoObject->getId());
-        $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
-
-        $responseAnswers = [];
-        /** @var ResponseAnswerDTO $answer [] */
-        while ($answer = $stmt->fetch()) {
-            if (null !== $answer->getPhoto()) {
-                // $file = new File($mediaDir . DIRECTORY_SEPARATOR . $answer->getPhoto());
-                //# $answer->setPhoto($file);
-                //  dump($answer, $answer->getPhoto());
-            }
-
-            $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
-        }
-
-        $questions = $this->question->build($questions, $responseAnswers);
-
-
-
-        $stmt = $conn->prepare('
-            WITH z as (
-                SELECT
-                    COUNT(*) as total
-                FROM
-                    x_survey.geo_object_question gq
-                WHERE
-                    gq.geo_object_type_id = :geo_object_type_id
-                    AND gq.survey_is_active = TRUE
-            ), d as (
-                SELECT
-                    COUNT(*) as complete
-                FROM
-                    x_survey.response_question q
-                WHERE
-                  q.geo_object_id = :geo_object_id
-                  AND q.user_id = :user_id
-            )
-            SELECT total, complete FROM z, d        
-        ');
-
-        $stmt->bindValue('user_id', $this->getUser()->getId());
-        $stmt->bindValue('geo_object_id', $geoObject->getId());
-        $stmt->bindValue('geo_object_type_id', $geoObject->getType()->getId());
-        $stmt->execute();
-
-        $result = $stmt->fetch();
-
-        $progress = [
-            'total' => $result['total'],
-            'complete' => $result['complete'],
-            'percentage' => round(($result['complete'] / $result['total']) * 100),
-        ];
-
         return $this->render('front/geo-object/details.html.twig', [
-            'geoObject' => $geoObject,
-            'is_available_for_survey' => $isAvailableForSurvey,
-            'result' => $result,
-            'questions' => $questions,
-            'progress' => $progress,
+            'geoObject' => $geoObject
         ]);
     }
 }
