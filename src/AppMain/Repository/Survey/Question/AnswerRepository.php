@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class AnswerRepository extends EntityRepository
 {
+    /** @deprecated  */
     public function findByQuestion(int $id)
     {
         $rsm = new ResultSetMapping();

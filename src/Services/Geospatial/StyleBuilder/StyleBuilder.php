@@ -3,24 +3,28 @@
 
 namespace App\Services\Geospatial\StyleBuilder;
 
+use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\AppMain\Entity\Geospatial\StyleCondition;
+use App\AppMain\Entity\Survey\Survey\Survey;
+use App\AppMain\Repository\Survey\Spatial\SurveyGeoObjectRepository;
+use App\Services\Constant;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StyleBuilder
 {
     protected $em;
+    protected $surveyGeoObjectRepository;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(
+        EntityManagerInterface $em,
+        SurveyGeoObjectRepository $surveyGeoObjectRepository
+    )
     {
         $this->em = $em;
+        $this->surveyGeoObjectRepository = $surveyGeoObjectRepository;
     }
 
-
-    public function inherit() {
-
-    }
-
-    public function build():void
+    public function build(): void
     {
         $chunkSize = 1000;
 
@@ -29,12 +33,10 @@ class StyleBuilder
                 'isDynamic' => false
             ], [
                 'priority' => 'ASC'
-            ])
-        ;
+            ]);
 
         $styles = [];
 
-        /** @var StyleCondition $geoObject */
         foreach ($stylesConditions as $styleCondition) {
             $styles[$styleCondition->getAttribute()][] = [
                 'value' => $styleCondition->getValue(),
@@ -43,29 +45,42 @@ class StyleBuilder
             ];
         }
 
-        $styleGroups = [];
-
         $conn = $this->em->getConnection();
-/*        $conn->query('
-            UPDATE 
-                x_geospatial.geo_object 
-            SET 
-                style_base = NULL, 
-                style_hover = NULL 
-        ');*/
 
         $conn->beginTransaction();
 
-        $conn->query('DROP TABLE IF EXISTS temp_style');
-        $conn->query('CREATE TEMP TABLE temp_style (id INT, style_base VARCHAR(32), style_hover VARCHAR(32))');
+        $conn->query('
+            UPDATE 
+                x_survey.spatial_geo_object 
+            SET 
+                base_style = NULL, 
+                hover_style = NULL 
+        ');
+
+        $conn->query('
+            DROP TABLE IF EXISTS temp_style
+        ');
+
+        $conn->query('
+            CREATE TEMP TABLE temp_style (
+                id INT, 
+                base_style VARCHAR(32), 
+                hover_style VARCHAR(32)
+            )
+        ');
 
         $insertStmt = $conn->prepare($this->buildInsertSQL($chunkSize));
 
+        $survey = $this->em->getRepository(Survey::class)->findOneBy([
+            'isActive' => true
+        ]);
+
         $batch = [];
+        $styleGroups = [];
 
         $i = 0;
 
-        foreach ($this->geoObjects() as $geoObject) {
+        foreach ($this->surveyGeoObjectRepository->findBySurvey($survey->getId()) as $geoObject) {
             ++$i;
 
             $sk = [
@@ -75,18 +90,21 @@ class StyleBuilder
                 'key2' => '',
             ];
 
-            $geometryType = json_decode($geoObject['geometry'], true)['type'];
-            $attributes = json_decode($geoObject['properties'], true);
+            $properties = json_decode($geoObject->properties, true);
 
-            if ('LineString' === $geometryType || 'MultiLineString' === $geometryType) {
-                $sk = $this->chk($attributes, $styles, $sk, 'line');
-            } elseif ('Point' === $geometryType || 'MultiPoint' === $geometryType) {
-                $sk = $this->chk($attributes, $styles, $sk, 'point');
-            } elseif ('Polygon' === $geometryType || 'MultiPolygon' === $geometryType) {
-                $sk = $this->chk($attributes, $styles, $sk, 'polygon');
+            if (Constant::GEOMETRY_TYPE_LINESTRING === $geoObject->geometry_type
+                || Constant::GEOMETRY_TYPE_MULTILINESTRING === $geoObject->geometry_type) {
+                $sk = $this->chk($properties, $styles, $sk, Constant::GEOMETRY_TYPE_LINESTRING);
+            } elseif (
+                Constant::GEOMETRY_TYPE_POINT === $geoObject->geometry_type
+                || Constant::GEOMETRY_TYPE_MULTIPOINT === $geoObject->geometry_type) {
+                $sk = $this->chk($properties, $styles, $sk, Constant::GEOMETRY_TYPE_POINT);
+            } elseif (Constant::GEOMETRY_TYPE_POLYGON === $geoObject->geometry_type
+                || Constant::GEOMETRY_TYPE_MULTIPOLYGON === $geoObject->geometry_type) {
+                $sk = $this->chk($properties, $styles, $sk, Constant::GEOMETRY_TYPE_POLYGON);
             }
 
-            $batch[] = $geoObject['id'];
+            $batch[] = $geoObject->id;
             $batch[] = $sk['key1'];
             $batch[] = $sk['key2'];
 
@@ -115,8 +133,8 @@ class StyleBuilder
             UPDATE 
                 x_survey.spatial_geo_object g 
             SET 
-                base_style = s.style_base,
-                hover_style = s.style_hover
+                base_style = s.base_style,
+                hover_style = s.hover_style
             FROM 
                 temp_style s 
             WHERE 
@@ -126,7 +144,7 @@ class StyleBuilder
         $conn->commit();
 
         $stmt = $conn->prepare('
-            INSERT INTO x_geospatial.style_group(
+            INSERT INTO x_geospatial.style_group (
                 code,
                 style,
                 is_for_internal_system,
@@ -141,34 +159,38 @@ class StyleBuilder
                 style = excluded.style    
         ');
 
-        foreach ($styleGroups as $code => $geoObject) {
+        foreach ($styleGroups as $code => $style) {
             $stmt->bindValue('code', $code);
-            $stmt->bindValue('style', json_encode($geoObject));
+            $stmt->bindValue('style', json_encode($style));
             $stmt->execute();
         }
-
-        $this->em->flush();
     }
+
     private function buildInsertSQL(int $chunkSize): string
     {
-        $sql = 'INSERT INTO temp_style (id, style_base, style_hover) 
+        $sql = '
+            INSERT INTO temp_style (
+                id, 
+                base_style, 
+                hover_style
+            ) 
             VALUES ' . rtrim(str_repeat('(?, ?, ?),', $chunkSize), ',');
 
         return $sql;
     }
 
-    private function chk($attributes, $styles, $sk, $type)
+    private function chk(array $properties, array $styles, array $sk, string $geometryType): array
     {
         // Attribute based style
-        foreach ($attributes as $attributeKey => $attributeValue) {
-            if (!isset($styles[$attributeKey])) {
+        foreach ($properties as $propertyKey => $propertyValue) {
+            if (!isset($styles[$propertyKey])) {
                 continue;
             }
 
-            foreach ($styles[$attributeKey] as $style) {
+            foreach ($styles[$propertyKey] as $style) {
                 if ('*' === $style['value']
-                    || (string) $attributes[$attributeKey] === (string) $style['value']) {
-                    $sk = $this->comp($style, $sk, $type);
+                    || (string)$properties[$propertyKey] === (string)$style['value']) {
+                    $sk = $this->comp($style, $sk, $geometryType);
                 }
             }
         }
@@ -176,83 +198,25 @@ class StyleBuilder
         // Default style
         if (empty($sk['key1']) && empty($sk['key2']) && isset($styles['_default'])) {
             foreach ($styles['_default'] as $style) {
-                $sk = $this->comp($style, $sk, $type);
+                $sk = $this->comp($style, $sk, $geometryType);
             }
         }
 
         return $sk;
     }
 
-    private function comp($style, array $sk, $type): array
+    private function comp(array $style, array $sk, string $geometryType): array
     {
-        if (isset($style['base_style'][$type]['content'])) {
-            $sk['s1'] = array_merge($style['base_style'][$type]['content'], $sk['s1']);
-            $sk['key1'] .= $style['base_style'][$type]['code'];
+        if (isset($style['base_style'][$geometryType]['content'])) {
+            $sk['s1'] = array_merge($style['base_style'][$geometryType]['content'], $sk['s1']);
+            $sk['key1'] .= $style['base_style'][$geometryType]['code'];
         }
 
-        if (isset($style['hover_style'][$type]['content'])) {
-            $sk['s2'] = array_merge($style['hover_style'][$type]['content'], $sk['s2']);
-            $sk['key2'] .= $style['hover_style'][$type]['code'];
+        if (isset($style['hover_style'][$geometryType]['content'])) {
+            $sk['s2'] = array_merge($style['hover_style'][$geometryType]['content'], $sk['s2']);
+            $sk['key2'] .= $style['hover_style'][$geometryType]['code'];
         }
 
         return $sk;
-    }
-
-    private function persistDynamicStyles() {
-/*        $stylesConditions = $this->em->getRepository(StyleCondition::class)
-            ->findBy([
-                'isDynamic' => false
-            ], [
-                'priority' => 'ASC'
-            ])
-        ;
-
-        $stmt = $conn->prepare('
-            INSERT INTO x_geospatial.style_group(
-                code,
-                style
-            ) VALUES (
-                :code,
-                :style
-            )
-            ON CONFLICT (code) DO UPDATE SET
-                style = excluded.style
-        ');
-
-        foreach ($styleGroups as $code => $geoObject) {
-            $stmt->bindValue('code', $code);
-            $stmt->bindValue('style', json_encode($geoObject));
-            $stmt->execute();
-        }*/
-    }
-
-    private function geoObjects(): \Generator
-    {
-        $conn = $this->em->getConnection();
-
-        $stmt = $conn->prepare('
-            SELECT
-                g.geo_object_id as id,
-                g.geo_object_name as geo_name,
-                g.base_style,
-                g.hover_style,
-                g.object_type_name as type_name,
-                g.properties,
-                st_asgeojson(gb.coordinates) as geometry
-            FROM
-                x_survey.spatial_geo_object g
-                    INNER JOIN
-                x_geometry.geometry_base gb ON gb.geo_object_id = g.geo_object_id
-                    INNER JOIN
-                x_survey.survey s ON g.survey_id = s.id AND s.is_active = TRUE
-          
-        ');
-
-
-        $stmt->execute();
-
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            yield $row;
-        }
     }
 }

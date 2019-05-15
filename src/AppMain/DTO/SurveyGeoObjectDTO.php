@@ -5,9 +5,11 @@
 
 namespace App\AppMain\DTO;
 
-class GeoObjectDTO
+class SurveyGeoObjectDTO
 {
+    public $id;
     public $geometry;
+    public $geometry_type;
     public $base_style;
     public $hover_style;
     public $type_name;

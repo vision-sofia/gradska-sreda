@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="spatial_geo_object", schema="x_survey")
- * @ORM\Entity(readOnly=true)
+ * @ORM\Entity(readOnly=true, repositoryClass="App\AppMain\Repository\Survey\Spatial\SurveyGeoObjectRepository")
  */
 class SurveyGeoObject implements UuidInterface, GeoObjectInterface
 {

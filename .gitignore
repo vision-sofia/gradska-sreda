@@ -20,6 +20,7 @@
 .idea
 .php_cs.cache
 src/DataFixtures/Raw
+!src/DataFixtures/Raw/README.md
 node_modules
 media
 !media/.gitignore

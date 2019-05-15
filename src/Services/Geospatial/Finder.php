@@ -2,7 +2,7 @@
 
 namespace App\Services\Geospatial;
 
-use App\AppMain\DTO\GeoObjectDTO;
+use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\Services\Geometry\Utils;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,7 +56,7 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('survey_id', $surveyId);
         $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         while ($row = $stmt->fetch()) {
             yield $row;
@@ -95,7 +95,7 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         while ($row = $stmt->fetch()) {
             yield $row;
@@ -138,14 +138,14 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
 
-    public function findSelected(string $geoObjectUuid): ?GeoObjectDTO
+    public function findSelected(string $geoObjectUuid): ?SurveyGeoObjectDTO
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
@@ -173,7 +173,7 @@ class Finder
         ');
 
         $stmt->execute([$geoObjectUuid]);
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         return $stmt->fetch();
     }

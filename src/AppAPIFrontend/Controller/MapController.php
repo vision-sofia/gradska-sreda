@@ -2,14 +2,16 @@
 
 namespace App\AppAPIFrontend\Controller;
 
-use App\AppMain\DTO\GeoObjectDTO;
+use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\Cache\Keys as CacheKeys;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use App\Services\Geospatial\Style;
 use App\Services\Geospatial\StyleBuilder\StyleUtils;
+use App\Services\JsonUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class MapController extends AbstractController
 {
@@ -44,7 +45,7 @@ class MapController extends AbstractController
         StyleUtils $styleUtils,
         AdapterInterface $cache,
         Style $styleService,
-        \App\Services\JsonUtils $jsonUtils
+        JsonUtils $jsonUtils
     )
     {
         $this->entityManager = $entityManager;
@@ -73,35 +74,23 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
-        $center = $request->query->get('c');
-        $select = $request->query->get('select');
+        $survey = $this->getDoctrine()->getRepository(Survey::class)->findOneBy([
+            'isActive' => true
+        ]);
+
+        if (!$survey) {
+            return new JsonResponse();
+        }
+
+        $mapCenter = $request->query->get('c');
+        $selectedObject = $request->query->get('select');
 
         $simplifyTolerance = $this->simplifyTolerance((int)$zoom);
 
-        $boundingBox = null;
-        /*
-                if ($collectionId) {
-                    $collectionBoundingBox = $this->geoCollection->findCollectionBoundingBox($this->getUser()->getId(), $collectionId);
-
-                    if ($collectionBoundingBox->getYMin()) {
-                        $boundingBox = Utils::buildBbox(
-                            $collectionBoundingBox->getXMin(),
-                            $collectionBoundingBox->getYMin(),
-                            $collectionBoundingBox->getXMax(),
-                            $collectionBoundingBox->getYMax()
-                        );
-                    }
-                }
-        */
-
-        $conn = $this->getDoctrine()->getConnection();
-        $stmt = $conn->query('SELECT id FROM x_survey.survey WHERE is_active = TRUE');
-        $surveyId = $stmt->fetchColumn();
-
-        $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $surveyId);
+        $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $survey->getId());
 
         $userGeoCollection = $userSubmitted = $objects = [];
-        $bbox = [];
+        $boundingBoxes = [];
 
         if ($this->getUser()) {
             $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
@@ -110,13 +99,13 @@ class MapController extends AbstractController
             $collectionBoundingBoxCollection = $this->geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
 
             foreach ($collectionBoundingBoxCollection as $collectionBoundingBox) {
-                $geoObject = new GeoObjectDTO();
+                $geoObject = new SurveyGeoObjectDTO();
                 $geoObject->geometry = $collectionBoundingBox->getPolygon();
                 $geoObject->base_style = 'gc_bbox';
                 $geoObject->hover_style = 'gc_bbox';
                 $geoObject->properties = '{}';
 
-                $bbox[] = $geoObject;
+                $boundingBoxes[] = $geoObject;
             }
         }
 
@@ -144,32 +133,32 @@ class MapController extends AbstractController
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
-        foreach ($bbox as $row) {
+        foreach ($boundingBoxes as $row) {
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userSubmitted as $row) {
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
-/*
-        if ($select) {
-            $geo = $this->finder->findSelected($select);
+
+        if ($selectedObject) {
+            $geo = $this->finder->findSelected($selectedObject);
 
             if ($geo) {
                 $objects[] = $this->process($geo, $styleGroups, $this->styleUtils);
             }
         }
-*/
+
         $this->logger->info('Map view', [
             'mem' => round(memory_get_usage() / 1024 / 1024, 2),
             'zoom' => $zoom,
-            'center' => $center,
+            'center' => $mapCenter,
             'bbox' => $in,
             'simplify_tolerance' => $simplifyTolerance,
             'objects' => 0,
         ]);
 
-        $this->session->set('center', $center);
+        $this->session->set('center', $mapCenter);
         $this->session->set('zoom', $zoom);
 
         $settings = [
@@ -177,9 +166,9 @@ class MapController extends AbstractController
                 'default_zoom' => 17,
                 'styles' => $styleGroups,
                 'dialog' => [
-                    1 => 'Искате ли да оцените избраното пресичане',
-                    2 => 'Искате ли да оцените избрания тротоар',
-                    3 => 'Искате ли да оцените избраната алея',
+                    1 => '',
+                    2 => '',
+                    3 => '',
                 ],
             ]
         ];
@@ -192,7 +181,7 @@ class MapController extends AbstractController
         return $response;
     }
 
-    private function process(GeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
+    private function process(SurveyGeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
     {
         $properties = json_decode($row->properties, false);
         $properties->_s1 = $row->base_style ?? null;
@@ -229,21 +218,28 @@ class MapController extends AbstractController
 
     private function simplifyTolerance(int $zoom)
     {
-        $simplifyTolerance = $this->cache->get('simplify-tolerance-' . $zoom, function (ItemInterface $item) use ($zoom) {
-            /** @var Simplify[] $simplify */
-            $simplifySet = $this->getDoctrine()->getRepository(Simplify::class)->findAll();
+        $simplifyTolerance = $this->cache->get(
+            CacheKeys::SIMPLIFY_TOLERANCE .
+            CacheKeys::VALUE_SEPARATOR .
+            $zoom,
+            function () use ($zoom) {
+                /** @var Simplify[] $simplify */
+                $simplifySet = $this->getDoctrine()
+                    ->getRepository(Simplify::class)
+                    ->findAll();
 
-            $simplifyRanges = [];
-            foreach ($simplifySet as $simplify) {
-                $simplifyRanges[] = [
-                    'min_zoom' => $simplify->getZoom()->getEnd(),
-                    'max_zoom' => $simplify->getZoom()->getStart(),
-                    'tolerance' => $simplify->getTolerance(),
-                ];
-            }
+                $ranges = [];
 
-            return $this->utils->findTolerance($simplifyRanges, $zoom);
-        });
+                foreach ($simplifySet as $simplify) {
+                    $ranges[] = [
+                        'min_zoom' => $simplify->getZoom()->getEnd(),
+                        'max_zoom' => $simplify->getZoom()->getStart(),
+                        'tolerance' => $simplify->getTolerance(),
+                    ];
+                }
+
+                return $this->utils->findTolerance($ranges, $zoom);
+            });
 
         return $simplifyTolerance;
     }
