@@ -1,129 +1,135 @@
-import { mapBoxAttribution, mapBoxUrl, apiEndpoints } from './map-config';
-import { Survey }  from './survey';
+import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle } from './map-config';
 
-const pathVoteSurvey = new Survey();
+export class Map {
+    map;
+    objectsSettings = {};
+    geoJsonLayer = {};
+    myLocationLayerGroup = L.layerGroup();
+    popusLayerGroup = L.layerGroup();
+    voteSurvay;
 
-function Map() {
-    if (!document.getElementById('mapMain')) {
-        return;
+    constructor() {
     }
-    const loading = $('.loading');
-    const confirmModal = $('.confirm');
 
-    $(document).on('click', '[data-confirm-cancel]', function () {
-        removeAllPopups();
-    });
-    //const mapCenter = mapOption.center;
-    //const mapZoom = mapOption.zoom;
-
-    const defaultObjectStyle = {
-        color: "#ff9710",
-        opacity: 0.5,
-        width: 5
-    };
-    let objectsSettings = {};
-    let initialLoad = false;
-
-    let map = new L.map('mapMain', {
-        updateWhenZooming: false,
-        attributionControl: false
-    });
-
-    let mapStyle = L.tileLayer(mapBoxUrl, {
-        attribution: mapBoxAttribution,
-        maxNativeZoom: 19,
-        maxZoom: 21,
-        minZoom: 11,
-        updateWhenZooming: false
-    });
-    mapStyle.addTo(map);
-
-    let myLocationButton = L.Control.extend({
-        options: {
-            position: 'topleft'
-        },
-        onAdd: () => {
-            let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
-            container.type = "button";
-            container.onclick = function () {
-                locate();
-            };
-            return container;
+    init() {
+        if (!document.getElementById('mapMain')) {
+            return;
         }
-    });
-    map.addControl(new myLocationButton());
+        this.loading = $('.loading');
+        this.confirmModal = $('.confirm');
 
-    let myLocationLayerGroup = L.layerGroup();
-    myLocationLayerGroup.addTo(map);
+        $(document).on('click', '[data-confirm-cancel]', () => {
+            this.removeAllPopups();
+        });
+        //const mapCenter = mapOption.center;
+        //const mapZoom = mapOption.zoom;
 
-    let popusLayerGroup = L.layerGroup();
-    popusLayerGroup.addTo(map);
+    
+        let initialLoad = false;
 
-    let updateMapThrottle;
-    map.on('dragend zoomend', function () {
-        clearTimeout(updateMapThrottle);
-        updateMapThrottle = setTimeout(() => {
-            let center = map.getCenter();
+        this.map = new L.map('mapMain', {
+            updateWhenZooming: false,
+            attributionControl: false
+        });
 
-            updateMap(center, () => {
-                if (!initialLoad) {
-                    initialLoad = true;
-                    if ($('#mapMain').data('locate-on-load') === true) {
-                        locate();
+        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+
+        let mapStyle = L.tileLayer(mapBoxUrl, {
+            attribution: mapBoxAttribution,
+            maxNativeZoom: 19,
+            maxZoom: 21,
+            minZoom: 11,
+            updateWhenZooming: false
+        });
+        mapStyle.addTo(this.map);
+
+        let myLocationButton = L.Control.extend({
+            options: {
+                position: 'topleft'
+            },
+            onAdd: () => {
+                let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
+                container.type = "button";
+                container.onclick = () => {
+                    this.locate();
+                };
+                return container;
+            }
+        });
+        this.map.addControl(new myLocationButton());
+
+        
+        this.myLocationLayerGroup.addTo(this.map);
+
+        this.popusLayerGroup.addTo(this.map);
+
+        let updateMapThrottle;
+        this.map.on('moveend', () => {
+            clearTimeout(updateMapThrottle);
+            updateMapThrottle = setTimeout(() => {
+                let center = this.map.getCenter();
+
+                this.updateMap(center, () => {
+                    if (!initialLoad) {
+                        initialLoad = true;
+                        if ($('#mapMain').data('locate-on-load') === true) {
+                            this.locate();
+                        }
                     }
-                }
-            })
-        }, 200);
-    });
+                })
+            }, 200);
+        });
 
-    map.on('locationfound', setMapViewToMyLocation);
-    map.on('locationerror', setInitialMapView);
 
-    let geoJsonLayer = L.geoJSON([], { 
-        style: function (feature) {
-            let styles = objectsSettings.styles[feature.properties._s1] ? {...objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle};
-            return styles;
-        },
-        onEachFeature: function (feature, layer) {
-            layer.on('click', function (ev) {
-                switch (feature.properties._behavior) {
-                    case "navigation":
-                        zoomToLayer(layer, ev);
-                        break;
-                    default:
-                        openLayerPopup(layer, ev);
-                        zoomToLayer(layer, ev);
-                        break;
-                }
-            });
-            layer.on('mouseover', function () {
-                if (layer.feature.properties.activePopup) {
-                    return;
-                }
-                if (objectsSettings.styles[feature.properties._s2]) {
-                    setLayerHoverStyle(layer);
-                }
-            });
-            layer.on('mouseout', function () {
-                if (layer.feature.properties.activePopup) {
-                    return;
-                }
-                if (objectsSettings.styles[feature.properties._s1]) {
-                    setLayerDefaultStyle(layer);
-                }
-            });
-        },
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, objectsSettings.styles[feature.properties._s1]);
-        }
-    }).addTo(map);
+        this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
+        this.map.on('locationerror', this.setInitialMapView.bind(this));
 
-    setInitialMapView();
+        this.geoJsonLayer = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = this.objectsSettings.styles[feature.properties._s1] ? {...this.objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    switch (feature.properties._behavior) {
+                        case "navigation":
+                            this.zoomToLayer(layer, ev);
+                            break;
+                        default:
+                            this.openLayerPopup(layer, ev);
+                            this.zoomToLayer(layer, ev);
+                            break;
+                    }
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return;
+                    }
+                    if (this.objectsSettings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return;
+                    }
+                    if (this.objectsSettings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, this.objectsSettings.styles[feature.properties._s1]);
+            }
+        }).addTo(this.map);
 
-    function updateMap(center, fn = () => {
+        this.setInitialMapView();
+    }
+
+    updateMap(center, fn = () => {
     }) {
-        let zoom = map.getZoom();
-        let bounds = map.getBounds();
+        let zoom = this.map.getZoom();
+        let bounds = this.map.getBounds();
         let returnedTarget = {};
 
         let a = {
@@ -144,17 +150,17 @@ function Map() {
         $.ajax({
             data: returnedTarget,
             url: "/front-end/map?",
-            success: function (results) {
-                objectsSettings = results.settings;
-                geoJsonLayer.clearLayers();
-                geoJsonLayer.addData(results.objects);
+            success: (results) => {
+                this.objectsSettings = results.settings;
+                this.geoJsonLayer.clearLayers();
+                this.geoJsonLayer.addData(results.objects);
                 fn();
             }
         });
     }
 
-    function saveViewport(center) {
-        let zoom = map.getZoom();
+    saveViewport(center) {
+        let zoom = this.map.getZoom();
         let a = {
             zoom: zoom,
             c: center.lat + ',' + center.lng
@@ -163,26 +169,26 @@ function Map() {
         $.ajax({
             data: a,
             url: "/map/z",
-            success: function (results) {
+            success: (results) => {
 
             }
         });
     }
 
-    function locate() {
-        loading.removeClass('d-none');
-        map.locate({
+    locate() {
+        this.loading.removeClass('d-none');
+        this.map.locate({
             setView: true,
-            maxZoom: objectsSettings.default_zoom
+            maxZoom: this.objectsSettings.default_zoom
         });
     }
 
-    function setMapViewToMyLocation(e) {
-        loading.addClass('d-none');
+    setMapViewToMyLocation(e) {
+        this.loading.addClass('d-none');
         let radius = e.accuracy / 2;
 
-        myLocationLayerGroup.eachLayer((layer) => {
-            myLocationLayerGroup.removeLayer(layer);
+        this.myLocationLayerGroup.eachLayer((layer) => {
+            this.myLocationLayerGroup.removeLayer(layer);
         });
 
         let center = L.circle(e.latlng, {
@@ -192,7 +198,7 @@ function Map() {
             weight: 4,
             opacity: 1,
             radius: 5
-        }).addTo(myLocationLayerGroup);
+        }).addTo(this.myLocationLayerGroup);
 
         L.circle(e.latlng, {
             radius: e.accuracy / 2,
@@ -200,7 +206,7 @@ function Map() {
             fillColor: '#136AEC',
             fillOpacity: 0.15,
             weight: 0
-        }).addTo(myLocationLayerGroup);
+        }).addTo(this.myLocationLayerGroup);
 
         center.bindPopup("Намирате се в радиус от " + radius + " метра от тази локация", {
             offset: L.point(0, -10)
@@ -208,8 +214,8 @@ function Map() {
         center.openPopup();
     }
 
-    function setInitialMapView() {
-        loading.addClass('d-none');
+    setInitialMapView() {
+        this.loading.addClass('d-none');
 
         let zoom;
         let lat;
@@ -217,46 +223,43 @@ function Map() {
 
         $.ajax({
             url: "/map/p",
-            success: function (results) {
+            success: (results) => {
                 zoom = results.zoom;
                 lat = results.lat;
                 lng = results.lng;
-                setRealInitialMapView(lat, lng, zoom)
+                this.setRealInitialMapView(lat, lng, zoom)
             }
         });
     }
 
-    function setRealInitialMapView(lat, lng, zoom) {
-        map.setView([lat, lng], zoom)
+    setRealInitialMapView(lat, lng, zoom) {
+        this.map.setView([lat, lng], zoom)
     }
 
-    function zoomToLayer(layer, ev) {
-        let clickCoordinates = map.mouseEventToLatLng(ev.originalEvent);
-        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== map.getZoom()) {
-            map.setView(clickCoordinates, layer.feature.properties._zoom);
+    zoomToLayer(layer, ev) {
+        let clickCoordinates = ev.latlng;
+        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== this.map.getZoom()) {
+            this.map.setView(clickCoordinates, layer.feature.properties._zoom);
         } else {
-            map.setView(clickCoordinates);
+            this.map.setView(clickCoordinates);
 
-            saveViewport(clickCoordinates);
+            this.saveViewport(clickCoordinates);
         }
     }
 
-    function openLayerPopup(layer, ev) {
-        pathVoteSurvey.geoObjectUUID = layer.feature.properties.id;
-        pathVoteSurvey.layer = layer;
-        pathVoteSurvey.getQuestions();
-
-        setLayerActiveStyle(layer);
-        removeAllPopups();
+    openLayerPopup(layer, ev) {
         layer.feature.properties.activePopup = true;
+        this.setLayerActiveStyle(layer);
+        this.removeAllPopups();
 
         let coordinates;
 
 
         if (layer.feature.properties._behavior === 'survey') {
-            coordinates = map.mouseEventToLatLng(ev.originalEvent);
+            coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
             if (mapOption.survey === true) {
                 // openConfirmModal(layer);
+                this.setSurveyData(layer, ev);
             }
         } else {
             coordinates = ev.latlng;
@@ -268,7 +271,7 @@ function Map() {
             weight: 0,
             opacity: 0,
             radius: 1
-        }).addTo(popusLayerGroup);
+        }).addTo(this.popusLayerGroup);
 
 
         const surveyTemplate = `
@@ -288,7 +291,7 @@ function Map() {
                             </h5>
                         </div>
                         <div class="col-12 text-center">
-                            <button data-survey-open data-confirm-cancel data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
+                            <button data-survey-open data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
                             <button data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</button>
                         </div>
                     </div>
@@ -299,11 +302,11 @@ function Map() {
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
-        }).on('popupclose', function () {
-            confirmModal.addClass('d-none');
+        }).on('popupclose', () => {
+            this.confirmModal.addClass('d-none');
             layer.feature.properties.activePopup = false;
-            setLayerDefaultStyle(layer);
-            removeAllPopups();
+            this.setLayerDefaultStyle(layer);
+            this.removeAllPopups();
         }).openPopup();
 
         let collection = mapOption.collection;
@@ -316,64 +319,52 @@ function Map() {
                     'geo-object': layer.feature.properties.id,
                     'collection': collection
                 },
-                success: function () {
-                    updateMap();
+                success: () => {
+                    this.updateMap();
                 }
             });
         }
-        /*
-                $(".m-form").submit(function(e) {
-                    var form = $(this);
-                    var url = form.attr('action');
-
-                    $.ajax({
-                        type: "POST",
-                        url: '/front-end/geo-collection/add',
-                        //data: form.serialize(),
-                        data: {
-                            'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
-                        },
-                        success: function()
-                        {
-                            updateMap();
-                        }
-                    });
-
-                    e.preventDefault();
-                });
-        */
     }
 
-    function removeAllPopups() {
-        map.closePopup();
-        popusLayerGroup.eachLayer((layer) => {
-            popusLayerGroup.removeLayer(layer);
+    removeAllPopups() {
+        this.map.closePopup();
+        this.popusLayerGroup.eachLayer((layer) => {
+            this.popusLayerGroup.removeLayer(layer);
         });
     }
 
-    function setLayerDefaultStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+    setLayerDefaultStyle(layer) {
+        layer.setStyle(this.objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
     }
 
-    function setLayerHoverStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s2])
+    setLayerHoverStyle(layer) {
+        layer.setStyle(this.objectsSettings.styles[layer.feature.properties._s2])
     }
 
-    function setLayerActiveStyle(layer) {
+    setLayerActiveStyle(layer) {
         switch (layer.feature.geometry.type) {
             case "Point":
-                layer.setStyle(objectsSettings.styles['on_dialog_point']);
+                layer.setStyle(this.objectsSettings.styles['on_dialog_point']);
                 break;
             case "MultiLineString":
-                layer.setStyle(objectsSettings.styles['on_dialog_line']);
+                layer.setStyle(this.objectsSettings.styles['on_dialog_line']);
                 break;
             case "Polygon":
-                layer.setStyle(objectsSettings.styles['on_dialog_polygon']);
+                layer.setStyle(this.objectsSettings.styles['on_dialog_polygon']);
                 break;
         }
     }
 
+    setSurvey(voteSurvay) {
+        this.voteSurvay = voteSurvay;
+    }
 
+    setSurveyData(layer, ev) {
+        this.voteSurvay.setLayerData(layer, ev);
+    }
+
+    // closeSurvey() => {
+        // pathVoteSurvey.close();
+    // }
 };
 
-Map();

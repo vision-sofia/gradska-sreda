@@ -10,9 +10,6 @@
                 </div>
             </div>
             <div class=" m-3 mt-0 col-lg-7">
-                Попълнена анкета
-                <div id="surveyProgressBar"></div>
-
                 <div class="row">
                     <div class="col">
                         <h5>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h5>
@@ -20,6 +17,12 @@
                     </div>
                 </div>
 
+               <div class="row">
+                    <div class="col">
+                        Попълнена анкета
+                        <div id="surveyProgressBar"></div>
+                     </div>
+                </div>
                 {#<h4>Рейтинг</h4>
                 {% for c in rating %}
                     {% set percentage = (c.rating / c.max_points) * 100 %}

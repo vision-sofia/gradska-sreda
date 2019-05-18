@@ -42,6 +42,7 @@
     "gulp-svgstore": "~6.1.1",
     "gulp-uglify": "~3.0.2",
     "js-yaml": "^3.13.1",
+    "leaflet-active-area": "^1.1.0",
     "run-sequence": "^2.2.1",
     "source-map-loader": "^0.2.3",
     "tar": ">=4.4.2",

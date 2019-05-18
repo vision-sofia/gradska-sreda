@@ -1,10 +1,17 @@
 export class Survey {
-    surveayForm;
-    geoObjectUUID = ''; 
-    timeoutId;
     layer;
+    event;
+    geoObjectUUID = ''; 
 
-    constructor() {
+    surveayForm;
+    timeoutId;
+    mapInstance;
+    lastCenterPoint;
+    pathVoteSurveyContaineEl;
+    mapAreaHeight = 100; // Precents 
+
+    constructor(mapInstance) {
+        this.mapInstance = mapInstance;
         this.pathVoteSurveyContaineEl = document.getElementById('path-vote-suevey');
         if (!this.pathVoteSurveyContaineEl) {
             return;
@@ -15,13 +22,13 @@ export class Survey {
 
     events() {
         $(document).on('click', '[data-survey-open]', () => {
-            this.open();
+            this.open(this.layer, this.ev);
         });
-
+        
         $(document).on('click', '[data-survey-close]', () => {
             this.close();
         });
-        
+
         $(document).on('input propertychange', '.answer', (e) => {
             const target = e.target;
             let data = {};
@@ -164,13 +171,39 @@ export class Survey {
         $('#surveyProgressBar').html(progressHTML);
     }
 
-    open() {
-        this.pathVoteSurveyContaineEl.classList.add('active');
+    setLayerData(layer, ev) {
+        this.layer = layer;
+        this.event = ev;
+        this.geoObjectUUID = this.layer.feature.properties.id;
+        this.getQuestions();
+    }
+
+    open(layer, ev) {
+        if (layer && ev) {
+            this.setLayerData(layer, ev);
+        }
+
         this.pathVoteSurveyContaineEl.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
         this.pathVoteSurveyContaineEl.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
+        this.pathVoteSurveyContaineEl.classList.add('active');
+
+        this.lastCenterPoint = this.event.latlng;
+        const surveyHeight = parseFloat(getComputedStyle(this.pathVoteSurveyContaineEl).getPropertyValue('--suevey-height'));
+        const activeAreaHeight = this.mapAreaHeight - surveyHeight;
+
+        this.mapInstance.map.setActiveArea({
+            height: activeAreaHeight + '%',
+        });
+
+        this.mapInstance.zoomToLayer(this.layer, this.event);
     }
 
     close() {
         this.pathVoteSurveyContaineEl.classList.remove('active');
+
+        this.mapInstance.map.setActiveArea({
+            height: this.mapAreaHeight + '%',
+        });
+        this.mapInstance.map.panTo(this.lastCenterPoint);
     }
 };

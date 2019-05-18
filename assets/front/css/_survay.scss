@@ -4,7 +4,8 @@
     background-color: #fff;
     width: 100%;
     transition: top 0.3s ease;
-    height: 62%;
+    --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
+    height: var(--suevey-height);
     overflow: auto;
 
     &.active {
