@@ -4,6 +4,7 @@ export class Map {
     map;
     objectsSettings = {};
     geoJsonLayer = {};
+    activeLayer;
     myLocationLayerGroup = L.layerGroup();
     popusLayerGroup = L.layerGroup();
     voteSurvay;
@@ -36,7 +37,10 @@ export class Map {
 
         let mapStyle = L.tileLayer(mapBoxUrl, {
             attribution: mapBoxAttribution,
-            maxNativeZoom: 19,
+            // * If difference between "maxNativeZoom" and "maxZoom" === 2
+            // and "leafLet-active-area" is included  "Maximum call stack size exceeded" is thrown on max zoom reached.
+            // https://github.com/Mappy/Leaflet-active-area/issues/32
+            maxNativeZoom: 20, 
             maxZoom: 21,
             minZoom: 11,
             updateWhenZooming: false
@@ -66,6 +70,7 @@ export class Map {
         let updateMapThrottle;
         this.map.on('moveend', () => {
             clearTimeout(updateMapThrottle);
+            
             updateMapThrottle = setTimeout(() => {
                 let center = this.map.getCenter();
 
@@ -76,6 +81,8 @@ export class Map {
                             this.locate();
                         }
                     }
+
+                    this.setLayerActiveStyle();
                 })
             }, 200);
         });
@@ -92,7 +99,7 @@ export class Map {
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
                     switch (feature.properties._behavior) {
-                        case "navigation":
+                        case 'navigation':
                             this.zoomToLayer(layer, ev);
                             break;
                         default:
@@ -342,15 +349,23 @@ export class Map {
     }
 
     setLayerActiveStyle(layer) {
-        switch (layer.feature.geometry.type) {
-            case "Point":
-                layer.setStyle(this.objectsSettings.styles['on_dialog_point']);
+        if (layer) {
+            this.activeLayer = layer;
+        } else if (this.activeLayer === undefined) {
+            return;
+        } else {
+            this.activeLayer.addTo(this.map);
+        }
+
+        switch (this.activeLayer.feature.geometry.type) {
+            case 'Point':
+                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_point']);
                 break;
-            case "MultiLineString":
-                layer.setStyle(this.objectsSettings.styles['on_dialog_line']);
+            case 'MultiLineString':
+                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_line']);
                 break;
-            case "Polygon":
-                layer.setStyle(this.objectsSettings.styles['on_dialog_polygon']);
+            case 'Polygon':
+                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_polygon']);
                 break;
         }
     }
