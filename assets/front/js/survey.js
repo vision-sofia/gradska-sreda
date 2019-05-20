@@ -9,6 +9,12 @@ export class Survey {
     lastCenterPoint;
     pathVoteSurveyContaineEl;
     mapAreaHeight = 100; // Precents 
+    mapMarkerIcon = L.icon({
+        iconUrl: 'front/svg/icon--map-pin--edit.svg',
+        iconSize:     [53.707, 53.707], // size of the icon
+        iconAnchor:   [26.9, 53], // point of the icon which will correspond to marker's location
+    });
+    mapMarker;
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
@@ -22,6 +28,8 @@ export class Survey {
 
     events() {
         $(document).on('click', '[data-survey-open]', () => {
+            this.mapInstance.map.closePopup();
+
             this.open(this.layer, this.ev);
         });
         
@@ -178,7 +186,20 @@ export class Survey {
         this.getQuestions();
     }
 
+    addMarker() {
+        if (this.mapMarker) {
+            this.mapMarker.remove();
+        }
+        this.mapMarker = L.marker(this.layer.getCenter(), {
+            icon: this.mapMarkerIcon
+        });
+        this.mapMarker.addTo(this.mapInstance.map);
+    }
+
     open(layer, ev) {
+        this.mapInstance.setLayerActiveStyle(this.layer);
+        this.addMarker();
+
         if (layer && ev) {
             this.setLayerData(layer, ev);
         }
@@ -195,7 +216,7 @@ export class Survey {
             height: activeAreaHeight + '%',
         });
 
-        this.mapInstance.zoomToLayer(this.layer, this.event);
+        this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
     }
 
     close() {

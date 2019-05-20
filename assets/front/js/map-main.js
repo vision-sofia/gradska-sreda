@@ -81,8 +81,6 @@ export class Map {
                             this.locate();
                         }
                     }
-
-                    this.setLayerActiveStyle();
                 })
             }, 200);
         });
@@ -110,14 +108,14 @@ export class Map {
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {
-                        return;
+                        return; 
                     }
                     if (this.objectsSettings.styles[feature.properties._s2]) {
                         this.setLayerHoverStyle(layer);
                     }
                 });
                 layer.on('mouseout', () => {
-                    if (layer.feature.properties.activePopup) {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
                         return;
                     }
                     if (this.objectsSettings.styles[feature.properties._s1]) {
@@ -161,6 +159,7 @@ export class Map {
                 this.objectsSettings = results.settings;
                 this.geoJsonLayer.clearLayers();
                 this.geoJsonLayer.addData(results.objects);
+                this.setLayerActiveStyle();
                 fn();
             }
         });
@@ -243,8 +242,8 @@ export class Map {
         this.map.setView([lat, lng], zoom)
     }
 
-    zoomToLayer(layer, ev) {
-        let clickCoordinates = ev.latlng;
+    zoomToLayer(layer, ev, coordinates) {
+        let clickCoordinates = coordinates || ev.latlng;
         if (layer.feature.properties._zoom && layer.feature.properties._zoom !== this.map.getZoom()) {
             this.map.setView(clickCoordinates, layer.feature.properties._zoom);
         } else {
@@ -312,6 +311,7 @@ export class Map {
         }).on('popupclose', () => {
             this.confirmModal.addClass('d-none');
             layer.feature.properties.activePopup = false;
+            this.activeLayer = null;
             this.setLayerDefaultStyle(layer);
             this.removeAllPopups();
         }).openPopup();
@@ -351,11 +351,13 @@ export class Map {
     setLayerActiveStyle(layer) {
         if (layer) {
             this.activeLayer = layer;
-        } else if (this.activeLayer === undefined) {
+        } else if (!this.activeLayer) {
             return;
         } else {
             this.activeLayer.addTo(this.map);
         }
+
+        this.activeLayer.bringToFront();
 
         switch (this.activeLayer.feature.geometry.type) {
             case 'Point':
