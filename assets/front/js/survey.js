@@ -187,13 +187,17 @@ export class Survey {
     }
 
     addMarker() {
-        if (this.mapMarker) {
-            this.mapMarker.remove();
-        }
+        this.removeMarker();
         this.mapMarker = L.marker(this.layer.getCenter(), {
             icon: this.mapMarkerIcon
         });
         this.mapMarker.addTo(this.mapInstance.map);
+    }
+
+    removeMarker() {
+        if (this.mapMarker) {
+            this.mapMarker.remove();
+        }
     }
 
     open(layer, ev) {
@@ -220,6 +224,7 @@ export class Survey {
     }
 
     close() {
+        this.removeMarker();
         this.pathVoteSurveyContaineEl.classList.remove('active');
 
         this.mapInstance.map.setActiveArea({
