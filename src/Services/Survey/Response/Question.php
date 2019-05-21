@@ -6,6 +6,7 @@ use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\User\UserInterface;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -18,13 +19,33 @@ class Question
         $this->entityManager = $entityManager;
     }
 
+    public function clear(string $questionUuid, int $userId): void
+    {
+        /** @var Connection $conn */
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('
+            DELETE FROM 
+                x_survey.response_question r
+                    USING 
+                x_survey.q_question q
+            WHERE
+                r.question_id = q.id
+                AND q.uuid = :question_uuid
+                AND user_id = :user_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('question_uuid', $questionUuid);
+        $stmt->execute();
+    }
+
     public function response(array $answers, array $toImport, GeoObjectInterface $geoObject, UserInterface $user)
     {
 
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => key($answers),
-        ])
-        ;
+        ]);
 
         /** @var Survey\Question\Question $question */
         $question = $answer->getQuestion();
@@ -68,11 +89,10 @@ class Question
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
             ->findOneBy([
-                             'geoObject' => $geoObject,
-                             'user' => $user,
-                             'coordinates' => null,
-                         ])
-        ;
+                'geoObject' => $geoObject,
+                'user' => $user,
+                'coordinates' => null,
+            ]);
 
         if (null === $location) {
             $location = new Survey\Response\Location();
@@ -87,7 +107,7 @@ class Question
                 'question' => $answer->getQuestion()
             ]);
 
-        if($responseQuestion === null) {
+        if ($responseQuestion === null) {
             $responseQuestion = new Survey\Response\Question();
             $responseQuestion->setUser($user);
             $responseQuestion->setGeoObject($geoObject);
@@ -98,7 +118,7 @@ class Question
 
         foreach ($answers as $answerUuid => $answer) {
             $a = $this->entityManager->getRepository(Answer::class)->findOneBy([
-                'uuid' =>$answerUuid
+                'uuid' => $answerUuid
             ]);
 
             $responseAnswer = new Survey\Response\Answer();

@@ -2,7 +2,7 @@
 
 namespace App\Services\Geospatial;
 
-use App\AppMain\DTO\GeoObjectDTO;
+use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\Services\Geometry\Utils;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +20,7 @@ class Finder
 
     public function find(int $zoom, float $simplifyTolerance, string $in, int $surveyId): \Generator
     {
+        /** @var Connection $conn */
         $conn = $this->em->getConnection();
 
         $sql = /** @lang PostgreSQL */
@@ -55,7 +56,7 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('survey_id', $surveyId);
         $stmt->execute();
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         while ($row = $stmt->fetch()) {
             yield $row;
@@ -94,8 +95,8 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
         while ($row = $stmt->fetch()) {
             yield $row;
         }
@@ -137,14 +138,14 @@ class Finder
         $stmt->bindValue('simplify_tolerance', $simplifyTolerance);
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
         while ($row = $stmt->fetch()) {
             yield $row;
         }
     }
 
-    public function findSelected(string $geoCollectionUuid): ?GeoObjectDTO
+    public function findSelected(string $geoObjectUuid): ?SurveyGeoObjectDTO
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
@@ -171,9 +172,8 @@ class Finder
                 g.uuid = ?
         ');
 
-
-        $stmt->execute([$geoCollectionUuid]);
-        $stmt->setFetchMode(\PDO::FETCH_CLASS, GeoObjectDTO::class);
+        $stmt->execute([$geoObjectUuid]);
+        $stmt->setFetchMode(\PDO::FETCH_CLASS, SurveyGeoObjectDTO::class);
 
         return $stmt->fetch();
     }

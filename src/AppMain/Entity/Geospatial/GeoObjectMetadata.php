@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="geo_object_metadata", schema="x_geospatial")
- * @ORM\Entity(repositoryClass="App\AppMain\Repository\Geospatial\GeoObjectRepository")
+ * @ORM\Entity(repositoryClass="SurveyGeoObjectRepository")
  */
 class GeoObjectMetadata
 {
