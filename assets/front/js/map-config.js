@@ -2,6 +2,12 @@
 export const mapBoxUrl = 'https://gradska-sreda.dreamradio.org/map/styles/vs/{z}/{x}/{y}.png';
 export const mapBoxAttribution = `&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`;
 
+
+export const defaultElConfig = {
+    headerId: '#app-header',
+    elHeader: null,
+};
+
 export const defaultObjectStyle = {
     color: "#ff9710",
     opacity: 0.5,

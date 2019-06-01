@@ -1,0 +1,51 @@
+.survey {
+    position: absolute;
+    top: 100%;
+    background-color: #fff;
+    width: 100%;
+    transition: top 0.3s ease;
+    --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
+    height: var(--suevey-height);
+    overflow: auto;
+
+    &.active {
+        top: 38%;
+    }
+
+    &-btn {
+        &-poll {
+            margin-top: -12px;
+        }
+        
+        &-close {
+            font-size: 2rem;
+            padding: 3px 20px;
+            line-height: 0;
+            color: #5655a4;
+
+            &-holder {
+                z-index: 10;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #fff;
+                width: 100%;
+            }
+        }
+    }
+
+    &-question {
+        &-option {
+            cursor: pointer;
+
+            &.is-answered {
+                color: green;
+            }
+        }
+    }
+
+    .carousel {
+        &-item {
+            background-color: #fff;
+        }
+    }
+}

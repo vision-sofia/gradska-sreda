@@ -1,67 +1,47 @@
 {% block content %}
-    <div id="path-vote-suevey" class="survay d-flex flex-column align-items-center justify-content-start">
-        <div class="row">
-            <button data-survey-close class="btn btn-danger cursor-pointer">X</button>
-        </div>
-        <div class="row container">
-            <div class="col-lg-5">
-                <div class="mb-4">
-                    {# <div id="mapMini" class="map-wide"></div> #}
-                </div>
-            </div>
-            <div class=" m-3 mt-0 col-lg-7">
-                <div class="row">
-                    <div class="col">
-                        <h3>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h3>
-                        <h3 class="mb-4">Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h4>
-                    </div>
-                </div>
-
-               <div class="row">
-                    <div class="col">
-                        Попълнена анкета
-                        <div id="surveyProgressBar"></div>
-                     </div>
-                </div>
-                {#<h4>Рейтинг</h4>
-                {% for c in rating %}
-                    {% set percentage = (c.rating / c.max_points) * 100 %}
+    <div id="path-vote-suevey" class="survey d-flex flex-column align-items-center justify-content-start">
+        <div class="survey-btn-close-holder position-fixed d-flex flex-column align-items-center justify-content-center">
+            <button data-survey-close class="btn cursor-pointer survey-btn-close">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>      
+        </div>  
+        <div id="carouselExampleControls" data-interval="0" data-ride="false" class="row container carousel slide carousel-vertical-stack h-100">
+            <div class="carousel-inner m-4 mt-5 coll">
+                <div class="carousel-item h-100 active">
                     <div class="row">
-                        <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
-                        <div class="col-lg-6">
-                            <div class="progress mb-4">
-                                <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                        aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                        aria-valuemax="100">{{ c.rating|number_format(1) }}
-                                    / {{ c.max_points|number_format(0) }}</div>
+                        <div class="col">
+                            Попълнена анкета
+                            <div class="survey-progress d-flex mb-2">
+                                <div class="progress flex-grow-1">
+                                    <div class="survey-progress-bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="ml-3" data-toggle="tooltip" data-placement="top" title="Трябва да попълните анкетата, за да видите статистиката.">
+                                    <a class="pt-2 survey-btn-poll btn btn-primary rounded-circle" href="#carouselExampleControls" role="button" data-slide="next">
+                                        <i class="fas fa-poll"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
 
-                <h4 class="mt-4">Оценки от хората</h4>
-                {% for u, r in resultByUsers %}
-                    <strong>{{ u }}</strong>
-                    {% for c in r %}
-                        {% set percentage = (c.rating / c.max_points) * 100 %}
-                        <div class="row">
-                            <div class="col-lg-6 text-right">{{ c.criterion_name }}</div>
-                            <div class="col-lg-6">
-                                <div class="progress mb-4">
-                                    <div class="progress-bar pt-1" role="progressbar" style="width: {{ percentage }}%;"
-                                            aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                                            aria-valuemax="100">{{ c.rating|number_format(1) }}
-                                        / {{ c.max_points|number_format(0) }}</div>
-                                </div>
-
-                            </div>
+                    <div class="row mb-5">
+                        <div class="col">
+                            <h3>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h3>
+                            <h3>Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h4>
                         </div>
-                    {% endfor %}
-                {% endfor %}#}
+                    </div>
 
-                <form id="surveyForm"></form>
+                    <form class="survey-form"></form>
+                </div>
+                <div class="carousel-item h-100">
+                    SLIDE 2
+                   <div>
+                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="next">
+                        <i class="fas fa-poll"></i>
+                    </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-  
 {% endblock %}

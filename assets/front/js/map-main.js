@@ -1,4 +1,4 @@
-import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle } from './map-config';
+import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle, defaultElConfig } from './map-config';
 
 export class Map {
     map;
@@ -13,6 +13,16 @@ export class Map {
     }
 
     init() {
+        this.map = new L.map('mapMain', {
+            updateWhenZooming: false,
+            attributionControl: false
+        });
+        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+
+        this.selectInitialElements();
+        this.events();
+        this.toggleHeaderEl(true);
+
         if (!document.getElementById('mapMain')) {
             return;
         }
@@ -28,12 +38,8 @@ export class Map {
     
         let initialLoad = false;
 
-        this.map = new L.map('mapMain', {
-            updateWhenZooming: false,
-            attributionControl: false
-        });
+        
 
-        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
 
         let mapStyle = L.tileLayer(mapBoxUrl, {
             attribution: mapBoxAttribution,
@@ -82,7 +88,7 @@ export class Map {
                         }
                     }
                 })
-            }, 200);
+            }, 300);
         });
 
 
@@ -129,6 +135,58 @@ export class Map {
         }).addTo(this.map);
 
         this.setInitialMapView();
+    }
+
+    events() {
+        const debounce = (func, wait, immediate) => {
+            let timeout;
+            return () => {
+                const later = () => {
+                    timeout = null;
+                    if (!immediate) {
+                        func.apply(this, arguments);
+                    }
+                };
+
+                const callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+
+                if (callNow) {
+                    func.apply(this, arguments);
+                }
+            };
+        }
+        
+        window.addEventListener('resize', debounce(() => {
+            
+        },
+        200, false), false);
+
+    }
+
+    selectInitialElements() {
+        defaultElConfig.elHeader = document.querySelector(defaultElConfig.headerId);
+    }
+
+    toggleHeaderEl(isActive) {
+        if (isActive || !defaultElConfig.elHeader.classList.contains('active') && isActive) {
+            defaultElConfig.elHeader.classList.add('active');
+            console.log('OPEN');
+            
+            const elHeaderHeight = getComputedStyle(defaultElConfig.elHeader).height;
+            
+            this.map.setActiveArea({
+                ...defaultObjectStyle.mapActiveArea,
+                height: `calc(${defaultObjectStyle.mapActiveArea.height} - ${elHeaderHeight})`,
+                top: elHeaderHeight,
+            });
+        } else {
+            console.log('CLOSE');
+
+            defaultElConfig.elHeader.classList.remove('active');
+            this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+        }
     }
 
     updateMap(center, fn = () => {
@@ -266,6 +324,9 @@ export class Map {
             if (mapOption.survey === true) {
                 // openConfirmModal(layer);
                 this.setSurveyData(layer, ev);
+                // if (this.voteSurvay.isOpen) {
+                    // return;
+                // }
             }
         } else {
             coordinates = ev.latlng;
@@ -318,19 +379,19 @@ export class Map {
 
         let collection = mapOption.collection;
 
-        if (typeof collection !== 'undefined') {
-            $.ajax({
-                type: "POST",
-                url: '/front-end/geo-collection/add',
-                data: {
-                    'geo-object': layer.feature.properties.id,
-                    'collection': collection
-                },
-                success: () => {
-                    this.updateMap();
-                }
-            });
-        }
+        // if (typeof collection !== 'undefined') {
+        //     $.ajax({
+        //         type: "POST",
+        //         url: '/front-end/geo-collection/add',
+        //         data: {
+        //             'geo-object': layer.feature.properties.id,
+        //             'collection': collection
+        //         },
+        //         success: () => {
+        //             this.updateMap();
+        //         }
+        //     });
+        // }
     }
 
     removeAllPopups() {

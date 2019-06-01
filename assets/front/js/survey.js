@@ -2,12 +2,15 @@ export class Survey {
     layer;
     event;
     geoObjectUUID = ''; 
+    isOpen = false;
 
-    surveayForm;
     timeoutId;
     mapInstance;
     lastCenterPoint;
-    pathVoteSurveyContaineEl;
+    elPathVoteSurveyContainer;
+    elProgressBar;
+    elSurveyPollBtn;
+    elSurveayForm;
     mapAreaHeight = 100; // Precents 
     mapMarkerIcon = L.icon({
         iconUrl: 'front/svg/icon--map-pin--edit.svg',
@@ -15,14 +18,17 @@ export class Survey {
         iconAnchor:   [26.9, 53], // point of the icon which will correspond to marker's location
     });
     mapMarker;
+    progress = 0;
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
-        this.pathVoteSurveyContaineEl = document.getElementById('path-vote-suevey');
-        if (!this.pathVoteSurveyContaineEl) {
+        this.elPathVoteSurveyContainer = document.getElementById('path-vote-suevey');
+        if (!this.elPathVoteSurveyContainer) {
             return;
         }
-        this.surveayForm = this.pathVoteSurveyContaineEl.querySelector('#surveyForm');
+        this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
+        this.elSurveyPollBtn = this.elPathVoteSurveyContainer.querySelector('.survey-btn-poll');
+        this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
         this.events();
     }
 
@@ -60,7 +66,7 @@ export class Survey {
             clearTimeout(this.timeoutId); 
     
             this.timeoutId = setTimeout(() => {
-                this.submitSurvay(data, target.value)
+                this.submitSurvey(data, target.value)
             }, debounceTime);
         });
 
@@ -86,14 +92,14 @@ export class Survey {
         });
     }
 
-    submitSurvay(data, value) {
+    submitSurvey(data, value) {
         $.ajax({
             type: 'POST',
             url: '/geo/' + this.geoObjectUUID + '/q',
             data: data,
             beforeSend: () => {
                 if (document.getElementById(value)) {
-                    document.getElementById(value).style.color = "green";
+                    document.getElementById(value).style.color = 'green';
                 }
             },
             success: (result) => {
@@ -105,26 +111,26 @@ export class Survey {
     onSuccess(result) {
         let html = ``;
         let survey = result.survey;
-        let progress = result.progress;
         let isSelectedParent = false;
+        this.progress = result.progress;
 
         Object.keys(survey).forEach((item) => {
             let answers = survey[item].answers;
             let question = survey[item];
 
-            html += `<div class="survay-question mb-4">
-                        <div class="survay-question-title  mb-1">
+            html += `<div class="survey-question mb-4">
+                        <div class="survey-question-title  mb-1">
                             <i class="mr-1 fas ` + (question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i>
-                            <h5 class="survay-question-title-text d-inline">` + question.title + `</h5>
+                            <h5 class="survey-question-title-text d-inline">` + question.title + `</h5>
                         </div>
-                        <div class="survay-question pl-4">`;
+                        <div class="survey-question pl-4">`;
 
             Object.keys(answers).forEach((answer) => {
                 if (answers[answer].parent === null) {
                     isSelectedParent = question.answers[answer].isSelected;
 
                     html += `<div class="d-flex flex-column">
-                                <label class="survay-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
+                                <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
                                     <input class="mr-1 answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + question.uuid + `][]"
                                     ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `
                                 </label>
@@ -136,8 +142,8 @@ export class Survey {
                 } else {
                     if (isSelectedParent === true) {
                         html += `<div class="pl-4 d-flex flex-column">
-                                    <label class="survay-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                        <input class="mr-1  answer" type="checkbox" name="answers[option][` + question.uuid + `][]"` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" />
+                                    <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
+                                        <input class="mr-1  answer" type="checkbox" name="answers[option][` + question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
                                         ` + answers[answer].title +
                                     `</label>`;
 
@@ -164,19 +170,17 @@ export class Survey {
                     `;
         });
 
-        this.surveayForm.innerHTML = html;
+        this.elSurveayForm.innerHTML = html;
 
-        let progressHTML = `<div class="progress mb-4">
-                                <div class="progress-bar ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ` + progress.percentage + `%;"
-                                 aria-valuenow="` + progress.percentage + `" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>`;
-        if (progress.percentage === 100) {
-            progressHTML += `<div class="mt-3">
-                                <a href="/geo/${ this.geoObjectUUID }/result" class="btn btn-primary rounded-0 pt-2">Виж рейтинга</a>
-                            </div>`;
+        this.elProgressBar.style.width = this.progress.percentage + '%';
+
+        if (this.progress.percentage === 100) {
+            this.elSurveyPollBtn.classList.remove('disabled');
+            $(this.elSurveyPollBtn).parent().tooltip('disable');
+        } else {
+            this.elSurveyPollBtn.classList.add('disabled');
+            $(this.elSurveyPollBtn).parent().tooltip('enable');
         }
-
-        $('#surveyProgressBar').html(progressHTML);
     }
 
     setLayerData(layer, ev) {
@@ -201,6 +205,7 @@ export class Survey {
     }
 
     open(layer, ev) {
+        this.isOpen = true;
         this.mapInstance.setLayerActiveStyle(this.layer);
         this.addMarker();
 
@@ -208,24 +213,35 @@ export class Survey {
             this.setLayerData(layer, ev);
         }
 
-        this.pathVoteSurveyContaineEl.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
-        this.pathVoteSurveyContaineEl.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
-        this.pathVoteSurveyContaineEl.classList.add('active');
+        this.elPathVoteSurveyContainer.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
+        this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
+        this.elPathVoteSurveyContainer.classList.add('active');
 
         this.lastCenterPoint = this.event.latlng;
-        const surveyHeight = parseFloat(getComputedStyle(this.pathVoteSurveyContaineEl).getPropertyValue('--suevey-height'));
+        const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-height'));
         const activeAreaHeight = this.mapAreaHeight - surveyHeight;
 
+        this.mapInstance.toggleHeaderEl(false);
         this.mapInstance.map.setActiveArea({
             height: activeAreaHeight + '%',
+            top: 0,
+            bottom: 0,
         });
 
         this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
+
+    }
+
+    toggleHeader() {
+
     }
 
     close() {
+        this.isOpen = false;
         this.removeMarker();
-        this.pathVoteSurveyContaineEl.classList.remove('active');
+        this.elPathVoteSurveyContainer.classList.remove('active');
+
+        this.mapInstance.toggleHeaderEl(true);
 
         this.mapInstance.map.setActiveArea({
             height: this.mapAreaHeight + '%',
