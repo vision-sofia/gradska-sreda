@@ -6,7 +6,7 @@
             </button>      
         </div>  
         <div id="carouselExampleControls" data-interval="0" data-ride="false" class="row container carousel slide carousel-vertical-stack h-100">
-            <div class="carousel-inner m-4 mt-5 coll">
+            <div class="carousel-inner m-4 mt-5 coll h-100">
                 <div class="carousel-item h-100 active">
                     <div class="row">
                         <div class="col">
@@ -34,10 +34,21 @@
                     <form class="survey-form"></form>
                 </div>
                 <div class="carousel-item h-100">
-                   <div>
-                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="next">
-                        <i class="fas fa-poll"></i>
-                    </a>
+                    <div class="col-lg-7">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h3>Статистиката</h3>
+
+                            <a class="pt-2 btn btn-primary rounded-circle" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <i class="fas fa-poll"></i>
+                            </a>
+                        </div>
+
+                        <h4>Рейтинг</h4>
+
+                        <div class="survey-ratings-rating"></div>
+
+                        <h4 class="mt-4">Оценки от хората</h4>
+                        <div class="survey-ratings-respondents"></div>
                     </div>
                 </div>
             </div>

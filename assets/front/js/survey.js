@@ -19,6 +19,12 @@ export class Survey {
     });
     mapMarker;
     progress = 0;
+    questions = [];
+    results = {
+        rating: [{}],
+        respondents: [{}]
+    };
+
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
@@ -87,7 +93,7 @@ export class Survey {
         $.ajax({
             url: 'front-end/geo/' + this.geoObjectUUID,
             success: (result) => {
-               this.onGetQuestionsSuccess(result);
+               this.buildSurvey(result);
             }
         });
     }
@@ -96,9 +102,7 @@ export class Survey {
         $.ajax({
             url: 'front-end/geo/' + this.geoObjectUUID + '/result',
             success: (result) => {
-            //    this.onGetResultsSuccess(result);
-            console.log(result);
-            
+               this.buildResults(result);
             }
         });
     }
@@ -114,53 +118,99 @@ export class Survey {
                 }
             },
             success: (result) => {
-                this.onGetQuestionsSuccess(result);
+                this.buildSurvey(result);
             }
         });
     };
 
-    onGetQuestionsSuccess(result) {
+    buildResults(result) {
+        let ratingHTML = ``;
+        let respondentsHTML = ``;
+        let isSelectedParent = false;
+        this.results.rating = result.rating;
+        this.results.respondents = result.respondents;
+
+       this.results.rating.forEach((ratingItem) => {
+            ratingHTML += `
+                <div class="row">
+                    <div class="col-lg-6 text-right">${ratingItem.criterion}</div>
+                    <div class="col-lg-6">
+                        <div class="progress mb-4">
+                            <div class="progress-bar pt-1" role="progressbar" style="width: ${ratingItem.percentage}%;"
+                                aria-valuenow="${ratingItem.percentage}" aria-valuemin="0"
+                                aria-valuemax="100">${ratingItem.rating} / ${ratingItem.max}</div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        document.querySelector('.survey-ratings-rating').innerHTML = ratingHTML;
+
+
+        Object.keys(this.results.respondents).forEach((respondentUser) => {
+            respondentsHTML += `<strong>${respondentUser}</strong>`;
+
+            this.results.respondents[respondentUser].forEach((respondentItem) => {
+                respondentsHTML += `
+                    <div class="row">
+                        <div class="col-lg-6 text-right">${respondentItem.criterion}</div>
+                        <div class="col-lg-6">
+                            <div class="progress mb-4">
+                                <div class="progress-bar pt-1" role="progressbar" style="width: ${respondentItem.percentage}%;"
+                                     aria-valuenow="${respondentItem.percentage}" aria-valuemin="0"
+                                     aria-valuemax="100">${respondentItem.rating} / ${respondentItem.max}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        });
+
+        document.querySelector('.survey-ratings-respondents').innerHTML = ratingHTML;
+
+    }
+
+    buildSurvey(result) {
         let html = ``;
-        let questions = result.survey.questions;
         let isSelectedParent = false;
         this.progress = result.survey.progress;
+        this.questions = result.survey.questions;
 
-        Object.keys(questions).forEach((item) => {
-            let answers = questions[item].answers;
-            let question = questions[item];
+        Object.keys(this.questions).forEach((item) => {
+            const answers = this.questions[item].answers;
+            this.question = this.questions[item];
 
             html += `<div class="survey-question mb-4">
                         <div class="survey-question-title  mb-1">
-                            <i class="mr-1 fas ` + (question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i>
-                            <h5 class="survey-question-title-text d-inline">` + question.title + `</h5>
+                            <i class="mr-1 fas ` + (this.question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i>
+                            <h5 class="survey-question-title-text d-inline">` + this.question.title + `</h5>
                         </div>
                         <div class="survey-question pl-4">`;
 
             Object.keys(answers).forEach((answer) => {
                 if (answers[answer].parent === null) {
-                    isSelectedParent = question.answers[answer].isSelected;
+                    isSelectedParent = this.question.answers[answer].isSelected;
 
                     html += `<div class="d-flex flex-column">
                                 <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                    <input class="mr-1 answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + question.uuid + `][]"
+                                    <input class="mr-1 answer" type="` + (this.question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + this.question.uuid + `][]"
                                     ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `
                                 </label>
                             </div>`;
 
-                    if (question.answers[answer].isFreeAnswer) {
+                    if (this.question.answers[answer].isFreeAnswer) {
                         html += `<textarea class="answer"></textarea>`;
                     }
                 } else {
                     if (isSelectedParent === true) {
                         html += `<div class="pl-4 d-flex flex-column">
                                     <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                        <input class="mr-1  answer" type="checkbox" name="answers[option][` + question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
+                                        <input class="mr-1  answer" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
                                         ` + answers[answer].title +
                                     `</label>`;
 
-                        if (answers[answer].isSelected && question.answers[answer].isFreeAnswer) {
+                        if (answers[answer].isSelected && this.question.answers[answer].isFreeAnswer) {
                             html += `<label class="` + (answers[answer].isSelected ? 'is-answered' : '') + `">
-                                        <textarea class="answer d-block" id="textarea-` + question.answers[answer].uuid + `]">` + question.answers[answer].explanation + `</textarea>
+                                        <textarea class="answer d-block" id="textarea-` + this.question.answers[answer].uuid + `]">` + this.question.answers[answer].explanation + `</textarea>
                                     </label>`;
                         }
 
@@ -169,9 +219,9 @@ export class Survey {
                 }
             });
 
-            if (question.isAnswered) {
+            if (this.question.isAnswered) {
                 html += `<div class="d-flex justify-content-end">
-                            <button type="button" class="rem btn btn-sm btn-danger" name="answers[option][` + question.uuid + `][]" value="` + question.uuid + `">Изчисти</button>
+                            <button type="button" class="rem btn btn-sm btn-danger" name="answers[option][` + this.question.uuid + `][]" value="` + this.question.uuid + `">Изчисти</button>
                         </div>`;
             }
 

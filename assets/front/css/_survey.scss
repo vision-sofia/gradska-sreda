@@ -44,6 +44,8 @@
     }
 
     .carousel {
+        z-index: 0;
+        
         &-item {
             background-color: #fff;
         }
