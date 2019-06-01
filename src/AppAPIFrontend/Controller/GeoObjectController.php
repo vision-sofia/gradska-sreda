@@ -53,8 +53,8 @@ class GeoObjectController extends AbstractController
     public function details(GeoObject $geoObject): Response
     {
         $isAvailableForSurvey = $this->getDoctrine()
-            ->getRepository(GeoObject::class)
-            ->isAvailableForSurvey($geoObject);
+            ->getRepository(Survey\Spatial\SurveyGeoObject::class)
+            ->isInScope($geoObject);
 
         if (!$isAvailableForSurvey) {
             return $this->redirectToRoute('app.map');
