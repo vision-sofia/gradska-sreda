@@ -85,7 +85,7 @@ export class Survey {
 
    getQuestions() {
         $.ajax({
-            url: '/geo/' + this.geoObjectUUID + '/q',
+            url: 'front-end/geo/' + this.geoObjectUUID + '/q',
             success: (result) => {
                this.onGetQuestionsSuccess(result);
             }
@@ -94,7 +94,7 @@ export class Survey {
 
     getResults() {
         $.ajax({
-            url: '/geo/' + this.geoObjectUUID + '/q/result',
+            url: 'front-end/geo/' + this.geoObjectUUID + '/result',
             success: (result) => {
             //    this.onGetResultsSuccess(result);
             console.log(result);
