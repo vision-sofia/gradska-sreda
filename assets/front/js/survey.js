@@ -85,7 +85,7 @@ export class Survey {
 
    getQuestions() {
         $.ajax({
-            url: 'front-end/geo/' + this.geoObjectUUID + '/q',
+            url: 'front-end/geo/' + this.geoObjectUUID,
             success: (result) => {
                this.onGetQuestionsSuccess(result);
             }
@@ -121,13 +121,13 @@ export class Survey {
 
     onGetQuestionsSuccess(result) {
         let html = ``;
-        let survey = result.survey;
+        let questions = result.survey.questions;
         let isSelectedParent = false;
-        this.progress = result.progress;
+        this.progress = result.survey.progress;
 
-        Object.keys(survey).forEach((item) => {
-            let answers = survey[item].answers;
-            let question = survey[item];
+        Object.keys(questions).forEach((item) => {
+            let answers = questions[item].answers;
+            let question = questions[item];
 
             html += `<div class="survey-question mb-4">
                         <div class="survey-question-title  mb-1">
