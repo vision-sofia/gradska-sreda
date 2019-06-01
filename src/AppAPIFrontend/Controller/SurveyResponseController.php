@@ -49,9 +49,8 @@ class SurveyResponseController extends AbstractController
         }
 
         $isAvailableForSurvey = $this->getDoctrine()
-            ->getRepository(GeoObject::class)
-            ->isAvailableForSurvey($geoObject)
-        ;
+            ->getRepository(Survey\Spatial\SurveyGeoObject::class)
+            ->isInScope($geoObject);
 
         if (false === $isAvailableForSurvey) {
             return new JsonResponse(['message' => 'error'], 400);
