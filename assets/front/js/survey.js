@@ -75,9 +75,9 @@ export class Survey {
             $.ajax({
                 type: "POST",
                 url: '/geo/' + this.geoObjectUUID + '/clear/' + value,
-    
                 success: () => {
-                    getQuestions();
+                    this.getQuestions();
+                    this.getResults();
                 }
             });
         });
@@ -87,7 +87,18 @@ export class Survey {
         $.ajax({
             url: '/geo/' + this.geoObjectUUID + '/q',
             success: (result) => {
-               this.onSuccess(result);
+               this.onGetQuestionsSuccess(result);
+            }
+        });
+    }
+
+    getResults() {
+        $.ajax({
+            url: '/geo/' + this.geoObjectUUID + '/q/result',
+            success: (result) => {
+            //    this.onGetResultsSuccess(result);
+            console.log(result);
+            
             }
         });
     }
@@ -103,12 +114,12 @@ export class Survey {
                 }
             },
             success: (result) => {
-                this.onSuccess(result);
+                this.onGetQuestionsSuccess(result);
             }
         });
     };
 
-    onSuccess(result) {
+    onGetQuestionsSuccess(result) {
         let html = ``;
         let survey = result.survey;
         let isSelectedParent = false;
@@ -188,6 +199,7 @@ export class Survey {
         this.event = ev;
         this.geoObjectUUID = this.layer.feature.properties.id;
         this.getQuestions();
+        this.getResults();
     }
 
     addMarker() {
