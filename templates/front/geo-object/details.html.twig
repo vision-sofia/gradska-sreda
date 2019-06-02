@@ -4,51 +4,55 @@
             <button data-survey-close class="btn cursor-pointer survey-btn-close">
                 <i class="fas fa-ellipsis-h"></i>
             </button>
-            <div class="survey-nav d-flex flex-lg-column p-lg-2">
-                <a data-slide-to="0" class="active pt-2 survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
+            <div class="survey-nav d-flex flex-md-column p-md-2">
+                <a data-slide-to="0" class="active survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
                     <i class="fas fa-poll fa-rotate-90"></i>
                 </a>
-                <div class="ml-2 ml-lg-0 mt-lg-2" data-toggle="tooltip" data-placement="top" title="Трябва да попълните анкетата, за да видите статистиката.">
-                    <a data-slide-to="1" class="pt-2 survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
+                <div class="ml-2 ml-md-0 mt-md-2" data-toggle="tooltip" data-placement="top" title="Трябва да попълните анкетата, за да видите статистиката.">
+                    <a data-slide-to="1" class=" survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
                         <i class="fas fa-chart-pie"></i>
                     </a>
                 </div>
             </div>
         </div>  
-        <div id="carouselServeyPages" data-interval="0" data-ride="false" class="d-flex justify-content-center w-100 row px-lg-4 overflow-auto carousel slide carousel-vertical-stack h-100">
-            <div class="carousel-inner m-4 mt-5 coll container">
-                <div class="carousel-item h-100 active">
-                    <div class="row">
-                        <div class="col">
-                            Попълнена анкета
-                            <div class="survey-progress d-flex mb-2">
-                                <div class="progress flex-grow-1">
-                                    <div class="survey-progress-bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div id="carouselServeyPages" data-interval="0" data-ride="false" class="d-flex justify-content-center w-100 row pl-lg-4 overflow-auto carousel slide carousel-vertical-stack h-100">
+            <div class="carousel-inner mt-5 mt-md-0 coll">
+                <div class="carousel-item p-4 h-100 active">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                Попълнена анкета
+                                <div class="survey-progress d-flex mb-2">
+                                    <div class="progress flex-grow-1">
+                                        <div class="survey-progress-bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-5">
-                        <div class="col">
-                            <h3>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h3>
-                            <h3>Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h4>
+                        <div class="row mb-5">
+                            <div class="col">
+                                <h3>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h3>
+                                <h3>Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h4>
+                            </div>
                         </div>
-                    </div>
 
-                    <form class="survey-form"></form>
+                        <form class="survey-form"></form>
+                    </div>
                 </div>
-                <div class="carousel-item h-100">
-                    <div class="d-flex justify-content-between mb-2">
-                        <h3>Статистиката</h3>      
+                <div class="carousel-item p-4 h-100">
+                    <div class="container">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h3>Статистиката</h3>      
+                        </div>
+
+                        <h4>Рейтинг</h4>
+
+                        <div class="survey-ratings-rating"></div>
+
+                        <h4 class="mt-4">Оценки от хората</h4>
+                        <div class="survey-ratings-respondents"></div>
                     </div>
-
-                    <h4>Рейтинг</h4>
-
-                    <div class="survey-ratings-rating"></div>
-
-                    <h4 class="mt-4">Оценки от хората</h4>
-                    <div class="survey-ratings-respondents"></div>
                 </div>
             </div>
         </div>

@@ -37,6 +37,14 @@
         position: absolute;
         top: 0;
         right: 0;
+
+        &-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 43px;
+            height: 43px;
+        }
     }
 
     .carousel {
@@ -46,6 +54,12 @@
 
         &-item {
             background-color: #fff;
+            overflow: auto;
+        }
+
+        &-inner {
+            height: 100%;
+            overflow: hidden;
         }
     }
 
