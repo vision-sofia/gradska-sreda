@@ -1,24 +1,14 @@
 .survey {
     position: absolute;
-    top: 100%;
     background-color: #fff;
-    width: 100%;
     transition: top 0.3s ease;
-    --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
-    height: var(--suevey-height);
-    overflow: auto;
-    z-index: -2;
+    transform: translate3d(0, 0, 0);
+    transform-style: preserve-3d;
 
     &.active {
-        top: 38%;
-        z-index: 2;
     }
 
     &-btn {
-        &-poll {
-            margin-top: -12px;
-        }
-        
         &-close {
             font-size: 2rem;
             padding: 3px 20px;
@@ -26,11 +16,9 @@
             color: #5655a4;
 
             &-holder {
-                z-index: 10;
-                left: 50%;
-                transform: translateX(-50%);
                 background-color: #fff;
-                width: 100%;
+                z-index: 10;
+                left: 0;
             }
         }
     }
@@ -58,6 +46,59 @@
 
         &-item {
             background-color: #fff;
+        }
+    }
+
+
+    @media only screen and (min-width: map-get($grid-breakpoints, md)) {
+        --suevey-width: 42%; // Sould allways be precentage unles changes in JS are made
+        $width: var(--suevey-width);
+        width: $width;
+        height: 100%;
+        left: 100%;
+        transition: left 0.3s ease;
+
+        &.active {
+            top: 0;
+            left: calc(100% - #{$width});
+        }
+
+        &-btn {
+            &-close {
+                transform: rotate(90deg);
+
+                &-holder {
+                    width: 2.5rem;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: map-get($grid-breakpoints, md)) {
+        --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
+        top: 100%;
+        width: 100%;
+        height: var(--suevey-height);
+        transition: top 0.3s ease;
+
+        &.active {
+            top: 38%;
+        }
+
+        &-btn {
+            &-close {
+                &-holder {
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2.5rem;
+                }
+            }
+        }
+
+        &-nav {
+            margin-top: -12px;
         }
     }
 }

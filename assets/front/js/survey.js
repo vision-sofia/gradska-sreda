@@ -46,7 +46,7 @@ export class Survey {
         this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
         this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
           
-        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.survey-btn-poll');
+        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.survey-nav-btn');
         this.elSurveyPollBtn = this.elSurveyCarouselNav[1];
         this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carouselServeyPages');
     }

@@ -38,9 +38,6 @@ export class Map {
     
         let initialLoad = false;
 
-        
-
-
         let mapStyle = L.tileLayer(mapBoxUrl, {
             attribution: mapBoxAttribution,
             // * If difference between "maxNativeZoom" and "maxZoom" === 2
@@ -159,9 +156,11 @@ export class Map {
         }
         
         window.addEventListener('resize', debounce(() => {
+            console.log(window.innerHeight);
             
-        },
-        200, false), false);
+            document.documentElement.classList.add('phone')
+            
+        }, 200, false), false);
 
     }
 
