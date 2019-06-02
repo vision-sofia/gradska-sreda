@@ -159,7 +159,14 @@ class ItemController extends AbstractController
      */
     public function qq(GeoObject $geoObject): JsonResponse
     {
-        return new JsonResponse($this->surveyResult($geoObject));
+        return new JsonResponse([
+            'geoObject' => [
+                'id' => $geoObject->getUuid(),
+                'name' => $geoObject->getName(),
+                'type' => $geoObject->getType()->getName(),
+            ],
+            'survey' => $this->surveyResult($geoObject)
+        ]);
     }
 
     /**
