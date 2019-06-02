@@ -15,6 +15,7 @@ export class Survey {
     };
 
     mapAreaHeight = 100; // Precents  // TODO take form MapInstance 
+    mapAreaWidth = 100; // Precents  // TODO take form MapInstance 
     mapMarkerIcon = L.icon({
         iconUrl: 'front/svg/icon--map-pin--edit.svg',
         iconSize:     [53.707, 53.707], // size of the icon
@@ -306,9 +307,13 @@ export class Survey {
         const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-height'));
         const activeAreaHeight = this.mapAreaHeight - surveyHeight;
 
+        const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-width'));
+        const activeAreaWidth = this.mapAreaWidth - surveyWidth;
+
         this.mapInstance.toggleHeaderEl(false);
         this.mapInstance.map.setActiveArea({
             height: activeAreaHeight + '%',
+            width: activeAreaWidth + '%',
             top: 0,
             bottom: 0,
         });
@@ -329,6 +334,7 @@ export class Survey {
         this.mapInstance.toggleHeaderEl(true);
 
         this.mapInstance.map.setActiveArea({
+            height: this.mapAreaHeight + '%',
             height: this.mapAreaHeight + '%',
         });
         this.mapInstance.map.panTo(this.lastCenterPoint);
