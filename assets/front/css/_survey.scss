@@ -7,9 +7,11 @@
     --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
     height: var(--suevey-height);
     overflow: auto;
+    z-index: -2;
 
     &.active {
         top: 38%;
+        z-index: 2;
     }
 
     &-btn {
