@@ -1,481 +1,56 @@
 {
-  "survey": [
-    {
-      "id": 281,
-      "uuid": "ae4eca21-9e9b-40ba-aec2-661cfa59a2d5",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u043d\u044f\u043a\u0430\u043a\u0432\u0438 \u043f\u0440\u0435\u043f\u044f\u0442\u0441\u0442\u0432\u0438\u044f \u0432 \u0442\u0430\u0437\u0438 \u043e\u0442\u0441\u0435\u0447\u043a\u0430?",
-      "isAnswered": true,
-      "isCompleted": true,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430, \u043f\u043e \u0446\u044f\u043b\u043e\u0442\u043e \u043f\u0440\u043e\u0434\u044a\u043b\u0436\u0435\u043d\u0438\u0435 \u043d\u0430 \u043e\u0442\u0441\u0435\u0447\u043a\u0430\u0442\u0430",
-          "parent": null,
-          "uuid": "b51580c6-9981-407d-b9d9-6d495c336e86",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041f\u0430\u0440\u043a\u0438\u0440\u0430\u043d\u0438 \u043a\u043e\u043b\u0438",
-          "parent": 1012,
-          "uuid": "4fd5cc5d-9b1e-4a1c-a612-db51c2ded151",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041a\u043e\u0444\u0438 \u0437\u0430 \u0431\u043e\u043a\u043b\u0443\u043a",
-          "parent": 1012,
-          "uuid": "0480da08-0730-4598-a02c-d5dfbf8c42a8",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041c\u0430\u0441\u0438 \u043d\u0430 \u0437\u0430\u0432\u0435\u0434\u0435\u043d\u0438\u044f",
-          "parent": 1012,
-          "uuid": "f7affc0c-966e-4f6b-b0eb-d1fa44dbbc7b",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0421\u043f\u0438\u0440\u043a\u0438 \u043d\u0430 \u041c\u0413\u0422",
-          "parent": 1012,
-          "uuid": "2d01ae35-e5cf-4647-97d4-042c9cea6f1b",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435\u0441\u044a\u043e\u0431\u0440\u0430\u0437\u0435\u043d\u043e \u043f\u043e\u0441\u0442\u0430\u0432\u0435\u043d\u0438 \u043e\u0441\u0432\u0435\u0442\u0438\u0442\u0435\u043b\u043d\u0438 \u0441\u0442\u044a\u043b\u0431\u043e\u0432\u0435 \u0438 \u0440\u0435\u043a\u043b\u0430\u043c\u0438",
-          "parent": 1012,
-          "uuid": "6fcc0069-90bf-4805-aae5-8d51b52eb150",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0410\u043d\u0442\u0438\u043f\u0430\u0440\u043a\u0438\u043d\u0433 \u043a\u043e\u043b\u0447\u0435\u0442\u0430",
-          "parent": 1012,
-          "uuid": "23a3176f-37da-443e-b4a7-a917c9903eba",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0440\u0443\u0433\u043e",
-          "parent": 1012,
-          "uuid": "b7adb3e9-23b9-4c4b-9d36-89fce40141f3",
-          "isSelected": false,
-          "isFreeAnswer": true,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430, \u0435\u043f\u0438\u0437\u043e\u0434\u0438\u0447\u043d\u043e",
-          "parent": null,
-          "uuid": "81397ff7-5159-4539-b4cd-463c9239d790",
-          "isSelected": true,
-          "isFreeAnswer": false,
-          "explanation": ""
-        },
-        {
-          "title": "\u041d\u0435, \u043d\u0438\u043a\u0430\u043a\u0432\u0438",
-          "parent": null,
-          "uuid": "96e9b3f3-3a5d-4f36-91d4-0b3342d0f347",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 282,
-      "uuid": "52c33c19-25e6-4910-88c0-2fa27baeff72",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u0441\u0435\u0440\u0438\u043e\u0437\u0435\u043d \u043a\u043e\u043d\u0444\u043b\u0438\u043a\u0442 \u0441 \u0432\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434\u0438\u0441\u0442\u0438, \u0442\u043e\u0432\u0430\u0440\u043d\u0438 \u0434\u0435\u0439\u043d\u043e\u0441\u0442\u0438, \u0441\u043a\u0443\u0442\u0435\u0440\u0438, \u0441\u043a\u0435\u0439\u0442\u0431\u043e\u0440\u0434 \u0438\u043b\u0438 \u0434\u0440\u0443\u0433\u0438?",
-      "isAnswered": true,
-      "isCompleted": true,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430",
-          "parent": null,
-          "uuid": "fcbcefe6-81c5-4ea8-8df3-1c2e1129efd4",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435",
-          "parent": null,
-          "uuid": "b3e22580-675b-468d-b17f-e321aaafb658",
-          "isSelected": true,
-          "isFreeAnswer": false,
-          "explanation": ""
-        }
-      ]
-    },
-    {
-      "id": 283,
-      "uuid": "15a2b135-0584-4fe4-b69a-95b6e854b560",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u043f\u0440\u043e\u0431\u043b\u0435\u043c\u0438 \u0441 \u043d\u0430\u0441\u0442\u0438\u043b\u043a\u0430\u0442\u0430 \u0432 \u043c\u043e\u043c\u0435\u043d\u0442\u0430?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u041d\u0435, \u043d\u0438\u043a\u0430\u043a\u0432\u0438",
-          "parent": null,
-          "uuid": "bb516380-1dac-4267-9063-7960a079a95f",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430",
-          "parent": null,
-          "uuid": "fa3b1eb0-d4cc-41e0-ab85-69499b810772",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0418\u043c\u0430 \u043c\u043d\u043e\u0433\u043e \u043d\u0435\u0440\u0430\u0432\u043d\u043e\u0441\u0442\u0438",
-          "parent": 1025,
-          "uuid": "d15dd51a-2174-4ec1-bcdc-157dc3f14e9a",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041b\u0438\u043f\u0441\u0430 \u043d\u0430 \u043d\u0430\u0441\u0442\u0438\u043b\u043a\u0430",
-          "parent": 1025,
-          "uuid": "42e770fd-93f9-44ba-a8e5-bf24aca8c902",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0425\u043b\u044a\u0437\u0433\u0430\u0432\u043e \u0435",
-          "parent": 1025,
-          "uuid": "40d51fcf-80f8-444a-86ea-cd9e72ecac87",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0418\u043c\u0430 \u043d\u0430\u0432\u043e\u0434\u043d\u0435\u043d\u0438 \u0443\u0447\u0430\u0441\u0442\u044a\u0446\u0438",
-          "parent": 1025,
-          "uuid": "01caf6f9-02da-471b-aa3d-0484604ae733",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0440\u0443\u0433\u043e",
-          "parent": 1025,
-          "uuid": "8d732131-b09b-4293-98ec-3fe560bebedf",
-          "isSelected": false,
-          "isFreeAnswer": true,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 284,
-      "uuid": "6caf9d8b-6c1b-4089-aeeb-5bb54da11a1d",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u2018\u0441\u0432\u0435\u0442\u043b\u0438\u2019 \u0438 \u0430\u043a\u0442\u0438\u0432\u043d\u0438 \u043f\u0430\u0440\u0442\u0435\u0440\u043d\u0438 \u0435\u0442\u0430\u0436\u0438 (\u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u043d\u0430 \u0442\u044a\u0440\u0433\u043e\u0432\u0441\u043a\u0438 \u043e\u0431\u0435\u043a\u0442\u0438)?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430",
-          "parent": null,
-          "uuid": "ddf8cd9d-cd32-4e5a-8825-25515667f8a4",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435",
-          "parent": null,
-          "uuid": "ab5b1597-6878-4f8c-8332-93579ed94b14",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 285,
-      "uuid": "9cab92f5-215f-49c3-97b1-bce729c400fd",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u0434\u0435\u043d\u043e\u043d\u043e\u0449\u043d\u0438 \u043e\u0431\u0435\u043a\u0442\u0438 \u043a\u0430\u0442\u043e \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u0438, \u0430\u043f\u0442\u0435\u043a\u0438, \u0437\u0430\u0432\u0435\u0434\u0435\u043d\u0438\u044f, \u0431\u0435\u043d\u0437\u0438\u043d\u043e\u0441\u0442\u0430\u043d\u0446\u0438\u0438?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430",
-          "parent": null,
-          "uuid": "1218051c-3b5d-4e7f-917f-b33b6b5426b9",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435",
-          "parent": null,
-          "uuid": "4d2682f4-1d19-4fae-abb2-1a4d49cbcdfe",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 286,
-      "uuid": "ee1481d8-86df-480b-b5ff-0a89f10706be",
-      "title": "\u041e\u0441\u0432\u0435\u0442\u0435\u043d\u043e \u043b\u0438 \u0435?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430, \u0434\u043e\u0441\u0442\u0430\u0442\u044a\u0447\u043d\u043e",
-          "parent": null,
-          "uuid": "b1ea8e01-1061-4f2a-b78a-dccb47e55443",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430, \u043d\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0430\u0442\u044a\u0447\u043d\u043e",
-          "parent": null,
-          "uuid": "6cf171a1-20f3-4744-ad63-5fd95e3f986c",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435",
-          "parent": null,
-          "uuid": "007611a6-9622-42f4-aa9c-d30b2d5aa468",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 287,
-      "uuid": "f9cbe1d8-f82f-4d8d-ba95-962c4fea3b66",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u0438\u0437\u043e\u0441\u0442\u0430\u0432\u0435\u043d\u0438 \u0441\u0433\u0440\u0430\u0434\u0438?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430",
-          "parent": null,
-          "uuid": "abc9d4da-72a8-4235-ac25-e5714108b7ef",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435",
-          "parent": null,
-          "uuid": "f8c5ea78-4ce9-4df8-a6c0-bccbc0b718b0",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 288,
-      "uuid": "5c5f4d46-393d-4cd4-aa20-b9189eb42531",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u0445\u043e\u0440\u0430 \u0432 \u0442\u0430\u0437\u0438 \u0437\u043e\u043d\u0430?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430, \u0438\u043c\u0430 \u0441\u0435\u0434\u044f\u0449\u0438\/\u0441\u0442\u043e\u044f\u0449\u0438",
-          "parent": null,
-          "uuid": "73bfc7e0-618b-4ea3-9eee-fd60e2dd1117",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430, \u0438\u043c\u0430 \u043f\u0440\u0435\u043c\u0438\u043d\u0430\u0432\u0430\u0449\u0438",
-          "parent": null,
-          "uuid": "2f6b71c6-f8d1-4f7e-992f-4d0ef2ab441f",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u044f\u043c\u0430",
-          "parent": null,
-          "uuid": "0e7b56f5-aa64-48df-a191-277927b4ebbb",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 289,
-      "uuid": "674ce678-ca8f-4e44-ab11-4a358dd44575",
-      "title": "\u041a\u0430\u043a\u044a\u0432 \u0435 \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u043d\u0438\u044f\u0442 \u0442\u0440\u0430\u0444\u0438\u043a \u0432 \u043c\u043e\u043c\u0435\u043d\u0442\u0430?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0418\u043d\u0442\u0435\u043d\u0437\u0438\u0432\u0435\u043d",
-          "parent": null,
-          "uuid": "3b8a2dd3-acb1-4a1f-9a6a-3e51d8b1036c",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0423\u043c\u0435\u0440\u0435\u043d",
-          "parent": null,
-          "uuid": "bb3acbca-c05c-47f1-a43a-4669f7961f67",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0421\u043f\u043e\u043a\u043e\u0435\u043d",
-          "parent": null,
-          "uuid": "93299e05-b5ad-4b9b-bfb2-1e6fbf7e0aa1",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 290,
-      "uuid": "498df252-e9e2-47aa-a958-3df4fb6776f1",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u043e\u0437\u0435\u043b\u0435\u043d\u044f\u0432\u0430\u043d\u0435?  (\u0434\u044a\u0440\u0432\u0435\u0442\u0430, \u0445\u0440\u0430\u0441\u0442\u0438, \u0442\u0440\u0435\u0432\u043d\u0438 \u043f\u043b\u043e\u0449\u0438 \u0438 \u0434\u0440.)",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430, \u0432 \u0434\u043e\u0431\u0440\u043e \u0441\u044a\u0441\u0442\u043e\u044f\u043d\u0438\u0435",
-          "parent": null,
-          "uuid": "b999a227-8650-4615-b709-58cb4a347732",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430, \u0432 \u043b\u043e\u0448\u043e \u0441\u044a\u0441\u0442\u043e\u044f\u043d\u0438\u0435",
-          "parent": null,
-          "uuid": "193c8af2-1164-4ca5-83d9-fac9f5896ab4",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435, \u043d\u044f\u043c\u0430",
-          "parent": null,
-          "uuid": "b0fd2192-5902-4817-a830-af8a35a737db",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 291,
-      "uuid": "bcf467f6-7050-479a-9105-0617224bbd03",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u0433\u0440\u0430\u0434\u0441\u043a\u043e \u043e\u0431\u0437\u0430\u0432\u0435\u0436\u0434\u0430\u043d\u0435 (\u043f\u0435\u0439\u043a\u0438, \u043a\u043e\u0448\u0447\u0435\u0442\u0430 \u0438 \u0434\u0440.)?",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u0414\u0430, \u0432 \u0434\u043e\u0431\u0440\u043e \u0441\u044a\u0441\u0442\u043e\u044f\u043d\u0438\u0435",
-          "parent": null,
-          "uuid": "3b128fb4-ada1-434f-ba17-683da5b3cb4d",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u0414\u0430, \u0432 \u043b\u043e\u0448\u043e \u0441\u044a\u0441\u0442\u043e\u044f\u043d\u0438\u0435",
-          "parent": null,
-          "uuid": "a870a512-cd06-48ec-9747-83cb4424529c",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435, \u043d\u044f\u043c\u0430",
-          "parent": null,
-          "uuid": "17b25e28-402a-4b87-8d5c-3a0306000e7d",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    },
-    {
-      "id": 292,
-      "uuid": "61213171-eaf9-477f-a1a5-bd5f52561697",
-      "title": "\u0418\u043c\u0430 \u043b\u0438 \u043d\u0435\u043f\u043e\u0434\u0434\u044a\u0440\u0436\u0430\u043d\u0438 \u0444\u0430\u0441\u0430\u0434\u0438? (\u0440\u043e\u043d\u0435\u0449\u0430 \u0441\u0435 \u043c\u0430\u0437\u0438\u043b\u043a\u0430 \u0438 \u0434\u0440.)",
-      "isAnswered": false,
-      "isCompleted": false,
-      "hasMultipleAnswers": false,
-      "answers": [
-        {
-          "title": "\u041c\u043d\u043e\u0433\u043e",
-          "parent": null,
-          "uuid": "b122a811-f0b1-4406-b33f-4b1e29102039",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041c\u0430\u043b\u043a\u043e",
-          "parent": null,
-          "uuid": "6e6ce79b-ed98-41b9-b63a-cce375505117",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u0435, \u043d\u044f\u043c\u0430",
-          "parent": null,
-          "uuid": "dae5591d-18bf-465a-b3ab-d07e52a3f2e7",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        },
-        {
-          "title": "\u041d\u044f\u043c\u0430 \u0441\u0433\u0440\u0430\u0434\u0438",
-          "parent": null,
-          "uuid": "f891651b-1130-40e8-81b5-359f5ac7345c",
-          "isSelected": false,
-          "isFreeAnswer": false,
-          "explanation": null
-        }
-      ]
-    }
-  ],
-  "progress": {
-    "total": 12,
-    "complete": 2,
-    "percentage": 17
+  "name": "rockety",
+  "version": "5.2.5",
+  "description": "Flexible front-end development toolbox",
+  "repository": "ivandokov/rockety",
+  "license": "MIT",
+  "homepage": "https://github.com/ivandokov/rockety",
+  "author": {
+    "name": "Ivan Dokov",
+    "email": "ivan@dokov.bg",
+    "url": "http://dokov.bg"
+  },
+  "scripts": {
+    "test": "exit 0"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=6.12.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "chalk": "^2.4.1",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "gulp": "~3.9.1",
+    "gulp-autoprefixer": "~5.0.0",
+    "gulp-babel": "~7.0.1",
+    "gulp-cheerio": "~0.6.3",
+    "gulp-clean-css": "~3.9.4",
+    "gulp-concat": "~2.6.0",
+    "gulp-eslint": "~4.0.2",
+    "gulp-less": "~4.0.0",
+    "gulp-livereload": "~3.8.1",
+    "gulp-rename": "~1.3.0",
+    "gulp-sass": "~4.0.2",
+    "gulp-sourcemaps": "~2.6.5",
+    "gulp-svgmin": "~1.2.3",
+    "gulp-svgstore": "~6.1.1",
+    "gulp-uglify": "~3.0.2",
+    "js-yaml": "^3.13.1",
+    "run-sequence": "^2.2.1",
+    "source-map-loader": "^0.2.3",
+    "tar": ">=4.4.2",
+    "webpack": "^3.10.0",
+    "webpack-stream": "^4.0.3"
+  },
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.4.1",
+    "leaflet": "^1.4.0"
   }
 }
