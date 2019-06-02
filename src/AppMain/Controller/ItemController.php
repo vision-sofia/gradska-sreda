@@ -215,7 +215,14 @@ class ItemController extends AbstractController
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
-        return new JsonResponse($this->surveyResult($geoObject));
+        return new JsonResponse([
+            'geoObject' => [
+                'id' => $geoObject->getUuid(),
+                'name' => $geoObject->getName(),
+                'type' => $geoObject->getType()->getName(),
+            ],
+            'survey' => $this->surveyResult($geoObject)
+        ]);
     }
 
     /**
