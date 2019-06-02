@@ -43,9 +43,17 @@
         }
     }
 
+    &-nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
     .carousel {
+        $carousel: &;
+
         z-index: 0;
-        
+
         &-item {
             background-color: #fff;
         }

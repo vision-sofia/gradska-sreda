@@ -1,23 +1,12 @@
 export class Survey {
+    mapInstance;
     layer;
-    event;
     geoObjectUUID = ''; 
     isOpen = false;
+    lastCenterPoint;
+    mapMarker;
 
     timeoutId;
-    mapInstance;
-    lastCenterPoint;
-    elPathVoteSurveyContainer;
-    elProgressBar;
-    elSurveyPollBtn;
-    elSurveayForm;
-    mapAreaHeight = 100; // Precents 
-    mapMarkerIcon = L.icon({
-        iconUrl: 'front/svg/icon--map-pin--edit.svg',
-        iconSize:     [53.707, 53.707], // size of the icon
-        iconAnchor:   [26.9, 53], // point of the icon which will correspond to marker's location
-    });
-    mapMarker;
     progress = 0;
     questions = [];
     results = {
@@ -25,20 +14,54 @@ export class Survey {
         respondents: [{}]
     };
 
+    mapAreaHeight = 100; // Precents  // TODO take form MapInstance 
+    mapMarkerIcon = L.icon({
+        iconUrl: 'front/svg/icon--map-pin--edit.svg',
+        iconSize:     [53.707, 53.707], // size of the icon
+        iconAnchor:   [26.9, 53], // point of the icon which will correspond to marker's location
+    });
+
+    // UI
+    event;
+    elPathVoteSurveyContainer;
+    elProgressBar;
+    elSurveayForm;
+    elSurveyCarouselNav;
+    elSurveyPollBtn;
+    refSurveyCarousel;
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
-        this.elPathVoteSurveyContainer = document.getElementById('path-vote-suevey');
-        if (!this.elPathVoteSurveyContainer) {
-            return;
-        }
-        this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
-        this.elSurveyPollBtn = this.elPathVoteSurveyContainer.querySelector('.survey-btn-poll');
-        this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
+      
+
+        this.queryElements();
         this.events();
     }
 
+    queryElements() {
+        this.elPathVoteSurveyContainer = document.getElementById('path-vote-suevey');
+        if (!this.elPathVoteSurveyContainer) {
+           throw 'Element "#path-vote-suevey" not found';
+        }
+        this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
+        this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
+          
+        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.survey-btn-poll');
+        this.elSurveyPollBtn = this.elSurveyCarouselNav[1];
+        this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carouselServeyPages');
+    }
+
     events() {
+        $(this.elSurveyCarouselNav).on('click', (e) => {
+            if (e.currentTarget.classList.contains('active')) {
+                return false;
+            }
+            this.elSurveyCarouselNav.forEach((navItem) => {
+                navItem.classList.remove('active');
+            })
+            e.currentTarget.classList.add('active')
+        });
+
         $(document).on('click', '[data-survey-open]', () => {
             this.mapInstance.map.closePopup();
 
