@@ -155,12 +155,8 @@ export class Map {
             };
         }
         
-        window.addEventListener('resize', debounce(() => {
-            console.log(window.innerHeight);
-            
-            document.documentElement.classList.add('phone')
-            
-        }, 200, false), false);
+        // window.addEventListener('resize', debounce(() => {
+        // }, 200, false), false);
 
     }
 
@@ -171,7 +167,6 @@ export class Map {
     toggleHeaderEl(isActive) {
         if (isActive || !defaultElConfig.elHeader.classList.contains('active') && isActive) {
             defaultElConfig.elHeader.classList.add('active');
-            console.log('OPEN');
             
             const elHeaderHeight = getComputedStyle(defaultElConfig.elHeader).height;
             
@@ -181,8 +176,6 @@ export class Map {
                 top: elHeaderHeight,
             });
         } else {
-            console.log('CLOSE');
-
             defaultElConfig.elHeader.classList.remove('active');
             this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
         }
