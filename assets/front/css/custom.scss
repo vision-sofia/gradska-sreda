@@ -1,3 +1,67 @@
+#app-header {
+  top: 0;
+  left: 0;
+  transition: 0.3s ease transform;
+  transform: translate3d(0, -100%, 0);
+
+  &.active {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.carousel {
+  $carousel: &;
+
+  &-vertical-stack {
+    #{$carousel}-item {
+      display: block !important;
+      transition: none !important;
+      transform: translate3d(0, 0, 0);
+      opacity: 0;
+      animation: animate-vertical-fade 0.8s ease forwards;
+
+      @keyframes animate-vertical-fade {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0.05;        
+        }
+      }
+
+      @media only screen and (max-width: map-get($grid-breakpoints, md)) {
+        @keyframes animate-vertical-stack {
+          from {
+            transform: translate3d(0, 100%, 0);
+          }
+          to {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+      }
+
+      @media only screen and (min-width: map-get($grid-breakpoints, md)) {
+        @keyframes animate-vertical-stack {
+          from {
+            transform: translate3d(100%, 0, 0);
+          }
+          to {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+      }
+
+      &.active {
+        opacity: 1;
+        z-index: 10;
+        animation: animate-vertical-stack 0.6s ease forwards !important;
+      }
+    }
+  }
+}
+
+
+
 .footer-nav {
   background-color: $colorPrimary;
   color: $white;

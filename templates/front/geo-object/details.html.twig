@@ -1,47 +1,60 @@
-{% extends 'front/geo-object/layout.html.twig' %}
-
 {% block content %}
-    <div class="container">
-        <div class="row mt-4">
-            <div class="col-lg-5">
-                <div class="mb-4">
-                    <div id="mapMini" class="map-wide"></div>
-                    <div class="confirm {% if app.debug %}confirm--debug{% endif %} d-none">
-                        <div class="container py-4">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <h5 class="font-weight-bold mb-3" data-confirm-title>Искате ли да оцените?</h5>
-                                </div>
-                                <div class="col-12 text-center">
-                                    <a href="#" data-confirm-link class="btn btn-success mr-3 px-4">ДА</a>
-                                    <span data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</span>
+    <div id="path-vote-suevey" class="survey d-flex flex-column align-items-center justify-content-start">
+        <div class="container survey-btn-close-holder position-fixed d-flex flex-column align-items-center justify-content-center">
+            <button data-survey-close class="btn cursor-pointer survey-btn-close">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="survey-nav d-flex flex-md-column p-md-2 mt-md-3">
+                <a data-slide-to="0" class="active survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
+                    <i class="fas fa-poll fa-rotate-90"></i>
+                </a>
+                <div class="ml-2 ml-md-0 mt-md-2" data-toggle="tooltip" data-placement="top" title="Трябва да попълните анкетата, за да видите статистиката.">
+                    <a data-slide-to="1" class=" survey-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
+                        <i class="fas fa-chart-pie"></i>
+                    </a>
+                </div>
+            </div>
+        </div>  
+        <div id="carouselServeyPages" data-interval="0" data-ride="false" class="d-flex justify-content-center w-100 row pl-lg-4 overflow-auto carousel slide carousel-vertical-stack h-100">
+            <div class="carousel-inner mt-5 mt-md-0 coll">
+                <div class="carousel-item p-4 h-100 active">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                Попълнена анкета
+                                <div class="survey-progress d-flex mb-2">
+                                    <div class="progress flex-grow-1">
+                                        <div class="survey-progress-bar progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mb-5">
+                            <div class="col">
+                                <h3>Обект: <strong class="geo-object-name">'geo_object.attributes.name'</strong></h3>
+                                <h3>Тип: <strong class="geo-object-type">'geo_object.attributes.type'</strong></h4>
+                            </div>
+                        </div>
+
+                        <form class="survey-form"></form>
                     </div>
                 </div>
+                <div class="carousel-item p-4 h-100">
+                    <div class="container">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h3>Статистиката</h3>      
+                        </div>
 
-                <div class="row">
-                    <div class="col">
-                        <h5>Обект: <strong>{{ geoObject.properties.name }}</strong></h5>
-                        <h5 class="m-0">Тип: <strong>{{ geoObject.properties.type }}</strong></h5>
+                        <h4>Рейтинг</h4>
+
+                        <div class="survey-ratings-rating"></div>
+
+                        <h4 class="mt-4">Оценки от хората</h4>
+                        <div class="survey-ratings-respondents"></div>
                     </div>
                 </div>
-
-                <div id="surveyProgress" data-object-id="{{ geoObject.uuid }}" class="mt-3"></div>
-            </div>
-
-            <div class="col-lg-7">
-                <div id="survey"></div>
             </div>
         </div>
     </div>
-    <script>
-        let mapOption = {
-            survey: true,
-            geoObject: '{{ geoObject.uuid }}'
-        };
-
-        let geoObject = '{{ geoObject.uuid }}'
-    </script>
 {% endblock %}

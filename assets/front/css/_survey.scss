@@ -1,0 +1,118 @@
+.survey {
+    position: absolute;
+    background-color: #fff;
+    transition: top 0.3s ease;
+    transform: translate3d(0, 0, 0);
+    transform-style: preserve-3d;
+
+    &.active { 
+    }
+
+    &-btn {
+        &-close {
+            font-size: 2rem;
+            padding: 3px 20px;
+            line-height: 0;
+            color: #5655a4;
+
+            &-holder {
+                background-color: #fff;
+                z-index: 10;
+                left: 0;
+            }
+        }
+    }
+
+    &-question {
+        &-option {
+            cursor: pointer;
+
+            &.is-answered {
+                color: green;
+            }
+        }
+    }
+
+    &-nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        &-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 43px;
+            height: 43px;
+        }
+    }
+
+    .carousel {
+        $carousel: &;
+
+        z-index: 0;
+
+        &-item {
+            background-color: #fff;
+            overflow: auto;
+        }
+
+        &-inner {
+            height: 100%;
+            overflow: hidden;
+        }
+    }
+
+
+    @media only screen and (min-width: map-get($grid-breakpoints, md)) {
+        --suevey-width: 42%; // Sould allways be precentage unles changes in JS are made
+        $width: var(--suevey-width);
+        width: $width;
+        height: 100%;
+        left: 100%;
+        transition: left 0.3s ease;
+
+        &.active {
+            top: 0;
+            left: calc(100% - #{$width});
+        }
+
+        &-btn {
+            &-close {
+                transform: rotate(90deg);
+
+                &-holder {
+                    width: 2.5rem;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: map-get($grid-breakpoints, md)) {
+        --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
+        top: 100%;
+        width: 100%;
+        height: var(--suevey-height);
+        transition: top 0.3s ease;
+
+        &.active {
+            top: 38%;
+        }
+
+        &-btn {
+            &-close {
+                &-holder {
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2.5rem;
+                }
+            }
+        }
+
+        &-nav {
+            margin-top: -12px;
+        }
+    }
+}
