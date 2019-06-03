@@ -188,7 +188,14 @@ class ItemController extends AbstractController
 
             $stmt->execute([$text['text']]);
 
-            return new JsonResponse($this->surveyResult($geoObject));
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
         }
 
         $answerUuid = $request->request->get('answer');
@@ -206,11 +213,25 @@ class ItemController extends AbstractController
             $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
             $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
 
-            return new JsonResponse($this->surveyResult($geoObject));
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
         }
 
         if ($questionV3->isAnsweredAndSingleAnswer($answerUuid, $userId, $geoObjectId)) {
-            return new JsonResponse($this->surveyResult($geoObject));
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
         }
 
         $questionV3->clearOut($answerUuid, $userId, $geoObjectId);
