@@ -147,7 +147,7 @@ class ItemController extends AbstractController
         ];
 
         return [
-            'survey' => $survey,
+            'questions' => $survey,
             'progress' => $progress
         ];
     }
