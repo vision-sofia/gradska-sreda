@@ -89,7 +89,7 @@ class MapController extends AbstractController
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $survey->getId());
 
-        $userGeoCollection = $userSubmitted = $objects = [];
+        $userGeoCollection = $userSubmitted = $objects =  $gcObjects = [];
         $boundingBoxes = [];
 
         if ($this->getUser()) {
@@ -130,11 +130,11 @@ class MapController extends AbstractController
         }
 
         foreach ($userGeoCollection as $row) {
-            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($boundingBoxes as $row) {
-            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userSubmitted as $row) {
@@ -170,10 +170,11 @@ class MapController extends AbstractController
                     2 => '',
                     3 => '',
                 ],
-            ]
+            ],
         ];
-
-        $content = $this->jsonUtils->concatString($settings, 'objects', $this->jsonUtils->joinArray($objects));
+        // TODO: concat more keys
+        $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
+        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/json');
