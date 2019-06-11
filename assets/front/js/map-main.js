@@ -354,12 +354,16 @@ export class Map {
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
+       console.log(layer.feature.properties._behavior );
        
         if (layer.feature.properties._behavior === 'survey') {
             this.openSuerveyPopup(layer, ev);
         }
 
-        switch (layer.feature.properties._behavior)  {
+        switch (layer.feature.properties._behavior) {
+            case 'info':
+                this.openInfoPopup(layer, ev);
+            break;
             case 'survey':
                 this.openSuerveyPopup(layer, ev);
                 break;
@@ -382,6 +386,35 @@ export class Map {
         this.activeLayer = null;
         this.setLayerDefaultStyle(layer);
         this.removeAllPopups();
+    }
+
+    openInfoPopup(layer, ev) {
+        const coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
+
+        let popupLayer = L.circle(coordinates, {
+            fillOpacity: 0,
+            weight: 0,
+            opacity: 0,
+            radius: 1
+        }).addTo(this.popusLayerGroup);
+
+        const infoTemplate = `
+            <p class="text-center">
+                <!-- <form method="post" class="m-form" action="/front-end/geo-collection/add">
+                    <input type="hidden" name="geo-object" value="${layer.feature.properties.id}">
+                    <button type="submit">${layer.feature.properties.id}</button>
+                </form> -->
+                ${layer.feature.properties.type}<br />${layer.feature.properties.name}
+            </p>
+        `;
+
+        const popupContent = infoTemplate;
+
+        popupLayer.bindPopup(popupContent, {
+            offset: L.point(0, -20)
+        }).on('popupclose', () => {
+            this.onPopupClose(layer);
+        }).openPopup();
     }
 
     openSuerveyPopup(layer, ev) {
