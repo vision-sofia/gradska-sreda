@@ -13,7 +13,7 @@
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item{{ app.request.get('_route') == 'app.geo-collection.create' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.geo-collection.create') }}">Маршрути</a>
+                        <a class="nav-link" href="#collection" data-toggle="collapse" data-target="#collapsingNavbar">Маршрути</a>
                     </li>
                     <li class="nav-item{{ app.request.get('_route') == 'app.achievements.index' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.achievements.index') }}">Постижения</a>

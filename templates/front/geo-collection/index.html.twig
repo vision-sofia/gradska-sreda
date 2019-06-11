@@ -1,37 +1,16 @@
-{% extends 'front/map/layout.html.twig' %}
-{% block title %}Карта{% endblock %}
 {% block content %}
-    <div class="gc-map-wrapper">
-        <div id="mapMini" class="map-left" data-locate-on-load="true"></div>
-    </div>
-    <div class="gc-sidebar-wrapper pl-5">
+    <div class="side-panel">
         <p>Отбележете своя маршрут до спирка на градския трансопрт.</p>
 
-        <form action="{{ path('app.geo-collection.add') }}" method="post" class="mb-4">
-            <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
-        </form>
+        <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
 
         Избереше маршрут:
-
+{# 
         <ul class="mt-2 pl-4">
-            {% set m = 0 %}
-            {% for collectionItem in collections %}
-                {% set m = m + 1 %}
-                <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
-                       class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
-                    {% if collection is defined and collectionItem.uuid == collection.uuid %}[<span class="text-success"> активен</span>]{% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+            <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
+                    class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
+                {% if collection is defined and collectionItem.uuid == collection.uuid %}[<span class="text-success"> активен</span>]{% endif %}
+            </li>
+        </ul> #}
     </div>
-
-    <script>
-        let mapOption = {
-            {% if collection is defined %}
-            collection: '{{ collection.uuid }}',
-            {% endif %}
-            survey: false,
-        {#    {% if boundingBox is not empty %}bbox: {{ boundingBox }}{% endif %} #}
-        }
-    </script>
 {% endblock %}

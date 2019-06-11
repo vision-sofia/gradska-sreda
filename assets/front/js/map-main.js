@@ -2,41 +2,28 @@ import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle, default
 
 export class Map {
     map;
-    objectsSettings = {};
-    geoJsonLayer = {};
     activeLayer;
     myLocationLayerGroup = L.layerGroup();
     popusLayerGroup = L.layerGroup();
     voteSurvay;
+    mapResponse = {
+        settings: {},
+        geoJsonLayer: [],
+    };
+    isMapLoaded = false;
 
     constructor() {
     }
 
     init() {
-        this.map = new L.map('mapMain', {
-            updateWhenZooming: false,
-            attributionControl: false
-        });
-        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
-
+        this.initMap();
         this.selectInitialElements();
         this.events();
         this.toggleHeaderEl(true);
-
-        if (!document.getElementById('mapMain')) {
-            return;
-        }
         this.loading = $('.loading');
-        this.confirmModal = $('.confirm');
-
-        $(document).on('click', '[data-confirm-cancel]', () => {
-            this.removeAllPopups();
-        });
+       
         //const mapCenter = mapOption.center;
         //const mapZoom = mapOption.zoom;
-
-    
-        let initialLoad = false;
 
         let mapStyle = L.tileLayer(mapBoxUrl, {
             attribution: mapBoxAttribution,
@@ -70,31 +57,11 @@ export class Map {
 
         this.popusLayerGroup.addTo(this.map);
 
-        let updateMapThrottle;
-        this.map.on('moveend', () => {
-            clearTimeout(updateMapThrottle);
-            
-            updateMapThrottle = setTimeout(() => {
-                let center = this.map.getCenter();
+       
 
-                this.updateMap(center, () => {
-                    if (!initialLoad) {
-                        initialLoad = true;
-                        if ($('#mapMain').data('locate-on-load') === true) {
-                            this.locate();
-                        }
-                    }
-                })
-            }, 300);
-        });
-
-
-        this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
-        this.map.on('locationerror', this.setInitialMapView.bind(this));
-
-        this.geoJsonLayer = L.geoJSON([], { 
+        this.mapResponse.geoJsonLayer = L.geoJSON([], { 
             style: (feature) => {
-                let styles = this.objectsSettings.styles[feature.properties._s1] ? {...this.objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
             },
             onEachFeature: (feature, layer) => {
@@ -104,7 +71,7 @@ export class Map {
                             this.zoomToLayer(layer, ev);
                             break;
                         default:
-                            this.openLayerPopup(layer, ev);
+                            this.onLayerClick(layer, ev);
                             this.zoomToLayer(layer, ev);
                             break;
                     }
@@ -113,7 +80,7 @@ export class Map {
                     if (layer.feature.properties.activePopup) {
                         return; 
                     }
-                    if (this.objectsSettings.styles[feature.properties._s2]) {
+                    if (this.mapResponse.settings.styles[feature.properties._s2]) {
                         this.setLayerHoverStyle(layer);
                     }
                 });
@@ -121,21 +88,35 @@ export class Map {
                     if (layer.feature.properties.activePopup || this.activeLayer === layer) {
                         return;
                     }
-                    if (this.objectsSettings.styles[feature.properties._s1]) {
+                    if (this.mapResponse.settings.styles[feature.properties._s1]) {
                         this.setLayerDefaultStyle(layer);
                     }
                 });
             },
             pointToLayer: (feature, latlng) => {
-                return L.circleMarker(latlng, this.objectsSettings.styles[feature.properties._s1]);
+                return L.circleMarker(latlng, this.mapResponse.settings.styles[feature.properties._s1]);
             }
         }).addTo(this.map);
 
         this.setInitialMapView();
     }
 
+    initMap() {
+        const elMap = document.getElementById('mapMain');
+        if (!elMap) {
+            return;
+        }
+
+        this.map = new L.map('mapMain', {
+            updateWhenZooming: false,
+            attributionControl: false
+        });
+
+        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+    }
+
     events() {
-        const debounce = (func, wait, immediate) => {
+        const debounce = (func, wait, immediate = false) => {
             let timeout;
             return () => {
                 const later = () => {
@@ -154,9 +135,29 @@ export class Map {
                 }
             };
         }
+
+        $(document).on('click', '[data-confirm-cancel]', () => {
+            this.removeAllPopups();
+        });
+
+       
+        this.map.on('moveend', debounce(() => {
+            const center = this.map.getCenter();
+            this.updateMap(center);
+        }, 300));
+
+        this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
+        this.map.on('locationerror', this.setInitialMapView.bind(this));
         
         // window.addEventListener('resize', debounce(() => {
         // }, 200, false), false);
+    }
+
+    setModeCollection() {
+
+    }
+
+    setModeView() {
 
     }
 
@@ -204,11 +205,12 @@ export class Map {
 
         $.ajax({
             data: returnedTarget,
-            url: "/front-end/map?",
+            url: '/front-end/map?',
             success: (results) => {
-                this.objectsSettings = results.settings;
-                this.geoJsonLayer.clearLayers();
-                this.geoJsonLayer.addData(results.objects);
+                this.isMapLoaded = true;
+                this.mapResponse.settings = results.settings;
+                this.mapResponse.geoJsonLayer.clearLayers();
+                this.mapResponse.geoJsonLayer.addData(results.objects);
                 this.setLayerActiveStyle();
                 fn();
             }
@@ -235,7 +237,7 @@ export class Map {
         this.loading.removeClass('d-none');
         this.map.locate({
             setView: true,
-            maxZoom: this.objectsSettings.default_zoom
+            maxZoom: this.mapResponse.settings.default_zoom
         });
     }
 
@@ -303,27 +305,43 @@ export class Map {
         }
     }
 
-    openLayerPopup(layer, ev) {
+    onLayerClick(layer, ev) {
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
-
-        let coordinates;
-
-
+       
         if (layer.feature.properties._behavior === 'survey') {
-            coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
-            if (mapOption.survey === true) {
-                // openConfirmModal(layer);
-                this.setSurveyData(layer, ev);
-                // if (this.voteSurvay.isOpen) {
-                    // return;
-                // }
-            }
-        } else {
-            coordinates = ev.latlng;
+            this.openSuerveyPopup(layer, ev);
         }
 
+        switch (layer.feature.properties._behavior)  {
+            case 'survey':
+                this.openSuerveyPopup(layer, ev);
+                break;
+            case 'collections':
+                this.addCollection(layer, ev);
+                break;
+
+        }
+    }
+
+    removeAllPopups() {
+        this.map.closePopup();
+        this.popusLayerGroup.eachLayer((layer) => {
+            this.popusLayerGroup.removeLayer(layer);
+        });
+    }
+
+    onPopupClose(layer) {
+        layer.feature.properties.activePopup = false;
+        this.activeLayer = null;
+        this.setLayerDefaultStyle(layer);
+        this.removeAllPopups();
+    }
+
+    openSuerveyPopup(layer, ev) {
+        const coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
+        this.setSurveyData(layer, ev);
 
         let popupLayer = L.circle(coordinates, {
             fillOpacity: 0,
@@ -331,7 +349,6 @@ export class Map {
             opacity: 0,
             radius: 1
         }).addTo(this.popusLayerGroup);
-
 
         const surveyTemplate = `
             <p class="text-center">
@@ -362,43 +379,36 @@ export class Map {
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
         }).on('popupclose', () => {
-            this.confirmModal.addClass('d-none');
-            layer.feature.properties.activePopup = false;
-            this.activeLayer = null;
-            this.setLayerDefaultStyle(layer);
-            this.removeAllPopups();
+            console.log('asCLOSEas');
+            
+            this.onPopupClose(layer);
         }).openPopup();
-
-        let collection = mapOption.collection;
-
-        // if (typeof collection !== 'undefined') {
-        //     $.ajax({
-        //         type: "POST",
-        //         url: '/front-end/geo-collection/add',
-        //         data: {
-        //             'geo-object': layer.feature.properties.id,
-        //             'collection': collection
-        //         },
-        //         success: () => {
-        //             this.updateMap();
-        //         }
-        //     });
-        // }
     }
 
-    removeAllPopups() {
-        this.map.closePopup();
-        this.popusLayerGroup.eachLayer((layer) => {
-            this.popusLayerGroup.removeLayer(layer);
-        });
+    addCollection() {
+        let collection = mapOption.collection;
+
+        if (typeof collection !== 'undefined') {
+            $.ajax({
+                type: "POST",
+                url: '/front-end/geo-collection/add',
+                data: {
+                    'geo-object': layer.feature.properties.id,
+                    'collection': collection
+                },
+                success: () => {
+                    this.updateMap();
+                }
+            });
+        }
     }
 
     setLayerDefaultStyle(layer) {
-        layer.setStyle(this.objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+        layer.setStyle(this.mapResponse.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
     }
 
     setLayerHoverStyle(layer) {
-        layer.setStyle(this.objectsSettings.styles[layer.feature.properties._s2])
+        layer.setStyle(this.mapResponse.settings.styles[layer.feature.properties._s2])
     }
 
     setLayerActiveStyle(layer) {
@@ -414,13 +424,13 @@ export class Map {
 
         switch (this.activeLayer.feature.geometry.type) {
             case 'Point':
-                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_point']);
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_point']);
                 break;
             case 'MultiLineString':
-                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_line']);
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_line']);
                 break;
             case 'Polygon':
-                this.activeLayer.setStyle(this.objectsSettings.styles['on_dialog_polygon']);
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_polygon']);
                 break;
         }
     }

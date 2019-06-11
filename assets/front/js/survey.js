@@ -47,7 +47,7 @@ export class Survey {
         this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
         this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
           
-        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.survey-nav-btn');
+        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.side-panel-nav-btn');
         this.elSurveyPollBtn = this.elSurveyCarouselNav[1];
         this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carouselServeyPages');
     }
@@ -113,7 +113,7 @@ export class Survey {
         });
     }
 
-   getQuestions() {
+    getQuestions() {
         $.ajax({
             url: 'front-end/geo/' + this.geoObjectUUID,
             success: (result) => {
