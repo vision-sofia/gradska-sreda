@@ -8,7 +8,8 @@ export class Map {
     voteSurvay;
     mapResponse = {
         settings: {},
-        geoJsonLayer: [],
+        ObjectsGeoJsonLayer: {},
+        CollectionsGeoJsonLayer: {},
     };
     isMapLoaded = false;
 
@@ -59,7 +60,47 @@ export class Map {
 
        
 
-        this.mapResponse.geoJsonLayer = L.geoJSON([], { 
+        this.mapResponse.ObjectsGeoJsonLayer = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    switch (feature.properties._behavior) {
+                        case 'navigation':
+                            this.zoomToLayer(layer, ev);
+                            break;
+                        default:
+                            this.onLayerClick(layer, ev);
+                            this.zoomToLayer(layer, ev);
+                            break;
+                    }
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return; 
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
+                        return;
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, this.mapResponse.settings.styles[feature.properties._s1]);
+            }
+        }).addTo(this.map);
+
+
+        this.mapResponse.CollectionsGeoJsonLayer = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -211,8 +252,10 @@ export class Map {
             success: (results) => {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;
-                this.mapResponse.geoJsonLayer.clearLayers();
-                this.mapResponse.geoJsonLayer.addData(results.objects);
+                this.mapResponse.ObjectsGeoJsonLayer.clearLayers();
+                this.mapResponse.ObjectsGeoJsonLayer.addData(results.objects);
+                this.mapResponse.CollectionsGeoJsonLayer.clearLayers();
+                this.mapResponse.CollectionsGeoJsonLayer.addData(results.geoCollections);
                 this.setLayerActiveStyle();
                 fn();
             }
@@ -369,7 +412,7 @@ export class Map {
                             </h5>
                         </div>
                         <div class="col-12 text-center">
-                            <button data-survey-open data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
+                            <button data-toggle-open data-toggle-for="path-vote-suevey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
                             <button data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</button>
                         </div>
                     </div>

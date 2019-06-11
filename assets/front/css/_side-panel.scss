@@ -76,10 +76,10 @@
     }
 
     @media only screen and (max-width: map-get($grid-breakpoints, md)) {
-        --suevey-height: 62%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-height: 62%; // Sould allways be precentage unles changes in JS are made
         top: 100%;
         width: 100%;
-        height: var(--suevey-height);
+        height: var(--side-panel-height);
         transition: top 0.3s ease;
 
         &.active {

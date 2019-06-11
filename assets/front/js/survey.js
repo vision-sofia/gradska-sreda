@@ -63,17 +63,16 @@ export class Survey {
             e.currentTarget.classList.add('active')
         });
 
-        $(document).on('click', '[data-survey-open]', () => {
-            this.mapInstance.map.closePopup();
 
+        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-open]', () => {
             this.open(this.layer, this.ev);
         });
         
-        $(document).on('click', '[data-survey-close]', () => {
+        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-close]', () => {
             this.close();
         });
 
-        $(document).on('input propertychange', '.answer', (e) => {
+        $(this.elPathVoteSurveyContainer.querySelector('.answer')).on('input propertychange', (e) => {
             const target = e.target;
             let data = {};
             let debounceTime = 0;
@@ -292,6 +291,7 @@ export class Survey {
 
     open(layer, ev) {
         this.isOpen = true;
+        this.mapInstance.map.closePopup();
         this.mapInstance.setLayerActiveStyle(this.layer);
         this.addMarker();
 
@@ -301,10 +301,9 @@ export class Survey {
 
         this.elPathVoteSurveyContainer.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
         this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
-        this.elPathVoteSurveyContainer.classList.add('active');
 
         this.lastCenterPoint = this.event.latlng;
-        const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-height'));
+        const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-height'));
         const activeAreaHeight = this.mapAreaHeight - surveyHeight;
 
         const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-width'));
@@ -322,14 +321,9 @@ export class Survey {
 
     }
 
-    toggleHeader() {
-
-    }
-
     close() {
         this.isOpen = false;
         this.removeMarker();
-        this.elPathVoteSurveyContainer.classList.remove('active');
 
         this.mapInstance.toggleHeaderEl(true);
 
