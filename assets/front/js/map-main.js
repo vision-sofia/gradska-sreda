@@ -354,12 +354,7 @@ export class Map {
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
-       console.log(layer.feature.properties._behavior );
        
-        if (layer.feature.properties._behavior === 'survey') {
-            this.openSuerveyPopup(layer, ev);
-        }
-
         switch (layer.feature.properties._behavior) {
             case 'info':
                 this.openInfoPopup(layer, ev);
