@@ -142,9 +142,11 @@ export class Map {
 
        
         this.map.on('moveend', debounce(() => {
+            console.log(this.map);
+            
             const center = this.map.getCenter();
             this.updateMap(center);
-        }, 300));
+        }, 200));
 
         this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
         this.map.on('locationerror', this.setInitialMapView.bind(this));
@@ -379,8 +381,6 @@ export class Map {
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
         }).on('popupclose', () => {
-            console.log('asCLOSEas');
-            
             this.onPopupClose(layer);
         }).openPopup();
     }
