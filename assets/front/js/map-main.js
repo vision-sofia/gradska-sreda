@@ -181,7 +181,15 @@ export class Map {
             this.removeAllPopups();
         });
 
-       
+        $(document).on('click', '[data-confirm-cancel]', () => {
+            this.removeAllPopups();
+        });
+
+        $(document).on('click', '[href="collections"]', (e) => {
+            $(e.currentTarget).toggleClass('.active')
+        });
+
+
         this.map.on('moveend', debounce(() => {
             console.log(this.map);
             
@@ -194,14 +202,6 @@ export class Map {
         
         // window.addEventListener('resize', debounce(() => {
         // }, 200, false), false);
-    }
-
-    setModeCollection() {
-
-    }
-
-    setModeView() {
-
     }
 
     selectInitialElements() {
@@ -360,10 +360,11 @@ export class Map {
                 this.openInfoPopup(layer, ev);
             break;
             case 'survey':
-                this.openSuerveyPopup(layer, ev);
-                break;
-            case 'collections':
-                this.addCollection(layer, ev);
+                if (this.collections.isCollectionsActive) {
+                    this.collections.add(layer, ev);
+                } else {
+                    this.openSuerveyPopup(layer, ev);
+                }
                 break;
 
         }
@@ -456,24 +457,6 @@ export class Map {
         }).openPopup();
     }
 
-    addCollection() {
-        let collection = mapOption.collection;
-
-        if (typeof collection !== 'undefined') {
-            $.ajax({
-                type: "POST",
-                url: '/front-end/geo-collection/add',
-                data: {
-                    'geo-object': layer.feature.properties.id,
-                    'collection': collection
-                },
-                success: () => {
-                    this.updateMap();
-                }
-            });
-        }
-    }
-
     setLayerDefaultStyle(layer) {
         layer.setStyle(this.mapResponse.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
     }
@@ -504,6 +487,10 @@ export class Map {
                 this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_polygon']);
                 break;
         }
+    }
+
+    setCollection(collctions) {
+        this.collections = collctions;
     }
 
     setSurvey(voteSurvay) {

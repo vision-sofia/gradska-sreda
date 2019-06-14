@@ -14,17 +14,16 @@ import { Collections } from './collections';
     mapInstance.setSurvey(pathVoteSurvey);
 
     const collctions = new Collections(mapInstance);
+    mapInstance.setCollection(collctions);
 
-    window.addEventListener('hashchange', (e) => {
-        switch(window.location.hash) {
-            case '#collection':
-                mapInstance.setModeCollection();
-            break;
-            default: 
-                mapInstance.setModeView();
-        }
-    });
-
-    
+    // window.addEventListener('hashchange', (e) => {
+    //     switch(window.location.hash) {
+    //         case '#collection':
+    //             mapInstance.setModeCollection();
+    //         break;
+    //         default: 
+    //             mapInstance.setModeView();
+    //     }
+    // });
  })();
 

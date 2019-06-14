@@ -1,16 +1,38 @@
 {% block content %}
-    <div class="side-panel">
+    <div id="collections" class="side-panel p-4">
+        <div class="container side-panel-btn-close-holder position-fixed d-flex flex-column align-items-center justify-content-center">
+            <button data-toggle-close="" data-toggle-for="path-vote-suevey" class="btn cursor-pointer side-panel-btn-close">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="side-panel-nav d-flex flex-md-column p-md-2 mt-md-3">
+                <a data-slide-to="0" class="active side-panel-nav-btn btn btn-primary rounded-circle" href="#carouselServeyPages" role="button" data-slide="next">
+                    <i class="fas fa-poll fa-rotate-90"></i>
+                </a>
+                <div class="ml-2 ml-md-0 mt-md-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Трябва да попълните анкетата, за да видите статистиката.">
+                    <a data-slide-to="1" class="side-panel-nav-btn btn btn-primary rounded-circle disabled" href="#carouselServeyPages" role="button" data-slide="next">
+                        <i class="fas fa-chart-pie"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <p>Отбележете своя маршрут до спирка на градския трансопрт.</p>
 
         <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
 
         Избереше маршрут:
-{# 
-        <ul class="mt-2 pl-4">
-            <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
-                    class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
-                {% if collection is defined and collectionItem.uuid == collection.uuid %}[<span class="text-success"> активен</span>]{% endif %}
-            </li>
-        </ul> #}
+        <p>
+            Натиснете на отсечка от картата за да я добавите към маршрут. Натиснете повторно на отсечка от маршрута за да я извадите.
+        </p>
+
+        <div id="collections-list">
+        </div>
+    </div>
+
+    <div class="collections-toggle checkbox">
+        <label>
+            <input id="collections-toggle" data-toggle-open data-toggle-for="collections" type="checkbox" data-toggle="toggle">
+            Option one is enabled
+        </label>
     </div>
 {% endblock %}

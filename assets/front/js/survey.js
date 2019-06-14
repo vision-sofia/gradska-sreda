@@ -169,7 +169,6 @@ export class Survey {
 
         document.querySelector('.survey-ratings-rating').innerHTML = ratingHTML;
 
-
         Object.keys(this.results.respondents).forEach((respondentUser) => {
             respondentsHTML += `<strong>${respondentUser}</strong>`;
 
@@ -215,25 +214,25 @@ export class Survey {
 
                     html += `<div class="d-flex flex-column">
                                 <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                    <input class="mr-1 answer" type="` + (this.question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + this.question.uuid + `][]"
+                                    <input class="mr-1 survey-question-input" type="` + (this.question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + this.question.uuid + `][]"
                                     ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `
                                 </label>
                             </div>`;
 
                     if (this.question.answers[answer].isFreeAnswer) {
-                        html += `<textarea class="answer"></textarea>`;
+                        html += `<textarea class="survey-question-input"></textarea>`;
                     }
                 } else {
                     if (isSelectedParent === true) {
                         html += `<div class="pl-4 d-flex flex-column">
                                     <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                        <input class="mr-1  answer" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
+                                        <input class="mr-1  survey-question-input" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
                                         ` + answers[answer].title +
                                     `</label>`;
 
                         if (answers[answer].isSelected && this.question.answers[answer].isFreeAnswer) {
                             html += `<label class="` + (answers[answer].isSelected ? 'is-answered' : '') + `">
-                                        <textarea class="answer d-block" id="textarea-` + this.question.answers[answer].uuid + `]">` + this.question.answers[answer].explanation + `</textarea>
+                                        <textarea class="survey-question-input d-block" id="textarea-` + this.question.answers[answer].uuid + `]">` + this.question.answers[answer].explanation + `</textarea>
                                     </label>`;
                         }
 
