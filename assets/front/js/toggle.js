@@ -1,9 +1,12 @@
 $(document).on('click', '[data-toggle-open]', (e) => {
-    const taegetToggleEl = document.getElementById(e.currentTarget.getAttribute('data-toggle-for'));
-    taegetToggleEl.classList.add('active'); 
+    const targetToggleEl = document.getElementById(e.currentTarget.getAttribute('data-toggle-for'));
+    
+    $(`[data-toggle-type="${targetToggleEl.getAttribute('data-toggle-type')}"]`).removeClass('active');
+
+    targetToggleEl.classList.add('active'); 
 });
 
 $(document).on('click', '[data-toggle-close]', (e) => {
-    const taegetToggleEl = document.getElementById(e.currentTarget.getAttribute('data-toggle-for'));
-    taegetToggleEl.classList.remove('active');
+    const targetToggleEl = document.getElementById(e.currentTarget.getAttribute('data-toggle-for'));
+    targetToggleEl.classList.remove('active');
 });

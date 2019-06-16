@@ -1,9 +1,9 @@
 export class Collections {
     mapInstance;
-    collectionId;
+    activeCollectionId;
     elCollectionsList;
     get isCollectionsActive() {
-        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsGeoJsonLayer);
+        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
     }
 
     constructor(mapInstance) {
@@ -27,26 +27,42 @@ export class Collections {
 
         $(document).on('click', '[data-collection-id]', (e) => {
             e.preventDefault();
+            $('[data-collection-id]').removeClass('active');
+            e.currentTarget.classList.add('active');
             this.setActiveCollection(e.currentTarget.getAttribute('data-collection-id'));
         })
+
+
+        $(document).on('click', '[data-toggle-for="collections"][data-toggle-open]', () => {
+            this.open()
+        });
+        
+        $(document).on('click', '[data-toggle-for="collections"][data-toggle-close]', () => {
+            this.close();
+        });
+
+
+        this.mapInstance.toggleHeaderEl(true);
     }
 
     toggleCollectionLayer(toggle) {
         if (this.isCollectionsActive) {
-            this.mapInstance.map.removeLayer(this.mapInstance.mapResponse.CollectionsGeoJsonLayer);
+            this.mapInstance.map.removeLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
         } else {
-            this.mapInstance.mapResponse.CollectionsGeoJsonLayer.addTo(this.mapInstance.map);
+            this.mapInstance.mapResponse.CollectionsLayerGeoJson.addTo(this.mapInstance.map);
         }
     }
 
     add(layer) {
-        if (typeof this.collectionId !== 'undefined') {
+        if (typeof this.activeCollectionId !== 'undefined') {
+            this.getGeoCollectionsList();
+
             $.ajax({
                 type: 'POST',
                 url: '/front-end/geo-collection/add',
                 data: {
                     'geo-object': layer.feature.properties.id,
-                    'collection': this.collectionId
+                    'collection': this.activeCollectionId
                 },
                 success: () => {
                     const center = this.mapInstance.map.getCenter();
@@ -56,43 +72,55 @@ export class Collections {
         }
     }
 
-    setActiveCollection(collectionId) {
-        this.collectionId = collectionId;
+    onLayerClick(layer, ev) {
+    //     layer.feature.properties.activePopup = true;
+    //     this.mapInstance.setLayerActiveStyle(layer);
+    //     this.mapInstance.removeAllPopups();
+    //    console.log('aaadadad');
+       
+    //     if (layer.feature.properties._behavior === 'survey') {
+    //         if (this.isCollectionsActive) {
+    //             this.add(layer, ev);
+    //         }
+    //     }
+    }
+
+    setActiveCollection(activeCollectionId) {
+        this.activeCollectionId = activeCollectionId;
     }
 
     getGeoCollectionsList() {
         $.ajax({
             url: '/geo-collection/info',
             success: result => {
-                let html = `<ul class="mt-4 pl-4">`;
+                let html = `<ul class="collections-list mt-4 pl-4">`;
 
                 result.forEach(geoLocation => {
-                    html += `<li class="mb-2">
-							<a data-collection-id="${geoLocation.collectionUuid}" href="#${geoLocation.collectionUuid}" class="font-weight-bold">Маршрут</a>`;
-                    if (typeof gcOpen !== 'undefined') {
-                        if (gcOpen === geoLocation.collectionUuid) {
-                            html += ` [<span class="text-success">активен</span>]
-							<form method="post" class="float-right">
-							    <input type="hidden" name="_method" value="delete">
-								<button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0"><i class="fa fa-trash"></i> </button>
-							</form>`;
+                    html += `<li class="collections-list-item mb-2">`;
+                    html += `
+                        <div class="d-flex">
+                            <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.collectionUuid ? 'active' : null}" data-collection-id="${geoLocation.collectionUuid}" href="#${geoLocation.collectionUuid}">
+                                Маршрут <span class="is-active">[<span class="text-success">активен</span>]</span>
+                            </a>
+                            <span class="d-flex justify-content-end flex-grow-1">
+                                <button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </span>
+                        </div>
+                    `;
 
-                        }
-                    }
-
-                    html += `<div>
+                    html += `
+                        <div>
 							дължина: ${geoLocation.length} м<br />
 							оценен: ${geoLocation.completion.percentage} %<br />
 								<div class="progress" style="height: 3px;">
 									<div class="progress-bar" role="progressbar" style="width: ${geoLocation.completion.percentage}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-								</div>`;
+                                </div>
+                        </div>
+                    `;
 
-                    if(geoLocation.interconnectedClustersCount > 1) {
-                        html += `<span class="text-danger">грешка: в маршрута има прекъсване</span>`;
-                    }
-
-                    html +=	`</div>
-						</li>`;
+                    html +=	`</li>`;
                 });
 
                 html += `</ul>`;
@@ -100,5 +128,13 @@ export class Collections {
                 this.elCollectionsList.innerHTML = html;
             }
         });
+    }
+
+    open() {
+        this.mapInstance.toggleHeaderEl(false);
+    }
+
+    close() {
+        this.mapInstance.toggleHeaderEl(true);
     }
 }

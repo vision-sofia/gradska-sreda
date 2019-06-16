@@ -8,8 +8,8 @@ export class Map {
     voteSurvay;
     mapResponse = {
         settings: {},
-        ObjectsGeoJsonLayer: {},
-        CollectionsGeoJsonLayer: {},
+        ObjectsLayerGeoJson: {},
+        CollectionsLayerGeoJson: {},
     };
     isMapLoaded = false;
 
@@ -60,7 +60,7 @@ export class Map {
 
        
 
-        this.mapResponse.ObjectsGeoJsonLayer = L.geoJSON([], { 
+        this.mapResponse.ObjectsLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -100,7 +100,7 @@ export class Map {
         }).addTo(this.map);
 
 
-        this.mapResponse.CollectionsGeoJsonLayer = L.geoJSON([], { 
+        this.mapResponse.CollectionsLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -112,7 +112,7 @@ export class Map {
                             this.zoomToLayer(layer, ev);
                             break;
                         default:
-                            this.onLayerClick(layer, ev);
+                            this.collections.onLayerClick(layer, ev);
                             this.zoomToLayer(layer, ev);
                             break;
                     }
@@ -252,10 +252,10 @@ export class Map {
             success: (results) => {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;
-                this.mapResponse.ObjectsGeoJsonLayer.clearLayers();
-                this.mapResponse.ObjectsGeoJsonLayer.addData(results.objects);
-                this.mapResponse.CollectionsGeoJsonLayer.clearLayers();
-                this.mapResponse.CollectionsGeoJsonLayer.addData(results.geoCollections);
+                this.mapResponse.ObjectsLayerGeoJson.clearLayers();
+                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
+                this.mapResponse.CollectionsLayerGeoJson.clearLayers();
+                this.mapResponse.CollectionsLayerGeoJson.addData(results.geoCollections);
                 this.setLayerActiveStyle();
                 fn();
             }

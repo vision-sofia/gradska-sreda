@@ -4,4 +4,20 @@
         top: 300px;
         left: 40px;
     }
+    
+    &-list {
+        &-item {
+            &-link {
+                .is-active {
+                    visibility: hidden;
+                }
+                
+                &.active {
+                    .is-active {
+                        visibility: visible;
+                    }
+                }
+            }
+        }
+    }
 }
