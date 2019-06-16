@@ -1,3 +1,5 @@
+import { debounce } from './helpers';
+
 export class Survey {
     mapInstance;
     layer;
@@ -72,10 +74,9 @@ export class Survey {
             this.close();
         });
 
-        $(document).on('input propertychange', '.survey-question-input', (e) => {
+        $(document).on('input propertychange', '.survey-question-input', debounce(e => {
             const target = e.target;
             let data = {};
-            let debounceTime = 0;
     
             if (target.tagName === 'TEXTAREA') {
                 data = {
@@ -85,31 +86,18 @@ export class Survey {
                     }
                 };
     
-                debounceTime = 400;
             } else {
                 data = {
                     'answer': target.value,
                 };
             }
-           
-            clearTimeout(this.timeoutId); 
     
-            this.timeoutId = setTimeout(() => {
-                this.submitSurvey(data, target.value)
-            }, debounceTime);
-        });
+            this.submitSurvey(data, target.value)
+        }, 200));
 
         $(document).on('click', '.survey-question .remove', (e) => {
             const uuid = e.currentTarget.getAttribute('data-uuid');
-
-            $.ajax({
-                type: 'POST',
-                url: '/geo/' + this.geoObjectUUID + '/clear/' + uuid,
-                success: () => {
-                    this.getQuestions();
-                    this.getResults();
-                }
-            });
+            this.clearQuestion(uuid);
         });
     }
 
@@ -337,5 +325,16 @@ export class Survey {
             height: this.mapAreaHeight + '%',
         });
         this.mapInstance.map.panTo(this.lastCenterPoint);
+    }
+
+    clearQuestion(uuid) {
+        $.ajax({
+            type: 'POST',
+            url: '/geo/' + this.geoObjectUUID + '/clear/' + uuid,
+            success: () => {
+                this.getQuestions();
+                this.getResults();
+            }
+        });
     }
 };

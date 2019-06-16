@@ -1,3 +1,4 @@
+
 export class Collections {
     mapInstance;
     activeCollectionId;
@@ -83,7 +84,7 @@ export class Collections {
     delete(layerUUID) {
         $.ajax({
             type: 'DELETE',
-            url: `/geo-collection/${layerUUID}`,
+            url: `/front-end/geo-collection/${layerUUID}`,
             success: () => {
                 this.getGeoCollectionsList();
             }
@@ -94,7 +95,8 @@ export class Collections {
         $.ajax({
             type: 'POST',
             url: '/front-end/geo-collection/add',
-            success: () => {
+            success: (response) => {
+                this.activeCollectionId = response.id;
                 this.getGeoCollectionsList();
             }
         });
@@ -119,7 +121,7 @@ export class Collections {
 
     getGeoCollectionsList() {
         $.ajax({
-            url: '/geo-collection/info',
+            url: 'ront-end/geo-collection/info',
             success: result => {
                 let html = `<ul class="collections-list mt-4 pl-4">`;
 
@@ -127,11 +129,11 @@ export class Collections {
                     html += `<li class="collections-list-item mb-2">`;
                     html += `
                         <div class="d-flex">
-                            <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.collectionUuid ? 'active' : null}" data-collection-id="${geoLocation.collectionUuid}" href="#${geoLocation.collectionUuid}">
+                            <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.id ? 'active' : null}" data-collection-id="${geoLocation.id}" href="#${geoLocation.id}">
                                 Маршрут <span class="is-active">[<span class="text-success">активен</span>]</span>
                             </a>
                             <span class="d-flex justify-content-end flex-grow-1">
-                                <button data-uuid="${geoLocation.collectionUuid}" class="remove btn btn-sm btn-danger">
+                                <button data-uuid="${geoLocation.id}" class="remove btn btn-sm btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </span>
