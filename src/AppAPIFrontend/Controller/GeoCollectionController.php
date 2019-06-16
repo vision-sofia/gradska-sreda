@@ -108,7 +108,7 @@ class GeoCollectionController extends AbstractController
                 'isActive' => true
             ]);
 
-        $name = $request->request->get('name');
+        $name = (string)$request->request->get('name');
 
         $collection = new Collection();
         $collection->setUser($this->getUser());
@@ -142,9 +142,10 @@ class GeoCollectionController extends AbstractController
 
             $result[] = [
                 'id' => $item->getUuid(),
+                'identify' => $item->getId(),
                 'length' => $length,
                 'completion' => $completion,
-                'name' => empty($item->getName()) ? $item->getId() : $item->getName()
+                'name' => $item->getName()
                 #'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
             ];
         }
