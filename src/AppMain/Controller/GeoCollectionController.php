@@ -115,7 +115,7 @@ class GeoCollectionController extends AbstractController
             $em->flush();
         }
 
-        return new JsonResponse([], 302);
+        return new JsonResponse([]);
     }
 
     /**
