@@ -72,7 +72,7 @@ export class Survey {
             this.close();
         });
 
-        $(this.elPathVoteSurveyContainer.querySelector('.answer')).on('input propertychange', (e) => {
+        $(document).on('input propertychange', '.survey-question-input', (e) => {
             const target = e.target;
             let data = {};
             let debounceTime = 0;
@@ -80,8 +80,8 @@ export class Survey {
             if (target.tagName === 'TEXTAREA') {
                 data = {
                     'explanation': {
-                        "answer": target.id,
-                        "text": target.value,
+                        'answer': target.id,
+                        'text': target.value,
                     }
                 };
     
@@ -99,11 +99,12 @@ export class Survey {
             }, debounceTime);
         });
 
-        $(document).on('click', '.rem', () => {
-            let value = this.value;
+        $(document).on('click', '.survey-question .remove', (e) => {
+            const uuid = e.currentTarget.getAttribute('data-uuid');
+
             $.ajax({
-                type: "POST",
-                url: '/geo/' + this.geoObjectUUID + '/clear/' + value,
+                type: 'POST',
+                url: '/geo/' + this.geoObjectUUID + '/clear/' + uuid,
                 success: () => {
                     this.getQuestions();
                     this.getResults();
@@ -201,12 +202,23 @@ export class Survey {
             const answers = this.questions[item].answers;
             this.question = this.questions[item];
 
-            html += `<div class="survey-question mb-4">
-                        <div class="survey-question-title  mb-1">
-                            <i class="mr-1 fas ` + (this.question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50') + `"></i>
-                            <h5 class="survey-question-title-text d-inline">` + this.question.title + `</h5>
-                        </div>
-                        <div class="survey-question pl-4">`;
+            html += `<div class="survey-question mb-4 ${this.question.isAnswered ? 'active' : null}">`;
+
+            html += `
+                <div class="survey-question-title mb-1">
+                    <i class="mr-1 fas ${this.question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50'}"></i>
+                    <h5 class="survey-question-title-text d-inline">${this.question.title}</h5>
+                    <div class="d-flex flex-grow-1 align-items-start justify-content-end">
+                        <button type="button" class="remove btn btn-sm btn-danger" name="answers[option][${this.question.uuid}][]" data-uuid="${this.question.uuid}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="survey-question pl-4">
+            `;
 
             Object.keys(answers).forEach((answer) => {
                 if (answers[answer].parent === null) {
@@ -226,7 +238,7 @@ export class Survey {
                     if (isSelectedParent === true) {
                         html += `<div class="pl-4 d-flex flex-column">
                                     <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
-                                        <input class="mr-1  survey-question-input" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
+                                        <input class="mr-1 survey-question-input" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
                                         ` + answers[answer].title +
                                     `</label>`;
 
@@ -241,16 +253,10 @@ export class Survey {
                 }
             });
 
-            if (this.question.isAnswered) {
-                html += `<div class="d-flex justify-content-end">
-                            <button type="button" class="rem btn btn-sm btn-danger" name="answers[option][` + this.question.uuid + `][]" value="` + this.question.uuid + `">Изчисти</button>
-                        </div>`;
-            }
-
             html += `
-                        </div>
                     </div>
-                    `;
+                </div>
+            `;
         });
 
         this.elSurveayForm.innerHTML = html;

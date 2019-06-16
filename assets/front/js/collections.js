@@ -41,6 +41,14 @@ export class Collections {
             this.close();
         });
 
+        $(document).on('click', '#collections .remove', (e) => {
+            const uuid = e.currentTarget.getAttribute('data-uuid');
+            this.delete(uuid);
+        });
+
+        $(document).on('click', '#collections .add', (e) => {
+            this.new();
+        });
 
         this.mapInstance.toggleHeaderEl(true);
     }
@@ -70,6 +78,26 @@ export class Collections {
                 }
             });
         }
+    }
+
+    delete(layerUUID) {
+        $.ajax({
+            type: 'DELETE',
+            url: `/geo-collection/${layerUUID}`,
+            success: () => {
+                this.getGeoCollectionsList();
+            }
+        });
+    }
+
+    new() {
+        $.ajax({
+            type: 'POST',
+            url: '/front-end/geo-collection/add',
+            success: () => {
+                this.getGeoCollectionsList();
+            }
+        });
     }
 
     onLayerClick(layer, ev) {
@@ -103,7 +131,7 @@ export class Collections {
                                 Маршрут <span class="is-active">[<span class="text-success">активен</span>]</span>
                             </a>
                             <span class="d-flex justify-content-end flex-grow-1">
-                                <button type="submit" class="btn btn-sm btn-danger" style="font-size: 11px; padding: 4px 5px 0">
+                                <button data-uuid="${geoLocation.collectionUuid}" class="remove btn btn-sm btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </span>

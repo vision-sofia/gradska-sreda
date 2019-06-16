@@ -18,6 +18,12 @@
                     }
                 }
             }
+
+            .remove {
+                visibility: hidden;
+                font-size: 11px;
+                padding: 4px 5px 0;
+            }
         }
     }
 }
