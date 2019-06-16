@@ -52,30 +52,6 @@ class GeoCollectionController extends AbstractController
     }
 
     /**
-     * @Route("add", name="add", methods="POST")
-     */
-    public function add(): JsonResponse
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var Survey $survey */
-        $survey = $em
-            ->getRepository(Survey::class)
-            ->findOneBy([
-                'isActive' => true
-            ]);
-
-        $collection = new Collection();
-        $collection->setUser($this->getUser());
-        $collection->setSurvey($survey);
-
-        $em->persist($collection);
-        $em->flush();
-
-        return new JsonResponse(['id' => $collection->getUuid()]);
-    }
-
-    /**
      * @Route("{id}",
      *     name="view",
      *     methods="GET",
@@ -95,54 +71,5 @@ class GeoCollectionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("{id}",
-     *     name="delete",
-     *     methods="DELETE",
-     *     requirements={
-     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
-     *     }
-     * )
-     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
-     */
-    public function delete(Collection $collection): JsonResponse
-    {
-        // TODO: improve this
-        // TODO: csrf check
-        if ($collection->getUser() === $this->getUser()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($collection);
-            $em->flush();
-        }
 
-        return new JsonResponse([]);
-    }
-
-    /**
-     * @Route("info", name="info", methods="GET")
-     */
-    public function info(): Response
-    {
-        /** @var Collection[] $collections */
-        $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
-            'user' => $this->getUser(),
-        ]);
-
-        $result = [];
-
-        foreach ($collections as $item) {
-            // TODO: cache metadata on collection change
-            $completion = $this->geoCollection->findCompletion($item->getId());
-            $length = $this->geoCollection->findLength($item->getId());
-
-            $result[] = [
-                'collectionUuid' => $item->getUuid(),
-                'length' => $length,
-                'completion' => $completion,
-                'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
-            ];
-        }
-
-        return new JsonResponse($result);
-    }
 }
