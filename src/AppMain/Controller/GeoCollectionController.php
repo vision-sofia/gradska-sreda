@@ -107,7 +107,7 @@ class GeoCollectionController extends AbstractController
      * )
      * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
      */
-    public function delete(Collection $collection): RedirectResponse
+    public function delete(Collection $collection): JsonResponse
     {
         // TODO: improve this
         // TODO: csrf check
@@ -117,7 +117,7 @@ class GeoCollectionController extends AbstractController
             $em->flush();
         }
 
-        return $this->redirectToRoute('app.geo-collection.create');
+        return new JsonResponse([], 302);
     }
 
     /**
