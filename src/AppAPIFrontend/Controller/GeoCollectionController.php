@@ -41,7 +41,7 @@ class GeoCollectionController extends AbstractController
     /**
      * @Route("add", name="add", methods={"POST"})
      */
-    public function index(Request $request): JsonResponse
+    public function add(Request $request): JsonResponse
     {
         $geoObjectId = $request->request->get('geo-object');
         $collectionId = $request->request->get('collection');
@@ -95,9 +95,9 @@ class GeoCollectionController extends AbstractController
     }
 
     /**
-     * @Route("add", name="add", methods="POST")
+     * @Route("new", name="new", methods="POST")
      */
-    public function add(): JsonResponse
+    public function new(): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
 
