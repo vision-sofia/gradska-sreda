@@ -97,7 +97,7 @@ class GeoCollectionController extends AbstractController
     /**
      * @Route("new", name="new", methods="POST")
      */
-    public function new(): JsonResponse
+    public function new(Request $request): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -108,9 +108,12 @@ class GeoCollectionController extends AbstractController
                 'isActive' => true
             ]);
 
+        $name = $request->request->get('name');
+
         $collection = new Collection();
         $collection->setUser($this->getUser());
         $collection->setSurvey($survey);
+        $collection->setName($name);
 
         $em->persist($collection);
         $em->flush();
@@ -141,11 +144,37 @@ class GeoCollectionController extends AbstractController
                 'id' => $item->getUuid(),
                 'length' => $length,
                 'completion' => $completion,
+                'name' => empty($item->getName()) ? $item->getId() : $item->getName()
                 #'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
             ];
         }
 
         return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("{id}",
+     *     name="edit",
+     *     methods="POST",
+     *     requirements={
+     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *     }
+     * )
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     */
+    public function edit(Request $request, Collection $collection): JsonResponse
+    {
+        // TODO: improve this
+        // TODO: csrf check
+        if ($collection->getUser() === $this->getUser()) {
+            $name = $request->request->get('name');
+
+            $collection->setName($name);
+
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return new JsonResponse([]);
     }
 
     /**

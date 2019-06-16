@@ -43,6 +43,11 @@ class Collection implements UuidInterface
     private $entries;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $name = '';
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
@@ -90,6 +95,16 @@ class Collection implements UuidInterface
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
+    }
+
+    public function getName(): string
+    {
+        return (string)$this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
