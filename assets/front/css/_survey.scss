@@ -1,5 +1,21 @@
 .survey {
     &-question {
+        &.active {
+            .remove {
+                visibility: visible;
+            }
+        }
+
+        .remove {
+            visibility: hidden;
+            font-size: 11px;
+            padding: 4px 5px 0;
+        }
+
+        &-title {
+            display: flex;
+        }
+
         &-option {
             cursor: pointer;
 
@@ -8,4 +24,5 @@
             }
         }
     }
+
 }
