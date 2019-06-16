@@ -94,7 +94,7 @@ export class Collections {
     new() {
         $.ajax({
             type: 'POST',
-            url: '/front-end/geo-collection/add',
+            url: '/front-end/geo-collection/new',
             success: (response) => {
                 this.activeCollectionId = response.id;
                 this.getGeoCollectionsList();
@@ -121,7 +121,7 @@ export class Collections {
 
     getGeoCollectionsList() {
         $.ajax({
-            url: 'ront-end/geo-collection/info',
+            url: '/front-end/geo-collection/info',
             success: result => {
                 let html = `<ul class="collections-list mt-4 pl-4">`;
 
