@@ -54,7 +54,7 @@ class GeoCollectionController extends AbstractController
     /**
      * @Route("add", name="add", methods="POST")
      */
-    public function add(): Response
+    public function add(): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -72,9 +72,7 @@ class GeoCollectionController extends AbstractController
         $em->persist($collection);
         $em->flush();
 
-        return $this->redirectToRoute('app.geo-collection.view', [
-            'id' => $collection->getUuid(),
-        ]);
+        return new JsonResponse(['id' => $collection->getUuid()]);
     }
 
     /**
