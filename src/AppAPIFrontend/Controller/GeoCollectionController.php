@@ -145,7 +145,11 @@ class GeoCollectionController extends AbstractController
                 'identify' => $item->getId(),
                 'length' => $length,
                 'completion' => $completion,
-                'name' => $item->getName()
+                'name' => $item->getName(),
+                'center' => [
+                    'lat' => 42.690035,
+                    'lng' => 23.299518,
+                ],
                 #'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
             ];
         }
