@@ -1,3 +1,5 @@
+import { defaultMapSize } from './map-config';
+
 export class Survey {
     mapInstance;
     layer;
@@ -14,8 +16,6 @@ export class Survey {
         respondents: [{}]
     };
 
-    mapAreaHeight = 100; // Precents  // TODO take form MapInstance 
-    mapAreaWidth = 100; // Precents  // TODO take form MapInstance 
     mapMarkerIcon = L.icon({
         iconUrl: 'front/svg/icon--map-pin--edit.svg',
         iconSize:     [53.707, 53.707], // size of the icon
@@ -301,10 +301,10 @@ export class Survey {
 
         this.lastCenterPoint = this.event.latlng;
         const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-height'));
-        const activeAreaHeight = this.mapAreaHeight - surveyHeight;
+        const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
 
-        const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--suevey-width'));
-        const activeAreaWidth = this.mapAreaWidth - surveyWidth;
+        const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-width'));
+        const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
 
         this.mapInstance.toggleHeaderEl(false);
         this.mapInstance.map.setActiveArea({
@@ -325,8 +325,8 @@ export class Survey {
         this.mapInstance.toggleHeaderEl(true);
 
         this.mapInstance.map.setActiveArea({
-            height: this.mapAreaHeight + '%',
-            height: this.mapAreaHeight + '%',
+            height: defaultMapSize.areaHeight + '%',
+            height: defaultMapSize.areaHeight + '%',
         });
         this.mapInstance.map.panTo(this.lastCenterPoint);
     }

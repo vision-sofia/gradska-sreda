@@ -51,8 +51,8 @@
     }
 
     @media only screen and (min-width: map-get($grid-breakpoints, md)) {
-        --suevey-width: 42%; // Sould allways be precentage unles changes in JS are made
-        $width: var(--suevey-width);
+        --side-panel-width: 42%; // Sould allways be precentage unles changes in JS are made
+        $width: var(--side-panel-width);
         width: $width;
         height: 100%;
         left: 100%;

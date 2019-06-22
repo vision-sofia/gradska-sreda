@@ -22,6 +22,8 @@ export class Map {
         this.selectInitialElements();
         this.events();
         this.loading = $('.loading');
+        console.log(this.map);
+        
        
         //const mapCenter = mapOption.center;
         //const mapZoom = mapOption.zoom;
@@ -322,7 +324,7 @@ export class Map {
 
     zoomToLayer(layer, ev, coordinates) {
         let clickCoordinates = coordinates || ev.latlng;
-        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== this.map.getZoom()) {
+        if (layer && layer.feature.properties._zoom && layer.feature.properties._zoom !== this.map.getZoom()) {
             this.map.setView(clickCoordinates, layer.feature.properties._zoom);
         } else {
             this.map.setView(clickCoordinates);
