@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -38,7 +39,7 @@ class GeoCollectionController extends AbstractController
     /**
      * @Route("add", name="add", methods={"POST"})
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $geoObjectId = $request->request->get('geo-object');
         $collectionId = $request->request->get('collection');
@@ -69,6 +70,9 @@ class GeoCollectionController extends AbstractController
             $em->remove($entry);
             $em->flush();
 
+            $this->geoCollection->updateBBoxGeometry($collection->getId());
+            $this->geoCollection->updateBBoxMetadata($collection->getId());
+
             return new JsonResponse([], 200);
         }
 
@@ -84,6 +88,9 @@ class GeoCollectionController extends AbstractController
 
             $em->persist($content);
             $em->flush();
+
+            $this->geoCollection->updateBBoxGeometry($collection->getId());
+            $this->geoCollection->updateBBoxMetadata($collection->getId());
 
             return new JsonResponse([], 200);
         }
