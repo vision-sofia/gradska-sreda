@@ -52,6 +52,16 @@ class Collection implements UuidInterface
      */
     private $createdAt;
 
+    /**
+     * @ORM\Column(type="geography", options={"geometry_type"="POLYGON"}, nullable=true)
+     */
+    private $bboxGeometry;
+
+    /**
+     * @ORM\Column(type="json", options={"jsonb"=true}, nullable=true)
+     */
+    private $bboxMetadata;
+
     public function __construct()
     {
         $this->entries = new ArrayCollection();

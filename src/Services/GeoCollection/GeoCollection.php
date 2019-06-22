@@ -4,6 +4,7 @@
 namespace App\Services\GeoCollection;
 
 use App\AppMain\DTO\BoundingBoxDTO;
+use App\AppMain\Entity\UuidInterface;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -163,6 +164,8 @@ class GeoCollection
             FROM z
         ';
 
+
+
         try {
             $stmt = $conn->prepare($sql);
 
@@ -285,5 +288,80 @@ class GeoCollection
         $stmt->execute();
 
         return $stmt->fetchColumn();
+    }
+
+    public function updateBBoxGeometry(int $geoCollectionId) {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.gc_collection c0
+            SET
+                bbox_geometry = (
+                    WITH z AS (
+                        SELECT
+                            ST_Expand(ST_Extent(gb.coordinates::geometry), 0.00003) as w
+                        FROM
+                            x_survey.gc_collection c
+                                INNER JOIN
+                            x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
+                                INNER JOIN
+                            x_geospatial.geo_object g ON cc.geo_object_id = g.id
+                                INNER JOIN x_geometry.geometry_base gb ON g.id = gb.geo_object_id
+                        WHERE
+                             c.id = c0.id
+                        GROUP BY c.id
+                    )
+                    SELECT
+                        ST_MakeEnvelope(
+                            st_xmin(w),
+                            st_ymin(w),
+                            st_xmax(w),
+                            st_ymax(w)
+                        )
+                    FROM z
+                )
+            WHERE
+                c0.id = ?
+        ');
+
+        $stmt->execute([$geoCollectionId]);
+    }
+
+    public function updateBBoxMetadata(int $geoCollectionId) {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.gc_collection c0
+            SET
+                bbox_metadata = (
+                    SELECT
+                        row_to_json(z) as z
+                    FROM
+                    (
+                    SELECT
+                        ST_AsGeoJSON(bbox_geometry::geometry)::jsonb as geometry_bbox,
+                        ST_AsGeoJSON(ST_ExteriorRing(bbox_geometry::geometry))::jsonb as geometry_exterior,
+                        ST_AsGeoJSON(ST_Centroid(bbox_geometry::geometry))::jsonb as geometry_center,
+                        ST_X(ST_Centroid(bbox_geometry::geometry)) as x_center,
+                        ST_Y(ST_Centroid(bbox_geometry::geometry)) as y_center,
+                        ST_XMin(bbox_geometry::geometry) as x_min,
+                        ST_XMax(bbox_geometry::geometry) as x_max,
+                        ST_Ymin(bbox_geometry::geometry) as y_min,
+                        ST_YMax(bbox_geometry::geometry) as y_max
+                    FROM
+                        x_survey.gc_collection c
+                    WHERE
+                        c.id = c0.id
+                    ) z
+                ) 
+            WHERE
+                c0.id = ?
+        ');
+
+        $stmt->execute([$geoCollectionId]);
     }
 }

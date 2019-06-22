@@ -72,6 +72,9 @@ class GeoCollectionController extends AbstractController
             $em->remove($entry);
             $em->flush();
 
+            $this->geoCollection->updateBBoxGeometry($collection->getId());
+            $this->geoCollection->updateBBoxMetadata($collection->getId());
+
             return new JsonResponse([], 200);
         }
 
@@ -87,6 +90,9 @@ class GeoCollectionController extends AbstractController
 
             $em->persist($content);
             $em->flush();
+
+            $this->geoCollection->updateBBoxGeometry($collection->getId());
+            $this->geoCollection->updateBBoxMetadata($collection->getId());
 
             return new JsonResponse([], 200);
         }
