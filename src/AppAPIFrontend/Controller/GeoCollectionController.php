@@ -154,10 +154,10 @@ class GeoCollectionController extends AbstractController
                         'lat' => $metadata['y_center'] ?? null,
                         'lng' => $metadata['x_center'] ?? null,
                     ],
-                    'x_min' => $metadata['x_min'] ?? null,
-                    'x_max' => $metadata['x_max'] ?? null,
-                    'y_min' => $metadata['y_min'] ?? null,
-                    'y_max' => $metadata['y_max'] ?? null,
+                    'bounds' => [
+                        [$metadata['x_min'], $metadata['y_min']],
+                        [$metadata['x_max'], $metadata['y_max']]
+                    ],
                 ];
             }
 
