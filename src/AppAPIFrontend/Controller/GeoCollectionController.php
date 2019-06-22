@@ -146,14 +146,28 @@ class GeoCollectionController extends AbstractController
             $completion = $this->geoCollection->findCompletion($item->getId());
             $length = $this->geoCollection->findLength($item->getId());
 
+            $metadata = $item->getBboxMetadata();
+
+            if ($metadata) {
+                $bbox = [
+                    'center' => [
+                        'lat' => $metadata['y_center'] ?? null,
+                        'lng' => $metadata['x_center'] ?? null,
+                    ],
+                    'x_min' => $metadata['x_min'] ?? null,
+                    'x_max' => $metadata['x_max'] ?? null,
+                    'y_min' => $metadata['y_min'] ?? null,
+                    'y_max' => $metadata['y_max'] ?? null,
+                ];
+            }
+
             $result[] = [
                 'id' => $item->getUuid(),
                 'identify' => $item->getId(),
                 'length' => $length,
                 'completion' => $completion,
                 'name' => $item->getName(),
-                'bbox' => $item->getBboxMetadata(),
-                #'interconnectedClustersCount' => $this->geoCollection->countInterconnectedClusters($item->getUuid())
+                'bbox' => $bbox ?? null,
             ];
         }
 
