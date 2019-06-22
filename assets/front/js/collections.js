@@ -2,27 +2,29 @@
 export class Collections {
     mapInstance;
     activeCollectionId;
+    elComponent;
     elCollectionsList;
+    isCollectionShown = false;
     get isCollectionsActive() {
         return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
     }
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
-
         this.init();
         this.events();
     }
 
     init() {
-        this.elCollectionsList = document.getElementById('collections-list');
+        this.elComponent = document.getElementById('collections');
+        this.elCollectionsList = this.elComponent.querySelector('#collections-list');
         this.getGeoCollectionsList();
     }
 
     events() {
-        document.getElementById('collections-toggle').checked = this.isCollectionsActive;
+        // document.getElementById('collections-toggle').checked = this.isCollectionsActive;
         
-        $(document).on('change', '#collections-toggle', () => {
+        $(document).on('click', '#collections-toggle', () => {
             this.toggleCollectionLayer();
         });
 
@@ -33,9 +35,8 @@ export class Collections {
             this.setActiveCollection(e.currentTarget.getAttribute('data-collection-id'));
         })
 
-
         $(document).on('click', '[data-toggle-for="collections"][data-toggle-open]', () => {
-            this.open()
+            this.open();
         });
         
         $(document).on('click', '[data-toggle-for="collections"][data-toggle-close]', () => {
@@ -56,9 +57,12 @@ export class Collections {
 
     toggleCollectionLayer(toggle) {
         if (this.isCollectionsActive) {
-            this.mapInstance.map.removeLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
+            // TODO: Remove this if not needed
+            // this.mapInstance.map.removeLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
+            this.open();
         } else {
-            this.mapInstance.mapResponse.CollectionsLayerGeoJson.addTo(this.mapInstance.map);
+            // this.mapInstance.mapResponse.CollectionsLayerGeoJson.addTo(this.mapInstance.map);
+            this.close();
         }
     }
 
@@ -87,6 +91,7 @@ export class Collections {
             url: `/front-end/geo-collection/${layerUUID}`,
             success: () => {
                 this.getGeoCollectionsList();
+                this.map
             }
         });
     }
@@ -103,10 +108,14 @@ export class Collections {
     }
 
     onLayerClick(layer, ev) {
+        this.mapInstance.onLayerClick(layer, ev);
+    // TODO: Remove if not needed
     //     layer.feature.properties.activePopup = true;
     //     this.mapInstance.setLayerActiveStyle(layer);
     //     this.mapInstance.removeAllPopups();
-    //    console.log('aaadadad');
+    //     console.log('s------');
+        
+    //    console.log(layer.feature.properties._behavior);
        
     //     if (layer.feature.properties._behavior === 'survey') {
     //         if (this.isCollectionsActive) {
@@ -117,6 +126,8 @@ export class Collections {
 
     setActiveCollection(activeCollectionId) {
         this.activeCollectionId = activeCollectionId;
+
+        // this.mapInstance.zoomToLayer(layer, ev);
     }
 
     getGeoCollectionsList() {
@@ -130,7 +141,7 @@ export class Collections {
                     html += `
                         <div class="d-flex">
                             <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.id ? 'active' : null}" data-collection-id="${geoLocation.id}" href="#${geoLocation.id}">
-                                Маршрут <span class="is-active">[<span class="text-success">активен</span>]</span>
+                                ${geoLocation.name ? geoLocation.name : 'Маршрут ' +  geoLocation.identify} <span class="is-active">[<span class="text-success">активен</span>]</span>
                             </a>
                             <span class="d-flex justify-content-end flex-grow-1">
                                 <button data-uuid="${geoLocation.id}" class="remove btn btn-sm btn-danger">
@@ -162,9 +173,13 @@ export class Collections {
 
     open() {
         this.mapInstance.toggleHeaderEl(false);
+        this.isCollectionShown = true;
+        this.elComponent.classList.add('active');
     }
 
     close() {
         this.mapInstance.toggleHeaderEl(true);
+        this.isCollectionShown = false;
+        this.elComponent.classList.add('remove');
     }
 }

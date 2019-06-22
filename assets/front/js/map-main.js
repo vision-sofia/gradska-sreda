@@ -21,7 +21,6 @@ export class Map {
         this.initMap();
         this.selectInitialElements();
         this.events();
-        this.toggleHeaderEl(true);
         this.loading = $('.loading');
        
         //const mapCenter = mapOption.center;
@@ -45,7 +44,7 @@ export class Map {
             },
             onAdd: () => {
                 let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
-                container.type = "button";
+                container.type = 'button';
                 container.onclick = () => {
                     this.locate();
                 };
@@ -53,13 +52,10 @@ export class Map {
             }
         });
         this.map.addControl(new myLocationButton());
-
         
         this.myLocationLayerGroup.addTo(this.map);
 
         this.popusLayerGroup.addTo(this.map);
-
-       
 
         this.mapResponse.ObjectsLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
@@ -158,7 +154,6 @@ export class Map {
     }
 
     events() {
-
         $(document).on('click', '[data-confirm-cancel]', () => {
             this.removeAllPopups();
         });
@@ -173,8 +168,6 @@ export class Map {
 
 
         this.map.on('moveend', debounce(() => {
-            console.log(this.map);
-            
             const center = this.map.getCenter();
             this.updateMap(center);
         }, 200));
@@ -191,6 +184,10 @@ export class Map {
     }
 
     toggleHeaderEl(isActive) {
+        if (window.innerWidth > 768) {
+            return;
+        }
+
         if (isActive || !defaultElConfig.elHeader.classList.contains('active') && isActive) {
             defaultElConfig.elHeader.classList.add('active');
             
@@ -238,6 +235,8 @@ export class Map {
                 this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
                 this.mapResponse.CollectionsLayerGeoJson.clearLayers();
                 this.mapResponse.CollectionsLayerGeoJson.addData(results.geoCollections);
+                console.log(this.mapResponse.CollectionsLayerGeoJson);
+                
                 this.setLayerActiveStyle();
                 fn();
             }
@@ -340,15 +339,14 @@ export class Map {
         switch (layer.feature.properties._behavior) {
             case 'info':
                 this.openInfoPopup(layer, ev);
-            break;
+                break;
             case 'survey':
-                if (this.collections.isCollectionsActive) {
+                if (this.collections.isCollectionsActive && this.collections.isCollectionShown) {
                     this.collections.add(layer, ev);
                 } else {
                     this.openSuerveyPopup(layer, ev);
                 }
                 break;
-
         }
     }
 

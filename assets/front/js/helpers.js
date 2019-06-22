@@ -1,10 +1,10 @@
 export const debounce = (func, wait, immediate = false) => {
     let timeout;
-    return () => {
+    return (e) => {
         const later = () => {
             timeout = null;
             if (!immediate) {
-                func.apply(this, arguments);
+                func.apply(this, [e, ...arguments]);
             }
         };
 
@@ -13,7 +13,7 @@ export const debounce = (func, wait, immediate = false) => {
         timeout = setTimeout(later, wait);
 
         if (callNow) {
-            func.apply(this, arguments);
+            func.apply(this, [e, ...arguments]);
         }
     };
 }

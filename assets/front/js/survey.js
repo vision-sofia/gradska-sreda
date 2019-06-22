@@ -1,5 +1,3 @@
-import { debounce } from './helpers';
-
 export class Survey {
     mapInstance;
     layer;
@@ -74,9 +72,10 @@ export class Survey {
             this.close();
         });
 
-        $(document).on('input propertychange', '.survey-question-input', debounce(e => {
+        $(document).on('input propertychange', '.survey-question-input', (e) => {
             const target = e.target;
             let data = {};
+            let debounceTime = 0;
     
             if (target.tagName === 'TEXTAREA') {
                 data = {
@@ -86,14 +85,19 @@ export class Survey {
                     }
                 };
     
+                debounceTime = 400;
             } else {
                 data = {
                     'answer': target.value,
                 };
             }
+           
+            clearTimeout(this.timeoutId); 
     
-            this.submitSurvey(data, target.value)
-        }, 200));
+            this.timeoutId = setTimeout(() => {
+                this.submitSurvey(data, target.value)
+            }, debounceTime);
+        });
 
         $(document).on('click', '.survey-question .remove', (e) => {
             const uuid = e.currentTarget.getAttribute('data-uuid');
