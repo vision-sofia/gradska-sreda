@@ -22,9 +22,7 @@ export class Map {
         this.selectInitialElements();
         this.events();
         this.loading = $('.loading');
-        console.log(this.map);
-        
-       
+        this.toggleHeaderEl(true);
         //const mapCenter = mapOption.center;
         //const mapZoom = mapOption.zoom;
 
@@ -151,7 +149,6 @@ export class Map {
             updateWhenZooming: false,
             attributionControl: false
         });
-
         this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
     }
 
@@ -186,7 +183,7 @@ export class Map {
     }
 
     toggleHeaderEl(isActive) {
-        if (window.innerWidth > 768) {
+        if (window.innerWidth > 768 && !isActive) {
             return;
         }
 
@@ -195,24 +192,27 @@ export class Map {
             
             const elHeaderHeight = getComputedStyle(defaultElConfig.elHeader).height;
             
-            this.map.setActiveArea({
-                ...defaultObjectStyle.mapActiveArea,
-                height: `calc(${defaultObjectStyle.mapActiveArea.height} - ${elHeaderHeight})`,
-                top: elHeaderHeight,
-            });
+            defaultObjectStyle.mapActiveArea.callculatedHeight = `calc(${defaultObjectStyle.mapActiveArea.height} - ${elHeaderHeight})`;
+            defaultObjectStyle.mapActiveArea.calculatedTop = elHeaderHeight;
+
+            // const afterHeaderActivArea 
+
+            this.setActiveArea();
         } else {
             defaultElConfig.elHeader.classList.remove('active');
-            this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+            defaultObjectStyle.mapActiveArea.callculatedHeight = defaultObjectStyle.mapActiveArea.height;
+            defaultObjectStyle.mapActiveArea.calculatedTop = defaultObjectStyle.mapActiveArea.top;
+            this.map.setActiveArea();
         }
     }
 
     updateMap(center, fn = () => {
     }) {
-        let zoom = this.map.getZoom();
-        let bounds = this.map.getBounds();
+        const zoom = this.map.getZoom();
+        const bounds = this.map.getBounds();
         let returnedTarget = {};
 
-        let a = {
+        const a = {
             in: bounds._southWest.lng + ',' +
             bounds._northEast.lat + ',' +
             bounds._northEast.lng + ',' +
@@ -237,7 +237,6 @@ export class Map {
                 this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
                 this.mapResponse.CollectionsLayerGeoJson.clearLayers();
                 this.mapResponse.CollectionsLayerGeoJson.addData(results.geoCollections);
-                console.log(this.mapResponse.CollectionsLayerGeoJson);
                 
                 this.setLayerActiveStyle();
                 fn();
@@ -378,11 +377,9 @@ export class Map {
 
         const infoTemplate = `
             <p class="text-center">
-                <!-- <form method="post" class="m-form" action="/front-end/geo-collection/add">
-                    <input type="hidden" name="geo-object" value="${layer.feature.properties.id}">
-                    <button type="submit">${layer.feature.properties.id}</button>
-                </form> -->
-                ${layer.feature.properties.type}<br />${layer.feature.properties.name}
+                ${layer.feature.properties.type}
+                <br />
+                ${layer.feature.properties.name}
             </p>
         `;
 
@@ -408,32 +405,23 @@ export class Map {
 
         const surveyTemplate = `
             <p class="text-center">
-                <!-- <form method="post" class="m-form" action="/front-end/geo-collection/add">
-                    <input type="hidden" name="geo-object" value="${layer.feature.properties.id}">
-                    <button type="submit">${layer.feature.properties.id}</button>
-                </form> -->
-                ${layer.feature.properties.type}<br />${layer.feature.properties.name}
+                ${layer.feature.properties.type}
+                <br />
+                ${layer.feature.properties.name}
             </p>
-            <div class="survey-modal">
-                <div class="container py-4">
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <h5 class="font-weight-bold mb-3" data-confirm-title>
-                              Искате ли да оцените
-                            </h5>
-                        </div>
-                        <div class="col-12 text-center">
-                            <button data-toggle-open data-toggle-for="path-vote-suevey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }" class="btn btn-success mr-3 px-4">ДА</button>
-                            <button data-confirm-cancel class="btn btn-danger cursor-pointer px-4">НЕ</button>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
+            <div class="survey-modal text-center">
+                <h5 class="font-weight-bold mb-2 h6" data-confirm-title>
+                    Искате ли да оцените
+                </h5>
+                <button data-toggle-open class="btn btn-success mr-3 py-0 px-2" data-toggle-for="path-vote-suevey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }">ДА</button>
+                <button data-confirm-cancel class="btn btn-danger cursor-pointer py-0 px-2">НЕ</button>
+            </div>
+        `;
 
         const popupContent = surveyTemplate;
 
         popupLayer.bindPopup(popupContent, {
-            offset: L.point(0, -20)
+            // offset: L.point(0, -20)
         }).on('popupclose', () => {
             this.onPopupClose(layer);
         }).openPopup();
@@ -483,8 +471,12 @@ export class Map {
         this.voteSurvay.setLayerData(layer, ev);
     }
 
-    // closeSurvey() => {
-        // pathVoteSurvey.close();
-    // }
+    setActiveArea() {
+        this.map.setActiveArea({
+            ...defaultObjectStyle.mapActiveArea,
+            top: defaultObjectStyle.mapActiveArea.calculatedTop,
+            height: defaultObjectStyle.mapActiveArea.callculatedHeight,
+        });
+    }
 };
 

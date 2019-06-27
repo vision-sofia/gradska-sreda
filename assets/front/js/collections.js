@@ -34,7 +34,8 @@ export class Collections {
             e.preventDefault();
             $('[data-collection-id]').removeClass('active');
             e.currentTarget.classList.add('active');
-            this.setActiveCollection(e.currentTarget.getAttribute('data-collection-id'));
+            const collectionId = e.currentTarget.getAttribute('data-collection-id');
+            this.setActiveCollection(collectionId);
         })
 
         $(document).on('click', '[data-toggle-for="collections"][data-toggle-open]', () => {
@@ -58,7 +59,7 @@ export class Collections {
     }
 
     toggleCollectionLayer(toggle) {
-        if (this.isCollectionsActive) {
+        if (!this.isCollectionShown) {
             // TODO: Remove this if not needed
             // this.mapInstance.map.removeLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
             this.open();
@@ -129,7 +130,20 @@ export class Collections {
     setActiveCollection(activeCollectionId) {
         this.activeCollectionId = activeCollectionId;
         const activeCollection = this.collectionsResponse.find(geoLocation => geoLocation.id === this.activeCollectionId);
-        this.mapInstance.zoomToLayer(null, null, activeCollection.center);
+        const boundsCorner1 = L.latLng(activeCollection.bbox.bounds[0][0], activeCollection.bbox.bounds[0][1]),
+        boundsCorner2 = L.latLng(activeCollection.bbox.bounds[1][0], activeCollection.bbox.bounds[1][1]),
+        acctiveCollectionBounds = L.latLngBounds(boundsCorner1, boundsCorner2);
+
+        if (acctiveCollectionBounds.isValid()) {
+            // TODO: Remove if fit active collection in bounds is not needed
+            // this.mapInstance.map.fitBounds(activeCollection.bbox.bounds);
+            this.mapInstance.zoomToLayer(null, null, activeCollection.bbox.center);
+        }
+    }
+
+    unsetActiveCollection() {
+        $('[data-collection-id]').removeClass('active;')
+        this.activeCollectionId = null;
     }
 
     getGeoCollectionsList() {
@@ -175,7 +189,9 @@ export class Collections {
     }
 
     open() {
+        this.mapInstance.map.closePopup();
         this.mapInstance.toggleHeaderEl(false);
+
         this.isCollectionShown = true;
         this.elCollectionsContainer.classList.add('active');
 
@@ -185,7 +201,6 @@ export class Collections {
         const surveyWidth = parseFloat(getComputedStyle(this.elCollectionsContainer).getPropertyValue('--side-panel-width'));
         const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
 
-        this.mapInstance.toggleHeaderEl(false);
         this.mapInstance.map.setActiveArea({
             height: activeAreaHeight + '%',
             width: activeAreaWidth + '%',
@@ -197,11 +212,9 @@ export class Collections {
     close() {
         this.mapInstance.toggleHeaderEl(true);
         this.isCollectionShown = false;
-        this.elCollectionsContainer.classList.add('remove');
-
+        this.elCollectionsContainer.classList.remove('active');
 
         this.mapInstance.map.setActiveArea({
-            height: defaultMapSize.areaHeight + '%',
             height: defaultMapSize.areaHeight + '%',
         });
     }

@@ -290,6 +290,7 @@ export class Survey {
         this.isOpen = true;
         this.mapInstance.map.closePopup();
         this.mapInstance.setLayerActiveStyle(this.layer);
+        this.mapInstance.toggleHeaderEl(false);
         this.addMarker();
 
         if (layer && ev) {
@@ -306,7 +307,6 @@ export class Survey {
         const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-width'));
         const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
 
-        this.mapInstance.toggleHeaderEl(false);
         this.mapInstance.map.setActiveArea({
             height: activeAreaHeight + '%',
             width: activeAreaWidth + '%',
@@ -315,7 +315,6 @@ export class Survey {
         });
 
         this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
-
     }
 
     close() {

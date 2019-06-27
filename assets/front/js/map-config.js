@@ -21,6 +21,10 @@ export const defaultObjectStyle = {
         left: '0',
         width: '100%',
         height: '100%',
+        callculatedWidth: '100%',
+        callculatedHeight: '100%',
+        callculatedTop: '0',
+        callculatedLeft: '0',
     }
 };
 
