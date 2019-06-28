@@ -196,7 +196,7 @@ class MapController extends AbstractController
         ];
         // TODO: concat more keys
         $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
-        $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponse', $this->jsonUtils->joinArray($userSubmittedObjects));
+        $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponses', $this->jsonUtils->joinArray($userSubmittedObjects));
         $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
 
         // GeoCollection layer variant 2
@@ -205,7 +205,7 @@ class MapController extends AbstractController
             $z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
         }
 
-        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollectionsV2', $this->jsonUtils->joinArray($z));
+        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollectionsVariant2', $this->jsonUtils->joinArray($z));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/json');
