@@ -103,7 +103,7 @@ class MapController extends AbstractController
                 $geoObject->geometry = $collectionBoundingBox->getPolygon();
                 $geoObject->base_style = 'gc_bbox';
                 $geoObject->hover_style = 'gc_bbox';
-                $geoObject->properties = '{}';
+                $geoObject->properties = $collectionBoundingBox->getProperties();
 
                 $boundingBoxes[] = $geoObject;
             }
@@ -129,12 +129,33 @@ class MapController extends AbstractController
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
+        // GeoCollection layer V2
+        $gcV2 = [];
+
         foreach ($userGeoCollection as $row) {
             $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
+
+            // GeoCollection layer variant 2
+            $gcV2Id = json_decode($row->properties, false)->_gc_id;
+
+            $p = json_decode($row->properties, false);
+            unset($p->_gc_id);
+            $row->properties = json_encode($p);
+
+            $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($boundingBoxes as $row) {
             $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
+
+            // GeoCollection layer variant 2
+            $gcV2Id = json_decode($row->properties, false)->_gc_id;
+
+            $p = json_decode($row->properties, false);
+            unset($p->_gc_id);
+            $row->properties = json_encode($p);
+
+            $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         foreach ($userSubmitted as $row) {
@@ -175,6 +196,14 @@ class MapController extends AbstractController
         // TODO: concat more keys
         $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
         $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
+
+        // GeoCollection layer variant 2
+        $z = [];
+        foreach ($gcV2 as $key => $item) {
+            $z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
+        }
+
+        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollectionsV2', $this->jsonUtils->joinArray($z));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/json');

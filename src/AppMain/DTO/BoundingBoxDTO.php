@@ -12,6 +12,7 @@ class BoundingBoxDTO
     private $y_min;
     private $y_max;
     private $envelope;
+    private $properties;
 
     public function getXMin(): ?float
     {
@@ -36,5 +37,10 @@ class BoundingBoxDTO
     public function getPolygon(): ?string
     {
         return $this->envelope;
+    }
+
+    public function getProperties(): ?string
+    {
+        return $this->properties;
     }
 }
