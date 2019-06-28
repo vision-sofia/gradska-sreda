@@ -158,8 +158,9 @@ class MapController extends AbstractController
             $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
+        $userSubmittedObjects = [];
         foreach ($userSubmitted as $row) {
-            $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
+            $userSubmittedObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         if ($selectedObject) {
@@ -195,6 +196,7 @@ class MapController extends AbstractController
         ];
         // TODO: concat more keys
         $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
+        $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponse', $this->jsonUtils->joinArray($userSubmittedObjects));
         $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
 
         // GeoCollection layer variant 2
