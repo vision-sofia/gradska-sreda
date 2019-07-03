@@ -1,6 +1,12 @@
 #app-header {
-  top: 0;
-  left: 0;
+  --active-area-width: 100%;
+  --active-area-height: 78px;
+  --active-area-top: 0;
+  --active-area-left: 0;
+  width: var(--active-area-width);
+  height: var(--active-area-height);
+  top: var(--active-area-top);
+  left: var(--active-area-left);
   transition: 0.3s ease transform;
   transform: translate3d(0, -100%, 0);
 

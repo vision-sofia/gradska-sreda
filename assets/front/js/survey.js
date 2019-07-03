@@ -30,11 +30,22 @@ export class Survey {
     elSurveyCarouselNav;
     elSurveyPollBtn;
     refSurveyCarousel;
+    activeAreaConfig = {
+        elRef: this.elPathVoteSurveyContainer,
+        style: {
+            height: activeAreaHeight + '%',
+            width: activeAreaWidth + '%',
+            top: 0,
+            bottom: 0,
+        }
+    };
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
-      
+        this.init();
+    }
 
+    init() {
         this.queryElements();
         this.events();
     }
@@ -301,18 +312,8 @@ export class Survey {
         this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
 
         this.lastCenterPoint = this.event.latlng;
-        const surveyHeight = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-height'));
-        const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
-
-        const surveyWidth = parseFloat(getComputedStyle(this.elPathVoteSurveyContainer).getPropertyValue('--side-panel-width'));
-        const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
-
-        this.mapInstance.map.setActiveArea({
-            height: activeAreaHeight + '%',
-            width: activeAreaWidth + '%',
-            top: 0,
-            bottom: 0,
-        });
+        
+        this.mapInstance.addToActiveAreaList(this.activeAreaConfig);
 
         this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
     }
@@ -320,14 +321,9 @@ export class Survey {
     close() {
         this.isOpen = false;
         this.removeMarker();
-
         this.mapInstance.toggleHeaderEl(true);
-
-        this.mapInstance.map.setActiveArea({
-            height: defaultMapSize.areaHeight + '%',
-            height: defaultMapSize.areaHeight + '%',
-        });
         this.mapInstance.map.panTo(this.lastCenterPoint);
+        this.mapInstance.removeFromActiveArea(this.activeAreaConfig);
     }
 
     clearQuestion(uuid) {

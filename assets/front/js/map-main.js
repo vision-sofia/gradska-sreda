@@ -12,7 +12,9 @@ export class Map {
         ObjectsLayerGeoJson: {},
         CollectionsLayerGeoJson: {},
     };
+    activeAreaList = [];
     isMapLoaded = false;
+
 
     constructor() {
     }
@@ -189,20 +191,10 @@ export class Map {
 
         if (isActive || !defaultElConfig.elHeader.classList.contains('active') && isActive) {
             defaultElConfig.elHeader.classList.add('active');
-            
-            const elHeaderHeight = getComputedStyle(defaultElConfig.elHeader).height;
-            
-            defaultObjectStyle.mapActiveArea.callculatedHeight = `calc(${defaultObjectStyle.mapActiveArea.height} - ${elHeaderHeight})`;
-            defaultObjectStyle.mapActiveArea.calculatedTop = elHeaderHeight;
-
-            // const afterHeaderActivArea 
-
-            this.setActiveArea();
+            this.addToActiveAreaList(defaultElConfig.elHeader);
         } else {
             defaultElConfig.elHeader.classList.remove('active');
-            defaultObjectStyle.mapActiveArea.callculatedHeight = defaultObjectStyle.mapActiveArea.height;
-            defaultObjectStyle.mapActiveArea.calculatedTop = defaultObjectStyle.mapActiveArea.top;
-            this.map.setActiveArea();
+            this.removeFromActiveAreaList(defaultElConfig.elHeader);
         }
     }
 
@@ -472,11 +464,40 @@ export class Map {
     }
 
     setActiveArea() {
-        this.map.setActiveArea({
-            ...defaultObjectStyle.mapActiveArea,
-            top: defaultObjectStyle.mapActiveArea.calculatedTop,
-            height: defaultObjectStyle.mapActiveArea.callculatedHeight,
+        this.activeAreaList.forEach(actionConfig => {
+            const surveyHeight = parseFloat(getComputedStyle(actionConfig.elRef).getPropertyValue('--active-area-height'));
+            const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
+    
+            const surveyWidth = parseFloat(getComputedStyle(actionConfig.elRef).getPropertyValue('--active-area-width'));
+            const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
+
+            this.map.setActiveArea({
+                height: activeAreaHeight + '%',
+                width: activeAreaWidth + '%',
+                top: 0,
+                bottom: 0,
+            });
         });
+
+        // height: defaultMapSize.areaHeight + '%',
+        // height: defaultMapSize.areaHeight + '%',
+
+        // this.map.setActiveArea({
+        //     ...defaultObjectStyle.mapActiveArea,
+        //     top: defaultObjectStyle.mapActiveArea.calculatedTop,
+        //     height: defaultObjectStyle.mapActiveArea.callculatedHeight,
+        // });
+    }
+
+    addToActiveAreaList(activeAreaConfig) {
+        this.activeAreaList.pull(activeAreaConfig);
+        this.setActiveArea();
+    }
+
+    removeFromActiveArea(){
+        const index = this.activeAreaList.indexOf(activeAreaConfig);
+        this.activeAreaList.splice(index, 1);
+        this.setActiveArea();
     }
 };
 

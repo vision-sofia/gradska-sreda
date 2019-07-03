@@ -52,15 +52,23 @@
 
     @media only screen and (min-width: map-get($grid-breakpoints, md)) {
         --side-panel-width: 42%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-height: 100%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-top: 0;
+
+        --active-area-width: --side-panel-width;
+        --active-area-height: --side-panel-height;
+        --active-area-top: 0;
+
+
         $width: var(--side-panel-width);
         width: $width;
         height: 100%;
         left: 100%;
         transition: left 0.3s ease;
         padding-top: 80px;
+        top: var(--side-panel-top);
 
         &.active {
-            top: 0;
             left: calc(100% - #{$width});
         }
 
@@ -77,9 +85,16 @@
     }
 
     @media only screen and (max-width: map-get($grid-breakpoints, md)) {
+        --side-panel-width: 100%; // Sould allways be precentage unles changes in JS are made
         --side-panel-height: 62%; // Sould allways be precentage unles changes in JS are made
-        top: 100%;
-        width: 100%;
+        --side-panel-top: 100%;
+        
+        --active-area-width: --side-panel-width;
+        --active-area-height: --side-panel-height;
+        --active-area-top: --side-panel-top;
+
+        top: var(--side-panel-top);
+        width: --side-panel-width;
         height: var(--side-panel-height);
         transition: top 0.3s ease;
 
