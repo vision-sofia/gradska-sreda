@@ -119,6 +119,7 @@ class Finder
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'_gc\', 1,
+                    \'_gc_id\', c.uuid,
                     \'_behavior\', \'survey\'
                 ) as properties
             FROM
