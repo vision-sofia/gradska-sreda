@@ -1,12 +1,15 @@
 manage:
   resource: '../src/AppManage/Controller/'
-  type:     annotation
+  type: annotation
   prefix: /manage
 
 api-front-end:
   resource: '../src/AppAPIFrontend/Controller'
-  type:     annotation
+  type: annotation
   prefix: /front-end
+
+api-login-check:
+  path: /api/login_check
 
 logout:
   path: /logout
