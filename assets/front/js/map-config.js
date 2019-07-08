@@ -21,12 +21,6 @@ export const defaultObjectStyle = {
         height: '100%',
         top: '0',
         left: '0',
-        callculatedWidth: 0,    
-        callculatedHeight: 0,
-        callculatedTop: 0,
-        callculatedBottom: 0,
-        callculatedLeft: 0,
-        callculatedRight: 0,
     }
 };
 

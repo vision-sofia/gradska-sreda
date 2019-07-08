@@ -466,162 +466,78 @@ export class Map {
         this.voteSurvay.setLayerData(layer, ev);
     }
 
-    setActiveArea(action) {
-
-        let w = '100%',
-        h = '100%',
-        t = defaultObjectStyle.mapActiveArea.callculatedTop,
-        b = defaultObjectStyle.mapActiveArea.callculatedBottom,
-        l = defaultObjectStyle.mapActiveArea.callculatedLeft,
-        r = defaultObjectStyle.mapActiveArea.callculatedRight;
+    setActiveArea() {
+        let t = 0,
+        b = 0,
+        l = 0,
+        r = 0;
 
         let callculatedWidth = 0,
+        callculatedWidthLeft = 0,
+        callculatedWidthRight = 0,
         callculatedHeight = 0,
         callculatedHeightTop = 0,
         callculatedHeightBot = 0;
 
+        this.activeAreaList.forEach(el => {
+            const elWidth = parseFloat(getComputedStyle(el).getPropertyValue('width'));
+            const elHeight = parseFloat(getComputedStyle(el).getPropertyValue('height'));
+            const elTop = parseFloat(getComputedStyle(el).getPropertyValue('top'));
+            const elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom'));
+            const elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left'));
+            const elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
 
-        let height2 = 0;
-        let height2Top = 0;
-        let width2 = 0;
-        let width2Right = 0;
-
-        console.log(this.activeAreaList);
-        
-
-        this.activeAreaList.forEach(actionConfig => {
-            const surveyWidth = parseFloat(getComputedStyle(actionConfig).getPropertyValue('width'));
-            const surveyHeight = parseFloat(getComputedStyle(actionConfig).getPropertyValue('height'));
-            const surveyTop = parseFloat(getComputedStyle(actionConfig).getPropertyValue('top'));
-            const surveyBottom = parseFloat(getComputedStyle(actionConfig).getPropertyValue('bottom'));
-            const surveyLeft = parseFloat(getComputedStyle(actionConfig).getPropertyValue('left'));
-            const surveyRight = parseFloat(getComputedStyle(actionConfig).getPropertyValue('right'));
-       
-
-            // const surveyLeft = parseFloat(getComputedStyle(actionConfig).getPropertyValue('left'));
-            // const surveyRight = parseFloat(getComputedStyle(actionConfig).getPropertyValue('right'));
-     
-            // if (surveyHeight === defaultObjectStyle.mapActiveArea.callculatedHeight) {
-            //     return;
-            // }
-           
-            
-            // if ( surveyHeight < window.innerHeight - defaultObjectStyle.mapActiveArea.callculatedHeight) {
-            //     h = `calc(100% - ${surveyHeight}px)`;
-            //     defaultObjectStyle.mapActiveArea.callculatedHeight = surveyHeight;
-            // } else if (defaultObjectStyle.mapActiveArea.callculatedHeight > 0) {
-            //     h = `calc(100% - ${defaultObjectStyle.mapActiveArea.callculatedHeight - surveyHeight}px)`;
-            //     defaultObjectStyle.mapActiveArea.callculatedHeight = surveyHeight;
-            // }
-            // console.log(surveyWidth);
-            // console.log('bottom', surveyBottom);
-            // console.log('top', surveyTop);
-            // console.log('top', window.innerHeight + surveyBottom);
-
-            // console.log('bottom', surveyTop + actionConfig.clientHeight);
-            // console.log('window.innerHeight', window.innerHeight);
-
-            console.log(surveyLeft);
-            console.log(surveyRight);
-            console.log(surveyTop);
-            console.log(surveyBottom);
-            console.log(surveyTop + surveyHeight);
-            console.log('A tova?', surveyHeight);
-            
-            console.log(window.innerHeight);
-            
-            // console.log(surveyBottom);
-            
-            if (actionConfig.clientWidth === window.innerWidth) {
-                // defaultObjectStyle.mapActiveArea.callculatedHeight += surveyHeight;
-debugger;
-
-                // height2 += surveyHeight;
-                // console.log(height2);
-
-                // if (window.innerHeight === surveyTop) {
-                //     t = 0;
-                // } else if (surveyTop === 0) {
-                //     t = surveyHeight;
-                // }
-
-                // console.log('----------HEIGHT--------------');
-                // if (action === 'add') {
-                //     if (surveyHeight > callculatedHeight) {
-                //         height2 = surveyHeight;
-                //     } else {
-                //         // height2 = callculatedHeight;
-                //     }
-
-                //     callculatedHeight = surveyHeight;
-                // } else {
-                //     if (surveyHeight > callculatedHeight) {
-                //         height2 = surveyHeight;
-                //     } else {
-                //         // height2 = callculatedHeight;
-                //     }
-                    
-                //     callculatedHeight = surveyHeight;
-                // }
-
-                if (Math.round(surveyBottom) <= 0) {
+            if (el.clientWidth === window.innerWidth) {
+                if (Math.round(elBottom) <= 0) {
                     // Bottom
-                    if (surveyHeight > callculatedHeightBot) {
-                        height2 = surveyHeight;
-                        callculatedHeightBot = height2;
+                    if (elHeight > callculatedHeightBot) {
+                        callculatedHeightBot = elHeight;
                     }
-                } else if (Math.round(surveyTop) === 0) { 
+                } else if (Math.round(elTop) === 0) { 
                     // TOP
-                    if (surveyHeight > callculatedHeightTop) {
-                        height2 = surveyHeight;
-                        t = height2;
-                        callculatedHeightTop = height2;
+                    if (elHeight > callculatedHeightTop) {
+                        t = elHeight;
+                        callculatedHeightTop = elHeight;
                     }
-                } else {
-                    t = 0;
                 }
 
                 callculatedHeight = callculatedHeightTop + callculatedHeightBot;
-            } else if (actionConfig.clientHeight === window.innerHeight) {
-                console.log('----------WIDTH--------------');
-                if (surveyWidth > defaultObjectStyle.mapActiveArea.callculatedWidth || width2 === 0) {
-                    width2 = surveyWidth;
-                    defaultObjectStyle.mapActiveArea.callculatedWidth += surveyWidth;
-                } else {
-                    defaultObjectStyle.mapActiveArea.callculatedWidth -= surveyWidth;
+            } else if (el.clientHeight === window.innerHeight) {
+                if (Math.round(elRight) <= 0) {
+                    // Right
+                    if (elWidth > callculatedWidthRight) {
+                        callculatedWidthRight = elWidth;
+                    }
+                } else if (Math.round(elLeft) === 0) { 
+                    // Left
+                    if (elWidth > callculatedWidthLeft) {
+                        l = elWidth;
+                        callculatedWidthLeft = elWidth;
+                    }
                 }
 
-                if (window.innerWidth === surveyLeft) {
-                    l = 0;
-                } else if (surveyLeft === 0) { 
-                    l = width2;
-                }
+                callculatedWidth = callculatedWidthLeft + callculatedWidthRight;
             }
         });
 
-        width2 = window.innerWidth - width2;
-        height2 = window.innerHeight - callculatedHeight;
-
-        console.log('sdlaskaokaokaoakoka', height2);
-        
-        // width2 = width2 === 0 ? window.innerWidth : width2;
+        const width = window.innerWidth - callculatedWidth;
+        const height = window.innerHeight - callculatedHeight;
 
         this.map.setActiveArea({
             ...defaultObjectStyle.mapActiveArea,
-            width: width2 + 'px',
-            height: height2 + 'px',
+            width: width + 'px',
+            height: height + 'px',
             top: t + 'px',
             bottom: b,
             left: l + 'px',
             right: r,
         });
-
     }
 
     addToActiveAreaList(activeAreaConfig) {
         if (!this.activeAreaList.includes(activeAreaConfig)) {
             this.activeAreaList.push(activeAreaConfig);
-            this.setActiveArea('add');
+            this.setActiveArea();
         }
     }
 
@@ -630,7 +546,7 @@ debugger;
 
         if (index > -1) {
             this.activeAreaList.splice(index, 1);
-            this.setActiveArea('remove');
+            this.setActiveArea();
         }
     }
 };
