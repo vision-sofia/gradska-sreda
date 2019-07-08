@@ -195,18 +195,7 @@ export class Collections {
         this.isCollectionShown = true;
         this.elCollectionsContainer.classList.add('active');
 
-        const surveyHeight = parseFloat(getComputedStyle(this.elCollectionsContainer).getPropertyValue('--side-panel-height'));
-        const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
-
-        const surveyWidth = parseFloat(getComputedStyle(this.elCollectionsContainer).getPropertyValue('--side-panel-width'));
-        const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
-
-        this.mapInstance.map.setActiveArea({
-            height: activeAreaHeight + '%',
-            width: activeAreaWidth + '%',
-            top: 0,
-            bottom: 0,
-        });
+        this.mapInstance.addToActiveAreaList(this.elCollectionsContainer);
     }
 
     close() {
@@ -214,8 +203,6 @@ export class Collections {
         this.isCollectionShown = false;
         this.elCollectionsContainer.classList.remove('active');
 
-        this.mapInstance.map.setActiveArea({
-            height: defaultMapSize.areaHeight + '%',
-        });
+        this.mapInstance.removeFromActiveAreaList(this.elCollectionsContainer);
     }
 }

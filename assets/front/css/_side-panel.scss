@@ -94,7 +94,7 @@
         --active-area-top: --side-panel-top;
 
         top: var(--side-panel-top);
-        width: --side-panel-width;
+        width: var(--side-panel-width);
         height: var(--side-panel-height);
         transition: top 0.3s ease;
 

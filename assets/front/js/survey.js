@@ -30,15 +30,6 @@ export class Survey {
     elSurveyCarouselNav;
     elSurveyPollBtn;
     refSurveyCarousel;
-    activeAreaConfig = {
-        elRef: this.elPathVoteSurveyContainer,
-        style: {
-            height: activeAreaHeight + '%',
-            width: activeAreaWidth + '%',
-            top: 0,
-            bottom: 0,
-        }
-    };
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
@@ -313,7 +304,7 @@ export class Survey {
 
         this.lastCenterPoint = this.event.latlng;
         
-        this.mapInstance.addToActiveAreaList(this.activeAreaConfig);
+        this.mapInstance.addToActiveAreaList(this.elPathVoteSurveyContainer);
 
         this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
     }
@@ -323,7 +314,7 @@ export class Survey {
         this.removeMarker();
         this.mapInstance.toggleHeaderEl(true);
         this.mapInstance.map.panTo(this.lastCenterPoint);
-        this.mapInstance.removeFromActiveArea(this.activeAreaConfig);
+        this.mapInstance.removeFromActiveAreaList(this.elPathVoteSurveyContainer);
     }
 
     clearQuestion(uuid) {
