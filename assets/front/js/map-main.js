@@ -179,8 +179,9 @@ export class Map {
         this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
         this.map.on('locationerror', this.setInitialMapView.bind(this));
         
-        // window.addEventListener('resize', debounce(() => {
-        // }, 200, false), false);
+        window.addEventListener('resize', debounce(() => {
+            this.setActiveArea();
+        }, 200, false), false);
     }
 
     selectInitialElements() {
@@ -467,10 +468,10 @@ export class Map {
     }
 
     setActiveArea() {
-        let t = 0,
-        b = 0,
-        l = 0,
-        r = 0;
+        let top = 0,
+        bottom = 0,
+        left = 0,
+        right = 0;
 
         let callculatedWidth = 0,
         callculatedWidthLeft = 0,
@@ -480,13 +481,14 @@ export class Map {
         callculatedHeightBot = 0;
 
         this.activeAreaList.forEach(el => {
-            const elWidth = parseFloat(getComputedStyle(el).getPropertyValue('width'));
-            const elHeight = parseFloat(getComputedStyle(el).getPropertyValue('height'));
-            const elTop = parseFloat(getComputedStyle(el).getPropertyValue('top'));
-            const elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom'));
-            const elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left'));
-            const elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
-
+            const elWidth = parseFloat(getComputedStyle(el).getPropertyValue('width')),
+            elHeight = parseFloat(getComputedStyle(el).getPropertyValue('height')),
+            elTop = parseFloat(getComputedStyle(el).getPropertyValue('top')),
+            elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom')),
+            elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left')),
+            elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
+            
+            // Optimise this code repetition
             if (el.clientWidth === window.innerWidth) {
                 if (Math.round(elBottom) <= 0) {
                     // Bottom
@@ -496,7 +498,7 @@ export class Map {
                 } else if (Math.round(elTop) === 0) { 
                     // TOP
                     if (elHeight > callculatedHeightTop) {
-                        t = elHeight;
+                        top = elHeight;
                         callculatedHeightTop = elHeight;
                     }
                 }
@@ -511,7 +513,7 @@ export class Map {
                 } else if (Math.round(elLeft) === 0) { 
                     // Left
                     if (elWidth > callculatedWidthLeft) {
-                        l = elWidth;
+                        left = elWidth;
                         callculatedWidthLeft = elWidth;
                     }
                 }
@@ -527,10 +529,10 @@ export class Map {
             ...defaultObjectStyle.mapActiveArea,
             width: width + 'px',
             height: height + 'px',
-            top: t + 'px',
-            bottom: b,
-            left: l + 'px',
-            right: r,
+            top: top + 'px',
+            bottom: bottom + 'px',
+            left: left + 'px',
+            right: right + 'px',
         });
     }
 
