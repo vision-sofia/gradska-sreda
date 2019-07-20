@@ -103,6 +103,7 @@ class MapController extends AbstractController
                 $geoObject->geometry = $collectionBoundingBox->getPolygon();
                 $geoObject->base_style = 'gc_bbox';
                 $geoObject->hover_style = 'gc_bbox';
+                $geoObject->active_style = 'gc_bbox_active';
                 $geoObject->properties = $collectionBoundingBox->getProperties();
 
                 $boundingBoxes[] = $geoObject;
@@ -226,6 +227,7 @@ class MapController extends AbstractController
         $properties = json_decode($row->properties, false);
         $properties->_s1 = $row->base_style ?? null;
         $properties->_s2 = $row->hover_style ?? null;
+        $properties->_s3 = $row->active_style ?? null;
         $properties->name = $row->geo_name ?? null;
         $properties->type = $row->type_name ?? null;
         $properties->id = $row->uuid ?? null;
