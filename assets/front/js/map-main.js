@@ -242,8 +242,8 @@ export class Map {
                 this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
                 this.mapResponse.CollectionsLayerControl.clearLayers();
 
-                const geoCollectinResult = results.geoCollectionsVariant2[0];
-                const collection = new Collection(this.mapResponse.settings);
+                const geoCollectinResult = results.geoCollectionsVariant2;
+                const collection = new Collection(this, this.mapResponse.settings);
                 for (const removeThisObj in geoCollectinResult) {
                     if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
                         collection.layer._leaflet_id = removeThisObj;
@@ -368,6 +368,8 @@ export class Map {
                 this.openInfoPopup(layer, ev);
                 break;
             case 'survey':
+                console.log(this.collections.isCollectionsActive);
+                
                 if (this.collections.isCollectionsActive && this.collections.isCollectionShown) {
                     this.collections.add(layer, ev);
                 } else {

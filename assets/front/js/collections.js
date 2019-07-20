@@ -1,8 +1,10 @@
 import { defaultMapSize } from './map-config';
 
 export class Collection {
-    constructor(settings) {
+    constructor(mapInstance, settings) {
+        this.mapInstance = mapInstance;
         this.settings = settings;
+        
         this.layer = L.geoJSON([], { 
             style: (feature) => {
                 let styles = settings.styles[feature.properties._s1] ? {...settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
@@ -11,15 +13,7 @@ export class Collection {
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
                     console.log('Collections - LayerGeoJson - CLICK');
-                    switch (feature.properties._behavior) {
-                        case 'navigation':
-                            this.zoomToLayer(layer, ev);
-                            break;
-                        default:
-                            this.collections.onLayerClick(layer, ev);
-                            this.zoomToLayer(layer, ev);
-                            break;
-                    }
+                    this.onLayerClick(layer, ev);
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {
@@ -51,6 +45,23 @@ export class Collection {
     setLayerHoverStyle(layer) {
         layer.setStyle(this.settings.styles[layer.feature.properties._s2])
     }
+
+    onLayerClick(layer, ev) {
+        this.mapInstance.onLayerClick(layer, ev);
+    // TODO: Remove if not needed
+    //     layer.feature.properties.activePopup = true;
+    //     this.mapInstance.setLayerActiveStyle(layer);
+    //     this.mapInstance.removeAllPopups();
+    //     console.log('s------');
+        
+    //    console.log(layer.feature.properties._behavior);
+       
+    //     if (layer.feature.properties._behavior === 'survey') {
+    //         if (this.isCollectionsActive) {
+    //             this.add(layer, ev);
+    //         }
+    //     }
+    }
 }
 
 export class Collections {
@@ -61,7 +72,7 @@ export class Collections {
     isCollectionShown = false;
     collectionsResponse;
     get isCollectionsActive() {
-        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
+        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerControl);
     }
 
     constructor(mapInstance) {
@@ -165,41 +176,17 @@ export class Collections {
         });
     }
 
-    onLayerClick(layer, ev) {
-        this.mapInstance.onLayerClick(layer, ev);
-    // TODO: Remove if not needed
-    //     layer.feature.properties.activePopup = true;
-    //     this.mapInstance.setLayerActiveStyle(layer);
-    //     this.mapInstance.removeAllPopups();
-    //     console.log('s------');
-        
-    //    console.log(layer.feature.properties._behavior);
-       
-    //     if (layer.feature.properties._behavior === 'survey') {
-    //         if (this.isCollectionsActive) {
-    //             this.add(layer, ev);
-    //         }
-    //     }
-    }
-
     setActiveCollection(activeCollectionId) {
         this.activeCollectionId = activeCollectionId;
         const activeCollection = this.collectionsResponse.find(geoLocation => geoLocation.id === this.activeCollectionId);
-        console.log(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
-        console.log(activeCollection);
-        
-        if (!activeCollection.bbox) {
-            return;
-        }
-
-        const boundsCorner1 = L.latLng(activeCollection.bbox.bounds[0][0], activeCollection.bbox.bounds[0][1]),
-        boundsCorner2 = L.latLng(activeCollection.bbox.bounds[1][0], activeCollection.bbox.bounds[1][1]),
-        acctiveCollectionBounds = L.latLngBounds(boundsCorner1, boundsCorner2);
-
-        if (acctiveCollectionBounds.isValid()) {
-            // TODO: Remove if fit active collection in bounds is not needed
-            this.mapInstance.map.fitBounds(activeCollection.bbox.bounds);
-            this.mapInstance.zoomToLayer(null, null, activeCollection.bbox.center);
+        const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(activeCollectionId);
+      
+        if (layer) {
+            if (!this.mapInstance.map.getBounds().contains(layer.getBounds())) {
+                this.mapInstance.map.fitBounds(layer.getBounds());
+            }
+    
+            this.mapInstance.zoomToLayer(null, null, layer.getBounds().getCenter());
         }
     }
 
