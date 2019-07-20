@@ -65,7 +65,7 @@ class MapController extends AbstractController
     /**
      * @Route("/map", name="api.map", methods="GET")
      */
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
@@ -197,20 +197,28 @@ class MapController extends AbstractController
         // TODO: concat more keys
         $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
         $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponses', $this->jsonUtils->joinArray($userSubmittedObjects));
-        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
+       # $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
+
+        $content = json_decode($content, true);
 
         // GeoCollection layer variant 2
-        $z = [];
+       # $z = [];
         foreach ($gcV2 as $key => $item) {
-            $z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
+            #$z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
+
+            foreach ($item as $feature) {
+                $content['geoCollections'][$key][] = json_decode($feature);
+            }
         }
 
-        $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollectionsVariant2', $this->jsonUtils->joinArray($z));
+       # $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($z));
 
-        $response = new Response($content);
-        $response->headers->set('Content-Type', 'application/json');
+       # $response = new Response($content);
+       # $response->headers->set('Content-Type', 'application/json');
 
-        return $response;
+       # return $response;
+
+        return new JsonResponse($content);
     }
 
     private function process(SurveyGeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
