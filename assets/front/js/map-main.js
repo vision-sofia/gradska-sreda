@@ -242,25 +242,23 @@ export class Map {
                 this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
                 this.mapResponse.CollectionsLayerControl.clearLayers();
 
-                const geoCollectinResult = results.geoCollectionsVariant2;
-                const collection = new Collection(this, this.mapResponse.settings);
+                const geoCollectinResult = results.geoCollections;
+                
                 for (const removeThisObj in geoCollectinResult) {
                     if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
-                        collection.layer._leaflet_id = removeThisObj;
+                        const collection = new Collection(this, this.mapResponse.settings);
 
+                        collection.layer._leaflet_id = removeThisObj;
                         geoCollectinResult[removeThisObj].forEach(item => {
                             collection.layer.addData(item);
                         })
+
+                        this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
                     } 
                 }
 
-                
-                this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
-
                 this.mapResponse.SurveyResponsesLayerGeoJson.clearLayers();
                 this.mapResponse.SurveyResponsesLayerGeoJson.addData(results.surveyResponses);
-
-                console.log(collection.layer);
 
                 this.setLayerActiveStyle();
                 fn();
