@@ -1,5 +1,58 @@
 import { defaultMapSize } from './map-config';
 
+export class Collection {
+    constructor(settings) {
+        this.settings = settings;
+        this.layer = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = settings.styles[feature.properties._s1] ? {...settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    console.log('Collections - LayerGeoJson - CLICK');
+                    switch (feature.properties._behavior) {
+                        case 'navigation':
+                            this.zoomToLayer(layer, ev);
+                            break;
+                        default:
+                            this.collections.onLayerClick(layer, ev);
+                            this.zoomToLayer(layer, ev);
+                            break;
+                    }
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return; 
+                    }
+                    if (settings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
+                        return;
+                    }
+                    if (settings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, settings.styles[feature.properties._s1]);
+            }
+        });
+    }
+    
+    setLayerDefaultStyle(layer) {
+        layer.setStyle(this.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+    }
+
+    setLayerHoverStyle(layer) {
+        layer.setStyle(this.settings.styles[layer.feature.properties._s2])
+    }
+}
+
 export class Collections {
     mapInstance;
     activeCollectionId;
@@ -89,12 +142,14 @@ export class Collections {
     }
 
     delete(layerUUID) {
+        const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(layerUUID);
+        
         $.ajax({
             type: 'DELETE',
             url: `/front-end/geo-collection/${layerUUID}`,
             success: () => {
                 this.getGeoCollectionsList();
-                this.map
+                this.mapInstance.mapResponse.CollectionsLayerControl.removeLayer(layer);
             }
         });
     }
@@ -130,13 +185,20 @@ export class Collections {
     setActiveCollection(activeCollectionId) {
         this.activeCollectionId = activeCollectionId;
         const activeCollection = this.collectionsResponse.find(geoLocation => geoLocation.id === this.activeCollectionId);
+        console.log(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
+        console.log(activeCollection);
+        
+        if (!activeCollection.bbox) {
+            return;
+        }
+
         const boundsCorner1 = L.latLng(activeCollection.bbox.bounds[0][0], activeCollection.bbox.bounds[0][1]),
         boundsCorner2 = L.latLng(activeCollection.bbox.bounds[1][0], activeCollection.bbox.bounds[1][1]),
         acctiveCollectionBounds = L.latLngBounds(boundsCorner1, boundsCorner2);
 
         if (acctiveCollectionBounds.isValid()) {
             // TODO: Remove if fit active collection in bounds is not needed
-            // this.mapInstance.map.fitBounds(activeCollection.bbox.bounds);
+            this.mapInstance.map.fitBounds(activeCollection.bbox.bounds);
             this.mapInstance.zoomToLayer(null, null, activeCollection.bbox.center);
         }
     }

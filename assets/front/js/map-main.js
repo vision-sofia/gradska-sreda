@@ -1,5 +1,6 @@
 import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle, defaultElConfig } from './map-config';
 import { debounce } from './helpers';
+import { Collection } from './collections';
 // import { defaultMapSize } from './map-config';
 
 export class Map {
@@ -11,7 +12,8 @@ export class Map {
     mapResponse = {
         settings: {},
         ObjectsLayerGeoJson: {},
-        CollectionsLayerGeoJson: {},
+        CollectionsLayerControl: {},
+        SurveyResponses: {},
     };
     activeAreaList = [];
     isMapLoaded = false;
@@ -67,6 +69,7 @@ export class Map {
             },
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
+                    console.log('Object LayerGeoJson CLICK');
                     switch (feature.properties._behavior) {
                         case 'navigation':
                             this.zoomToLayer(layer, ev);
@@ -100,19 +103,24 @@ export class Map {
         }).addTo(this.map);
 
 
-        this.mapResponse.CollectionsLayerGeoJson = L.geoJSON([], { 
+        this.mapResponse.CollectionsLayerControl = L.layerGroup().addTo(this.map);
+
+        this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                console.log(styles.color = 'red');
+                
                 return styles;
             },
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
+                    console.log('Survey - ResponsesLayerGeoJson - CLICK');
                     switch (feature.properties._behavior) {
                         case 'navigation':
                             this.zoomToLayer(layer, ev);
                             break;
                         default:
-                            this.collections.onLayerClick(layer, ev);
+                            this.onLayerClick(layer, ev);
                             this.zoomToLayer(layer, ev);
                             break;
                     }
@@ -230,10 +238,30 @@ export class Map {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;
                 this.mapResponse.ObjectsLayerGeoJson.clearLayers();
-                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
-                this.mapResponse.CollectionsLayerGeoJson.clearLayers();
-                this.mapResponse.CollectionsLayerGeoJson.addData(results.geoCollections);
                 
+                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
+                this.mapResponse.CollectionsLayerControl.clearLayers();
+
+                const geoCollectinResult = results.geoCollectionsVariant2[0];
+                const collection = new Collection(this.mapResponse.settings);
+                for (const removeThisObj in geoCollectinResult) {
+                    if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
+                        collection.layer._leaflet_id = removeThisObj;
+
+                        geoCollectinResult[removeThisObj].forEach(item => {
+                            collection.layer.addData(item);
+                        })
+                    } 
+                }
+
+                
+                this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
+
+                this.mapResponse.SurveyResponsesLayerGeoJson.clearLayers();
+                this.mapResponse.SurveyResponsesLayerGeoJson.addData(results.surveyResponses);
+
+                console.log(collection.layer);
+
                 this.setLayerActiveStyle();
                 fn();
             }
@@ -329,6 +357,8 @@ export class Map {
     }
 
     onLayerClick(layer, ev) {
+        console.log('CLICK');
+        
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
