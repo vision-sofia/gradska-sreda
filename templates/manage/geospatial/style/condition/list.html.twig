@@ -39,27 +39,27 @@
                 <td class="text-right">{{ styleCondition.value }}</td>
                 <td class="text-center">{{ styleCondition.isDynamic ? '<span class="text-success">Да</span>' : 'Не' }}</td>
                 <td>
-                    {% if styleCondition.baseStyle.point is defined %}
-                        {{ macros.geometry_style_info(styleCondition.baseStyle.point.content, 'base') }}
+                    {% if styleCondition.baseStyle.POINT is defined %}
+                        {{ macros.geometry_style_info(styleCondition.baseStyle.POINT.content, 'base') }}
                     {% endif %}
-                    {% if styleCondition.hoverStyle.point is defined %}
-                        {{ macros.geometry_style_info(styleCondition.hoverStyle.point.content, 'hover') }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if styleCondition.baseStyle.line is defined %}
-                        {{ macros.geometry_style_info(styleCondition.baseStyle.line.content, 'base') }}
-                    {% endif %}
-                    {% if styleCondition.hoverStyle.line is defined %}
-                        {{ macros.geometry_style_info(styleCondition.hoverStyle.line.content, 'hover') }}
+                    {% if styleCondition.hoverStyle.POINT is defined %}
+                        {{ macros.geometry_style_info(styleCondition.hoverStyle.POINT.content, 'hover') }}
                     {% endif %}
                 </td>
                 <td>
-                    {% if styleCondition.baseStyle.polygon is defined %}
-                        {{ macros.geometry_style_info(styleCondition.baseStyle.polygon.content, 'base') }}
+                    {% if styleCondition.baseStyle.LINESTRING is defined %}
+                        {{ macros.geometry_style_info(styleCondition.baseStyle.LINESTRING.content, 'base') }}
                     {% endif %}
-                    {% if styleCondition.hoverStyle.polygon is defined %}
-                        {{ macros.geometry_style_info(styleCondition.hoverStyle.polygon.content, 'hover') }}
+                    {% if styleCondition.hoverStyle.LINESTRING is defined %}
+                        {{ macros.geometry_style_info(styleCondition.hoverStyle.LINESTRING.content, 'hover') }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if styleCondition.baseStyle.POLYGON is defined %}
+                        {{ macros.geometry_style_info(styleCondition.baseStyle.POLYGON.content, 'base') }}
+                    {% endif %}
+                    {% if styleCondition.hoverStyle.POLYGON is defined %}
+                        {{ macros.geometry_style_info(styleCondition.hoverStyle.POLYGON.content, 'hover') }}
                     {% endif %}
                 </td>
                 <td class="text-right">{{ styleCondition.priority }}</td>

@@ -150,14 +150,14 @@ class StyleConverter
     {
         $styles = [
             'base' => [
-                'point' => '',
-                'line' => '',
-                'polygon' => '',
+                'POINT' => '',
+                'LINESTRING' => '',
+                'POLYGON' => '',
             ],
             'hover' => [
-                'point' => '',
-                'line' => '',
-                'polygon' => '',
+                'POINT' => '',
+                'LINESTRING' => '',
+                'POLYGON' => '',
             ],
         ];
 

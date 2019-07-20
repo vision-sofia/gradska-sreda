@@ -227,7 +227,7 @@ class MapController extends AbstractController
             $properties->_zoom = 20;
         }
 
-        $s = $styleUtils->inherit('line', $properties, $row->base_style, $row->hover_style);
+        $s = $styleUtils->inherit('LINESTRING', $properties, $row->base_style, $row->hover_style);
 
         if (isset($s['base_style_code'])) {
             $properties->_s1 = $s['base_style_code'];
