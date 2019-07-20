@@ -132,7 +132,6 @@ class MapController extends AbstractController
 
         // GeoCollection layer V2
         $gcV2 = [];
-        $gcV2a = [];
 
         foreach ($userGeoCollection as $row) {
             $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
@@ -157,7 +156,7 @@ class MapController extends AbstractController
             unset($p->_gc_id);
             $row->properties = json_encode($p);
 
-            $gcV2a[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
+            $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         $userSubmittedObjects = [];
@@ -209,15 +208,7 @@ class MapController extends AbstractController
             #$z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
 
             foreach ($item as $feature) {
-                $content['geoCollections'][$key]['content'][] = json_decode($feature, false);
-            }
-        }
-        # $z = [];
-        foreach ($gcV2a as $key => $item) {
-            #$z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
-
-            foreach ($item as $feature) {
-                $content['geoCollections'][$key]['extra'][] = json_decode($feature, false);
+                $content['geoCollections'][$key][] = json_decode($feature);
             }
         }
 
