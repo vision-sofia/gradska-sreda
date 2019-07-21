@@ -108,8 +108,6 @@ export class Map {
         this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
-                console.log(styles.color = 'red');
-                
                 return styles;
             },
             onEachFeature: (feature, layer) => {
