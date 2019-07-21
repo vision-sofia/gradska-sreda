@@ -1,6 +1,7 @@
 import { defaultMapSize } from './map-config';
 
 export class Collection {
+
     constructor(mapInstance, settings) {
         this.mapInstance = mapInstance;
         this.settings = settings;
@@ -14,6 +15,7 @@ export class Collection {
                 layer.on('click', (ev) => {
                     console.log('Collections - LayerGeoJson - CLICK');
                     this.onLayerClick(layer, ev);
+                    this.mapInstance.zoomToLayer(layer, ev);
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {

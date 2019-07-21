@@ -364,8 +364,6 @@ export class Map {
                 this.openInfoPopup(layer, ev);
                 break;
             case 'survey':
-                console.log(this.collections.isCollectionsActive);
-                
                 if (this.collections.isCollectionsActive && this.collections.isCollectionShown) {
                     this.collections.add(layer, ev);
                 } else {
@@ -496,6 +494,10 @@ export class Map {
     }
 
     setActiveArea() {
+        if (!this.map._loaded) {
+            return;
+        }
+
         let top = 0,
         bottom = 0,
         left = 0,
@@ -552,6 +554,12 @@ export class Map {
 
         const width = window.innerWidth - callculatedWidth;
         const height = window.innerHeight - callculatedHeight;
+        
+        const lastCenterPoint = this.map.getCenter();
+        
+        setTimeout(() => {
+            this.map.panTo(lastCenterPoint);
+        }, 200);
 
         this.map.setActiveArea({
             ...defaultObjectStyle.mapActiveArea,

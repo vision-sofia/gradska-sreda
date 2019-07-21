@@ -5,7 +5,6 @@ export class Survey {
     layer;
     geoObjectUUID = ''; 
     isOpen = false;
-    lastCenterPoint;
     mapMarker;
 
     timeoutId;
@@ -305,19 +304,13 @@ export class Survey {
 
         this.elPathVoteSurveyContainer.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
         this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
-
-        this.lastCenterPoint = this.event.latlng;
-        
         this.mapInstance.addToActiveAreaList(this.elPathVoteSurveyContainer);
-
-        this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
     }
 
     close() {
         this.isOpen = false;
         this.removeMarker();
         this.mapInstance.toggleHeaderEl(true);
-        this.mapInstance.map.panTo(this.lastCenterPoint);
         this.mapInstance.removeFromActiveAreaList(this.elPathVoteSurveyContainer);
     }
 
