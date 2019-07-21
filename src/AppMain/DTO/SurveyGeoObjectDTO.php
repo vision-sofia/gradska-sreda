@@ -12,6 +12,7 @@ class SurveyGeoObjectDTO
     public $geometry_type;
     public $base_style;
     public $hover_style;
+    public $active_style;
     public $type_name;
     public $geo_name;
     public $uuid;

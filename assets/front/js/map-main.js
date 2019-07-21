@@ -1,5 +1,7 @@
 import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle, defaultElConfig } from './map-config';
 import { debounce } from './helpers';
+import { Collection } from './collections';
+// import { defaultMapSize } from './map-config';
 
 export class Map {
     map;
@@ -10,7 +12,8 @@ export class Map {
     mapResponse = {
         settings: {},
         ObjectsLayerGeoJson: {},
-        CollectionsLayerGeoJson: {},
+        CollectionsLayerControl: {},
+        SurveyResponses: {},
     };
     activeAreaList = [];
     isMapLoaded = false;
@@ -66,6 +69,7 @@ export class Map {
             },
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
+                    console.log('Object LayerGeoJson CLICK');
                     switch (feature.properties._behavior) {
                         case 'navigation':
                             this.zoomToLayer(layer, ev);
@@ -99,19 +103,22 @@ export class Map {
         }).addTo(this.map);
 
 
-        this.mapResponse.CollectionsLayerGeoJson = L.geoJSON([], { 
+        this.mapResponse.CollectionsLayerControl = L.layerGroup().addTo(this.map);
+
+        this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], { 
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
             },
             onEachFeature: (feature, layer) => {
                 layer.on('click', (ev) => {
+                    console.log('Survey - ResponsesLayerGeoJson - CLICK');
                     switch (feature.properties._behavior) {
                         case 'navigation':
                             this.zoomToLayer(layer, ev);
                             break;
                         default:
-                            this.collections.onLayerClick(layer, ev);
+                            this.onLayerClick(layer, ev);
                             this.zoomToLayer(layer, ev);
                             break;
                     }
@@ -151,6 +158,8 @@ export class Map {
             updateWhenZooming: false,
             attributionControl: false
         });
+
+        this.map.setActiveArea('map-active-area');
         this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
     }
 
@@ -176,8 +185,9 @@ export class Map {
         this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
         this.map.on('locationerror', this.setInitialMapView.bind(this));
         
-        // window.addEventListener('resize', debounce(() => {
-        // }, 200, false), false);
+        window.addEventListener('resize', debounce(() => {
+            this.setActiveArea();
+        }, 200, false), false);
     }
 
     selectInitialElements() {
@@ -226,10 +236,28 @@ export class Map {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;
                 this.mapResponse.ObjectsLayerGeoJson.clearLayers();
-                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
-                this.mapResponse.CollectionsLayerGeoJson.clearLayers();
-                this.mapResponse.CollectionsLayerGeoJson.addData(results.geoCollections);
                 
+                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
+                this.mapResponse.CollectionsLayerControl.clearLayers();
+
+                const geoCollectinResult = results.geoCollections;
+                
+                for (const removeThisObj in geoCollectinResult) {
+                    if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
+                        const collection = new Collection(this, this.mapResponse.settings);
+
+                        collection.layer._leaflet_id = removeThisObj;
+                        geoCollectinResult[removeThisObj].forEach(item => {
+                            collection.layer.addData(item);
+                        })
+
+                        this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
+                    } 
+                }
+
+                this.mapResponse.SurveyResponsesLayerGeoJson.clearLayers();
+                this.mapResponse.SurveyResponsesLayerGeoJson.addData(results.surveyResponses);
+
                 this.setLayerActiveStyle();
                 fn();
             }
@@ -325,6 +353,8 @@ export class Map {
     }
 
     onLayerClick(layer, ev) {
+        console.log('CLICK');
+        
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
@@ -464,40 +494,98 @@ export class Map {
     }
 
     setActiveArea() {
-        this.activeAreaList.forEach(actionConfig => {
-            const surveyHeight = parseFloat(getComputedStyle(actionConfig.elRef).getPropertyValue('--active-area-height'));
-            const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
-    
-            const surveyWidth = parseFloat(getComputedStyle(actionConfig.elRef).getPropertyValue('--active-area-width'));
-            const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
+        if (!this.map._loaded) {
+            return;
+        }
 
-            this.map.setActiveArea({
-                height: activeAreaHeight + '%',
-                width: activeAreaWidth + '%',
-                top: 0,
-                bottom: 0,
-            });
+        let top = 0,
+        bottom = 0,
+        left = 0,
+        right = 0;
+
+        let callculatedWidth = 0,
+        callculatedWidthLeft = 0,
+        callculatedWidthRight = 0,
+        callculatedHeight = 0,
+        callculatedHeightTop = 0,
+        callculatedHeightBot = 0;
+
+        this.activeAreaList.forEach(el => {
+            const elWidth = parseFloat(getComputedStyle(el).getPropertyValue('width')),
+            elHeight = parseFloat(getComputedStyle(el).getPropertyValue('height')),
+            elTop = parseFloat(getComputedStyle(el).getPropertyValue('top')),
+            elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom')),
+            elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left')),
+            elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
+            
+            // Optimise this code repetition
+            if (el.clientWidth === window.innerWidth) {
+                if (Math.round(elBottom) <= 0) {
+                    // Bottom
+                    if (elHeight > callculatedHeightBot) {
+                        callculatedHeightBot = elHeight;
+                    }
+                } else if (Math.round(elTop) === 0) { 
+                    // TOP
+                    if (elHeight > callculatedHeightTop) {
+                        top = elHeight;
+                        callculatedHeightTop = elHeight;
+                    }
+                }
+
+                callculatedHeight = callculatedHeightTop + callculatedHeightBot;
+            } else if (el.clientHeight === window.innerHeight) {
+                if (Math.round(elRight) <= 0) {
+                    // Right
+                    if (elWidth > callculatedWidthRight) {
+                        callculatedWidthRight = elWidth;
+                    }
+                } else if (Math.round(elLeft) === 0) { 
+                    // Left
+                    if (elWidth > callculatedWidthLeft) {
+                        left = elWidth;
+                        callculatedWidthLeft = elWidth;
+                    }
+                }
+
+                callculatedWidth = callculatedWidthLeft + callculatedWidthRight;
+            }
         });
 
-        // height: defaultMapSize.areaHeight + '%',
-        // height: defaultMapSize.areaHeight + '%',
+        const width = window.innerWidth - callculatedWidth;
+        const height = window.innerHeight - callculatedHeight;
+        
+        const lastCenterPoint = this.map.getCenter();
+        
+        setTimeout(() => {
+            this.map.panTo(lastCenterPoint);
+        }, 200);
 
-        // this.map.setActiveArea({
-        //     ...defaultObjectStyle.mapActiveArea,
-        //     top: defaultObjectStyle.mapActiveArea.calculatedTop,
-        //     height: defaultObjectStyle.mapActiveArea.callculatedHeight,
-        // });
+        this.map.setActiveArea({
+            ...defaultObjectStyle.mapActiveArea,
+            width: width + 'px',
+            height: height + 'px',
+            top: top + 'px',
+            bottom: bottom + 'px',
+            left: left + 'px',
+            right: right + 'px',
+        });
     }
 
     addToActiveAreaList(activeAreaConfig) {
-        this.activeAreaList.pull(activeAreaConfig);
-        this.setActiveArea();
+        if (!this.activeAreaList.includes(activeAreaConfig)) {
+            this.activeAreaList.push(activeAreaConfig);
+            this.setActiveArea();
+        }
     }
 
-    removeFromActiveArea(){
+    removeFromActiveAreaList(activeAreaConfig) {
         const index = this.activeAreaList.indexOf(activeAreaConfig);
-        this.activeAreaList.splice(index, 1);
-        this.setActiveArea();
+
+        if (index > -1) {
+            this.activeAreaList.splice(index, 1);
+            this.setActiveArea();
+        }
     }
 };
 

@@ -17,14 +17,10 @@ export const defaultObjectStyle = {
     width: 5,
     mapActiveArea: {
         position: 'absolute',
-        top: '0',
-        left: '0',
         width: '100%',
         height: '100%',
-        callculatedWidth: '100%',
-        callculatedHeight: '100%',
-        callculatedTop: '0',
-        callculatedLeft: '0',
+        top: '0',
+        left: '0',
     }
 };
 

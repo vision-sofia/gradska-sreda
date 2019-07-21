@@ -78,7 +78,9 @@ class Finder
                 t.name as type_name,
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
-                    \'_geo_comp\', uc.is_completed::int
+                    \'_sca\', g.properties->>\'_sca\',
+                    \'_behavior\', \'survey\',
+                    \'_completed\', uc.is_completed::int
                 ) as properties
             FROM
                 x_survey.result_user_completion uc

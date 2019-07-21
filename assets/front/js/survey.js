@@ -5,7 +5,6 @@ export class Survey {
     layer;
     geoObjectUUID = ''; 
     isOpen = false;
-    lastCenterPoint;
     mapMarker;
 
     timeoutId;
@@ -30,15 +29,6 @@ export class Survey {
     elSurveyCarouselNav;
     elSurveyPollBtn;
     refSurveyCarousel;
-    activeAreaConfig = {
-        elRef: this.elPathVoteSurveyContainer,
-        style: {
-            height: activeAreaHeight + '%',
-            width: activeAreaWidth + '%',
-            top: 0,
-            bottom: 0,
-        }
-    };
 
     constructor(mapInstance) {
         this.mapInstance = mapInstance;
@@ -141,11 +131,12 @@ export class Survey {
             data: data,
             beforeSend: () => {
                 if (document.getElementById(value)) {
-                    document.getElementById(value).style.color = 'green';
+                    document.getElementById(value).classList.add('active');
                 }
             },
             success: (result) => {
                 this.buildSurvey(result);
+                this.getResults();
             }
         });
     };
@@ -205,11 +196,14 @@ export class Survey {
             const answers = this.questions[item].answers;
             this.question = this.questions[item];
 
-            html += `<div class="survey-question mb-4 ${this.question.isAnswered ? 'active' : null}">`;
+            const isAnswered = this.question.isAnswered && this.question.isCompleted;
+            const isUnComplete = this.question.isAnswered && !this.question.isCompleted;
+
+            html += `<div class="survey-question mb-4 ${isAnswered ? 'is-answered' : isUnComplete ? 'is-unComplete' : null}">`;
 
             html += `
                 <div class="survey-question-title mb-1">
-                    <i class="mr-1 fas ${this.question.isAnswered ? 'text-success fa-check' : 'fa-check text-black-50'}"></i>
+                    <i class="survey-question-title-check mr-1 fas fa-check"></i>
                     <h5 class="survey-question-title-text d-inline">${this.question.title}</h5>
                     <div class="d-flex flex-grow-1 align-items-start justify-content-end">
                         <button type="button" class="remove btn btn-sm btn-danger" name="answers[option][${this.question.uuid}][]" data-uuid="${this.question.uuid}">
@@ -228,7 +222,7 @@ export class Survey {
                     isSelectedParent = this.question.answers[answer].isSelected;
 
                     html += `<div class="d-flex flex-column">
-                                <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
+                                <label class="survey-question-option ` + (answers[answer].isSelected  ? 'is-selected' : '') + `" id="` + answers[answer].uuid + `">
                                     <input class="mr-1 survey-question-input" type="` + (this.question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + this.question.uuid + `][]"
                                     ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `
                                 </label>
@@ -240,13 +234,13 @@ export class Survey {
                 } else {
                     if (isSelectedParent === true) {
                         html += `<div class="pl-4 d-flex flex-column">
-                                    <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-answered' : '') + `" id="` + answers[answer].uuid + `">
+                                    <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-selected' : '') + `" id="` + answers[answer].uuid + `">
                                         <input class="mr-1 survey-question-input" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
                                         ` + answers[answer].title +
                                     `</label>`;
 
                         if (answers[answer].isSelected && this.question.answers[answer].isFreeAnswer) {
-                            html += `<label class="` + (answers[answer].isSelected ? 'is-answered' : '') + `">
+                            html += `<label class="` + (answers[answer].isSelected ? 'is-selected' : '') + `">
                                         <textarea class="survey-question-input d-block" id="textarea-` + this.question.answers[answer].uuid + `]">` + this.question.answers[answer].explanation + `</textarea>
                                     </label>`;
                         }
@@ -310,20 +304,14 @@ export class Survey {
 
         this.elPathVoteSurveyContainer.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
         this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
-
-        this.lastCenterPoint = this.event.latlng;
-        
-        this.mapInstance.addToActiveAreaList(this.activeAreaConfig);
-
-        this.mapInstance.zoomToLayer(this.layer, this.event, this.layer.getCenter());
+        this.mapInstance.addToActiveAreaList(this.elPathVoteSurveyContainer);
     }
 
     close() {
         this.isOpen = false;
         this.removeMarker();
         this.mapInstance.toggleHeaderEl(true);
-        this.mapInstance.map.panTo(this.lastCenterPoint);
-        this.mapInstance.removeFromActiveArea(this.activeAreaConfig);
+        this.mapInstance.removeFromActiveAreaList(this.elPathVoteSurveyContainer);
     }
 
     clearQuestion(uuid) {

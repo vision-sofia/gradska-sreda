@@ -148,7 +148,7 @@ class GeoCollectionController extends AbstractController
 
             $metadata = $item->getBboxMetadata();
 
-            if ($metadata) {
+/*            if ($metadata) {
                 $bbox = [
                     'center' => [
                         'lat' => $metadata['y_center'] ?? null,
@@ -159,7 +159,7 @@ class GeoCollectionController extends AbstractController
                         [$metadata['x_max'], $metadata['y_max']]
                     ],
                 ];
-            }
+            }*/
 
             $result[] = [
                 'id' => $item->getUuid(),
@@ -167,7 +167,7 @@ class GeoCollectionController extends AbstractController
                 'length' => $length,
                 'completion' => $completion,
                 'name' => $item->getName(),
-                'bbox' => $bbox ?? null,
+               # 'bbox' => $bbox ?? null,
             ];
         }
 

@@ -271,7 +271,7 @@ class StyleConditionFixtures extends Fixture
                 ],
             ],
             [
-                'attribute' => '_geo_comp',
+                'attribute' => '_completed',
                 'value' => 0,
                 'description' => 'Обект с частично попълнена анкета',
                 'is_dynamic' => true,
@@ -297,7 +297,7 @@ class StyleConditionFixtures extends Fixture
                 ],
             ],
             [
-                'attribute' => '_geo_comp',
+                'attribute' => '_completed',
                 'value' => 1,
                 'description' => 'Обект с изцяло попълнена анкета',
                 'is_dynamic' => true,

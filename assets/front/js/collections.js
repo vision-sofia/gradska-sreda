@@ -1,5 +1,71 @@
 import { defaultMapSize } from './map-config';
 
+export class Collection {
+
+    constructor(mapInstance, settings) {
+        this.mapInstance = mapInstance;
+        this.settings = settings;
+        
+        this.layer = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = settings.styles[feature.properties._s1] ? {...settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    console.log('Collections - LayerGeoJson - CLICK');
+                    this.onLayerClick(layer, ev);
+                    this.mapInstance.zoomToLayer(layer, ev);
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return; 
+                    }
+                    if (settings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
+                        return;
+                    }
+                    if (settings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, settings.styles[feature.properties._s1]);
+            }
+        });
+    }
+    
+    setLayerDefaultStyle(layer) {
+        layer.setStyle(this.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+    }
+
+    setLayerHoverStyle(layer) {
+        layer.setStyle(this.settings.styles[layer.feature.properties._s2])
+    }
+
+    onLayerClick(layer, ev) {
+        this.mapInstance.onLayerClick(layer, ev);
+    // TODO: Remove if not needed
+    //     layer.feature.properties.activePopup = true;
+    //     this.mapInstance.setLayerActiveStyle(layer);
+    //     this.mapInstance.removeAllPopups();
+    //     console.log('s------');
+        
+    //    console.log(layer.feature.properties._behavior);
+       
+    //     if (layer.feature.properties._behavior === 'survey') {
+    //         if (this.isCollectionsActive) {
+    //             this.add(layer, ev);
+    //         }
+    //     }
+    }
+}
+
 export class Collections {
     mapInstance;
     activeCollectionId;
@@ -8,7 +74,7 @@ export class Collections {
     isCollectionShown = false;
     collectionsResponse;
     get isCollectionsActive() {
-        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerGeoJson);
+        return this.mapInstance.map.hasLayer(this.mapInstance.mapResponse.CollectionsLayerControl);
     }
 
     constructor(mapInstance) {
@@ -89,12 +155,14 @@ export class Collections {
     }
 
     delete(layerUUID) {
+        const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(layerUUID);
+        
         $.ajax({
             type: 'DELETE',
             url: `/front-end/geo-collection/${layerUUID}`,
             success: () => {
                 this.getGeoCollectionsList();
-                this.map
+                this.mapInstance.mapResponse.CollectionsLayerControl.removeLayer(layer);
             }
         });
     }
@@ -110,34 +178,17 @@ export class Collections {
         });
     }
 
-    onLayerClick(layer, ev) {
-        this.mapInstance.onLayerClick(layer, ev);
-    // TODO: Remove if not needed
-    //     layer.feature.properties.activePopup = true;
-    //     this.mapInstance.setLayerActiveStyle(layer);
-    //     this.mapInstance.removeAllPopups();
-    //     console.log('s------');
-        
-    //    console.log(layer.feature.properties._behavior);
-       
-    //     if (layer.feature.properties._behavior === 'survey') {
-    //         if (this.isCollectionsActive) {
-    //             this.add(layer, ev);
-    //         }
-    //     }
-    }
-
     setActiveCollection(activeCollectionId) {
         this.activeCollectionId = activeCollectionId;
         const activeCollection = this.collectionsResponse.find(geoLocation => geoLocation.id === this.activeCollectionId);
-        const boundsCorner1 = L.latLng(activeCollection.bbox.bounds[0][0], activeCollection.bbox.bounds[0][1]),
-        boundsCorner2 = L.latLng(activeCollection.bbox.bounds[1][0], activeCollection.bbox.bounds[1][1]),
-        acctiveCollectionBounds = L.latLngBounds(boundsCorner1, boundsCorner2);
-
-        if (acctiveCollectionBounds.isValid()) {
-            // TODO: Remove if fit active collection in bounds is not needed
-            // this.mapInstance.map.fitBounds(activeCollection.bbox.bounds);
-            this.mapInstance.zoomToLayer(null, null, activeCollection.bbox.center);
+        const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(activeCollectionId);
+      
+        if (layer) {
+            if (!this.mapInstance.map.getBounds().contains(layer.getBounds())) {
+                this.mapInstance.map.fitBounds(layer.getBounds());
+            }
+    
+            this.mapInstance.zoomToLayer(null, null, layer.getBounds().getCenter());
         }
     }
 
@@ -195,18 +246,7 @@ export class Collections {
         this.isCollectionShown = true;
         this.elCollectionsContainer.classList.add('active');
 
-        const surveyHeight = parseFloat(getComputedStyle(this.elCollectionsContainer).getPropertyValue('--side-panel-height'));
-        const activeAreaHeight = defaultMapSize.areaHeight - surveyHeight;
-
-        const surveyWidth = parseFloat(getComputedStyle(this.elCollectionsContainer).getPropertyValue('--side-panel-width'));
-        const activeAreaWidth = defaultMapSize.areaWidth - surveyWidth;
-
-        this.mapInstance.map.setActiveArea({
-            height: activeAreaHeight + '%',
-            width: activeAreaWidth + '%',
-            top: 0,
-            bottom: 0,
-        });
+        this.mapInstance.addToActiveAreaList(this.elCollectionsContainer);
     }
 
     close() {
@@ -214,8 +254,6 @@ export class Collections {
         this.isCollectionShown = false;
         this.elCollectionsContainer.classList.remove('active');
 
-        this.mapInstance.map.setActiveArea({
-            height: defaultMapSize.areaHeight + '%',
-        });
+        this.mapInstance.removeFromActiveAreaList(this.elCollectionsContainer);
     }
 }
