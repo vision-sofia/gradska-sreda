@@ -6,7 +6,7 @@ manage:
 api-front-end:
   resource: '../src/AppAPIFrontend/Controller'
   type: annotation
-  prefix: /front-end
+  prefix: /api
 
 api-login-check:
   path: /api/login_check
