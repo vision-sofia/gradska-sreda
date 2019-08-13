@@ -231,7 +231,7 @@ export class Map {
 
         $.ajax({
             data: returnedTarget,
-            url: '/front-end/map?',
+            url: '/api/map?',
             success: (results) => {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;

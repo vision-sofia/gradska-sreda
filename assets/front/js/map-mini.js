@@ -144,7 +144,7 @@
 
 //         $.ajax({
 //             data: returnedTarget,
-//             url: "/front-end/map?",
+//             url: "/api/map?",
 //             success: function (results) {
 //                 objectsSettings = results.settings;
 //                 geoJsonLayer.clearLayers();
@@ -278,7 +278,7 @@
 //             radius: 1
 //         }).addTo(popusLayerGroup);
 
-//         let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+//         let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/api/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
 
 //         popupLayer.bindPopup(popupContent, {
 //             offset: L.point(0, -20)
@@ -294,7 +294,7 @@
 //         if (typeof collection !== 'undefined') {
 //             $.ajax({
 //                 type: "POST",
-//                 url: '/front-end/geo-collection/add',
+//                 url: '/api/geo-collection/add',
 //                 data: {
 //                     'geo-object': layer.feature.properties.id,
 //                     'collection': collection
@@ -318,7 +318,7 @@
 
 //                     $.ajax({
 //                         type: "POST",
-//                         url: '/front-end/geo-collection/add',
+//                         url: '/api/geo-collection/add',
 //                         //data: form.serialize(),
 //                         data: {
 //                             'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'

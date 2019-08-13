@@ -141,7 +141,7 @@ export class Collections {
 
             $.ajax({
                 type: 'POST',
-                url: '/front-end/geo-collection/add',
+                url: '/api/geo-collection/add',
                 data: {
                     'geo-object': layer.feature.properties.id,
                     'collection': this.activeCollectionId
@@ -159,7 +159,7 @@ export class Collections {
         
         $.ajax({
             type: 'DELETE',
-            url: `/front-end/geo-collection/${layerUUID}`,
+            url: `/api/geo-collection/${layerUUID}`,
             success: () => {
                 this.getGeoCollectionsList();
                 this.mapInstance.mapResponse.CollectionsLayerControl.removeLayer(layer);
@@ -170,7 +170,7 @@ export class Collections {
     new() {
         $.ajax({
             type: 'POST',
-            url: '/front-end/geo-collection/new',
+            url: '/api/geo-collection/new',
             success: (response) => {
                 this.activeCollectionId = response.id;
                 this.getGeoCollectionsList();
@@ -199,7 +199,7 @@ export class Collections {
 
     getGeoCollectionsList() {
         $.ajax({
-            url: '/front-end/geo-collection/info',
+            url: '/api/geo-collection/info',
             success: result => {
                 this.collectionsResponse = result;
                 let html = `<ul class="collections-list mt-4 pl-4">`;
