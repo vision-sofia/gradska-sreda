@@ -5,16 +5,24 @@ namespace App\DataFixtures;
 use App\AppMain\Entity\User\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends Fixture
 {
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $encoder)
+    {
+        $this->encoder = $encoder;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $entity = new User();
         $entity->setEmail('admin@localhost');
         $entity->setIsActive(true);
         $entity->setUsername('admin');
-        $entity->setPassword('$argon2i$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$BjWlpk8/CC9Ei/G14zrVbgwBLK8Nq1e9bk2Bk1LOqGc'); // 123@
+        $entity->setPassword($this->encoder->encodePassword($entity, 'demo'));
         $entity->addRole('ROLE_ADMIN');
 
         $manager->persist($entity);
@@ -23,7 +31,7 @@ class UserFixtures extends Fixture
         $entity->setEmail('test@localhost');
         $entity->setIsActive(true);
         $entity->setUsername('test');
-        $entity->setPassword('$argon2i$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$BjWlpk8/CC9Ei/G14zrVbgwBLK8Nq1e9bk2Bk1LOqGc'); // 123@
+        $entity->setPassword($this->encoder->encodePassword($entity, 'demo'));
         $entity->addRole('ROLE_MANAGE');
 
         $manager->persist($entity);
@@ -32,7 +40,7 @@ class UserFixtures extends Fixture
         $entity->setEmail('foo@localhost');
         $entity->setIsActive(true);
         $entity->setUsername('foo');
-        $entity->setPassword('$argon2i$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$BjWlpk8/CC9Ei/G14zrVbgwBLK8Nq1e9bk2Bk1LOqGc'); // 123@
+        $entity->setPassword($this->encoder->encodePassword($entity, 'demo'));
         $entity->addRole('ROLE_USER');
 
         $manager->persist($entity);
