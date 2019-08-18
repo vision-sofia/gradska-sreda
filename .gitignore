@@ -24,3 +24,6 @@ src/DataFixtures/Raw
 node_modules
 media
 !media/.gitignore
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

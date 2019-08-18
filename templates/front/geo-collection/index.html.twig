@@ -1,37 +1,35 @@
-{% extends 'front/map/layout.html.twig' %}
-{% block title %}Карта{% endblock %}
 {% block content %}
-    <div class="gc-map-wrapper">
-        <div id="mapMini" class="map-left" data-locate-on-load="true"></div>
+    <div id="collections" class="collections survey side-panel d-flex flex-column align-items-center justify-content-start" data-toggle-type="side-panel">
+        <div class="container side-panel-btn-close-holder position-fixed d-flex flex-column align-items-center justify-content-center">
+            <button data-toggle-close data-toggle-for="collections" class="btn cursor-pointer side-panel-btn-close">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="side-panel-nav d-flex flex-md-column p-md-2 mt-md-3">
+                <button class="add active side-panel-nav-btn btn btn-primary rounded-circle" role="button">
+                    <i class="fas fa-plus-circle"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex mt-5 mt-md-0 justify-content-center w-100 row pl-lg-4 carousel slide carousel-vertical-stack h-100">
+            <div class="p-4">
+                <p>Отбележете своя маршрут до спирка на градския трансопрт.</p>
+
+                Избереше маршрут:
+                <p>
+                    Натиснете на отсечка от картата за да я добавите към маршрут. Натиснете повторно на отсечка от маршрута за да я извадите.
+                </p>
+
+                <div id="collections-list">
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="gc-sidebar-wrapper pl-5">
-        <p>Отбележете своя маршрут до спирка на градския трансопрт.</p>
 
-        <form action="{{ path('app.geo-collection.add') }}" method="post" class="mb-4">
-            <button type="submit" class="btn btn-md btn-primary">Нов маршрут</button>
-        </form>
-
-        Избереше маршрут:
-
-        <ul class="mt-2 pl-4">
-            {% set m = 0 %}
-            {% for collectionItem in collections %}
-                {% set m = m + 1 %}
-                <li><a href="{{ path('app.geo-collection.view', {'id': collectionItem.uuid}) }}"
-                       class="{% if collection is defined and collectionItem.uuid == collection.uuid %}font-weight-bold{% endif %}">Маршрут {{ m }}</a>
-                    {% if collection is defined and collectionItem.uuid == collection.uuid %}[<span class="text-success"> активен</span>]{% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+    <div>
+        <input hidden id="collections-toggle" type="checkbox">
+        <label title="Маршрути" for="collections-toggle" class="btn btn-primary d-flex collections-toggle checkbox">
+            <i class="fas fa-layer-group"></i>
+        </label>
     </div>
-
-    <script>
-        let mapOption = {
-            {% if collection is defined %}
-            collection: '{{ collection.uuid }}',
-            {% endif %}
-            survey: false,
-        {#    {% if boundingBox is not empty %}bbox: {{ boundingBox }}{% endif %} #}
-        }
-    </script>
 {% endblock %}

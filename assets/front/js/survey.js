@@ -1,154 +1,327 @@
-(() => {
+import { defaultMapSize } from './map-config';
 
-    function questions() {
+export class Survey {
+    mapInstance;
+    layer;
+    geoObjectUUID = ''; 
+    isOpen = false;
+    mapMarker;
 
+    timeoutId;
+    progress = 0;
+    questions = [];
+    results = {
+        rating: [{}],
+        respondents: [{}]
+    };
+
+    mapMarkerIcon = L.icon({
+        iconUrl: 'front/svg/icon--map-pin--edit.svg',
+        iconSize:     [53.707, 53.707], // size of the icon
+        iconAnchor:   [26.9, 53], // point of the icon which will correspond to marker's location
+    });
+
+    // UI
+    event;
+    elPathVoteSurveyContainer;
+    elProgressBar;
+    elSurveayForm;
+    elSurveyCarouselNav;
+    elSurveyPollBtn;
+    refSurveyCarousel;
+
+    constructor(mapInstance) {
+        this.mapInstance = mapInstance;
+        this.init();
+    }
+
+    init() {
+        this.queryElements();
+        this.events();
+    }
+
+    queryElements() {
+        this.elPathVoteSurveyContainer = document.getElementById('path-vote-suevey');
+        if (!this.elPathVoteSurveyContainer) {
+           throw 'Element "#path-vote-suevey" not found';
+        }
+        this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
+        this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
+          
+        this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.side-panel-nav-btn');
+        this.elSurveyPollBtn = this.elSurveyCarouselNav[1];
+        this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carouselServeyPages');
+    }
+
+    events() {
+        $(this.elSurveyCarouselNav).on('click', (e) => {
+            if (e.currentTarget.classList.contains('active')) {
+                return false;
+            }
+            this.elSurveyCarouselNav.forEach((navItem) => {
+                navItem.classList.remove('active');
+            })
+            e.currentTarget.classList.add('active')
+        });
+
+
+        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-open]', () => {
+            this.open(this.layer, this.ev);
+        });
+        
+        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-close]', () => {
+            this.close();
+        });
+
+        $(document).on('input propertychange', '.survey-question-input', (e) => {
+            const target = e.target;
+            let data = {};
+            let debounceTime = 0;
+    
+            if (target.tagName === 'TEXTAREA') {
+                data = {
+                    'explanation': {
+                        'answer': target.id,
+                        'text': target.value,
+                    }
+                };
+    
+                debounceTime = 400;
+            } else {
+                data = {
+                    'answer': target.value,
+                };
+            }
+           
+            clearTimeout(this.timeoutId); 
+    
+            this.timeoutId = setTimeout(() => {
+                this.submitSurvey(data, target.value)
+            }, debounceTime);
+        });
+
+        $(document).on('click', '.survey-question .remove', (e) => {
+            const uuid = e.currentTarget.getAttribute('data-uuid');
+            this.clearQuestion(uuid);
+        });
+    }
+
+    getQuestions() {
         $.ajax({
-            url: '/geo/' + geoObject + '/q',
-
-            success: function (result) {
-                let html = ``;
-                let survey = result.survey;
-                let progress = result.progress;
-                let isSelectedParent = false;
-                Object.keys(survey).forEach(function (item) {
-                    let answers = survey[item].answers;
-                    let question = survey[item];
-                    let indicatorStyle;
-
-                    if (question.isAnswered && question.isCompleted) {
-                        indicatorStyle = 'text-success';
-                    } else if (question.isAnswered && !question.isCompleted) {
-                        indicatorStyle = 'text-warning';
-                    } else {
-                        indicatorStyle = 'text-black-50';
-                    }
-
-                    html += `<div class="mb-4 " >
-                            <i class="fas fa-check ${indicatorStyle}"></i> <h5 class="d-inline">${question.title}</h5>`;
-
-                    Object.keys(answers).forEach(function (answer) {
-                        if (answers[answer].parent === null) {
-                            isSelectedParent = question.answers[answer].isSelected;
-
-                            html += `<p class="mb-0"><label id="${answers[answer].uuid}"><input class="answer" type="` + (question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][${question.uuid}][]"
-                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label></p>`;
-
-                            if (question.answers[answer].isFreeAnswer) {
-                                html += `<textarea></textarea>`;
-                            }
-                        } else {
-                            if (isSelectedParent === true) {
-                                html += `<div style="padding-left:32px;"><label class="" id="${answers[answer].uuid}"><input class="answer" type="checkbox"
-									name="answers[option][${question.uuid}][]"
-                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="${answers[answer].uuid}" /> ${answers[answer].title}</label>`;
-
-                                if (answers[answer].isSelected && question.answers[answer].isFreeAnswer) {
-                                    html += `<textarea class="d-block" id="textarea-${question.answers[answer].uuid}]">${question.answers[answer].explanation}</textarea>`;
-                                }
-
-                                html += '</div>';
-                            }
-                        }
-                    });
-
-                    if (question.isAnswered) {
-                        html += `<button type="button" class="rem btn btn-sm btn-danger rounded-0" name="answers[option][${question.uuid}][]" value="${question.uuid}"> Изчисти отговора</button>`;
-                    }
-
-                    html += `</div>`;
-                });
-
-                $("#survey").html(html);
-
-                const article = document.querySelector('#surveyProgress');
-
-                let progressHtml = `
-                                Попълнена анкета ${progress.percentage}%<br/> 
-                                <div class="progress mb-4 rounded-0">
-                                    <div class="progress-bar rounded-0 pt-1 ` + (progress.percentage === 100 ? 'bg-success' : '') + `" role="progressbar" style="width: ${progress.percentage}%;"
-                                         aria-valuenow="${progress.percentage}" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>`;
-
-                if (progress.percentage === 100) {
-                    progressHtml += `<div class="mt-3">
-                                        <a href="/geo/${article.dataset.objectId}/result" class="btn btn-primary rounded-0 pt-2">Виж рейтинга</a>
-                                    </div>`;
-                }
-
-                $("#surveyProgress").html(progressHtml);
+            url: 'front-end/geo/' + this.geoObjectUUID,
+            success: (result) => {
+               this.buildSurvey(result);
             }
         });
     }
 
-    questions();
-
-    function saveExplanation(id, value) {
-
+    getResults() {
         $.ajax({
-            type: "POST",
-            url: '/geo/' + geoObject + '/q',
-            data: {
-                'explanation': {
-                    "answer": id,
-                    "text": value,
-                }
-            },
-            beforeSend: function () {
-                if (document.getElementById(id)) {
-                    document.getElementById(id).style.backgroundColor = "green";
-                    setTimeout(function () {
-                        document.getElementById(id).style.backgroundColor = "white";
-                    }, 200);
-                }
-            },
-            success: function (data) {
-
-            },
+            url: 'front-end/geo/' + this.geoObjectUUID + '/result',
+            success: (result) => {
+               this.buildResults(result);
+            }
         });
     }
 
-    let timeoutId;
-
-    $(document).on('input propertychange change', 'textarea', function () {
-        let $this = $(this);
-
-        clearTimeout(timeoutId);
-
-        timeoutId = setTimeout(function () {
-            saveExplanation($this.attr("id"), $this.val());
-        }, 600);
-    });
-
-
-    $(document).on('click', '.answer', function () {
-        let value = this.value;
+    submitSurvey(data, value) {
         $.ajax({
-            type: "POST",
-            url: '/geo/' + geoObject + '/q',
-            data: {
-                'answer': value,
-            },
-            beforeSend: function () {
+            type: 'POST',
+            url: '/geo/' + this.geoObjectUUID + '/q',
+            data: data,
+            beforeSend: () => {
                 if (document.getElementById(value)) {
-                    document.getElementById(value).style.color = "green";
+                    document.getElementById(value).classList.add('active');
                 }
             },
-            success: function () {
-                questions();
+            success: (result) => {
+                this.buildSurvey(result);
+                this.getResults();
             }
         });
-    });
+    };
 
-    $(document).on('click', '.rem', function () {
-        let value = this.value;
+    buildResults(result) {
+        let ratingHTML = ``;
+        let respondentsHTML = ``;
+        let isSelectedParent = false;
+        this.results.rating = result.rating;
+        this.results.respondents = result.respondents;
+
+       this.results.rating.forEach((ratingItem) => {
+            ratingHTML += `
+                <div class="row">
+                    <div class="col-lg-6 text-right">${ratingItem.criterion}</div>
+                    <div class="col-lg-6">
+                        <div class="progress mb-4">
+                            <div class="progress-bar pt-1" role="progressbar" style="width: ${ratingItem.percentage}%;"
+                                aria-valuenow="${ratingItem.percentage}" aria-valuemin="0"
+                                aria-valuemax="100">${ratingItem.rating} / ${ratingItem.max}</div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        document.querySelector('.survey-ratings-rating').innerHTML = ratingHTML;
+
+        Object.keys(this.results.respondents).forEach((respondentUser) => {
+            respondentsHTML += `<strong>${respondentUser}</strong>`;
+
+            this.results.respondents[respondentUser].forEach((respondentItem) => {
+                respondentsHTML += `
+                    <div class="row">
+                        <div class="col-lg-6 text-right">${respondentItem.criterion}</div>
+                        <div class="col-lg-6">
+                            <div class="progress mb-4">
+                                <div class="progress-bar pt-1" role="progressbar" style="width: ${respondentItem.percentage}%;"
+                                     aria-valuenow="${respondentItem.percentage}" aria-valuemin="0"
+                                     aria-valuemax="100">${respondentItem.rating} / ${respondentItem.max}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        });
+
+        document.querySelector('.survey-ratings-respondents').innerHTML = ratingHTML;
+
+    }
+
+    buildSurvey(result) {
+        let html = ``;
+        let isSelectedParent = false;
+        this.progress = result.survey.progress;
+        this.questions = result.survey.questions;
+
+        Object.keys(this.questions).forEach((item) => {
+            const answers = this.questions[item].answers;
+            this.question = this.questions[item];
+
+            const isAnswered = this.question.isAnswered && this.question.isCompleted;
+            const isUnComplete = this.question.isAnswered && !this.question.isCompleted;
+
+            html += `<div class="survey-question mb-4 ${isAnswered ? 'is-answered' : isUnComplete ? 'is-unComplete' : null}">`;
+
+            html += `
+                <div class="survey-question-title mb-1">
+                    <i class="survey-question-title-check mr-1 fas fa-check"></i>
+                    <h5 class="survey-question-title-text d-inline">${this.question.title}</h5>
+                    <div class="d-flex flex-grow-1 align-items-start justify-content-end">
+                        <button type="button" class="remove btn btn-sm btn-danger" name="answers[option][${this.question.uuid}][]" data-uuid="${this.question.uuid}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="survey-question pl-4">
+            `;
+
+            Object.keys(answers).forEach((answer) => {
+                if (answers[answer].parent === null) {
+                    isSelectedParent = this.question.answers[answer].isSelected;
+
+                    html += `<div class="d-flex flex-column">
+                                <label class="survey-question-option ` + (answers[answer].isSelected  ? 'is-selected' : '') + `" id="` + answers[answer].uuid + `">
+                                    <input class="mr-1 survey-question-input" type="` + (this.question.hasMultipleAnswers ? 'checkbox' : 'radio') + `" name="answers[option][` + this.question.uuid + `][]"
+                                    ` + (answers[answer].isSelected ? 'checked="checked"' : '') + ` value="` + answers[answer].uuid + `" /> ` + answers[answer].title + `
+                                </label>
+                            </div>`;
+
+                    if (this.question.answers[answer].isFreeAnswer) {
+                        html += `<textarea class="survey-question-input"></textarea>`;
+                    }
+                } else {
+                    if (isSelectedParent === true) {
+                        html += `<div class="pl-4 d-flex flex-column">
+                                    <label class="survey-question-option ` + (answers[answer].isSelected ? 'is-selected' : '') + `" id="` + answers[answer].uuid + `">
+                                        <input class="mr-1 survey-question-input" type="checkbox" name="answers[option][` + this.question.uuid + `][]" ${(answers[answer].isSelected ? 'checked="checked"' : '')} value="${answers[answer].uuid}" />
+                                        ` + answers[answer].title +
+                                    `</label>`;
+
+                        if (answers[answer].isSelected && this.question.answers[answer].isFreeAnswer) {
+                            html += `<label class="` + (answers[answer].isSelected ? 'is-selected' : '') + `">
+                                        <textarea class="survey-question-input d-block" id="textarea-` + this.question.answers[answer].uuid + `]">` + this.question.answers[answer].explanation + `</textarea>
+                                    </label>`;
+                        }
+
+                        html += '</div>';
+                    }
+                }
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        this.elSurveayForm.innerHTML = html;
+
+        this.elProgressBar.style.width = this.progress.percentage + '%';
+
+        if (this.progress.percentage === 100) {
+            this.elSurveyPollBtn.classList.remove('disabled');
+            $(this.elSurveyPollBtn).parent().tooltip('disable');
+        } else {
+            this.elSurveyPollBtn.classList.add('disabled');
+            $(this.elSurveyPollBtn).parent().tooltip('enable');
+        }
+    }
+
+    setLayerData(layer, ev) {
+        this.layer = layer;
+        this.event = ev;
+        this.geoObjectUUID = this.layer.feature.properties.id;
+        this.getQuestions();
+        this.getResults();
+    }
+
+    addMarker() {
+        this.removeMarker();
+        this.mapMarker = L.marker(this.layer.getCenter(), {
+            icon: this.mapMarkerIcon
+        });
+        this.mapMarker.addTo(this.mapInstance.map);
+    }
+
+    removeMarker() {
+        if (this.mapMarker) {
+            this.mapMarker.remove();
+        }
+    }
+
+    open(layer, ev) {
+        this.isOpen = true;
+        this.mapInstance.map.closePopup();
+        this.mapInstance.setLayerActiveStyle(this.layer);
+        this.mapInstance.toggleHeaderEl(false);
+        this.addMarker();
+
+        if (layer && ev) {
+            this.setLayerData(layer, ev);
+        }
+
+        this.elPathVoteSurveyContainer.querySelector('.geo-object-name').textContent = this.layer.feature.properties.name;
+        this.elPathVoteSurveyContainer.querySelector('.geo-object-type').textContent = this.layer.feature.properties.type;
+        this.mapInstance.addToActiveAreaList(this.elPathVoteSurveyContainer);
+    }
+
+    close() {
+        this.isOpen = false;
+        this.removeMarker();
+        this.mapInstance.toggleHeaderEl(true);
+        this.mapInstance.removeFromActiveAreaList(this.elPathVoteSurveyContainer);
+    }
+
+    clearQuestion(uuid) {
         $.ajax({
-            type: "POST",
-            url: '/geo/' + geoObject + '/clear/' + value,
-
-            success: function () {
-                questions();
+            type: 'POST',
+            url: '/geo/' + this.geoObjectUUID + '/clear/' + uuid,
+            success: () => {
+                this.getQuestions();
+                this.getResults();
             }
         });
-    });
-
-})();
+    }
+};

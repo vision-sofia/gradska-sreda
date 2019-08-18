@@ -1,19 +1,11 @@
 #mapMain {
+  background-color: #f4f4f4;
   position: fixed;
-  left: 0;
-  bottom: 0;
   width: 100%;
-  top: 87px;
-  background-color: #f4f4f4;
-}
-
-.map-left {
-  position: fixed;
-  left: 0;
+  height: 100%;
+  top: 0;
   bottom: 0;
-  width: 65%;
-  top: 87px;
-  background-color: #f4f4f4;
+  left: 0;
 }
 
 .map-wide {
@@ -35,12 +27,21 @@
   background: rgba(255, 255, 255, .9);
 }
 
-.leaflet-control-custom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 35px;
-  height: 35px;
-  padding: 0;
-  font-size: 18px;
+.leaflet {
+  &-control {
+    &-container {
+      position: relative;
+      top: 75px;
+    }
+
+    &-custom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 35px;
+      height: 35px;
+      padding: 0;
+      font-size: 18px;
+    }
+  }
 }

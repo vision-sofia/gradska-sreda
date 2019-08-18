@@ -5,9 +5,11 @@ namespace App\AppAPIFrontend\Controller;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey\GeoCollection\Collection;
 use App\AppMain\Entity\Survey\GeoCollection\Entry;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,7 +41,7 @@ class GeoCollectionController extends AbstractController
     /**
      * @Route("add", name="add", methods={"POST"})
      */
-    public function index(Request $request)
+    public function add(Request $request): JsonResponse
     {
         $geoObjectId = $request->request->get('geo-object');
         $collectionId = $request->request->get('collection');
@@ -96,5 +98,127 @@ class GeoCollectionController extends AbstractController
         }
 
         return new JsonResponse(['error' => 'notTouchingGeoCollection'], 200);
+    }
+
+    /**
+     * @Route("new", name="new", methods="POST")
+     */
+    public function new(Request $request): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Survey $survey */
+        $survey = $em
+            ->getRepository(Survey::class)
+            ->findOneBy([
+                'isActive' => true
+            ]);
+
+        $name = (string)$request->request->get('name');
+
+        $collection = new Collection();
+        $collection->setUser($this->getUser());
+        $collection->setSurvey($survey);
+        $collection->setName($name);
+
+        $em->persist($collection);
+        $em->flush();
+
+        return new JsonResponse([
+            'id' => $collection->getUuid()
+        ]);
+    }
+
+    /**
+     * @Route("info", name="info", methods="GET")
+     */
+    public function info(): Response
+    {
+        /** @var Collection[] $collections */
+        $collections = $this->getDoctrine()->getRepository(Collection::class)->findBy([
+            'user' => $this->getUser(),
+        ]);
+
+        $result = [];
+
+        foreach ($collections as $item) {
+            // TODO: cache metadata on collection change
+            $completion = $this->geoCollection->findCompletion($item->getId());
+            $length = $this->geoCollection->findLength($item->getId());
+
+            $metadata = $item->getBboxMetadata();
+
+/*            if ($metadata) {
+                $bbox = [
+                    'center' => [
+                        'lat' => $metadata['y_center'] ?? null,
+                        'lng' => $metadata['x_center'] ?? null,
+                    ],
+                    'bounds' => [
+                        [$metadata['x_min'], $metadata['y_min']],
+                        [$metadata['x_max'], $metadata['y_max']]
+                    ],
+                ];
+            }*/
+
+            $result[] = [
+                'id' => $item->getUuid(),
+                'identify' => $item->getId(),
+                'length' => $length,
+                'completion' => $completion,
+                'name' => $item->getName(),
+               # 'bbox' => $bbox ?? null,
+            ];
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("{id}",
+     *     name="edit",
+     *     methods="POST",
+     *     requirements={
+     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *     }
+     * )
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     */
+    public function edit(Request $request, Collection $collection): JsonResponse
+    {
+        // TODO: improve this
+        // TODO: csrf check
+        if ($collection->getUser() === $this->getUser()) {
+            $name = $request->request->get('name');
+
+            $collection->setName($name);
+
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        return new JsonResponse([]);
+    }
+
+    /**
+     * @Route("{id}",
+     *     name="delete",
+     *     methods="DELETE",
+     *     requirements={
+     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *     }
+     * )
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     */
+    public function delete(Collection $collection): JsonResponse
+    {
+        // TODO: improve this
+        // TODO: csrf check
+        if ($collection->getUser() === $this->getUser()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($collection);
+            $em->flush();
+        }
+
+        return new JsonResponse([]);
     }
 }

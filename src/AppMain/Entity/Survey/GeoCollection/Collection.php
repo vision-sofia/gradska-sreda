@@ -117,6 +117,11 @@ class Collection implements UuidInterface
         $this->name = $name;
     }
 
+    public function getBboxMetadata()
+    {
+        return $this->bboxMetadata;
+    }
+
     /**
      * @ORM\PrePersist()
      */

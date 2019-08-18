@@ -1,0 +1,121 @@
+.side-panel {
+    position: absolute;
+    background-color: #fff;
+    transition: top 0.3s ease;
+    transform: translate3d(0, 0, 0);
+    transform-style: preserve-3d;
+
+    &-btn {
+        &-close {
+            font-size: 2rem;
+            padding: 3px 20px;
+            line-height: 0;
+            color: #5655a4;
+
+            &-holder {
+                background-color: #fff;
+                z-index: 10;
+                left: 0;
+            }
+        }
+    }
+
+    &-nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        &-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 43px;
+            height: 43px;
+        }
+    }
+
+    .carousel {
+        $carousel: &;
+
+        z-index: 0;
+
+        &-item {
+            background-color: #fff;
+            overflow: auto;
+        }
+
+        &-inner {
+            height: 100%;
+            overflow: hidden;
+        }
+    }
+
+    @media only screen and (min-width: map-get($grid-breakpoints, md)) {
+        --side-panel-width: 42%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-height: 100%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-top: 0;
+
+        --active-area-width: --side-panel-width;
+        --active-area-height: --side-panel-height;
+        --active-area-top: 0;
+
+
+        $width: var(--side-panel-width);
+        width: $width;
+        height: 100%;
+        left: 100%;
+        transition: left 0.3s ease;
+        padding-top: 80px;
+        top: var(--side-panel-top);
+
+        &.active {
+            left: calc(100% - #{$width});
+        }
+
+        &-btn {
+            &-close {
+                transform: rotate(90deg);
+
+                &-holder {
+                    width: 2.5rem;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: map-get($grid-breakpoints, md)) {
+        --side-panel-width: 100%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-height: 62%; // Sould allways be precentage unles changes in JS are made
+        --side-panel-top: 100%;
+        
+        --active-area-width: --side-panel-width;
+        --active-area-height: --side-panel-height;
+        --active-area-top: --side-panel-top;
+
+        top: var(--side-panel-top);
+        width: var(--side-panel-width);
+        height: var(--side-panel-height);
+        transition: top 0.3s ease;
+
+        &.active {
+            top: 38%;
+        }
+
+        &-btn {
+            &-close {
+                &-holder {
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2.5rem;
+                }
+            }
+        }
+
+        &-nav {
+            margin-top: -12px;
+        }
+    }
+
+}

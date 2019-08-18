@@ -1,0 +1,68 @@
+@import 'variables';
+
+.survey {
+    &-question {
+        $question: &;
+        &.is-answered, &.is-unComplete {
+            .remove {
+                visibility: visible;
+            }
+        }
+
+        &.is-answered {
+           #{$question} {
+                &-title {
+                    color: map-get($theme-colors, 'success');
+
+                    &-check {
+                        color: inherit;
+                    }
+                }
+
+                &-option {
+                    &.is-selected, &.active {
+                        color: map-get($theme-colors, 'success');
+                    }
+                }
+            }
+        }
+
+        &.is-unComplete {
+            #{$question} {
+                &-title {
+                    color: map-get($theme-colors, 'warning');
+
+                    &-check {
+                        color: inherit;
+                    }
+                }
+
+                &-option {
+                    &.is-selected, &.active {
+                        color: map-get($theme-colors, 'warning');
+                    }
+                }
+            }
+         }
+
+        .remove {
+            visibility: hidden;
+            font-size: 11px;
+            padding: 4px 5px 0;
+        }
+
+        &-title {
+            display: flex;
+            
+            &-check {
+                color: map-get($theme-colors, 'dark');
+                opacity: 0.6;
+            }
+        }
+
+        &-option {
+            cursor: pointer;
+        }
+    }
+
+}

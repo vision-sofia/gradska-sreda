@@ -1,0 +1,28 @@
+.collections {
+    &-toggle {
+        position: fixed;
+        top: 230px;
+        left: 10px;
+    }
+    
+    &-list {
+        &-item {
+            &-link {
+                .is-active {
+                    visibility: hidden;
+                }
+                
+                &.active {
+                    .is-active {
+                        visibility: visible;
+                    }
+                }
+            }
+
+            .remove {
+                font-size: 11px;
+                padding: 4px 5px 0;
+            }
+        }
+    }
+}

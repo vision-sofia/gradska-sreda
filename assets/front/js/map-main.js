@@ -1,129 +1,220 @@
-import {mapBoxAttribution, mapBoxUrl} from './map-config';
+import { mapBoxAttribution, mapBoxUrl, apiEndpoints, defaultObjectStyle, defaultElConfig } from './map-config';
+import { debounce } from './helpers';
+import { Collection } from './collections';
+// import { defaultMapSize } from './map-config';
 
-(() => {
-    if (!document.getElementById('mapMain')) {
-        return;
-    }
-    const loading = $('.loading');
-    const confirmModal = $('.confirm');
-    $(document).on('click', '[data-confirm-cancel]', function () {
-        removeAllPopups();
-    });
-
-    //const mapCenter = mapOption.center;
-    //const mapZoom = mapOption.zoom;
-
-    const defaultObjectStyle = {
-        color: "#ff9710",
-        opacity: 0.5,
-        width: 5
+export class Map {
+    map;
+    activeLayer;
+    myLocationLayerGroup = L.layerGroup();
+    popusLayerGroup = L.layerGroup();
+    voteSurvay;
+    mapResponse = {
+        settings: {},
+        ObjectsLayerGeoJson: {},
+        CollectionsLayerControl: {},
+        SurveyResponses: {},
     };
-    let objectsSettings = {};
-    let initialLoad = false;
+    activeAreaList = [];
+    isMapLoaded = false;
 
-    let map = new L.map('mapMain', {
-        updateWhenZooming: false,
-        attributionControl: false
-    });
 
-    let mapStyle = L.tileLayer(mapBoxUrl, {
-        attribution: mapBoxAttribution,
-        maxNativeZoom: 19,
-        maxZoom: 21,
-        minZoom: 11,
-        updateWhenZooming: false
-    });
-    mapStyle.addTo(map);
+    constructor() {
+    }
 
-    let myLocationButton = L.Control.extend({
-        options: {
-            position: 'topleft'
-        },
-        onAdd: () => {
-            let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
-            container.type = "button";
-            container.onclick = function () {
-                locate();
-            };
-            return container;
-        }
-    });
-    map.addControl(new myLocationButton());
+    init() {
+        this.initMap();
+        this.selectInitialElements();
+        this.events();
+        this.loading = $('.loading');
+        this.toggleHeaderEl(true);
+        //const mapCenter = mapOption.center;
+        //const mapZoom = mapOption.zoom;
 
-    let myLocationLayerGroup = L.layerGroup();
-    myLocationLayerGroup.addTo(map);
+        let mapStyle = L.tileLayer(mapBoxUrl, {
+            attribution: mapBoxAttribution,
+            // * If difference between "maxNativeZoom" and "maxZoom" === 2
+            // and "leafLet-active-area" is included  "Maximum call stack size exceeded" is thrown on max zoom reached.
+            // https://github.com/Mappy/Leaflet-active-area/issues/32
+            maxNativeZoom: 20, 
+            maxZoom: 21,
+            minZoom: 11,
+            updateWhenZooming: false
+        });
+        mapStyle.addTo(this.map);
 
-    let popusLayerGroup = L.layerGroup();
-    popusLayerGroup.addTo(map);
+        let myLocationButton = L.Control.extend({
+            options: {
+                position: 'topleft'
+            },
+            onAdd: () => {
+                let container = L.DomUtil.create('button', 'leaflet-bar leaflet-control-custom far fa-dot-circle');
+                container.type = 'button';
+                container.onclick = () => {
+                    this.locate();
+                };
+                return container;
+            }
+        });
+        this.map.addControl(new myLocationButton());
+        
+        this.myLocationLayerGroup.addTo(this.map);
 
-    let updateMapThrottle;
-    map.on('dragend zoomend', function () {
-        clearTimeout(updateMapThrottle);
-        updateMapThrottle = setTimeout(() => {
-            let center = map.getCenter();
+        this.popusLayerGroup.addTo(this.map);
 
-            updateMap(center, () => {
-                if (!initialLoad) {
-                    initialLoad = true;
-                    if ($('#mapMain').data('locate-on-load') === true) {
-                        locate();
+        this.mapResponse.ObjectsLayerGeoJson = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    console.log('Object LayerGeoJson CLICK');
+                    switch (feature.properties._behavior) {
+                        case 'navigation':
+                            this.zoomToLayer(layer, ev);
+                            break;
+                        default:
+                            this.onLayerClick(layer, ev);
+                            this.zoomToLayer(layer, ev);
+                            break;
                     }
-                }
-            })
-        }, 200);
-    });
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return; 
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
+                        return;
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, this.mapResponse.settings.styles[feature.properties._s1]);
+            }
+        }).addTo(this.map);
 
-    map.on('locationfound', setMapViewToMyLocation);
-    map.on('locationerror', setInitialMapView);
 
-    let geoJsonLayer = L.geoJSON([], { 
-        style: function (feature) {
-            let styles = objectsSettings.styles[feature.properties._s1] ? {...objectsSettings.styles[feature.properties._s1]} : {...defaultObjectStyle};
-            return styles;
-        },
-        onEachFeature: function (feature, layer) {
-            layer.on('click', function (ev) {
-                switch (feature.properties._behavior) {
-                    case "navigation":
-                        zoomToLayer(layer, ev);
-                        break;
-                    default:
-                        openLayerPopup(layer, ev);
-                        zoomToLayer(layer, ev);
-                        break;
-                }
-            });
-            layer.on('mouseover', function () {
-                if (layer.feature.properties.activePopup) {
-                    return;
-                }
-                if (objectsSettings.styles[feature.properties._s2]) {
-                    setLayerHoverStyle(layer);
-                }
-            });
-            layer.on('mouseout', function () {
-                if (layer.feature.properties.activePopup) {
-                    return;
-                }
-                if (objectsSettings.styles[feature.properties._s1]) {
-                    setLayerDefaultStyle(layer);
-                }
-            });
-        },
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, objectsSettings.styles[feature.properties._s1]);
+        this.mapResponse.CollectionsLayerControl = L.layerGroup().addTo(this.map);
+
+        this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], { 
+            style: (feature) => {
+                let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
+                return styles;
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on('click', (ev) => {
+                    console.log('Survey - ResponsesLayerGeoJson - CLICK');
+                    switch (feature.properties._behavior) {
+                        case 'navigation':
+                            this.zoomToLayer(layer, ev);
+                            break;
+                        default:
+                            this.onLayerClick(layer, ev);
+                            this.zoomToLayer(layer, ev);
+                            break;
+                    }
+                });
+                layer.on('mouseover', () => {
+                    if (layer.feature.properties.activePopup) {
+                        return; 
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s2]) {
+                        this.setLayerHoverStyle(layer);
+                    }
+                });
+                layer.on('mouseout', () => {
+                    if (layer.feature.properties.activePopup || this.activeLayer === layer) {
+                        return;
+                    }
+                    if (this.mapResponse.settings.styles[feature.properties._s1]) {
+                        this.setLayerDefaultStyle(layer);
+                    }
+                });
+            },
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, this.mapResponse.settings.styles[feature.properties._s1]);
+            }
+        }).addTo(this.map);
+
+        this.setInitialMapView();
+    }
+
+    initMap() {
+        const elMap = document.getElementById('mapMain');
+        if (!elMap) {
+            return;
         }
-    }).addTo(map);
 
-    setInitialMapView();
+        this.map = new L.map('mapMain', {
+            updateWhenZooming: false,
+            attributionControl: false
+        });
 
-    function updateMap(center, fn = () => {
+        this.map.setActiveArea('map-active-area');
+        this.map.setActiveArea(defaultObjectStyle.mapActiveArea);
+    }
+
+    events() {
+        $(document).on('click', '[data-confirm-cancel]', () => {
+            this.removeAllPopups();
+        });
+
+        $(document).on('click', '[data-confirm-cancel]', () => {
+            this.removeAllPopups();
+        });
+
+        $(document).on('click', '[href="collections"]', (e) => {
+            $(e.currentTarget).toggleClass('.active')
+        });
+
+
+        this.map.on('moveend', debounce(() => {
+            const center = this.map.getCenter();
+            this.updateMap(center);
+        }, 200));
+
+        this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
+        this.map.on('locationerror', this.setInitialMapView.bind(this));
+        
+        window.addEventListener('resize', debounce(() => {
+            this.setActiveArea();
+        }, 200, false), false);
+    }
+
+    selectInitialElements() {
+        defaultElConfig.elHeader = document.querySelector(defaultElConfig.headerId);
+    }
+
+    toggleHeaderEl(isActive) {
+        if (window.innerWidth > 768 && !isActive) {
+            return;
+        }
+
+        if (isActive || !defaultElConfig.elHeader.classList.contains('active') && isActive) {
+            defaultElConfig.elHeader.classList.add('active');
+            this.addToActiveAreaList(defaultElConfig.elHeader);
+        } else {
+            defaultElConfig.elHeader.classList.remove('active');
+            this.removeFromActiveAreaList(defaultElConfig.elHeader);
+        }
+    }
+
+    updateMap(center, fn = () => {
     }) {
-        let zoom = map.getZoom();
-        let bounds = map.getBounds();
+        const zoom = this.map.getZoom();
+        const bounds = this.map.getBounds();
         let returnedTarget = {};
 
-        let a = {
+        const a = {
             in: bounds._southWest.lng + ',' +
             bounds._northEast.lat + ',' +
             bounds._northEast.lng + ',' +
@@ -140,18 +231,41 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
         $.ajax({
             data: returnedTarget,
-            url: "/front-end/map?",
-            success: function (results) {
-                objectsSettings = results.settings;
-                geoJsonLayer.clearLayers();
-                geoJsonLayer.addData(results.objects);
+            url: '/front-end/map?',
+            success: (results) => {
+                this.isMapLoaded = true;
+                this.mapResponse.settings = results.settings;
+                this.mapResponse.ObjectsLayerGeoJson.clearLayers();
+                
+                this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
+                this.mapResponse.CollectionsLayerControl.clearLayers();
+
+                const geoCollectinResult = results.geoCollections;
+                
+                for (const removeThisObj in geoCollectinResult) {
+                    if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
+                        const collection = new Collection(this, this.mapResponse.settings);
+
+                        collection.layer._leaflet_id = removeThisObj;
+                        geoCollectinResult[removeThisObj].forEach(item => {
+                            collection.layer.addData(item);
+                        })
+
+                        this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
+                    } 
+                }
+
+                this.mapResponse.SurveyResponsesLayerGeoJson.clearLayers();
+                this.mapResponse.SurveyResponsesLayerGeoJson.addData(results.surveyResponses);
+
+                this.setLayerActiveStyle();
                 fn();
             }
         });
     }
 
-    function saveViewport(center) {
-        let zoom = map.getZoom();
+    saveViewport(center) {
+        let zoom = this.map.getZoom();
         let a = {
             zoom: zoom,
             c: center.lat + ',' + center.lng
@@ -160,26 +274,26 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         $.ajax({
             data: a,
             url: "/map/z",
-            success: function (results) {
+            success: (results) => {
 
             }
         });
     }
 
-    function locate() {
-        loading.removeClass('d-none');
-        map.locate({
+    locate() {
+        this.loading.removeClass('d-none');
+        this.map.locate({
             setView: true,
-            maxZoom: objectsSettings.default_zoom
+            maxZoom: this.mapResponse.settings.default_zoom
         });
     }
 
-    function setMapViewToMyLocation(e) {
-        loading.addClass('d-none');
+    setMapViewToMyLocation(e) {
+        this.loading.addClass('d-none');
         let radius = e.accuracy / 2;
 
-        myLocationLayerGroup.eachLayer((layer) => {
-            myLocationLayerGroup.removeLayer(layer);
+        this.myLocationLayerGroup.eachLayer((layer) => {
+            this.myLocationLayerGroup.removeLayer(layer);
         });
 
         let center = L.circle(e.latlng, {
@@ -189,7 +303,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
             weight: 4,
             opacity: 1,
             radius: 5
-        }).addTo(myLocationLayerGroup);
+        }).addTo(this.myLocationLayerGroup);
 
         L.circle(e.latlng, {
             radius: e.accuracy / 2,
@@ -197,7 +311,7 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
             fillColor: '#136AEC',
             fillOpacity: 0.15,
             weight: 0
-        }).addTo(myLocationLayerGroup);
+        }).addTo(this.myLocationLayerGroup);
 
         center.bindPopup("Намирате се в радиус от " + radius + " метра от тази локация", {
             offset: L.point(0, -10)
@@ -205,8 +319,8 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
         center.openPopup();
     }
 
-    function setInitialMapView() {
-        loading.addClass('d-none');
+    setInitialMapView() {
+        this.loading.addClass('d-none');
 
         let zoom;
         let lat;
@@ -214,138 +328,264 @@ import {mapBoxAttribution, mapBoxUrl} from './map-config';
 
         $.ajax({
             url: "/map/p",
-            success: function (results) {
+            success: (results) => {
                 zoom = results.zoom;
                 lat = results.lat;
                 lng = results.lng;
-                setRealInitialMapView(lat, lng, zoom)
+                this.setRealInitialMapView(lat, lng, zoom)
             }
         });
     }
 
-    function setRealInitialMapView(lat, lng, zoom) {
-        map.setView([lat, lng], zoom)
+    setRealInitialMapView(lat, lng, zoom) {
+        this.map.setView([lat, lng], zoom)
     }
 
-    function zoomToLayer(layer, ev) {
-        let clickCoordinates = map.mouseEventToLatLng(ev.originalEvent);
-        if (layer.feature.properties._zoom && layer.feature.properties._zoom !== map.getZoom()) {
-            map.setView(clickCoordinates, layer.feature.properties._zoom);
+    zoomToLayer(layer, ev, coordinates) {
+        let clickCoordinates = coordinates || ev.latlng;
+        if (layer && layer.feature.properties._zoom && layer.feature.properties._zoom !== this.map.getZoom()) {
+            this.map.setView(clickCoordinates, layer.feature.properties._zoom);
         } else {
-            map.setView(clickCoordinates);
+            this.map.setView(clickCoordinates);
 
-            saveViewport(clickCoordinates);
+            this.saveViewport(clickCoordinates);
         }
     }
 
-    function openLayerPopup(layer, ev) {
-        setLayerActiveStyle(layer);
-        removeAllPopups();
+    onLayerClick(layer, ev) {
+        console.log('CLICK');
+        
         layer.feature.properties.activePopup = true;
-
-        let coordinates;
-
-
-        if (layer.feature.properties._behavior === 'survey') {
-            coordinates = map.mouseEventToLatLng(ev.originalEvent);
-            if (mapOption.survey === true) {
-                openConfirmModal(layer);
-            }
-        } else {
-            coordinates = ev.latlng;
+        this.setLayerActiveStyle(layer);
+        this.removeAllPopups();
+       
+        switch (layer.feature.properties._behavior) {
+            case 'info':
+                this.openInfoPopup(layer, ev);
+                break;
+            case 'survey':
+                if (this.collections.isCollectionsActive && this.collections.isCollectionShown) {
+                    this.collections.add(layer, ev);
+                } else {
+                    this.openSuerveyPopup(layer, ev);
+                }
+                break;
         }
+    }
 
+    removeAllPopups() {
+        this.map.closePopup();
+        this.popusLayerGroup.eachLayer((layer) => {
+            this.popusLayerGroup.removeLayer(layer);
+        });
+    }
+
+    onPopupClose(layer) {
+        layer.feature.properties.activePopup = false;
+        this.activeLayer = null;
+        this.setLayerDefaultStyle(layer);
+        this.removeAllPopups();
+    }
+
+    openInfoPopup(layer, ev) {
+        const coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
 
         let popupLayer = L.circle(coordinates, {
             fillOpacity: 0,
             weight: 0,
             opacity: 0,
             radius: 1
-        }).addTo(popusLayerGroup);
+        }).addTo(this.popusLayerGroup);
 
-        let popupContent = `<p class="text-center"><!--<form method="post" class="m-form" action="/front-end/geo-collection/add"><input type="hidden" name="geo-object" value="${layer.feature.properties.id}"><button type="submit">${layer.feature.properties.id}</button></form>-->${layer.feature.properties.type}<br />${layer.feature.properties.name}</p>`;
+        const infoTemplate = `
+            <p class="text-center">
+                ${layer.feature.properties.type}
+                <br />
+                ${layer.feature.properties.name}
+            </p>
+        `;
+
+        const popupContent = infoTemplate;
 
         popupLayer.bindPopup(popupContent, {
             offset: L.point(0, -20)
-        }).on('popupclose', function () {
-            confirmModal.addClass('d-none');
-            layer.feature.properties.activePopup = false;
-            setLayerDefaultStyle(layer);
-            removeAllPopups();
+        }).on('popupclose', () => {
+            this.onPopupClose(layer);
         }).openPopup();
+    }
 
-        let collection = mapOption.collection;
+    openSuerveyPopup(layer, ev) {
+        const coordinates = this.map.mouseEventToLatLng(ev.originalEvent);
+        this.setSurveyData(layer, ev);
 
-        if (typeof collection !== 'undefined') {
-            $.ajax({
-                type: "POST",
-                url: '/front-end/geo-collection/add',
-                data: {
-                    'geo-object': layer.feature.properties.id,
-                    'collection': collection
-                },
-                success: function () {
-                    updateMap();
-                }
-            });
+        let popupLayer = L.circle(coordinates, {
+            fillOpacity: 0,
+            weight: 0,
+            opacity: 0,
+            radius: 1
+        }).addTo(this.popusLayerGroup);
+
+        const surveyTemplate = `
+            <p class="text-center">
+                ${layer.feature.properties.type}
+                <br />
+                ${layer.feature.properties.name}
+            </p>
+            <div class="survey-modal text-center">
+                <h5 class="font-weight-bold mb-2 h6" data-confirm-title>
+                    Искате ли да оцените
+                </h5>
+                <button data-toggle-open class="btn btn-success mr-3 py-0 px-2" data-toggle-for="path-vote-suevey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }">ДА</button>
+                <button data-confirm-cancel class="btn btn-danger cursor-pointer py-0 px-2">НЕ</button>
+            </div>
+        `;
+
+        const popupContent = surveyTemplate;
+
+        popupLayer.bindPopup(popupContent, {
+            // offset: L.point(0, -20)
+        }).on('popupclose', () => {
+            this.onPopupClose(layer);
+        }).openPopup();
+    }
+
+    setLayerDefaultStyle(layer) {
+        layer.setStyle(this.mapResponse.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
+    }
+
+    setLayerHoverStyle(layer) {
+        layer.setStyle(this.mapResponse.settings.styles[layer.feature.properties._s2])
+    }
+
+    setLayerActiveStyle(layer) {
+        if (layer) {
+            this.activeLayer = layer;
+        } else if (!this.activeLayer) {
+            return;
+        } else {
+            this.activeLayer.addTo(this.map);
         }
-        /*
-                $(".m-form").submit(function(e) {
-                    var form = $(this);
-                    var url = form.attr('action');
 
-                    $.ajax({
-                        type: "POST",
-                        url: '/front-end/geo-collection/add',
-                        //data: form.serialize(),
-                        data: {
-                            'geo-object': 'cd538bf5-3220-4259-b26d-3488d71ca7d7'
-                        },
-                        success: function()
-                        {
-                            updateMap();
-                        }
-                    });
+        this.activeLayer.bringToFront();
 
-                    e.preventDefault();
-                });
-        */
+        switch (this.activeLayer.feature.geometry.type) {
+            case 'Point':
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_point']);
+                break;
+            case 'MultiLineString':
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_line']);
+                break;
+            case 'Polygon':
+                this.activeLayer.setStyle(this.mapResponse.settings.styles['on_dialog_polygon']);
+                break;
+        }
     }
 
-    function openConfirmModal(layer) {
-        let dialogTitle = objectsSettings.dialog[layer.feature.properties._dtext] || 'Искате ли да оцените';
-        let dialogLink = '/geo/' + layer.feature.properties.id;
-        confirmModal.removeClass('d-none');
-        confirmModal.find('[data-confirm-title]').html(`${dialogTitle}?`);
-        confirmModal.find('[data-confirm-link]').attr('href', dialogLink);
+    setCollection(collctions) {
+        this.collections = collctions;
     }
 
-    function removeAllPopups() {
-        map.closePopup();
-        popusLayerGroup.eachLayer((layer) => {
-            popusLayerGroup.removeLayer(layer);
+    setSurvey(voteSurvay) {
+        this.voteSurvay = voteSurvay;
+    }
+
+    setSurveyData(layer, ev) {
+        this.voteSurvay.setLayerData(layer, ev);
+    }
+
+    setActiveArea() {
+        if (!this.map._loaded) {
+            return;
+        }
+
+        let top = 0,
+        bottom = 0,
+        left = 0,
+        right = 0;
+
+        let callculatedWidth = 0,
+        callculatedWidthLeft = 0,
+        callculatedWidthRight = 0,
+        callculatedHeight = 0,
+        callculatedHeightTop = 0,
+        callculatedHeightBot = 0;
+
+        this.activeAreaList.forEach(el => {
+            const elWidth = parseFloat(getComputedStyle(el).getPropertyValue('width')),
+            elHeight = parseFloat(getComputedStyle(el).getPropertyValue('height')),
+            elTop = parseFloat(getComputedStyle(el).getPropertyValue('top')),
+            elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom')),
+            elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left')),
+            elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
+            
+            // Optimise this code repetition
+            if (el.clientWidth === window.innerWidth) {
+                if (Math.round(elBottom) <= 0) {
+                    // Bottom
+                    if (elHeight > callculatedHeightBot) {
+                        callculatedHeightBot = elHeight;
+                    }
+                } else if (Math.round(elTop) === 0) { 
+                    // TOP
+                    if (elHeight > callculatedHeightTop) {
+                        top = elHeight;
+                        callculatedHeightTop = elHeight;
+                    }
+                }
+
+                callculatedHeight = callculatedHeightTop + callculatedHeightBot;
+            } else if (el.clientHeight === window.innerHeight) {
+                if (Math.round(elRight) <= 0) {
+                    // Right
+                    if (elWidth > callculatedWidthRight) {
+                        callculatedWidthRight = elWidth;
+                    }
+                } else if (Math.round(elLeft) === 0) { 
+                    // Left
+                    if (elWidth > callculatedWidthLeft) {
+                        left = elWidth;
+                        callculatedWidthLeft = elWidth;
+                    }
+                }
+
+                callculatedWidth = callculatedWidthLeft + callculatedWidthRight;
+            }
+        });
+
+        const width = window.innerWidth - callculatedWidth;
+        const height = window.innerHeight - callculatedHeight;
+        
+        const lastCenterPoint = this.map.getCenter();
+        
+        setTimeout(() => {
+            this.map.panTo(lastCenterPoint);
+        }, 200);
+
+        this.map.setActiveArea({
+            ...defaultObjectStyle.mapActiveArea,
+            width: width + 'px',
+            height: height + 'px',
+            top: top + 'px',
+            bottom: bottom + 'px',
+            left: left + 'px',
+            right: right + 'px',
         });
     }
 
-    function setLayerDefaultStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s1] || defaultObjectStyle)
-    }
-
-    function setLayerHoverStyle(layer) {
-        layer.setStyle(objectsSettings.styles[layer.feature.properties._s2])
-    }
-
-    function setLayerActiveStyle(layer) {
-        switch (layer.feature.geometry.type) {
-            case "Point":
-                layer.setStyle(objectsSettings.styles['on_dialog_point']);
-                break;
-            case "MultiLineString":
-                layer.setStyle(objectsSettings.styles['on_dialog_line']);
-                break;
-            case "Polygon":
-                layer.setStyle(objectsSettings.styles['on_dialog_polygon']);
-                break;
+    addToActiveAreaList(activeAreaConfig) {
+        if (!this.activeAreaList.includes(activeAreaConfig)) {
+            this.activeAreaList.push(activeAreaConfig);
+            this.setActiveArea();
         }
     }
-})();
+
+    removeFromActiveAreaList(activeAreaConfig) {
+        const index = this.activeAreaList.indexOf(activeAreaConfig);
+
+        if (index > -1) {
+            this.activeAreaList.splice(index, 1);
+            this.setActiveArea();
+        }
+    }
+};
+
