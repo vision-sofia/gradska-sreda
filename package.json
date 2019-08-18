@@ -46,7 +46,12 @@
     "source-map-loader": "^0.2.3",
     "tar": ">=4.4.2",
     "webpack": "^3.10.0",
-    "webpack-stream": "^4.0.3"
+    "webpack-stream": "^4.0.3",
+    "lodash.mergewith": ">=4.6.2",
+    "lodash.merge": ">=4.6.2",
+    "lodash.template": ">=4.5.0",
+    "lodash": ">=4.17.13",
+    "mem": ">=4.0.0"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
