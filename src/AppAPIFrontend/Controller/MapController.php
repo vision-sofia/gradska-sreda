@@ -285,4 +285,40 @@ class MapController extends AbstractController
 
         return $simplifyTolerance;
     }
+
+    /**
+     * @Route("/map/p", name="app.map-p")
+     */
+    public function p(SessionInterface $session): Response
+    {
+        $ex = explode(',', $session->get('center'));
+
+        if (empty($session->get('center'))) {
+            $ex = [42.697664, 23.3166103];
+        }
+
+        $zoom = $session->get('zoom') ?? 17 ;
+
+        return new JsonResponse([
+            'zoom' => $zoom,
+            'lat' => (float) $ex[0],
+            'lng' => (float) $ex[1],
+        ]);
+    }
+
+    /**
+     * @Route("/map/z", name="app.map-z")
+     */
+    public function z(Request $request): JsonResponse
+    {
+        $zoom = $request->query->get('zoom');
+        $center = $request->query->get('c');
+
+        $zoom = (float) $zoom;
+
+        $this->session->set('center', $center);
+        $this->session->set('zoom', $zoom);
+
+        return  new JsonResponse([]);
+    }
 }
