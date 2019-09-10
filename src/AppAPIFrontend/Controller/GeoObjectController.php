@@ -230,7 +230,10 @@ class GeoObjectController extends AbstractController
             ]);
         }
 
-        $answerUuid = $request->request->get('answer');
+        $content = $request->getContent();
+        $content = json_decode($content, false);
+
+        $answerUuid = $content->answer;
 
         $userId = $this->getUser()->getId();
         $geoObjectId = $geoObject->getId();
@@ -267,7 +270,7 @@ class GeoObjectController extends AbstractController
         }
 
         $questionV3->clearOut($answerUuid, $userId, $geoObjectId);
-        $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
+        $questionV3->response($answerUuid, [], $geoObject, $this->getUser());
 
         $questionV3->clearDetached($userId, $geoObjectId);
         $questionV3->mark($userId, $geoObjectId);
