@@ -6,16 +6,20 @@ use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\Event\GeoObjectSurveyTouch;
 use App\Services\ApiFrontend\GeoObjectRating;
 use App\Services\Survey\Question;
+use App\Services\Survey\Response\QuestionV3;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -190,6 +194,94 @@ class GeoObjectController extends AbstractController
             ],
             'rating' => $this->geoObjectRating->getOverallRating($geoObject->getId()),
             'respondents' => $this->geoObjectRating->getRatingByUser($geoObject->getId()),
+        ]);
+    }
+
+    /**
+     * @Route("{id}/q", name="app.geo-object.details.qz", methods={"POST"})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     * @param Request $request
+     * @param GeoObject $geoObject
+     * @param QuestionV3 $questionV3
+     * @return JsonResponse
+     */
+    public function q2(Request $request, GeoObject $geoObject, QuestionV3 $questionV3): JsonResponse
+    {
+        $text = $request->request->get('explanation');
+
+        if (isset($text)) {
+            /** @var Connection $conn */
+            $conn = $this->entityManager->getConnection();
+
+            $stmt = $conn->prepare(
+                'UPDATE x_survey.response_answer SET explanation = ?'
+            );
+
+            $stmt->execute([$text['text']]);
+
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
+        }
+
+        $answerUuid = $request->request->get('answer');
+
+        $userId = $this->getUser()->getId();
+        $geoObjectId = $geoObject->getId();
+
+        if ($questionV3->isAnsweredAndMultipleAnswers($answerUuid, $userId, $geoObjectId)) {
+            $questionV3->uncheck($answerUuid, $userId, $geoObjectId);
+            $questionV3->clearDetached($userId, $geoObjectId);
+            $questionV3->clearEmptyQuestions($userId, $geoObjectId);
+
+            $questionV3->mark($userId, $geoObjectId);
+
+            $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+            $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
+
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
+        }
+
+        if ($questionV3->isAnsweredAndSingleAnswer($answerUuid, $userId, $geoObjectId)) {
+            return new JsonResponse([
+                'geoObject' => [
+                    'id' => $geoObject->getUuid(),
+                    'name' => $geoObject->getName(),
+                    'type' => $geoObject->getType()->getName(),
+                ],
+                'survey' => $this->surveyResult($geoObject)
+            ]);
+        }
+
+        $questionV3->clearOut($answerUuid, $userId, $geoObjectId);
+        $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
+
+        $questionV3->clearDetached($userId, $geoObjectId);
+        $questionV3->mark($userId, $geoObjectId);
+
+        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+        $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
+
+        return new JsonResponse([
+            'geoObject' => [
+                'id' => $geoObject->getUuid(),
+                'name' => $geoObject->getName(),
+                'type' => $geoObject->getType()->getName(),
+            ],
+            'survey' => $this->surveyResult($geoObject)
         ]);
     }
 }
