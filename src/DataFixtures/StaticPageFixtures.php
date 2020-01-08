@@ -2,13 +2,9 @@
 
 namespace App\DataFixtures;
 
-use App\AppMain\Entity\Achievement\CategoryCompletionAchievement;
 use App\AppMain\Entity\StaticPage;
-use App\AppMain\Entity\Survey\Survey\Category;
-use App\DataFixtures\Survey\CategoryFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class StaticPageFixtures extends Fixture
 {

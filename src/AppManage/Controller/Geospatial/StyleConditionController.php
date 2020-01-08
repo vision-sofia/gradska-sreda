@@ -65,7 +65,7 @@ class StyleConditionController extends AbstractController
     public function rebuildStyles(): RedirectResponse
     {
         $event = new GenericEvent();
-        $this->eventDispatcher->dispatch(Events::STYLES_REBUILD, $event);
+        $this->eventDispatcher->dispatch($event, Events::STYLES_REBUILD);
 
         $this->flashMessage->addSuccess(
             '',
@@ -108,7 +108,7 @@ class StyleConditionController extends AbstractController
 
             if ($styleCondition->getIsDynamic()) {
                 $event = new GenericEvent();
-                $this->eventDispatcher->dispatch(Events::DYNAMIC_STYLE_TOUCH, $event);
+                $this->eventDispatcher->dispatch($event, Events::DYNAMIC_STYLE_TOUCH);
             }
 
             $this->flashMessage->addSuccess(

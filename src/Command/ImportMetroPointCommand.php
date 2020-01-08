@@ -27,9 +27,9 @@ class ImportMetroPointCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/metro.json');
+        $string = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/metro.json');
         $content = json_decode($string, true);
 
         $objectType = $this->entityManager
@@ -115,5 +115,7 @@ class ImportMetroPointCommand extends Command
         $conn->commit();
 
         echo sprintf("Done: %d/%d\n", $j, $i);
+
+        return 0;
     }
 }

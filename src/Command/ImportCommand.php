@@ -27,11 +27,11 @@ class ImportCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         ini_set('memory_limit', '-1');
 
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/network.json');
+        $string = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/network.json');
         $content = json_decode($string, true);
 
         /** @var Connection $conn */
@@ -141,5 +141,7 @@ class ImportCommand extends Command
         $conn->commit();
 
         echo sprintf("Import complete.\nSkipped objects: %d,\nImported objects: %d", $j, $i);
+
+        return 0;
     }
 }

@@ -20,7 +20,7 @@ class CriterionMetadataUpdateCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->text('Start: survey metadata update');
@@ -29,5 +29,7 @@ class CriterionMetadataUpdateCommand extends Command
         $this->criterionSubjectMetadata->sync();
 
         $io->success('Complete');
+
+        return 0;
     }
 }

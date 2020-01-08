@@ -18,10 +18,8 @@ doctrine:
            #point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
             geography:
                 class: Jsor\Doctrine\PostGIS\Types\GeographyType
-                commented: false
             int4range:
                 class: App\Doctrine\DBAL\Types\IntRangeType
-                commented: false
 
     orm:
         auto_generate_proxy_classes: true

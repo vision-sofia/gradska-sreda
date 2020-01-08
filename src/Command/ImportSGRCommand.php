@@ -26,9 +26,9 @@ class ImportSGRCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $file = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/Stroitelna_Granitsa.json');
+        $file = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/Stroitelna_Granitsa.json');
         $content = json_decode($file, true);
         $geometry = $content['features'][0]['geometry']['rings'][0];
 
@@ -96,5 +96,7 @@ class ImportSGRCommand extends Command
         $conn->commit();
 
         echo  "Import complete.\n";
+
+        return 0;
     }
 }

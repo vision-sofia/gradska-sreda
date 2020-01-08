@@ -5,7 +5,7 @@ namespace App\DataFixtures\Geospatial;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\Doctrine\ValueObject\IntRange;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class GeometrySimplifyFixtures extends Fixture
 {

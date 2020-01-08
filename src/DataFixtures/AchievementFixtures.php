@@ -7,7 +7,7 @@ use App\AppMain\Entity\Survey\Survey\Category;
 use App\DataFixtures\Survey\CategoryFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class AchievementFixtures extends Fixture implements DependentFixtureInterface
 {

@@ -2,11 +2,8 @@
 
 namespace App\Command\Survey;
 
-use App\AppMain\Entity\Geospatial\StyleCondition;
-use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\Event\Events;
 use App\Services\Geospatial\StyleBuilder\StyleBuilder;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +28,7 @@ class StyleBuildCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->text('Start: style build');
@@ -41,10 +38,12 @@ class StyleBuildCommand extends Command
         $this->styleBuilder->build();
 
         $event = new GenericEvent();
-        $this->eventDispatcher->dispatch(Events::STYLES_REBUILD, $event);
+        $this->eventDispatcher->dispatch($event, Events::STYLES_REBUILD);
 
         $stopwatchEvent = $this->stopwatch->stop(self::$defaultName);
 
         $io->success(sprintf('Complete in %.2f seconds', $stopwatchEvent->getDuration() / 1000));
+
+        return 0;
     }
 }

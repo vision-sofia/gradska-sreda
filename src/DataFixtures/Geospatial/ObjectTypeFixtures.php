@@ -6,7 +6,7 @@ use App\AppMain\Entity\Geospatial\ObjectType;
 use App\AppMain\Entity\Geospatial\ObjectTypeVisibility;
 use App\Doctrine\ValueObject\IntRange;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class ObjectTypeFixtures extends Fixture
 {

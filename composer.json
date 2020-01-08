@@ -2,48 +2,47 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "doctrine/doctrine-migrations-bundle": "^2.0",
+        "doctrine/doctrine-migrations-bundle": "^2.1",
         "erusev/parsedown": "^1.7",
         "jsor/doctrine-postgis": "^1.7",
         "lexik/jwt-authentication-bundle": "^2.6",
-        "nelmio/cors-bundle": "^1.5",
-        "oneup/flysystem-bundle": "^3.0",
-        "ramsey/uuid": "^3.8",
-        "sensio/framework-extra-bundle": "^5.1",
-        "symfony/asset": "4.3.*",
-        "symfony/console": "4.3.*",
-        "symfony/dotenv": "4.3.*",
-        "symfony/expression-language": "4.3.*",
-        "symfony/flex": "^1.1",
-        "symfony/form": "4.3.*",
-        "symfony/framework-bundle": "4.3.*",
-        "symfony/monolog-bundle": "^3.1",
+        "nelmio/cors-bundle": "^2.0",
+        "oneup/flysystem-bundle": "^3.3",
+        "ramsey/uuid": "^3.9",
+        "sensio/framework-extra-bundle": "^5.5",
+        "symfony/asset": "5.0.*",
+        "symfony/console": "5.0.*",
+        "symfony/dotenv": "5.0.*",
+        "symfony/expression-language": "5.0.*",
+        "symfony/flex": "^1.6",
+        "symfony/form": "5.0.*",
+        "symfony/framework-bundle": "5.0.*",
+        "symfony/monolog-bundle": "^3.5",
         "symfony/orm-pack": "*",
-        "symfony/process": "4.3.*",
-        "symfony/security-bundle": "4.3.*",
+        "symfony/process": "5.0.*",
+        "symfony/security-bundle": "5.0.*",
         "symfony/serializer-pack": "*",
-        "symfony/swiftmailer-bundle": "^3.1",
-        "symfony/translation": "4.3.*",
-        "symfony/twig-bundle": "4.3.*",
-        "symfony/validator": "4.3.*",
-        "symfony/web-link": "4.3.*",
-        "symfony/yaml": "4.3.*"
+        "symfony/swiftmailer-bundle": "^3.4",
+        "symfony/translation": "5.0.*",
+        "symfony/twig-bundle": "5.0.*",
+        "symfony/validator": "5.0.*",
+        "symfony/web-link": "5.0.*",
+        "symfony/yaml": "5.0.*"
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "doctrine/doctrine-fixtures-bundle": "^3.3",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "4.3.*",
+        "symfony/phpunit-bridge": "5.0.*",
         "symfony/profiler-pack": "*",
-        "symfony/test-pack": "*",
-        "symfony/web-server-bundle": "4.3.*"
+        "symfony/test-pack": "*"
     },
     "config": {
         "preferred-install": {
@@ -87,7 +86,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "4.3.*"
+            "require": "5.0.*"
         }
     }
 }

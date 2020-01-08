@@ -23,7 +23,7 @@ class SpatialSyncCommand extends Command
         parent::__construct();
     }
     
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->text('Start: spatial sync');
@@ -36,5 +36,7 @@ class SpatialSyncCommand extends Command
 
         $io->success(sprintf('Complete in %.2f seconds', $stopwatchEvent->getDuration() / 1000));
         $io->note(sprintf('Run "%s" if you expect new objects in survey', StyleBuildCommand::getDefaultName()));
+
+        return 0;
     }
 }

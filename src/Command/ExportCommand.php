@@ -26,7 +26,7 @@ class ExportCommand extends Command
     }
 
     // TODO: Refactor in to service and reduce memory usage
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -61,14 +61,16 @@ class ExportCommand extends Command
         }
 
         $path =
-            $this->container->getParameter('kernel.root_dir') .
+            $this->container->getParameter('kernel.project_dir') .
             \DIRECTORY_SEPARATOR .
-            'DataFixtures/Raw/_export.json';
+            'src/DataFixtures/Raw/_export.json';
 
         file_put_contents($path, json_encode($result, JSON_UNESCAPED_UNICODE));
 
         unset($result);
 
         $io->success('Done');
+
+        return 0;
     }
 }

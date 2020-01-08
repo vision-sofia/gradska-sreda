@@ -11,7 +11,7 @@ use App\AppMain\Entity\Survey\Survey\Survey;
 use App\DataFixtures\Geospatial\ObjectTypeFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class CategoryFixtures extends Fixture implements DependentFixtureInterface
 {

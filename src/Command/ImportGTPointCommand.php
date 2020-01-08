@@ -28,9 +28,9 @@ class ImportGTPointCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $string = file_get_contents($this->container->getParameter('kernel.root_dir') . \DIRECTORY_SEPARATOR . 'DataFixtures/Raw/gt.json');
+        $string = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/gt.json');
         $content = json_decode($string, true);
 
         $objectType = $this->entityManager
@@ -114,5 +114,7 @@ class ImportGTPointCommand extends Command
         $conn->commit();
 
         echo sprintf("Done: %d/%d\n", $j, $i);
+
+        return 0;
     }
 }

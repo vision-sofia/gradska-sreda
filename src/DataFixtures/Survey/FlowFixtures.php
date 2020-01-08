@@ -9,7 +9,7 @@ use App\AppMain\Entity\Survey\Question\Flow;
 use App\AppMain\Entity\Survey\Question\Question;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class FlowFixtures extends Fixture implements DependentFixtureInterface
 {

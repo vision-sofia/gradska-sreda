@@ -23,7 +23,7 @@ class SimplifiedGeometryRefreshCommand extends Command
         parent::__construct();
     }
     
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->text('Start: refresh simplified geometries');
@@ -35,5 +35,7 @@ class SimplifiedGeometryRefreshCommand extends Command
         $stopwatchEvent = $this->stopwatch->stop(self::$defaultName);
 
         $io->success(sprintf('Complete in %.2f seconds', $stopwatchEvent->getDuration() / 1000));
+
+        return 0;
     }
 }

@@ -23,7 +23,7 @@ class DenormalizeCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->text('Start: survey denormalize');
@@ -35,5 +35,7 @@ class DenormalizeCommand extends Command
         $stopwatchEvent = $this->stopwatch->stop(self::$defaultName);
 
         $io->success(sprintf('Complete in %.2f seconds', $stopwatchEvent->getDuration() / 1000));
+
+        return 0;
     }
 }

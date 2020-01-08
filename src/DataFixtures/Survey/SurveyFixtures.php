@@ -5,7 +5,7 @@ namespace App\DataFixtures\Survey;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class SurveyFixtures extends Fixture
 {

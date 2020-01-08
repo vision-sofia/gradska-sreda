@@ -2,8 +2,8 @@
 https://gradska-sreda.dreamradio.org
 
 
-* Symfony 4.3
+* Symfony 5.0
 * PostgreSQL 11
 * PostGIS 2.5
-* PHP 7.3
+* PHP 7.4
 * Leaflet

@@ -211,7 +211,7 @@ class ItemController extends AbstractController
             $questionV3->mark($userId, $geoObjectId);
 
             $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
-            $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
+            $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
             return new JsonResponse([
                 'geoObject' => [
@@ -241,7 +241,7 @@ class ItemController extends AbstractController
         $questionV3->mark($userId, $geoObjectId);
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
-        $this->eventDispatcher->dispatch(GeoObjectSurveyTouch::NAME, $event);
+        $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
         return new JsonResponse([
             'geoObject' => [
