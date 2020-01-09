@@ -85,7 +85,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
         return [
             [
                 'category' => 'Пресичания',
-                'question' => 'Какъв е автомобилният трафик в момента?',
+                'question' => 'Какъв е автомобилният трафик на уличното платно в момента?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -172,7 +172,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         'title' => 'Нерегулирано (квартални улици)',
                     ],
                     [
-                        'title' => 'Несъществуващо(!)',
+                        'title' => 'Неправилно',
                     ],
                 ],
             ],
@@ -207,7 +207,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пресичания',
-                'question' => 'Има ли нещо, което в момента да затруднява видимостта или пресичането?', // TODO: да не се появява при отговор “нерегулирано” на въпрос 2
+                'question' => 'Има ли нещо, което в момента затруднява видимостта или пресичането?', // TODO: да не се появява при отговор “нерегулирано” на въпрос 2
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -220,6 +220,9 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                             ],
                             [
                                 'title' => 'Кофи за боклук',
+                            ],
+                            [
+                                'title' => 'Дървета/храсти',
                             ],
                             [
                                 'title' => 'Друго',
@@ -243,11 +246,11 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пресичания',
-                'question' => 'Осветено ли е добре пресичането вечерно време?',
+                'question' => 'Как оценявате осветеността на кръстовището?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да',
+                        'title' => 'Достатъчно осветено',
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -256,7 +259,16 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не',
+                        'title' => 'Осветено, но не е достатъчно',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Сигурност',
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не е осветено',
                     ],
                 ],
             ],
@@ -266,7 +278,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да, по цялото продължение на отсечката',
+                        'title' => 'Да, по цялото протежение на отсечката',
                         'is_photo_enabled' => true,
                         'is_child_answer_required' => true,
                         'child' => [
@@ -296,6 +308,32 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'title' => 'Да, епизодично',
+                        'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
+                        'child' => [
+                            [
+                                'title' => 'Паркирани коли',
+                            ],
+                            [
+                                'title' => 'Кофи за боклук',
+                            ],
+                            [
+                                'title' => 'Маси на заведения',
+                            ],
+                            [
+                                'title' => 'Спирки на МГТ',
+                            ],
+                            [
+                                'title' => 'Несъобразено поставени осветителни стълбове и реклами',
+                            ],
+                            [
+                                'title' => 'Антипаркинг колчета',
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true,
+                            ],
+                        ],
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -316,12 +354,27 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Има ли сериозен конфликт с велосипедисти, товарни дейности, скутери, скейтборд или други?',
+                'question' => 'Има ли конфликт на тротоара с други дейности?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
                         'title' => 'Да',
                         'is_photo_enabled' => true,
+                        'child' => [
+                            [
+                                'title' => 'Преминават велосипеди',
+                            ],
+                            [
+                                'title' => 'Преминават тротинетки',
+                            ],
+                            [
+                                'title' => 'Товарни автомобили зареждат търговски обекти',
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true,
+                            ],
+                        ],
                     ],
                     [
                         'title' => 'Не',
@@ -340,16 +393,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Не, никакви',
-                        'evaluation' => [
-                            [
-                                'point' => 2,
-                                'criterion' => 'Достъпност и проходимост',
-                            ],
-                        ],
-                    ],
-                    [
-                        'title' => 'Да',
+                        'title' => 'Да, по цялото протежение на отсечката',
                         'is_photo_enabled' => true,
                         'is_child_answer_required' => true,
                         'child' => [
@@ -371,11 +415,43 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                             ],
                         ],
                     ],
+                    [
+                        'title' => 'Да, епизодично',
+                        'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
+                        'child' => [
+                            [
+                                'title' => 'Има много неравности',
+                            ],
+                            [
+                                'title' => 'Липса на настилка',
+                            ],
+                            [
+                                'title' => 'Хлъзгаво е',
+                            ],
+                            [
+                                'title' => 'Има наводнени участъци',
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true,
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, никакви',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Има ли ‘светли’ и активни партерни етажи (наличие на търговски обекти)?',
+                'question' => 'Има ли търговски обекти в партерните етажи на сградите?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -398,7 +474,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Има ли денонощни обекти като магазини, аптеки, заведения, бензиностанции?',
+                'question' => 'Има ли денонощни обекти (магазин, аптека, бар, бензиностанция, хотел, болница, други)?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -425,7 +501,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да, достатъчно',
+                        'title' => 'Да, достатъчно осветено в цялата отсечка',
                         'evaluation' => [
                             [
                                 'point' => 2,
@@ -434,7 +510,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Да, но недостатъчно',
+                        'title' => 'Да, достатъчно осветено само в някои части на отсечката',
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -443,7 +519,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не',
+                        'title' => 'Не е осветено в цялата отсечка',
                     ],
                 ],
             ],
@@ -491,13 +567,22 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
+                        'title' => 'Да, има седящи/стоящи и преминаващи',
+                        'evaluation' => [
+                            [
+                                'point' => 0.5,
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
+                        ],
+                    ],
+                    [
                         'title' => 'Няма',
                     ],
                 ],
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Какъв е автомобилният трафик в момента?',
+                'question' => 'Какъв е автомобилният трафик на уличното платно в момента?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -525,7 +610,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'category' => 'Пешеходни отсечки',
-                'question' => 'Има ли озеленяване?  (дървета, храсти, тревни площи и др.)',
+                'question' => 'Има ли озеленяване? (дървета, храсти, тревни площи и др.)',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
@@ -621,16 +706,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Не, никакви',
-                        'evaluation' => [
-                            [
-                                'point' => 2,
-                                'criterion' => 'Достъпност и проходимост',
-                            ],
-                        ],
-                    ],
-                    [
-                        'title' => 'Да',
+                        'title' => 'Да, по цялото протежение на отсечката',
                         'is_photo_enabled' => true,
                         'is_child_answer_required' => true,
                         'child' => [
@@ -652,6 +728,38 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                             ],
                         ],
                     ],
+                    [
+                        'title' => 'Да, епизодично',
+                        'is_photo_enabled' => true,
+                        'is_child_answer_required' => true,
+                        'child' => [
+                            [
+                                'title' => 'Има много неравности',
+                            ],
+                            [
+                                'title' => 'Липса на настилка',
+                            ],
+                            [
+                                'title' => 'Хлъзгаво е',
+                            ],
+                            [
+                                'title' => 'Има наводнени участъци',
+                            ],
+                            [
+                                'title' => 'Друго',
+                                'is_free_answer' => true,
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Не, никакви',
+                        'evaluation' => [
+                            [
+                                'point' => 2,
+                                'criterion' => 'Достъпност и проходимост',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             [
@@ -660,7 +768,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да, достатъчно',
+                        'title' => 'Да, достатъчно осветено в цялата отсечка',
                         'evaluation' => [
                             [
                                 'point' => 2,
@@ -669,7 +777,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Да, но недостатъчно',
+                        'title' => 'Да, достатъчно осветено само в някои части на отсечката',
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -678,17 +786,17 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не',
+                        'title' => 'Не е осветено в цялата отсечка',
                     ],
                 ],
             ],
             [
                 'category' => 'Алеи',
-                'question' => 'Хората само преминават или има и стоящи/седящи хора наоколо в момента?',
+                'question' => 'Има ли хора в тази зона?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
-                        'title' => 'Да, сами',
+                        'title' => 'Да, има седящи/стоящи',
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -697,7 +805,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Да, в група от двама или повече',
+                        'title' => 'Да, има преминаващи',
                         'evaluation' => [
                             [
                                 'point' => 1,
@@ -706,13 +814,22 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'title' => 'Не',
+                        'title' => 'Да, има седящи/стоящи и преминаващи',
+                        'evaluation' => [
+                            [
+                                'point' => 1,
+                                'criterion' => 'Комфорт и привлекателност',
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Няма',
                     ],
                 ],
             ],
             [
                 'category' => 'Алеи',
-                'question' => 'Има ли озеленяване?  (дървета, храсти, тревни площи и др.)?',
+                'question' => 'Има ли озеленяване? (дървета, храсти, тревни площи и др.)?',
                 'has_multiple_answers' => false,
                 'answers' => [
                     [
