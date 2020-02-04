@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Properties naming convention: underscore
  */

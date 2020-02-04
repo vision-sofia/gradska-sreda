@@ -6,8 +6,8 @@ use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey\Spatial\SurveyGeoObject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\DBALException;
+use Doctrine\Persistence\ManagerRegistry;
 
 class SurveyGeoObjectRepository extends ServiceEntityRepository
 {

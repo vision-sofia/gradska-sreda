@@ -13,8 +13,8 @@ class DenormalizeCommand extends Command
 {
     protected static $defaultName = 'survey:denormalize';
 
-    protected $stopwatch;
-    protected $matView;
+    protected Stopwatch $stopwatch;
+    protected MatView $matView;
 
     public function __construct(Stopwatch $stopwatch, MatView $matView)
     {

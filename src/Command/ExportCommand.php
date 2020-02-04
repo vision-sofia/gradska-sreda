@@ -13,8 +13,8 @@ class ExportCommand extends Command
 {
     protected static $defaultName = 'export';
 
-    protected $em;
-    protected $container;
+    protected EntityManagerInterface $em;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $em,

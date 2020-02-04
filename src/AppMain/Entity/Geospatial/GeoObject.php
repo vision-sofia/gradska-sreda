@@ -117,6 +117,4 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     {
         $this->localProperties = $localProperties;
     }
-
-
 }

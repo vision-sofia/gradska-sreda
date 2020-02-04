@@ -1,28 +1,26 @@
 <?php
 
-
 namespace App\Services\Survey\Spatial;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 
-
 class Sync
 {
-    protected $em;
+    protected EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->em = $em;
+        $this->entityManager = $entityManager;
     }
 
     public function syncGeoObjects(): void
     {
-        $conn = $this->em->getConnection();
+        $conn = $this->entityManager->getConnection();
         $conn->beginTransaction();
 
         try {
-            # Insert main objects
+            # Insert survey objects
             $stmt = $conn->prepare('
                 INSERT INTO x_survey.spatial_geo_object (
                     geo_object_id,

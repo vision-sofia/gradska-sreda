@@ -6,7 +6,6 @@ use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\AppMain\Entity\Geospatial\Simplify;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\Cache\Keys as CacheKeys;
-use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use App\Services\Geospatial\Finder;
 use App\Services\Geospatial\Style;
@@ -29,7 +28,6 @@ class MapController extends AbstractController
     protected $logger;
     protected $finder;
     protected $session;
-    protected $geoCollection;
     protected $styleUtils;
     protected $cache;
     protected $styleService;
@@ -41,7 +39,6 @@ class MapController extends AbstractController
         LoggerInterface $logger,
         Finder $finder,
         SessionInterface $session,
-        GeoCollection $geoCollection,
         StyleUtils $styleUtils,
         AdapterInterface $cache,
         Style $styleService,
@@ -53,7 +50,6 @@ class MapController extends AbstractController
         $this->logger = $logger;
         $this->finder = $finder;
         $this->session = $session;
-        $this->geoCollection = $geoCollection;
         $this->styleUtils = $styleUtils;
         $this->cache = $cache;
         $this->styleService = $styleService;
@@ -89,25 +85,10 @@ class MapController extends AbstractController
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $survey->getId());
 
-        $userGeoCollection = $userSubmitted = $objects =  $gcObjects = [];
-        $boundingBoxes = [];
+        $userSubmitted = $objects = [];
 
         if ($this->getUser()) {
             $userSubmitted = $this->finder->userSubmitted($this->getUser()->getId(), $simplifyTolerance);
-            $userGeoCollection = $this->finder->userGeoCollection($this->getUser()->getId(), $simplifyTolerance);
-
-            $collectionBoundingBoxCollection = $this->geoCollection->findCollectionBoundingBoxByUser($this->getUser()->getId());
-
-            foreach ($collectionBoundingBoxCollection as $collectionBoundingBox) {
-                $geoObject = new SurveyGeoObjectDTO();
-                $geoObject->geometry = $collectionBoundingBox->getPolygon();
-                $geoObject->base_style = 'gc_bbox';
-                $geoObject->hover_style = 'gc_bbox';
-                $geoObject->active_style = 'gc_bbox_active';
-                $geoObject->properties = $collectionBoundingBox->getProperties();
-
-                $boundingBoxes[] = $geoObject;
-            }
         }
 
         $dynamicStyles = $this->cache->get(CacheKeys::DYNAMIC_STYLES, function () {
@@ -128,35 +109,6 @@ class MapController extends AbstractController
 
         foreach ($geoObjects as $row) {
             $objects[] = $this->process($row, $styleGroups, $this->styleUtils);
-        }
-
-        // GeoCollection layer V2
-        $gcV2 = [];
-
-        foreach ($userGeoCollection as $row) {
-            $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
-
-            // GeoCollection layer variant 2
-            $gcV2Id = json_decode($row->properties, false)->_gc_id;
-
-            $p = json_decode($row->properties, false);
-            unset($p->_gc_id);
-            $row->properties = json_encode($p);
-
-            $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
-        }
-
-        foreach ($boundingBoxes as $row) {
-            $gcObjects[] = $this->process($row, $styleGroups, $this->styleUtils);
-
-            // GeoCollection layer variant 2
-            $gcV2Id = json_decode($row->properties, false)->_gc_id;
-
-            $p = json_decode($row->properties, false);
-            unset($p->_gc_id);
-            $row->properties = json_encode($p);
-
-            $gcV2[$gcV2Id][] = $this->process($row, $styleGroups, $this->styleUtils);
         }
 
         $userSubmittedObjects = [];
@@ -195,31 +147,14 @@ class MapController extends AbstractController
                 ],
             ],
         ];
-        // TODO: concat more keys
+
         $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
         $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponses', $this->jsonUtils->joinArray($userSubmittedObjects));
-       # $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($gcObjects));
 
-        $content = json_decode($content, true);
+        $response = new Response($content);
+        $response->headers->set('Content-Type', 'application/json');
 
-        // GeoCollection layer variant 2
-       # $z = [];
-        foreach ($gcV2 as $key => $item) {
-            #$z[] = $this->jsonUtils->concatString(null ,$key, $this->jsonUtils->joinArray($item));
-
-            foreach ($item as $feature) {
-                $content['geoCollections'][$key][] = json_decode($feature);
-            }
-        }
-
-       # $content = $this->jsonUtils->concatString(json_decode($content, true),'geoCollections', $this->jsonUtils->joinArray($z));
-
-       # $response = new Response($content);
-       # $response->headers->set('Content-Type', 'application/json');
-
-       # return $response;
-
-        return new JsonResponse($content);
+        return $response;
     }
 
     private function process(SurveyGeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string

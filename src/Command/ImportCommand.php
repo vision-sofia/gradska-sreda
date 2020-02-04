@@ -14,14 +14,13 @@ class ImportCommand extends Command
 {
     protected static $defaultName = 'app:import';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();
@@ -140,7 +139,7 @@ class ImportCommand extends Command
 
         $conn->commit();
 
-        echo sprintf("Import complete.\nSkipped objects: %d,\nImported objects: %d", $j, $i);
+        echo sprintf("Complete.\nSkipped objects: %d\nImported objects: %d\n", $j, $i);
 
         return 0;
     }

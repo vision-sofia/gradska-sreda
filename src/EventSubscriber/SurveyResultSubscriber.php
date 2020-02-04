@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\EventSubscriber;
 
 use App\Event\GeoObjectSurveyTouch;
@@ -9,12 +8,11 @@ use App\Services\Survey\Result\GeoObjectRating;
 use App\Services\Survey\Result\UserCompletion;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-
 class SurveyResultSubscriber implements EventSubscriberInterface
 {
-    protected $criterionCompletion;
-    protected $userCompletion;
-    protected $geoObjectRating;
+    protected CriterionCompletion $criterionCompletion;
+    protected UserCompletion $userCompletion;
+    protected GeoObjectRating $geoObjectRating;
 
     public function __construct(
         CriterionCompletion $criterionCompletion,
@@ -60,5 +58,4 @@ class SurveyResultSubscriber implements EventSubscriberInterface
 
         $this->geoObjectRating->update($geoObjectId, $userId);
     }
-
 }

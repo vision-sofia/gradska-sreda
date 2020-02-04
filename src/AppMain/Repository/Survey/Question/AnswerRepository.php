@@ -6,7 +6,6 @@ use App\AppMain\Entity\Survey\Question\Answer;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-
 class AnswerRepository extends EntityRepository
 {
     /** @deprecated  */

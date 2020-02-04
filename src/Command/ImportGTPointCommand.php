@@ -15,14 +15,13 @@ class ImportGTPointCommand extends Command
 {
     protected static $defaultName = 'app:import-gt';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();

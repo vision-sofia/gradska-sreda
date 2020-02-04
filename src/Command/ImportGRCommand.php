@@ -15,14 +15,13 @@ class ImportGRCommand extends Command
 {
     protected static $defaultName = 'app:import-gr';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->container = $container;
         parent::__construct();

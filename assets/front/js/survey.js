@@ -3,7 +3,7 @@ import { defaultMapSize } from './map-config';
 export class Survey {
     mapInstance;
     layer;
-    geoObjectUUID = ''; 
+    geoObjectUUID = '';
     isOpen = false;
     mapMarker;
 
@@ -41,16 +41,16 @@ export class Survey {
     }
 
     queryElements() {
-        this.elPathVoteSurveyContainer = document.getElementById('path-vote-suevey');
+        this.elPathVoteSurveyContainer = document.getElementById('path-vote-survey');
         if (!this.elPathVoteSurveyContainer) {
-           throw 'Element "#path-vote-suevey" not found';
+           throw 'Element "#path-vote-survey" not found';
         }
         this.elProgressBar = this.elPathVoteSurveyContainer.querySelector('.survey-progress-bar');
         this.elSurveayForm = this.elPathVoteSurveyContainer.querySelector('.survey-form');
-          
+
         this.elSurveyCarouselNav = this.elPathVoteSurveyContainer.querySelectorAll('.side-panel-nav-btn');
         this.elSurveyPollBtn = this.elSurveyCarouselNav[1];
-        this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carouselServeyPages');
+        this.refSurveyCarousel = this.elPathVoteSurveyContainer.querySelectorAll('#carousel-survey-pages');
     }
 
     events() {
@@ -65,11 +65,11 @@ export class Survey {
         });
 
 
-        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-open]', () => {
+        $(document).on('click', '[data-toggle-for="path-vote-survey"][data-toggle-open]', () => {
             this.open(this.layer, this.ev);
         });
-        
-        $(document).on('click', '[data-toggle-for="path-vote-suevey"][data-toggle-close]', () => {
+
+        $(document).on('click', '[data-toggle-for="path-vote-survey"][data-toggle-close]', () => {
             this.close();
         });
 
@@ -77,7 +77,7 @@ export class Survey {
             const target = e.target;
             let data = {};
             let debounceTime = 0;
-    
+
             if (target.tagName === 'TEXTAREA') {
                 data = {
                     'explanation': {
@@ -85,16 +85,16 @@ export class Survey {
                         'text': target.value,
                     }
                 };
-    
+
                 debounceTime = 400;
             } else {
                 data = {
                     'answer': target.value,
                 };
             }
-           
-            clearTimeout(this.timeoutId); 
-    
+
+            clearTimeout(this.timeoutId);
+
             this.timeoutId = setTimeout(() => {
                 this.submitSurvey(data, target.value)
             }, debounceTime);

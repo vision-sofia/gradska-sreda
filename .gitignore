@@ -1,5 +1,6 @@
 ###> symfony/framework-bundle ###
 /.env.local
+/.env.local.php
 /.env.*.local
 /public/bundles/
 /var/
@@ -8,16 +9,16 @@
 
 ###> symfony/phpunit-bridge ###
 .phpunit
+.phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
-.env
-.idea
-.php_cs.cache
-src/DataFixtures/Raw
-!src/DataFixtures/Raw/README.md
-node_modules
-media
-!media/.gitignore
+
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+/src/DataFixtures/Raw
+!/src/DataFixtures/Raw/README.md
+/node_modules
+/media
+!/media/.gitignore

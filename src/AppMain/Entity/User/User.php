@@ -39,7 +39,7 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
     protected $roles;
 
     /**
-     * @ORM\Column(type="date_immutable", nullable=true)
+     * @ORM\Column(name="last_login", type="date_immutable", nullable=true)
      */
     protected $lastLogin;
 

@@ -66,7 +66,7 @@ class GeoObjectRating
                 q.geo_object_id,
                 q.user_id
             ORDER BY
-                geo_object_id ASC            
+                geo_object_id            
             ON CONFLICT (criterion_subject_id, geo_object_id, user_id) DO UPDATE SET
                 rating = excluded.rating  
         ');

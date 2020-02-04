@@ -1,18 +1,15 @@
 <?php
 
-
 namespace App\Services\Survey\CriterionSubject;
-
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-
 class CriterionSubjectMetadata
 {
-    private $em;
-    private $logger;
+    private EntityManagerInterface $em;
+    private LoggerInterface $logger;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
@@ -20,7 +17,8 @@ class CriterionSubjectMetadata
         $this->logger = $logger;
     }
 
-    public function updateMaxPoints(?int $subjectId = null): void {
+    public function updateMaxPoints(?int $subjectId = null): void
+    {
         $conn = $this->em->getConnection();
 
         try {
@@ -79,7 +77,8 @@ class CriterionSubjectMetadata
         }
     }
 
-    public function sync():void {
+    public function sync(): void
+    {
         $conn = $this->em->getConnection();
 
         try {

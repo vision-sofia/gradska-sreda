@@ -1,45 +1,49 @@
-<header id="app-header" class="active fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <div class="container p-0 ">
+{# TODO: remove this check after fixing the bug with map view on bootstrap 4 #}
+<header {{ app.request.attributes.get('_route') == 'app.map' ? 'id="app-header" class="active fixed-top"' : '' }}>
+    <nav class="navbar navbar-expand-md navbar-light bg-white">
+        <div class="container">
             <a class="logo" href="{{ path('app.map') }}"><img src="{{ asset('front/images/logo.png') }}"></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar" aria-controls="collapsingNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="navbar-collapse collapse" id="collapsingNavbar">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item{{ app.request.get('_route') == 'app.map' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.map') }}">Карта</a>
                     </li>
-                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <li class="nav-item{{ app.request.get('_route') == 'app.achievements.index' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.achievements.index') }}">Постижения</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item{{ app.request.get('_route') == 'app.rating' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.rating') }}">Класации</a>
-                    </li>
-                    <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">
-                        <a class="nav-link" href="{{ path('app.info') }}">Информация</a>
-                    </li>
-                    <li class="nav-item{{ app.request.get('_route') == 'app.about' ? ' active' }}">
+{#                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}#}
+{#                    <li class="nav-item{{ app.request.get('_route') == 'app.achievements.index' ? ' active' }}">#}
+{#                        <a class="nav-link" href="{{ path('app.achievements.index') }}">Постижения</a>#}
+{#                    </li>#}
+{#                    {% endif %}#}
+{#                    <li class="nav-item{{ app.request.get('_route') == 'app.rating' ? ' active' }}">#}
+{#                        <a class="nav-link" href="{{ path('app.rating') }}">Класации</a>#}
+{#                    </li>#}
+{#                    <li class="nav-item{{ app.request.get('_route') == 'app.info' ? ' active' }}">#}
+{#                        <a class="nav-link" href="{{ path('app.info') }}">Информация</a>#}
+{#                    </li>#}
+                    <li class="nav-item{{ app.request.get('_route') == 'app.site.page' ? ' active' }}">
                         <a class="nav-link" href="{{ path('app.site.page', {'slug': 'about'}) }}">За платформата</a>
                     </li>
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                         <li class="nav-item{{ app.request.get('_route') starts with 'app.user.settings' ? ' active' }}">
                             <a class="nav-link" href="{{ path('app.user.settings.profile') }}">Настройки</a>
                         </li>
-                        {% if is_granted('ROLE_MANAGE') %}
-                            <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
-                                <a class="nav-link" href="{{ path('manage.index') }}"><i class="fa fa-cog"></i> </a>
-                            </li>
-                        {% endif %}
                         <li class="nav-item{{ app.request.get('_route') == 'logout' ? ' active' }}">
                             <a class="nav-link" href="{{ path('logout') }}">Изход</a>
                         </li>
+                        {% if is_granted('ROLE_MANAGE') %}
+                            <li class="nav-item{{ app.request.get('_route') == 'manage.index' ? ' active' }}">
+                                <a class="nav-link text-danger" href="{{ path('manage.index') }}"><i class="fa fa-cog"></i> </a>
+                            </li>
+                        {% endif %}
                     {% else %}
                         <li class="nav-item{{ app.request.get('_route') == 'app.login' ? ' active' }}">
-                            <a class="nav-link  " href="{{ path('app.login') }}">Вход</a>
+                            <a class="nav-link" href="{{ path('app.login') }}">Вход</a>
+                        </li>
+                        <li class="nav-item{{ app.request.get('_route') == 'app.register' ? ' active' }}">
+                            <a class="nav-link" href="{{ path('app.register') }}">Регистрация</a>
                         </li>
                     {% endif %}
                 </ul>

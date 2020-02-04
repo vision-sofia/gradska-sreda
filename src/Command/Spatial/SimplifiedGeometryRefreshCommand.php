@@ -13,16 +13,16 @@ class SimplifiedGeometryRefreshCommand extends Command
 {
     protected static $defaultName = 'spatial:simplified:refresh';
 
-    protected $simplify;
-    protected $stopwatch;
+    protected Simplify $simplify;
+    protected Stopwatch $stopwatch;
 
-    public function __construct(Simplify $simplify, Stopwatch $stopwatch)
+    public function __construct(Simplify $sync, Stopwatch $stopwatch)
     {
         $this->stopwatch = $stopwatch;
-        $this->simplify = $simplify;
+        $this->simplify = $sync;
         parent::__construct();
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

@@ -1,10 +1,10 @@
 <?php
+
 /**
  * Properties naming convention: underscore
  */
 
 namespace App\AppMain\DTO;
-
 
 class GeoJsonDTO
 {

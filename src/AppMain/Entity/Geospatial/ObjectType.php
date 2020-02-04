@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Geospatial;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
@@ -27,12 +26,12 @@ class ObjectType implements UuidInterface
      */
     private $name;
 
-    public function getId():?int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName():?string
+    public function getName(): ?string
     {
         return $this->name;
     }

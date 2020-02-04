@@ -15,8 +15,8 @@ class ImportMetroPointCommand extends Command
 {
     protected static $defaultName = 'app:import-metro';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,

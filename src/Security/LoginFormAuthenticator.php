@@ -15,9 +15,9 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
-    private $em;
-    private $router;
-    private $encoder;
+    private EntityManagerInterface $em;
+    private RouterInterface $router;
+    private EncoderFactoryInterface $encoder;
 
     public function __construct(
         EntityManagerInterface $em,

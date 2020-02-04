@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bg" class="h-100">
+<html lang="bg">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -26,22 +26,32 @@
     <meta property="og:description" content="">
     <meta property="og:image" content="">
     <title>Градска среда - Визия за София</title>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ asset('front/css/custom-b4.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <!-- Foreign CSS stuff -->
+   {# <link rel='stylesheet' id='thegem-google-fonts-css'
+          href='//fonts.googleapis.com/css?family=Source+Sans+Pro%3Aregular%2C300%7CMontserrat%3A700%2Cregular&#038;subset=greek-ext%2Clatin%2Ccyrillic-ext%2Ccyrillic%2Cgreek%2Clatin-ext%2Cvietnamese&#038;ver=4.9.8'
+          type='text/css' media='all'/>#}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ asset('front/css/vendor.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('front/css/custom.css') }}?{{ "now"|date("U") }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front/css/typography.css') }}?{{ "now"|date("U") }}" type="text/css">
+    <link rel="stylesheet" href="https://vizia.sofia.bg/wp-content/themes/thegem/css/thegem-header.css?ver=4.9.8"
+          type="text/css">
 </head>
-<body class="d-flex flex-column h-100">
-
+<body>
 {% include 'front/partial/header.html.twig' %}
-<main role="main" class="flex-shrink-0">
+<main>
     {% block body %}{% endblock %}
 </main>
 
-{% include 'front/partial/footer.html.twig' %}
+<script type="text/javascript" src="{{ asset('front/js/vendor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('front/js/bundle.js') }}" async></script>
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+{% if app.debug %}
+    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+{% endif %}
+
 </body>
 </html>

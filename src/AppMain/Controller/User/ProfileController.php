@@ -24,7 +24,7 @@ class ProfileController extends AbstractController
         $form = $this->createForm(UserProfileType::class, $this->getUser());
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
         }
 

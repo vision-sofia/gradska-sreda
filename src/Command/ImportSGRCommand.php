@@ -14,8 +14,8 @@ class ImportSGRCommand extends Command
 {
     protected static $defaultName = 'app:import-sgr';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,

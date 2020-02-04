@@ -1,12 +1,16 @@
-<footer class="footer-nav footer mt-auto py-4">
-    <div class="container text-center">
-        <div class="d-flex justify-content-between">
-            <div>Проучване на градската среда</div>
-            <div>
-                <a href="{{ path('app.site.page', {'slug': 'terms-and-conditions'}) }}" class="mr-4">Условия за ползване</a>
-                <a href="{{ path('app.site.page', {'slug': 'privacy-policy'}) }}" class="mr-4">Политика за лични данни</a>
-                <a href="{{ path('app.site.page', {'slug': 'open-data'}) }}" class="mr-4">Отворени данни</a>
-                <a href="https://vizia.sofia.bg/" target="_blank">Визия за София</a>
+<footer class="footer mt-auto py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <p class="mb-0">Проучване на градската среда</p>
+            </div>
+            <div class="col-8">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item"><a href="{{ path('app.site.page', {'slug': 'terms-and-conditions'}) }}" class="mr-4">Условия за ползване</a></li>
+                    <li class="list-inline-item"><a href="{{ path('app.site.page', {'slug': 'privacy-policy'}) }}" class="mr-4">Политика за лични данни</a></li>
+                    <li class="list-inline-item"><a href="{{ path('app.site.page', {'slug': 'open-data'}) }}" class="mr-4">Отворени данни</a></li>
+                    <li class="list-inline-item"><a href="https://vizia.sofia.bg/" target="_blank">Визия за София</a></li>
+                </ul>
             </div>
         </div>
     </div>

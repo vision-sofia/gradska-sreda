@@ -13,16 +13,16 @@ class SpatialSyncCommand extends Command
 {
     protected static $defaultName = 'survey:spatial:sync';
 
-    protected $spatialSync;
-    protected $stopwatch;
+    protected Sync $spatialSync;
+    protected Stopwatch $stopwatch;
 
-    public function __construct(Sync $simplify, Stopwatch $stopwatch)
+    public function __construct(Sync $sync, Stopwatch $stopwatch)
     {
         $this->stopwatch = $stopwatch;
-        $this->spatialSync = $simplify;
+        $this->spatialSync = $sync;
         parent::__construct();
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

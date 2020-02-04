@@ -15,8 +15,8 @@ class ImportRegionCommand extends Command
 {
     protected static $defaultName = 'app:import-r';
 
-    protected $entityManager;
-    protected $container;
+    protected EntityManagerInterface $entityManager;
+    protected ContainerInterface $container;
 
     public function __construct(
         EntityManagerInterface $entityManager,

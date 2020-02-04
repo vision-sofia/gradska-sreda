@@ -54,7 +54,7 @@ SELECT
         FROM
             rel_tree a
         ORDER BY
-            path, id ASC
+            path, id
         ) z
     ) as question_answers
 FROM

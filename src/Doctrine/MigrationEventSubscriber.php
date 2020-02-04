@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Doctrine;
-
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;

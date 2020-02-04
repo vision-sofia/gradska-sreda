@@ -36,7 +36,7 @@ export class Map {
             // * If difference between "maxNativeZoom" and "maxZoom" === 2
             // and "leafLet-active-area" is included  "Maximum call stack size exceeded" is thrown on max zoom reached.
             // https://github.com/Mappy/Leaflet-active-area/issues/32
-            maxNativeZoom: 20, 
+            maxNativeZoom: 20,
             maxZoom: 21,
             minZoom: 11,
             updateWhenZooming: false
@@ -57,12 +57,12 @@ export class Map {
             }
         });
         this.map.addControl(new myLocationButton());
-        
+
         this.myLocationLayerGroup.addTo(this.map);
 
         this.popusLayerGroup.addTo(this.map);
 
-        this.mapResponse.ObjectsLayerGeoJson = L.geoJSON([], { 
+        this.mapResponse.ObjectsLayerGeoJson = L.geoJSON([], {
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -82,7 +82,7 @@ export class Map {
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {
-                        return; 
+                        return;
                     }
                     if (this.mapResponse.settings.styles[feature.properties._s2]) {
                         this.setLayerHoverStyle(layer);
@@ -105,7 +105,7 @@ export class Map {
 
         this.mapResponse.CollectionsLayerControl = L.layerGroup().addTo(this.map);
 
-        this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], { 
+        this.mapResponse.SurveyResponsesLayerGeoJson = L.geoJSON([], {
             style: (feature) => {
                 let styles = this.mapResponse.settings.styles[feature.properties._s1] ? {...this.mapResponse.settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -125,7 +125,7 @@ export class Map {
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {
-                        return; 
+                        return;
                     }
                     if (this.mapResponse.settings.styles[feature.properties._s2]) {
                         this.setLayerHoverStyle(layer);
@@ -184,7 +184,7 @@ export class Map {
 
         this.map.on('locationfound', this.setMapViewToMyLocation.bind(this));
         this.map.on('locationerror', this.setInitialMapView.bind(this));
-        
+
         window.addEventListener('resize', debounce(() => {
             this.setActiveArea();
         }, 200, false), false);
@@ -236,12 +236,12 @@ export class Map {
                 this.isMapLoaded = true;
                 this.mapResponse.settings = results.settings;
                 this.mapResponse.ObjectsLayerGeoJson.clearLayers();
-                
+
                 this.mapResponse.ObjectsLayerGeoJson.addData(results.objects);
                 this.mapResponse.CollectionsLayerControl.clearLayers();
 
                 const geoCollectinResult = results.geoCollections;
-                
+
                 for (const removeThisObj in geoCollectinResult) {
                     if (geoCollectinResult.hasOwnProperty(removeThisObj)) {
                         const collection = new Collection(this, this.mapResponse.settings);
@@ -252,7 +252,7 @@ export class Map {
                         })
 
                         this.mapResponse.CollectionsLayerControl.addLayer(collection.layer);
-                    } 
+                    }
                 }
 
                 this.mapResponse.SurveyResponsesLayerGeoJson.clearLayers();
@@ -354,11 +354,11 @@ export class Map {
 
     onLayerClick(layer, ev) {
         console.log('CLICK');
-        
+
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
-       
+
         switch (layer.feature.properties._behavior) {
             case 'info':
                 this.openInfoPopup(layer, ev);
@@ -435,7 +435,7 @@ export class Map {
                 <h5 class="font-weight-bold mb-2 h6" data-confirm-title>
                     Искате ли да оцените
                 </h5>
-                <button data-toggle-open class="btn btn-success mr-3 py-0 px-2" data-toggle-for="path-vote-suevey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }">ДА</button>
+                <button data-toggle-open class="btn btn-success mr-3 py-0 px-2" data-toggle-for="path-vote-survey"  data-url="${ apiEndpoints.geo + layer.feature.properties.id }">ДА</button>
                 <button data-confirm-cancel class="btn btn-danger cursor-pointer py-0 px-2">НЕ</button>
             </div>
         `;
@@ -517,7 +517,7 @@ export class Map {
             elBottom = parseFloat(getComputedStyle(el).getPropertyValue('bottom')),
             elLeft = parseFloat(getComputedStyle(el).getPropertyValue('left')),
             elRight = parseFloat(getComputedStyle(el).getPropertyValue('right'));
-            
+
             // Optimise this code repetition
             if (el.clientWidth === window.innerWidth) {
                 if (Math.round(elBottom) <= 0) {
@@ -525,7 +525,7 @@ export class Map {
                     if (elHeight > callculatedHeightBot) {
                         callculatedHeightBot = elHeight;
                     }
-                } else if (Math.round(elTop) === 0) { 
+                } else if (Math.round(elTop) === 0) {
                     // TOP
                     if (elHeight > callculatedHeightTop) {
                         top = elHeight;
@@ -540,7 +540,7 @@ export class Map {
                     if (elWidth > callculatedWidthRight) {
                         callculatedWidthRight = elWidth;
                     }
-                } else if (Math.round(elLeft) === 0) { 
+                } else if (Math.round(elLeft) === 0) {
                     // Left
                     if (elWidth > callculatedWidthLeft) {
                         left = elWidth;
@@ -554,9 +554,9 @@ export class Map {
 
         const width = window.innerWidth - callculatedWidth;
         const height = window.innerHeight - callculatedHeight;
-        
+
         const lastCenterPoint = this.map.getCenter();
-        
+
         setTimeout(() => {
             this.map.panTo(lastCenterPoint);
         }, 200);

@@ -12,7 +12,7 @@ class CriterionMetadataUpdateCommand extends Command
 {
     protected static $defaultName = 'survey:metadata:update';
 
-    protected $criterionSubjectMetadata;
+    protected CriterionSubjectMetadata $criterionSubjectMetadata;
 
     public function __construct(CriterionSubjectMetadata $criterionSubjectMetadata)
     {

@@ -9,7 +9,6 @@ use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-
 class QuestionRepository extends EntityRepository
 {
     public function findNextQuestion(UserInterface $user, GeoObject $geoObject): ?Question
@@ -63,8 +62,8 @@ class QuestionRepository extends EntityRepository
                         AND f.question_id = q.id
                 )
             ORDER BY 
-                survey_id ASC, 
-                q.id ASC                               
+                survey_id, 
+                q.id                               
             LIMIT 1
         ', $rsm);
 
@@ -116,8 +115,8 @@ class QuestionRepository extends EntityRepository
                             AND f.question_id = gq.question_id
                     )
                 ORDER BY 
-                    survey_id ASC, 
-                    gq.question_id ASC');
+                    survey_id, 
+                    gq.question_id');
 
         $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());

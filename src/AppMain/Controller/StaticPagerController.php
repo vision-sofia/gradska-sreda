@@ -3,20 +3,17 @@
 namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\StaticPage;
-
 use App\Services\Markdown\MarkdownService;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 
-
 class StaticPagerController extends AbstractController
 {
-    protected $markdown;
-    protected $cache;
+    protected MarkdownService $markdown;
+    protected AdapterInterface $cache;
 
     public function __construct(MarkdownService $markdown, AdapterInterface $cache)
     {
@@ -32,7 +29,7 @@ class StaticPagerController extends AbstractController
      *     requirements={"slug": "terms-and-conditions|privacy-policy|about|open-data"}
      * )
      */
-    public function termsAndConditions(string $slug): Response
+    public function show(string $slug): Response
     {
         $content = $this->cache->get('static-page-' . $slug, function (ItemInterface $item) use ($slug) {
             /** @var StaticPage|null $page */

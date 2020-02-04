@@ -1,15 +1,31 @@
+deactivated:
+  path:
+    - /achievements
+    - /rating
+  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+  defaults:
+    path: /
+    permanent: true
+
+main:
+  resource: '../src/AppMain/Controller/'
+  type: annotation
+  prefix: /
+
 manage:
   resource: '../src/AppManage/Controller/'
   type: annotation
   prefix: /manage
 
-api-front-end:
+api_frontend:
   resource: '../src/AppAPIFrontend/Controller'
   type: annotation
   prefix: /front-end
 
-api-login-check:
+api_login:
   path: /api/login_check
 
 logout:
   path: /logout
+
+

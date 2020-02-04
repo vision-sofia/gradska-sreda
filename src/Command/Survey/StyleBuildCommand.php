@@ -16,14 +16,17 @@ class StyleBuildCommand extends Command
 {
     protected static $defaultName = 'survey:style:build';
 
-    protected $stopwatch;
-    protected $styleBuilder;
-    protected $eventDispatcher;
+    protected Stopwatch $stopwatch;
+    protected StyleBuilder $styleBuilder;
+    protected EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(StyleBuilder $matView, Stopwatch $stopwatch, EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        StyleBuilder $styleBuilder,
+        Stopwatch $stopwatch,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->stopwatch = $stopwatch;
-        $this->styleBuilder = $matView;
+        $this->styleBuilder = $styleBuilder;
         $this->eventDispatcher = $eventDispatcher;
         parent::__construct();
     }

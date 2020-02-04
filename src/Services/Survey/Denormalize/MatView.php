@@ -7,16 +7,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class MatView
 {
-    protected $em;
+    protected EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->em = $entityManager;
+        $this->entityManager = $entityManager;
     }
 
     public function refresh(): void
     {
-        $conn = $this->em->getConnection();
+        $conn = $this->entityManager->getConnection();
 
         try {
             $conn->query('REFRESH MATERIALIZED VIEW x_survey.ev_criterion_question');

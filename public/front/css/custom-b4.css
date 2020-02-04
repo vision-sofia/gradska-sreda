@@ -1,3 +1,22 @@
+footer {
+    background-color: #5655a4;
+    color: #fff;
+    font-size: 14px;
+}
+
+footer a {
+    color: #fff;
+}
+
+a.logo img {
+    height: 40px;
+}
+
+footer a:hover {
+    color: #fff;
+}
+
+/* --- */
 * {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -7,6 +26,9 @@
 *:focus {
     outline: -webkit-focus-ring-color auto 0;
 }
+
+
+
 
 body, html {
     width: 100%;
@@ -153,15 +175,15 @@ li.active {
     color: #5655a4 !important;
 }
 
-footer {
-    width: 100%;
-    left: 0;
-    bottom: 0;
-    z-index: 2;
-    background-color: #ffffff8f;
-    padding: 8px;
-    font-size: 10px;
-}
+/*footer {*/
+/*    width: 100%;*/
+/*    left: 0;*/
+/*    bottom: 0;*/
+/*    z-index: 2;*/
+/*    background-color: #ffffff8f;*/
+/*    padding: 8px;*/
+/*    font-size: 10px;*/
+/*}*/
 
 .mainMarker {
     background-color: white;
@@ -172,9 +194,6 @@ footer {
     transform: translate(0, -110%);
 }
 
-a.logo img {
-    height: 40px;
-}
 
 .navbar {
     box-shadow: 0 0 2px 0 rgba(56, 69, 84, 0.2);

@@ -11,16 +11,16 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider implements UserProviderInterface
 {
-    private $em;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->em = $entityManager;
+        $this->entityManager = $entityManager;
     }
 
     public function loadUserByUsername($username)
     {
-        $repository = $this->em->getRepository(User::class);
+        $repository = $this->entityManager->getRepository(User::class);
 
         /** @var User $user */
         $user = $repository->findOneBy(['username' => $username]);

@@ -14,12 +14,8 @@ class InfoController extends AbstractController
      */
     public function index(): Response
     {
-        $users = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->findAll();
-
         return $this->render('front/info/index.html.twig', [
-            'users' => $users
+
         ]);
     }
 }

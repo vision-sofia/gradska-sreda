@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\EventSubscriber;
 
 use App\Event\Events;
@@ -11,19 +10,17 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-
 class StyleBuildSubscriber implements EventSubscriberInterface
 {
-    protected $styleBuilder;
-    protected $cache;
-    protected $styleService;
+    protected StyleBuilder $styleBuilder;
+    protected AdapterInterface $cache;
+    protected Style $styleService;
 
     public function __construct(
         StyleBuilder $styleBuilder,
         AdapterInterface $cache,
         Style $styleService
-    )
-    {
+    ) {
         $this->styleBuilder = $styleBuilder;
         $this->cache = $cache;
         $this->styleService = $styleService;

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Doctrine\DBAL\Types;
 
 use App\Doctrine\ValueObject\IntRange;
