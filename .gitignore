@@ -17,8 +17,8 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-/src/DataFixtures/Raw
+/src/DataFixtures/Raw/*
 !/src/DataFixtures/Raw/README.md
 /node_modules
-/media
+/media/*
 !/media/.gitignore
