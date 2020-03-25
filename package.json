@@ -50,8 +50,8 @@
     "run-sequence": "^2.2.1",
     "source-map-loader": "^0.2.3",
     "tar": "^4.4.10",
-    "webpack": "^3.10.0",
-    "webpack-stream": "^4.0.3"
+    "webpack": "^4.42.1",
+    "webpack-stream": "^5.2.1"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
