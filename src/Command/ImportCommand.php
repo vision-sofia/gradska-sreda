@@ -30,7 +30,12 @@ class ImportCommand extends Command
     {
         ini_set('memory_limit', '-1');
 
-        $string = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/network.json');
+        $dataFile = $this->container->getParameter('kernel.project_dir')
+            . \DIRECTORY_SEPARATOR
+            . 'src/DataFixtures/Raw/network.json'
+        ;
+
+        $string = file_get_contents($dataFile);
         $content = json_decode($string, true);
 
         /** @var Connection $conn */
@@ -49,14 +54,14 @@ class ImportCommand extends Command
         $stmt = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
-                coordinates, 
-                metadata, 
+                coordinates,
+                metadata,
                 uuid
             ) VALUES (
                 :spatial_object_id,
-                :geography, 
-                \'{}\', 
-                :uuid                      
+                :geography,
+                \'{}\',
+                :uuid
             )
         ');
 
@@ -67,10 +72,10 @@ class ImportCommand extends Command
                 object_type_id,
                 name
             ) VALUES (
-                :properties,        
+                :properties,
                 :uuid,
                 :object_type_id,
-                :name                 
+                :name
             )
         ');
 
@@ -79,9 +84,15 @@ class ImportCommand extends Command
         foreach ($content as $item) {
             if (\is_array($item)) {
                 foreach ($item as $s) {
-                    if (isset($s['geometry']['paths'][0])) {
+                    if (isset($s['geometry']['coordinates'])) {
                         $p = [];
-                        foreach ($s['geometry']['paths'][0] as $points) {
+
+                        if (isset($s['geometry']['coordinates'][0][0][0])) {
+                            echo 'SKIP' . PHP_EOL;
+                            continue;
+                        }
+                        #dump($s['geometry']['coordinates'][0][0][0]);
+                        foreach ($s['geometry']['coordinates'] as $points) {
                             $p[] = implode(' ', $points);
                         }
 
@@ -89,13 +100,14 @@ class ImportCommand extends Command
 
                         $objectTypeId = null;
 
-                        if (isset($s['attributes']['type'], $objectTypes[$s['attributes']['type']])) {
-                            $objectTypeId = $objectTypes[$s['attributes']['type']];
+                        if (isset($s['properties']['type'], $objectTypes[$s['properties']['type']])) {
+                            $objectTypeId = $objectTypes[$s['properties']['type']];
                         }
 
-                        $name = $s['attributes']['name'] ?? '';
+                        $name = $s['properties']['name'] ?? '';
+                        $properties = json_encode($s['properties'] ?? [], JSON_THROW_ON_ERROR, 512);
 
-                        $stmtSPO->bindValue('properties', json_encode($s['attributes'] ?? []));
+                        $stmtSPO->bindValue('properties', $properties);
                         $stmtSPO->bindValue('uuid', Uuid::uuid4());
                         $stmtSPO->bindValue('name', $name);
                         $stmtSPO->bindValue('object_type_id', $objectTypeId);
