@@ -114,7 +114,7 @@ final class Version20190403175643 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_68F9143AE0946303 ON x_survey.gc_collection_content (geo_collection_id)');
         $this->addSql('CREATE INDEX IDX_68F9143A82127C22 ON x_survey.gc_collection_content (geo_object_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_68F9143AE094630382127C22 ON x_survey.gc_collection_content (geo_collection_id, geo_object_id)');
-        $this->addSql('CREATE TABLE x_geometry.geometry_base (id INT GENERATED ALWAYS AS IDENTITY, geo_object_id INT DEFAULT NULL, uuid UUID NOT NULL, coordinates Geography DEFAULT NULL, metadata JSONB DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE x_geometry.geometry_base (id INT GENERATED ALWAYS AS IDENTITY, geo_object_id INT DEFAULT NULL, uuid UUID NOT NULL, coordinates Geometry(Geometry, 4326) DEFAULT NULL, metadata JSONB DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_4E7280C8D17F50A6 ON x_geometry.geometry_base (uuid)');
         $this->addSql('CREATE INDEX IDX_4E7280C882127C22 ON x_geometry.geometry_base (geo_object_id)');
         $this->addSql('CREATE INDEX IDX_4E7280C89816D676 ON x_geometry.geometry_base USING GIST (coordinates)');

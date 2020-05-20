@@ -12,14 +12,16 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
         mapping_types:
             int4range: int4range
+            integer[]: integer[]
+            _int4: integer[]
         types:
            #geography:  CrEOF\Spatial\DBAL\Types\GeographyType
            #polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
            #point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
-            geography:
-                class: Jsor\Doctrine\PostGIS\Types\GeographyType
-            int4range:
-                class: App\Doctrine\DBAL\Types\IntRangeType
+            integer[]: MartinGeorgiev\Doctrine\DBAL\Types\IntegerArray
+            geography: Jsor\Doctrine\PostGIS\Types\GeographyType
+            geometry: Jsor\Doctrine\PostGIS\Types\GeometryType
+            int4range: App\Doctrine\DBAL\Types\IntRangeType
 
     orm:
         auto_generate_proxy_classes: true

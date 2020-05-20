@@ -37,10 +37,10 @@ class AchievementFixtures extends Fixture implements DependentFixtureInterface
             $achievement->setThreshold($data['threshold']);
             $achievement->setSurveyCategory($c[$data['category']]);
 
-            $manager->persist($achievement);
+            #$manager->persist($achievement);
         }
 
-        $manager->flush();
+        #$manager->flush();
     }
 
     private function data(): array

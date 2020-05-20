@@ -27,7 +27,7 @@ class StyleGroup
     private $code;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true})
+     * @ORM\Column(type="json", options={"jsonb": true})
      */
     private $style;
 

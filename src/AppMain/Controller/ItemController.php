@@ -60,7 +60,7 @@ class ItemController extends AbstractController
                     ra.answer_id as id,
                     ra.explanation,
                     ra.photo,
-                    rq.question_id 
+                    rq.question_id
                 FROM
                     x_survey.response_answer ra
                         INNER JOIN
@@ -130,7 +130,7 @@ class ItemController extends AbstractController
                   AND q.user_id = :user_id
                   AND q.is_completed = TRUE
             )
-            SELECT total, complete FROM z, d        
+            SELECT total, complete FROM z, d
         ');
 
         $stmt->bindValue('user_id', $this->getUser()->getId());
@@ -267,6 +267,9 @@ class ItemController extends AbstractController
             $this->getUser()->getId()
         );
 
+        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+        $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
+
         return new JsonResponse([], 200);
     }
 
@@ -284,7 +287,7 @@ class ItemController extends AbstractController
 
         $stmt = $conn->prepare('
             SELECT
-                cr.name AS name, 
+                cr.name AS name,
                 round(AVG(rating), 1) AS rating
             FROM
                 x_survey.result_geo_object_rating gr
@@ -315,7 +318,7 @@ class ItemController extends AbstractController
             WHERE
                 gr.geo_object_id = :geo_object_id
             GROUP BY
-                cr.id               
+                cr.id
         ');
 
         $stmt->bindValue('geo_object_id', $geoObject->getId());

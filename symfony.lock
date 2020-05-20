@@ -1,4 +1,7 @@
 {
+    "brick/math": {
+        "version": "0.8.15"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -113,6 +116,9 @@
             "config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "martin-georgiev/postgresql-for-doctrine": {
+        "version": "v1.4.1"
+    },
     "monolog/monolog": {
         "version": "1.24.0"
     },
@@ -175,6 +181,9 @@
     },
     "psr/log": {
         "version": "1.1.0"
+    },
+    "ramsey/collection": {
+        "version": "1.0.1"
     },
     "ramsey/uuid": {
         "version": "3.8.0"

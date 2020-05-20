@@ -37,14 +37,12 @@ class Finder
                 x_geometry.simplified_geo m
                     INNER JOIN
                 x_survey.spatial_geo_object g ON m.geo_object_id = g.geo_object_id
-                    INNER JOIN
-                x_geospatial.object_type_visibility v ON g.object_type_id = v.object_type_id
             WHERE
                 g.survey_id = :survey_id
-                AND m.coordinates && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
-                AND v.zoom @> :zoom::int
+                AND m.bbox && ST_MakeEnvelope(:x_min, :y_min, :x_max, :y_max)
+                AND :zoom = ANY(g.zoom)
                 AND m.simplify_tolerance = :simplify_tolerance
-
+            LIMIT 5000
         ';
 
         $stmt = $conn->prepare($sql);
@@ -117,7 +115,7 @@ class Finder
                 g.hover_style,
                 g.geo_object_name as geo_name,
                 t.name as type_name,
-                c.uuid as geo_collection_uuid,     
+                c.uuid as geo_collection_uuid,
                 ST_AsGeoJSON(ST_Simplify(gb.coordinates::geometry, :simplify_tolerance, true)) AS geometry,
                 jsonb_build_object(
                     \'_gc\', 1,

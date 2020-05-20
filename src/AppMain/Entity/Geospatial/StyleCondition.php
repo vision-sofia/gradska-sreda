@@ -28,12 +28,12 @@ class StyleCondition
     private $value;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     private $baseStyle;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     private $hoverStyle;
 

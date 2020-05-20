@@ -20,12 +20,12 @@ abstract class AbstractGeometry implements UuidInterface
     protected $id;
 
     /**
-     * @ORM\Column(type="geography", nullable=true)
+     * @ORM\Column(type="geometry", nullable=true, options={"geometry_type"="geometry", "srid"=4326})
      */
     protected $coordinates;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     protected $metadata;
 

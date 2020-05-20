@@ -59,7 +59,7 @@ class ImportCommand extends Command
                 uuid
             ) VALUES (
                 :spatial_object_id,
-                :geography,
+                ST_GeomFromText(:geography, 4326),
                 \'{}\',
                 :uuid
             )

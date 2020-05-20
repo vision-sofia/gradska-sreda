@@ -41,7 +41,7 @@ class Criterion implements UuidInterface
     private $indicators;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     private $metadata;
 

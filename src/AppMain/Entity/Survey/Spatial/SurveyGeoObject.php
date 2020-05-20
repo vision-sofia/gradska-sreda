@@ -8,8 +8,15 @@ use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="spatial_geo_object", schema="x_survey")
- * @ORM\Entity(readOnly=true, repositoryClass="App\AppMain\Repository\Survey\Spatial\SurveyGeoObjectRepository")
+ * @ORM\Table(
+ *     name="spatial_geo_object",
+ *     schema="x_survey",
+ *     indexes={@ORM\Index(columns={"zoom"})}
+ * )
+ * @ORM\Entity(
+ *     readOnly=true,
+ *     repositoryClass="App\AppMain\Repository\Survey\Spatial\SurveyGeoObjectRepository"
+ * )
  */
 class SurveyGeoObject implements UuidInterface, GeoObjectInterface
 {
@@ -28,7 +35,7 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
     private $survey;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
      */
     private $properties;
 
@@ -53,7 +60,7 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
     private $objectTypeName;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true, "default"="{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default"="{}"})
      */
     private $metadata;
 
@@ -66,6 +73,11 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
      * @ORM\Column(type="string", nullable=true)
      */
     private $hoverStyle;
+
+    /**
+     * @ORM\Column(type="integer[]", nullable=true)
+     */
+    private ?array $zoom = null;
 
     public function getId(): ?int
     {
@@ -132,5 +144,13 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
         return $this->properties;
     }
 
+    public function getZoom(): ?array
+    {
+        return $this->zoom;
+    }
 
+    public function setZoom(?array $zoom): void
+    {
+        $this->zoom = $zoom;
+    }
 }

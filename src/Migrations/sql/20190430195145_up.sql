@@ -3,7 +3,8 @@ SELECT
     g.geo_object_id,
     s.tolerance as simplify_tolerance,
     ST_AsGeoJSON(ST_Simplify(g.coordinates::geometry, s.tolerance, true)) geometry,
-    g.coordinates::geometry
+    g.coordinates::geometry,
+    (ST_Envelope(ST_Force2D(g.coordinates::geometry))) as bbox
 FROM
     x_geometry.geometry_base g
         CROSS JOIN

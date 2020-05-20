@@ -23,12 +23,12 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     private $id;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
      */
     private $properties;
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
      */
     private $localProperties;
 
@@ -49,7 +49,7 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     private $name = '';
 
     /**
-     * @ORM\Column(type="json_array", options={"jsonb": true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     private $metadata;
 
