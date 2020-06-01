@@ -22,7 +22,7 @@ class UserCompletion
         $conn->beginTransaction();
 
         $stmt = $conn->prepare('
-            DELETE FROM 
+            DELETE FROM
                 x_survey.result_user_completion
             WHERE
                 user_id = :user_id
@@ -35,8 +35,8 @@ class UserCompletion
 
         $stmt = $conn->prepare('
             INSERT INTO x_survey.result_user_completion(
-                user_id, 
-                geo_object_id, 
+                user_id,
+                geo_object_id,
                 survey_id,
                 is_completed
             )
@@ -46,19 +46,19 @@ class UserCompletion
                 sc_s.survey_id,
                 (bool_and(is_complete) = TRUE
                     AND (COUNT(*) = (
-                        SELECT 
+                        SELECT
                             COUNT(*)
-                        FROM 
+                        FROM
                             x_survey.ev_criterion_subject cs_c
                                 INNER JOIN
                             x_survey.ev_criterion_subject cs2_c ON cs_c.category_id = cs2_c.category_id
-                        WHERE 
+                        WHERE
                             cs_c.id = MAX(cc_s.subject_id)
                             AND EXISTS(SELECT * FROM x_survey.ev_criterion_definition WHERE subject_id = cs2_c.id)
                         )
                     ) = TRUE
                 ) as is_complete
-            FROM 
+            FROM
                 x_survey.result_criterion_completion cc_s
                     INNER JOIN
                 x_survey.ev_criterion_subject cs_s ON cc_s.subject_id = cs_s.id
@@ -67,15 +67,39 @@ class UserCompletion
             WHERE
                 cc_s.user_id = :user_id
                 AND cc_s.geo_object_id = :geo_object_id
-            GROUP BY 
+            GROUP BY
                 cc_s.user_id,
                 cc_s.geo_object_id,
                 sc_s.survey_id
             ON CONFLICT (user_id, geo_object_id, survey_id) DO UPDATE SET
-                is_completed = excluded.is_completed    
+                is_completed = excluded.is_completed
         ');
 
         $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.spatial_geo_object s
+            SET
+                properties = properties ||
+                    jsonb_build_object(
+                        \'_is_completed\',
+                        CAST(EXISTS(
+                            SELECT
+                                *
+                            FROM
+                                x_survey.result_user_completion c
+                            WHERE
+                                c.is_completed = true
+                                AND c.geo_object_id = s.geo_object_id
+                        ) as integer)
+                    )
+            WHERE
+                s.geo_object_id = :geo_object_id
+        ');
+
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
 
