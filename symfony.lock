@@ -197,6 +197,9 @@
             "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
     },
+    "symfony/amqp-messenger": {
+        "version": "v5.1.0"
+    },
     "symfony/asset": {
         "version": "v4.2.1"
     },
@@ -244,6 +247,9 @@
     },
     "symfony/doctrine-bridge": {
         "version": "v4.2.1"
+    },
+    "symfony/doctrine-messenger": {
+        "version": "v5.1.0"
     },
     "symfony/dom-crawler": {
         "version": "v4.2.1"
@@ -323,6 +329,18 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
+    "symfony/messenger": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "8a2675c061737658bed85102e9241c752620e575"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
+        ]
+    },
     "symfony/mime": {
         "version": "v4.3.2"
     },
@@ -388,6 +406,9 @@
     },
     "symfony/property-info": {
         "version": "v4.2.1"
+    },
+    "symfony/redis-messenger": {
+        "version": "v5.1.0"
     },
     "symfony/routing": {
         "version": "4.2",

@@ -32,6 +32,9 @@ class StyleUtils
         $s1 = $baseStyle;
         $s2 = $hoverStyle;
 
+        $s1options = '';
+        $s2options = '';
+
         if (isset($this->staticStyles[$baseStyle], $this->staticStyles[$hoverStyle])) {
             $s1options = $this->staticStyles[$s1];
             $s2options = $this->staticStyles[$s2];

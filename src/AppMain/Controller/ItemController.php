@@ -7,6 +7,8 @@ use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\Event\GeoObjectSurveyTouch;
+use App\Message\RebuildStyleByAnswer;
+use App\Message\RebuildStyleByQuestion;
 use App\Services\Survey\Question;
 use App\Services\Survey\Response\Question as QuestionResponseService;
 use App\Services\Survey\Response\QuestionV3;
@@ -21,6 +23,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ItemController extends AbstractController
@@ -30,19 +33,22 @@ class ItemController extends AbstractController
     protected $uploaderHelper;
     protected $question;
     protected $questionResponseService;
+    protected MessageBusInterface $messageBus;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $eventDispatcher,
         UploaderHelper $uploaderHelper,
         QuestionResponseService $questionResponseService,
-        Question $question
+        Question $question,
+        MessageBusInterface $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
         $this->question = $question;
         $this->questionResponseService = $questionResponseService;
+        $this->messageBus = $messageBus;
     }
 
     private function surveyResult($geoObject)
@@ -212,6 +218,8 @@ class ItemController extends AbstractController
             $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
             $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
+            $this->messageBus->dispatch(new RebuildStyleByAnswer($geoObjectId, $answerUuid));
+
             return new JsonResponse([
                 'geoObject' => [
                     'id' => $geoObject->getUuid(),
@@ -242,6 +250,8 @@ class ItemController extends AbstractController
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
+        $this->messageBus->dispatch(new RebuildStyleByAnswer($geoObjectId, $answerUuid));
+
         return new JsonResponse([
             'geoObject' => [
                 'id' => $geoObject->getUuid(),
@@ -268,6 +278,8 @@ class ItemController extends AbstractController
 
         $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
         $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
+
+        $this->messageBus->dispatch(new RebuildStyleByQuestion($geoObject->getId(), $question));
 
         return new JsonResponse([], 200);
     }
