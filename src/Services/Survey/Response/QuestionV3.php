@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class QuestionV3
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -39,7 +39,7 @@ class QuestionV3
                     AND a.uuid = :answer_uuid
                     AND rq.user_id = :user_id
                     AND rq.geo_object_id = :geo_object_id
-                    AND (a.parent IS NOT NULL OR (a.parent IS NULL AND q.has_multiple_answers = TRUE))    
+                    AND (a.parent IS NOT NULL OR (a.parent IS NULL AND q.has_multiple_answers = TRUE))
             ');
 
         $stmt->bindValue('answer_uuid', $answerUuid);
@@ -54,8 +54,7 @@ class QuestionV3
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
-            DELETE
-            FROM
+            DELETE FROM
                 x_survey.response_question q
             WHERE
                 NOT EXISTS((SELECT * FROM x_survey.response_answer a WHERE a.question_id = q.id))
@@ -100,7 +99,7 @@ class QuestionV3
                         INNER JOIN
                     x_survey.response_question rq ON ra.question_id = rq.id
                 WHERE
-                    
+
                     rq.user_id = :user_id
                     AND rq.geo_object_id = :geo_object_id
             )
@@ -111,8 +110,8 @@ class QuestionV3
                     FROM
                 z
             WHERE
-                z.question_id = raa.question_id  
-                AND raa.id = z.response_answer_id      
+                z.question_id = raa.question_id
+                AND raa.id = z.response_answer_id
         ');
 
         //$stmt->bindValue('answer_uuid', $answerUuid);
@@ -130,7 +129,7 @@ class QuestionV3
                     INNER JOIN
                 x_survey.q_answer a ON ra.answer_id = a.id
             WHERE
-                rq.id = ra.question_id 
+                rq.id = ra.question_id
                 AND rq.user_id = :user_id
                 AND rq.geo_object_id = :geo_object_id
         ');
@@ -150,7 +149,7 @@ class QuestionV3
             SELECT EXISTS((
                 SELECT * FROM
                     x_survey.response_answer r
-                        INNER JOIN 
+                        INNER JOIN
                     x_survey.q_answer a ON r.answer_id = a.id
                         INNER JOIN
                     x_survey.q_question q ON a.question_id = q.id
@@ -160,8 +159,8 @@ class QuestionV3
                     a.uuid = :answer_uuid
                     AND rq.user_id = :user_id
                     AND rq.geo_object_id = :geo_object_id
-                AND (a.parent IS NOT NULL OR (a.parent IS NULL AND q.has_multiple_answers = TRUE)) 
-            ))           
+                AND (a.parent IS NOT NULL OR (a.parent IS NULL AND q.has_multiple_answers = TRUE))
+            ))
         ');
 
         $stmt->bindValue('answer_uuid', $answerUuid);
@@ -245,8 +244,8 @@ class QuestionV3
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
-            DELETE FROM 
-                x_survey.response_answer ra1 
+            DELETE FROM
+                x_survey.response_answer ra1
             WHERE
                 ra1.id IN (
                     WITH t AS (
@@ -419,7 +418,7 @@ class QuestionV3
                 WHERE
                     id = :answer_id
                     AND  question_id = :question_id
-            )                          
+            )
         ');
 
         $stmt->bindValue('answer_id', $answer->getId());

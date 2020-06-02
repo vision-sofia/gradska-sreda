@@ -9,8 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Finder
 {
-    protected $em;
-    protected $utils;
+    protected EntityManagerInterface $em;
+    protected Utils $utils;
 
     public function __construct(EntityManagerInterface $entityManager, Utils $utils)
     {
