@@ -7,11 +7,65 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class UserCompletion
 {
-    private $em;
+    private EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
+    }
+
+    // TODO: Remove hardcoded values, make it dynamic
+    public function updateHybrid(int $geoObjectId): void
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            SELECT
+                properties,
+                EXISTS(
+                    SELECT
+                        *
+                    FROM
+                        x_survey.result_user_completion c
+                    WHERE
+                        c.is_completed = true
+                        AND c.geo_object_id = s.geo_object_id
+                ) as has_completion
+            FROM
+                x_survey.spatial_geo_object s
+            WHERE
+                s.geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+
+        $data = $stmt->fetch();
+        $properties = json_decode($data['properties'], true);
+
+        $styleValue = '';
+
+        if ($properties['_sca'] === 'Пешеходни отсечки' && $data['has_completion'] === true) {
+            $styleValue = 't';
+        } elseif ($properties['_sca'] === 'Алеи' && $data['has_completion'] === true) {
+            $styleValue = 'a';
+        } elseif ($properties['_sca'] === 'Пресичания' && $data['has_completion'] === true) {
+            $styleValue = 'p';
+        }
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.spatial_geo_object
+            SET
+                properties = properties || :hc
+            WHERE
+                geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('hc', json_encode(['_hc' => $styleValue]));
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
     }
 
     public function update(int $geoObjectId, int $userId): void
@@ -79,31 +133,9 @@ class UserCompletion
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
 
-        $stmt = $conn->prepare('
-            UPDATE
-                x_survey.spatial_geo_object s
-            SET
-                properties = properties ||
-                    jsonb_build_object(
-                        \'_is_completed\',
-                        CAST(EXISTS(
-                            SELECT
-                                *
-                            FROM
-                                x_survey.result_user_completion c
-                            WHERE
-                                c.is_completed = true
-                                AND c.geo_object_id = s.geo_object_id
-                        ) as integer)
-                    )
-            WHERE
-                s.geo_object_id = :geo_object_id
-        ');
-
-        $stmt->bindValue('geo_object_id', $geoObjectId);
-        $stmt->execute();
-
         $conn->commit();
+
+        $this->updateHybrid($geoObjectId);
     }
 
     // @deprecated
