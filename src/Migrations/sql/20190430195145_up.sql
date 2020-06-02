@@ -19,3 +19,6 @@ CREATE INDEX ON x_geometry.simplified_geo (geo_object_id)
 ---
 CREATE INDEX ON x_geometry.simplified_geo USING GIST (coordinates)
 ;
+---
+CREATE INDEX ON x_geometry.simplified_geo USING GIST (bbox)
+;
