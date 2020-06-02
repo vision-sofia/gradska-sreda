@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="survey", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\SurveyRepository")
  */
 class Survey implements UuidInterface, SurveyInterface
 {
@@ -19,27 +19,27 @@ class Survey implements UuidInterface, SurveyInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isActive = false;
+    private bool $isActive = false;
 
     /**
      * @ORM\Column(type="date")
      */
-    private $startDate;
+    private ?\DateTimeInterface $startDate = null;
 
     /**
      * @ORM\Column(type="date")
      */
-    private $endDate;
+    private ?\DateTimeInterface $endDate = null;
 
     public function getId(): int
     {
