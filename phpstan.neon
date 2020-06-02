@@ -1,0 +1,8 @@
+parameters:
+    autoload_files:
+        - vendor/autoload.php
+    paths:
+        - src
+    excludes_analyse:
+        - src/Migrations/*
+    level: 1
