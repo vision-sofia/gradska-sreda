@@ -65,14 +65,14 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пешеходни отсечки',
-                'description' => 'Обект от категория "пешеходна отсечка"',
+                'description' => 'Пешеходни отсечки',
                 'is_dynamic' => false,
                 'priority' => 1,
                 'base_style' => [
                     Constant::GEOMETRY_TYPE_LINESTRING => [
                         'code' => 'a1',
                         'content' => [
-                            'color' => '#C08055',
+                            'color' => '#E0AC69',
                             'weight' => 7,
                             'opacity' => 0.9,
                         ],
@@ -91,14 +91,14 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Алеи',
-                'description' => 'Обект от категория "алея"',
+                'description' => 'Алеи',
                 'is_dynamic' => false,
                 'priority' => 2,
                 'base_style' => [
                     Constant::GEOMETRY_TYPE_LINESTRING => [
                         'code' => 'a4',
                         'content' => [
-                            'color' => '#F6AE7B',
+                            'color' => '#6BD2DB',
                             'weight' => 7,
                         ],
                     ],
@@ -116,14 +116,14 @@ class StyleConditionFixtures extends Fixture
             [
                 'attribute' => '_sca',
                 'value' => 'Пресичания',
-                'description' => 'Обект от категория "пресичане"',
+                'description' => 'Пресичания',
                 'is_dynamic' => false,
                 'priority' => 3,
                 'base_style' => [
                     Constant::GEOMETRY_TYPE_LINESTRING => [
                         'code' => 'a7',
                         'content' => [
-                            'color' => '#F6AE7B',
+                            'color' => '#FFD183',
                             'weight' => 7,
                         ],
                     ],
@@ -131,6 +131,82 @@ class StyleConditionFixtures extends Fixture
                 'hover_style' => [
                     Constant::GEOMETRY_TYPE_LINESTRING => [
                         'code' => 'a7-h',
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_hc',
+                'value' => 't',
+                'description' => 'Пешеходни отсечки с попълнена анкета',
+                'is_dynamic' => true,
+                'priority' => 5,
+                'base_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'color' => '#C68642',
+                            'weight' => 7,
+                            'opacity' => 0.9,
+                        ],
+                    ],
+                ],
+                'hover_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_hc',
+                'value' => 'a',
+                'description' => 'Алеи с попълнена анкета',
+                'is_dynamic' => true,
+                'priority' => 5,
+                'base_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'color' => '#0EA7B5',
+                            'weight' => 7,
+                        ],
+                    ],
+                ],
+                'hover_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'weight' => 10,
+                            'opacity' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'attribute' => '_hc',
+                'value' => 'p',
+                'description' => 'Пресичания с попълнена анкета',
+                'is_dynamic' => true,
+                'priority' => 5,
+                'base_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
+                        'content' => [
+                            'color' => '#FFBE4F',
+                            'weight' => 7,
+                        ],
+                    ],
+                ],
+                'hover_style' => [
+                    Constant::GEOMETRY_TYPE_LINESTRING => [
+                        'code' => bin2hex(random_bytes(2)),
                         'content' => [
                             'weight' => 10,
                             'opacity' => 1,
@@ -320,7 +396,8 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
-            ], [
+            ],
+            [
                 'attribute' => '_gc',
                 'value' => 1,
                 'description' => 'Маршрут',
