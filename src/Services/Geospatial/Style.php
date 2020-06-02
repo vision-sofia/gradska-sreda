@@ -1,13 +1,10 @@
 <?php
 
-
 namespace App\Services\Geospatial;
-
 
 use App\AppMain\Entity\Geospatial\StyleCondition;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use Doctrine\ORM\EntityManagerInterface;
-
 
 class Style
 {
@@ -24,8 +21,9 @@ class Style
         $styleConditions = $this->entityManager
             ->getRepository(StyleCondition::class)
             ->findBy([
-                'isDynamic' => true
-            ]);
+                'isDynamic' => true,
+            ])
+        ;
 
         $result = [];
 
@@ -42,7 +40,8 @@ class Style
         /** @var StyleGroup[] $stylesGroups */
         $stylesGroups = $this->entityManager
             ->getRepository(StyleGroup::class)
-            ->findAll();
+            ->findAll()
+        ;
 
         $result = [];
 

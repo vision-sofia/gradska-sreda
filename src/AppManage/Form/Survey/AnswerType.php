@@ -27,18 +27,18 @@ class AnswerType extends AbstractType
                     $data = $event->getData();
 
                     $form->add('parent', EntityType::class, [
-                    'class' => Answer::class,
-                    'choice_label' => 'title',
-                    'placeholder' => '',
-                    'query_builder' => function (EntityRepository $er) use ($data) {
-                        return $er->createQueryBuilder('u')
-                            ->andWhere('u.question = :question')
-                            ->andWhere('u.id != :answer')
-                            ->setParameter('question', $data->getQuestion())
-                            ->setParameter('answer', $data)
-                            ;
-                    },
-                ]);
+                        'class' => Answer::class,
+                        'choice_label' => 'title',
+                        'placeholder' => '',
+                        'query_builder' => function (EntityRepository $er) use ($data) {
+                            return $er->createQueryBuilder('u')
+                                ->andWhere('u.question = :question')
+                                ->andWhere('u.id != :answer')
+                                ->setParameter('question', $data->getQuestion())
+                                ->setParameter('answer', $data)
+                                ;
+                        },
+                    ]);
                 }
             )
         ;

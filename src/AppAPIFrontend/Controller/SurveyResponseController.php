@@ -38,9 +38,10 @@ class SurveyResponseController extends AbstractController
 
     // TODO: refactor in to services
     // TODO: caching
+
     /**
      * @Route("/{id}/survey", name="question.load", methods="GET")
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
     public function getAnswer(GeoObject $geoObject): Response
     {
@@ -50,7 +51,8 @@ class SurveyResponseController extends AbstractController
 
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(Survey\Spatial\SurveyGeoObject::class)
-            ->isInScope($geoObject);
+            ->isInScope($geoObject)
+        ;
 
         if (false === $isAvailableForSurvey) {
             return new JsonResponse(['message' => 'error'], 400);
@@ -97,7 +99,7 @@ class SurveyResponseController extends AbstractController
 
     /**
      * @Route("/{id}/survey", name="question.response", methods="POST")
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
     public function result(Request $request, GeoObject $geoObject, Question $question)
     {

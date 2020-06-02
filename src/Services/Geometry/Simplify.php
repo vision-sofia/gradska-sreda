@@ -15,6 +15,5 @@ class Simplify
 
     public function getTolerance(float $zoom): float
     {
-
     }
 }

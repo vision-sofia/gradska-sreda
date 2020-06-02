@@ -34,7 +34,8 @@ class ImportGTPointCommand extends Command
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Спирка на градски транспорт']);
+            ->findOneBy(['name' => 'Спирка на градски транспорт'])
+        ;
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
@@ -92,7 +93,7 @@ class ImportGTPointCommand extends Command
                     $name = trim($name);
 
                     $localProperties = [
-                        'has_vhc_other' => 1
+                        'has_vhc_other' => 1,
                     ];
 
                     $stmtGeo->bindValue('properties', json_encode($s['attributes'] ?? []));

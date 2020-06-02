@@ -20,7 +20,7 @@ class Sync
         $conn->beginTransaction();
 
         try {
-            # Insert survey objects
+            // Insert survey objects
             $stmt = $conn->prepare('
                 INSERT INTO x_survey.spatial_geo_object (
                     geo_object_id,
@@ -78,7 +78,7 @@ class Sync
 
             $stmt->execute();
 
-            # Insert auxiliary objects
+            // Insert auxiliary objects
             $stmt = $conn->prepare('
                 INSERT INTO x_survey.spatial_geo_object (
                     geo_object_id,

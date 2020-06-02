@@ -16,10 +16,10 @@ class UserProfileType extends AbstractType
         $builder
             ->add('currentPassword', PasswordType::class)
             ->add('username', TextType::class, [
-                'empty_data' => ''
+                'empty_data' => '',
             ])
             ->add('email', TextType::class, [
-                'empty_data' => ''
+                'empty_data' => '',
             ])
         ;
     }
@@ -27,7 +27,7 @@ class UserProfileType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'        => User::class,
+            'data_class' => User::class,
             'validation_groups' => ['profile', 'current_password'],
         ]);
     }

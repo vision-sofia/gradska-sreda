@@ -42,7 +42,6 @@ class Question
 
     public function response(array $answers, array $toImport, GeoObjectInterface $geoObject, UserInterface $user)
     {
-
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => key($answers),
         ]);
@@ -92,7 +91,8 @@ class Question
                 'geoObject' => $geoObject,
                 'user' => $user,
                 'coordinates' => null,
-            ]);
+            ])
+        ;
 
         if (null === $location) {
             $location = new Survey\Response\Location();
@@ -104,8 +104,9 @@ class Question
             ->findOneBy([
                 'user' => $user,
                 'geoObject' => $geoObject,
-                'question' => $answer->getQuestion()
-            ]);
+                'question' => $answer->getQuestion(),
+            ])
+        ;
 
         if ($responseQuestion === null) {
             $responseQuestion = new Survey\Response\Question();
@@ -118,7 +119,7 @@ class Question
 
         foreach ($answers as $answerUuid => $answer) {
             $a = $this->entityManager->getRepository(Answer::class)->findOneBy([
-                'uuid' => $answerUuid
+                'uuid' => $answerUuid,
             ]);
 
             $responseAnswer = new Survey\Response\Answer();

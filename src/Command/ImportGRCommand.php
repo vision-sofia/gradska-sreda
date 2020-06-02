@@ -34,7 +34,8 @@ class ImportGRCommand extends Command
 
         $objectType = $this->entityManager
             ->getRepository(ObjectType::class)
-            ->findOneBy(['name' => 'Градоустройствена единица']);
+            ->findOneBy(['name' => 'Градоустройствена единица'])
+        ;
 
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();

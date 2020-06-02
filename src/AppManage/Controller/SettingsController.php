@@ -35,7 +35,8 @@ class SettingsController extends AbstractController
     {
         $settings = $this->getDoctrine()
             ->getRepository(Settings::class)
-            ->findBy([], ['key' => 'DESC']);
+            ->findBy([], ['key' => 'DESC'])
+        ;
 
         return $this->render('manage/settings/list.html.twig', [
             'settings' => $settings,

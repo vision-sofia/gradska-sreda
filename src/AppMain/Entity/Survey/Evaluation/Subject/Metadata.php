@@ -2,11 +2,7 @@
 
 namespace App\AppMain\Entity\Survey\Evaluation\Subject;
 
-use App\AppMain\Entity\Survey\Survey\Category;
 use App\AppMain\Entity\Survey\Survey\Survey;
-use App\AppMain\Entity\Traits\UUIDableTrait;
-use App\AppMain\Entity\UuidInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

@@ -52,7 +52,6 @@ class StyleBuildSubscriber implements EventSubscriberInterface
         try {
             $this->cache->deleteItem(Keys::COMPILED_STYLES);
         } catch (InvalidArgumentException $e) {
-
         }
     }
 
@@ -68,7 +67,6 @@ class StyleBuildSubscriber implements EventSubscriberInterface
         try {
             $this->cache->deleteItem(Keys::DYNAMIC_STYLES);
         } catch (InvalidArgumentException $e) {
-
         }
     }
 

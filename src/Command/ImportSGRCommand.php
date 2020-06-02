@@ -79,10 +79,10 @@ class ImportSGRCommand extends Command
         ');
 
         $localProperties = [
-            '_tc' => 'sgr'
+            '_tc' => 'sgr',
         ];
 
-        $stmtGeo->bindValue('local_properties',json_encode($localProperties));
+        $stmtGeo->bindValue('local_properties', json_encode($localProperties));
         $stmtGeo->bindValue('uuid', Uuid::uuid4());
         $stmtGeo->bindValue('name', 'Строителна граница');
         $stmtGeo->bindValue('object_type_id', $objectType);

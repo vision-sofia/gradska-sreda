@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     schema="x_geospatial",
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"code"})}
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class StyleGroup
 {

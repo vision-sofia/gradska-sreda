@@ -63,7 +63,7 @@ class StyleGroupFixtures extends Fixture
                     'weight' => 1,
                     'opacity' => 1,
                 ],
-            ]
+            ],
         ];
     }
 }

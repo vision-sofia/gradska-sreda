@@ -12,16 +12,16 @@ class StyleUtilsTest extends TestCase
         $staticStyles = [
             's' => [
                 'color' => '#FFF',
-                'opacity' => 0.4
+                'opacity' => 0.4,
             ],
             'h' => [
                 'color' => '#FFF',
-                'opacity' => 0.7
+                'opacity' => 0.7,
             ],
             'c' => [
                 'color' => '#FF0',
-                'opacity' => 0.5
-            ]
+                'opacity' => 0.5,
+            ],
         ];
 
         $dynamicStyles = [
@@ -33,8 +33,7 @@ class StyleUtilsTest extends TestCase
                             'content' => [
                                 'color' => '#00FF00',
                                 'weight' => 1,
-                                'opacity' => 0.1
-
+                                'opacity' => 0.1,
                             ],
                         ],
                     ],
@@ -44,12 +43,12 @@ class StyleUtilsTest extends TestCase
                             'content' => [
                                 'color' => '#00FF00',
                                 'weight' => 1,
-                                'opacity' => 0.2
+                                'opacity' => 0.2,
                             ],
                         ],
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $geoObjectAttributes = new \StdClass();

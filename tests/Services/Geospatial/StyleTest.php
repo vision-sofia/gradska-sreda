@@ -12,7 +12,7 @@ class StyleTest extends TestCase
         $styleArray = [
             'color' => '#FF00FF0',
             'opacity' => 0.9,
-            'fill' => false
+            'fill' => false,
         ];
 
         $expect = '';
@@ -35,7 +35,7 @@ class StyleTest extends TestCase
         $expect = [
             'color' => '#FF00FF0',
             'opacity' => 0.9,
-            'fill' => false
+            'fill' => false,
         ];
 
         $styleService = new StyleConverter();

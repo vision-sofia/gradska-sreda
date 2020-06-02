@@ -6,10 +6,10 @@ use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Serializable;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface as UserSecurityInterface;
 use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
@@ -102,7 +102,7 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
 
     public function getRoles()
     {
-        return \unserialize($this->roles);
+        return unserialize($this->roles);
     }
 
     public function addRole(string $role): void
@@ -122,7 +122,7 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
 
     public function serialize()
     {
-        return \serialize([
+        return serialize([
             $this->id,
             $this->username,
             $this->password,
@@ -140,7 +140,7 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
             // see section on salt below
             // $this->salt
         ]
-            = \unserialize($serialized);
+            = unserialize($serialized);
     }
 
     public function getId(): int
@@ -198,7 +198,7 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
         $this->name = $profileName;
     }
 
-    public function getCurrentPassword():?string
+    public function getCurrentPassword(): ?string
     {
         return $this->currentPassword;
     }

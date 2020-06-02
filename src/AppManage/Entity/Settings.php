@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
  *     name="settings",
  *     schema="x_main",
  *     uniqueConstraints={@UniqueConstraint(columns={"key"})}
- *     )
- * @ORM\Entity()
+ * )
+ * @ORM\Entity
  */
 class Settings
 {

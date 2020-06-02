@@ -36,8 +36,9 @@ class GeometrySimplifyController extends AbstractController
         $visibilities = $this->getDoctrine()
             ->getRepository(Simplify::class)
             ->findBy([], [
-                'zoom' => 'DESC'
-            ]);
+                'zoom' => 'DESC',
+            ])
+        ;
 
         return $this->render('manage/geospatial/geometry-simplify/list.html.twig', [
             'list' => $visibilities,

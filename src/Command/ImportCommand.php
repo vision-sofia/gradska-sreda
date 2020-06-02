@@ -91,7 +91,7 @@ class ImportCommand extends Command
                             echo 'SKIP' . PHP_EOL;
                             continue;
                         }
-                        #dump($s['geometry']['coordinates'][0][0][0]);
+                        //dump($s['geometry']['coordinates'][0][0][0]);
                         foreach ($s['geometry']['coordinates'] as $points) {
                             $p[] = implode(' ', $points);
                         }

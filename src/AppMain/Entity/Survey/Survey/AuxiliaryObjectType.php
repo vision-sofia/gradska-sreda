@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     schema="x_survey",
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"survey_id", "object_type_id"})}
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class AuxiliaryObjectType implements UuidInterface
 {

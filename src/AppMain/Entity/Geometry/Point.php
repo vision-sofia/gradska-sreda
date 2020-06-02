@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     indexes={@ORM\Index(columns={"coordinates"}, flags={"spatial"})},
  *     uniqueConstraints={@ORM\UniqueConstraint(name="UNIQ_B8D4B651D17F50A2", columns={"uuid"})}
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Point extends AbstractGeometry
 {

@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="ev_criterion_subject", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Criterion implements UuidInterface
 {
@@ -70,12 +70,10 @@ class Criterion implements UuidInterface
         $this->category = $survey;
     }
 
-
     public function getCategory()
     {
         return $this->category;
     }
-
 
     public function setCategory($category): void
     {

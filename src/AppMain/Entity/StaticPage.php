@@ -3,7 +3,6 @@
 namespace App\AppMain\Entity;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
-
 use Doctrine\ORM\Mapping as ORM;
 
 /**

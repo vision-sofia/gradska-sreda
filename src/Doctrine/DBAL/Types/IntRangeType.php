@@ -28,11 +28,7 @@ class IntRangeType extends StringType
     {
         if (null !== $value) {
             if (1 !== preg_match('/^(\[|\()(\d+),(\d+)(\]|\))$/', $value)) {
-                throw ConversionException::conversionFailedFormat(
-                    $value,
-                    $this->getName(),
-                    '(\[|\()(\d+),(\d+)(\]|\))$'
-                );
+                throw ConversionException::conversionFailedFormat($value, $this->getName(), '(\[|\()(\d+),(\d+)(\]|\))$');
             }
 
             $value = IntRange::fromString($value);

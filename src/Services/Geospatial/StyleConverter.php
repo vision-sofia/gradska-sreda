@@ -52,7 +52,6 @@ class StyleConverter
         return $result;
     }
 
-
     private function cast(string $line): array
     {
         $types = [
@@ -80,7 +79,7 @@ class StyleConverter
             'float' => [
                 'opacity',
                 'fillOpacity',
-            ]
+            ],
         ];
 
         $lineParts = explode(':', trim($line));
@@ -90,30 +89,30 @@ class StyleConverter
             $lineParts[1] = rtrim(trim($lineParts[1]), ',');
             $lineParts[1] = str_replace('"', '', $lineParts[1]);
 
-            if (in_array($lineParts[0], $types['bool'], true)) {
+            if (\in_array($lineParts[0], $types['bool'], true)) {
                 return [
                     'option' => $lineParts[0],
                     'value' => 'true' === $lineParts[1],
                 ];
             }
 
-            if (in_array($lineParts[0], $types['int'], true)) {
+            if (\in_array($lineParts[0], $types['int'], true)) {
                 return [
                     'option' => $lineParts[0],
-                    'value' => (int)$lineParts[1],
+                    'value' => (int) $lineParts[1],
                 ];
             }
 
-            if (in_array($lineParts[0], $types['float'], true)) {
+            if (\in_array($lineParts[0], $types['float'], true)) {
                 return [
                     'option' => $lineParts[0],
-                    'value' => (float)$lineParts[1],
+                    'value' => (float) $lineParts[1],
                 ];
             }
 
             return [
                 'option' => $lineParts[0],
-                'value' => $lineParts[1]
+                'value' => $lineParts[1],
             ];
         }
 
@@ -124,11 +123,11 @@ class StyleConverter
     {
         $key = trim($key);
 
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return sprintf("%s: %s,\n", $key, ($value === true ? 'true' : 'false'));
         }
 
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return sprintf("%s: %s,\n", $key, rtrim('"' . trim($value) . '"', ','));
         }
 

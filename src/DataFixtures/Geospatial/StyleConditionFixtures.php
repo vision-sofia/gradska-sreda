@@ -265,7 +265,6 @@ class StyleConditionFixtures extends Fixture
                         'code' => 'def-poly-h',
                         'content' => [
                             'weight' => 7,
-
                         ],
                     ],
                 ],
@@ -346,7 +345,7 @@ class StyleConditionFixtures extends Fixture
                         ],
                     ],
                 ],
-            ]
+            ],
         ];
     }
 }

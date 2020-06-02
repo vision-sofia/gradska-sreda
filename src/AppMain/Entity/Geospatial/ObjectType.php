@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="object_type", schema="x_geospatial")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class ObjectType implements UuidInterface
 {

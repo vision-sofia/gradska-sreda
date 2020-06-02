@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Services\GeoCollection;
 
 use App\AppMain\DTO\BoundingBoxDTO;
-use App\AppMain\Entity\UuidInterface;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,7 +47,7 @@ class GeoCollection
         return [
             'total' => $result['total'],
             'completed' => $result['completed'],
-            'percentage' => $percentage ?? 0
+            'percentage' => $percentage ?? 0,
         ];
     }
 
@@ -83,7 +81,8 @@ class GeoCollection
             ->innerJoin('c', ' x_survey.gc_collection_content', 'cc', 'c.id = cc.geo_collection_id')
             ->innerJoin('cc', 'x_geospatial.geo_object', 'g', 'cc.geo_object_id = g.id')
             ->innerJoin('g', 'x_geometry.geometry_base', 'gb', 'g.id = gb.geo_object_id')
-            ->andWhere('c.user_id = :user_id');
+            ->andWhere('c.user_id = :user_id')
+        ;
 
         if ($collectionUuid) {
             $qb->andWhere('c.uuid = :collection_uuid');
@@ -142,7 +141,8 @@ class GeoCollection
             ->innerJoin('cc', 'x_geospatial.geo_object', 'g', 'cc.geo_object_id = g.id')
             ->innerJoin('g', 'x_geometry.geometry_base', 'gb', 'g.id = gb.geo_object_id')
             ->andWhere('c.user_id = :user_id')
-            ->groupBy('c.id');
+            ->groupBy('c.id')
+        ;
 
         $sql = '
             WITH z AS (
@@ -166,8 +166,6 @@ class GeoCollection
                 ) as properties
             FROM z
         ';
-
-
 
         try {
             $stmt = $conn->prepare($sql);
@@ -293,7 +291,8 @@ class GeoCollection
         return $stmt->fetchColumn();
     }
 
-    public function updateBBoxGeometry(int $geoCollectionId) {
+    public function updateBBoxGeometry(int $geoCollectionId)
+    {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
 
@@ -332,7 +331,8 @@ class GeoCollection
         $stmt->execute([$geoCollectionId]);
     }
 
-    public function updateBBoxMetadata(int $geoCollectionId) {
+    public function updateBBoxMetadata(int $geoCollectionId)
+    {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
 

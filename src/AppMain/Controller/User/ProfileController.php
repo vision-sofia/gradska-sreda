@@ -2,7 +2,6 @@
 
 namespace App\AppMain\Controller\User;
 
-use App\AppMain\Entity\Survey;
 use App\AppMain\Form\Type\User\UserProfileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +28,7 @@ class ProfileController extends AbstractController
         }
 
         return $this->render('front/user/profile/index.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Properties naming convention: underscore
+ * Properties naming convention: underscore.
  */
 
 namespace App\AppMain\DTO;
@@ -52,6 +52,4 @@ class ResponseAnswerDTO
     {
         $this->question_id = $questionId;
     }
-
-
 }

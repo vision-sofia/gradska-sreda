@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Markdown;
 
 interface MarkdownInterface

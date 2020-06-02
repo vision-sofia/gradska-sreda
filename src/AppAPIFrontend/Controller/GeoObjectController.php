@@ -37,8 +37,7 @@ class GeoObjectController extends AbstractController
         UploaderHelper $uploaderHelper,
         Question $question,
         GeoObjectRating $geoObjectRating
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
@@ -48,13 +47,14 @@ class GeoObjectController extends AbstractController
 
     /**
      * @Route("{id}", name="details", methods={"GET"})
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
     public function details(GeoObject $geoObject): Response
     {
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(Survey\Spatial\SurveyGeoObject::class)
-            ->isInScope($geoObject);
+            ->isInScope($geoObject)
+        ;
 
         if (!$isAvailableForSurvey) {
             return $this->redirectToRoute('app.map');
@@ -66,16 +66,16 @@ class GeoObjectController extends AbstractController
                 'name' => $geoObject->getName(),
                 'type' => $geoObject->getType()->getName(),
             ],
-            'survey' => $this->surveyResult($geoObject)
+            'survey' => $this->surveyResult($geoObject),
         ]);
     }
-
 
     private function surveyResult(GeoObject $geoObject): array
     {
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)
-            ->findQuestions($this->getUser(), $geoObject);
+            ->findQuestions($this->getUser(), $geoObject)
+        ;
 
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
@@ -120,7 +120,7 @@ class GeoObjectController extends AbstractController
                     'uuid' => $answer->getUuid(),
                     'isSelected' => $answer->getIsSelected(),
                     'isFreeAnswer' => $answer->getIsFreeAnswer(),
-                    'explanation' => $answer->getExplanation()
+                    'explanation' => $answer->getExplanation(),
                 ];
             }
 
@@ -131,7 +131,7 @@ class GeoObjectController extends AbstractController
                 'isAnswered' => $question->isAnswered(),
                 'isCompleted' => $question->isCompleted(),
                 'hasMultipleAnswers' => $question->getHasMultipleAnswers(),
-                'answers' => $answers
+                'answers' => $answers,
             ];
         }
 
@@ -172,13 +172,13 @@ class GeoObjectController extends AbstractController
 
         return [
             'questions' => $survey,
-            'progress' => $progress
+            'progress' => $progress,
         ];
     }
 
     /**
      * @Route("{id}/result", name="result")
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
     public function result(GeoObject $geoObject): Response
     {

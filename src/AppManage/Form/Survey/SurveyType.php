@@ -15,7 +15,8 @@ class SurveyType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'survey',
-            ]);
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

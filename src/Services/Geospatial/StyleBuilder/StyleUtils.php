@@ -1,10 +1,6 @@
 <?php
 
-
 namespace App\Services\Geospatial\StyleBuilder;
-
-use App\AppMain\Entity\Geospatial\StyleCondition;
-use Doctrine\ORM\EntityManagerInterface;
 
 class StyleUtils
 {
@@ -37,7 +33,6 @@ class StyleUtils
         $s2 = $hoverStyle;
 
         if (isset($this->staticStyles[$baseStyle], $this->staticStyles[$hoverStyle])) {
-
             $s1options = $this->staticStyles[$s1];
             $s2options = $this->staticStyles[$s2];
 

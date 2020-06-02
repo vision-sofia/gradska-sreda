@@ -13,14 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Scope
 {
     /**
-     * @ORM\Id()
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Survey\Survey\Survey")
      * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
      */
     private $survey;
 
     /**
-     * @ORM\Id()
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */

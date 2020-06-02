@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Properties naming convention: underscore
+ * Properties naming convention: underscore.
  */
 
 namespace App\AppMain\DTO;
@@ -98,7 +98,7 @@ class QuestionAnswerDTO
         $this->photo = $photo;
     }
 
-    public function getIsSelected():bool
+    public function getIsSelected(): bool
     {
         return $this->is_selected;
     }
@@ -108,7 +108,7 @@ class QuestionAnswerDTO
         $this->is_selected = $isSelected;
     }
 
-    public static function fromStd(object $object): QuestionAnswerDTO
+    public static function fromStd(object $object): self
     {
         $instance = new self();
 

@@ -1,28 +1,24 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Response;
 
-use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
+use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
-
-
-use App\AppMain\Entity\Survey;
 
 /**
  * @ORM\Table(
  *     name="response_location",
  *     schema="x_survey",
  *     uniqueConstraints={
- *          @ORM\UniqueConstraint(columns={"user_id", "geo_object_id"}, options={"where": "(coordinates IS NULL)"}),
- *          @ORM\UniqueConstraint(columns={"user_id", "geo_object_id", "coordinates"}, options={"where": "(coordinates IS NOT NULL)"})
+ *         @ORM\UniqueConstraint(columns={"user_id", "geo_object_id"}, options={"where": "(coordinates IS NULL)"}),
+ *         @ORM\UniqueConstraint(columns={"user_id", "geo_object_id", "coordinates"}, options={"where": "(coordinates IS NOT NULL)"})
  *     }
  * )
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Location implements UuidInterface
 {
@@ -48,7 +44,7 @@ class Location implements UuidInterface
     private $geoObject;
 
     /**
-     * @ORM\Column(name="coordinates", type="geography", options={"geometry_type"="POINT"}, nullable=true)
+     * @ORM\Column(name="coordinates", type="geography", options={"geometry_type": "POINT"}, nullable=true)
      */
     private $coordinates;
 
@@ -56,7 +52,6 @@ class Location implements UuidInterface
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $updatedAt;
-
 
     public function getId(): int
     {
@@ -99,7 +94,7 @@ class Location implements UuidInterface
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function onPreUpdate(): void
     {

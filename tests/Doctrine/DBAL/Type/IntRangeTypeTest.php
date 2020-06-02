@@ -1,21 +1,18 @@
 <?php
 
-
 namespace App\Tests\Doctrine\DBAL\Type;
 
+use App\Doctrine\DBAL\Types\IntRangeType;
+use App\Doctrine\ValueObject\IntRange;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
-
-use App\Doctrine\DBAL\Types\IntRangeType;
-use App\Doctrine\ValueObject\IntRange;
-
 use PHPUnit\Framework\TestCase;
 
 class IntRangeTypeTest extends TestCase
 {
-    /** @var  AbstractPlatform */
+    /** @var AbstractPlatform */
     protected $platform;
 
     /** @var IntRangeType */

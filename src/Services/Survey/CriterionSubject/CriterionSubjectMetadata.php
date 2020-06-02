@@ -70,7 +70,7 @@ class CriterionSubjectMetadata
                     max_points = excluded.max_points        
             ');
 
-            #$stmt->bindValue('subject_id', $subjectId);
+            //$stmt->bindValue('subject_id', $subjectId);
             $stmt->execute();
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
@@ -122,7 +122,6 @@ class CriterionSubjectMetadata
             ');
 
             $stmt->execute();
-
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }

@@ -44,6 +44,7 @@ class SurveyGeoObjectRepository extends ServiceEntityRepository
 
     /**
      * @return SurveyGeoObjectDTO[]|\Generator
+     *
      * @throws DBALException
      */
     public function findBySurvey(int $surveyId): \Generator

@@ -13,8 +13,8 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
  *     schema="x_survey",
  *     uniqueConstraints={@UniqueConstraint(columns={"geo_collection_id", "geo_object_id"})}
  * )
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Entry implements UuidInterface
 {
@@ -70,7 +70,7 @@ class Entry implements UuidInterface
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function onPrePersist(): void
     {

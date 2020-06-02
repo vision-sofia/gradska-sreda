@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="gc_collection", schema="x_survey")
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Collection implements UuidInterface
 {
@@ -53,12 +53,12 @@ class Collection implements UuidInterface
     private $createdAt;
 
     /**
-     * @ORM\Column(type="geography", options={"geometry_type"="POLYGON"}, nullable=true)
+     * @ORM\Column(type="geography", options={"geometry_type": "POLYGON"}, nullable=true)
      */
     private $bboxGeometry;
 
     /**
-     * @ORM\Column(type="json", options={"jsonb"=true}, nullable=true)
+     * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
     private $bboxMetadata;
 
@@ -109,7 +109,7 @@ class Collection implements UuidInterface
 
     public function getName(): string
     {
-        return (string)$this->name;
+        return (string) $this->name;
     }
 
     public function setName(string $name): void
@@ -123,7 +123,7 @@ class Collection implements UuidInterface
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function onPrePersist(): void
     {

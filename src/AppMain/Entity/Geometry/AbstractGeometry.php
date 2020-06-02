@@ -20,7 +20,7 @@ abstract class AbstractGeometry implements UuidInterface
     protected $id;
 
     /**
-     * @ORM\Column(type="geometry", nullable=true, options={"geometry_type"="geometry", "srid"=4326})
+     * @ORM\Column(type="geometry", nullable=true, options={"geometry_type": "geometry", "srid": 4326})
      */
     protected $coordinates;
 

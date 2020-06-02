@@ -79,7 +79,6 @@ class QuestionRepository extends EntityRepository
      */
     public function findQuestions(UserInterface $user, GeoObject $geoObject): \Generator
     {
-
         $conn = $this->_em->getConnection();
 
         $stmt = $conn->prepare('

@@ -2,7 +2,6 @@
 
 namespace App\AppMain\Controller\User;
 
-use App\AppMain\Entity\Survey;
 use App\AppMain\Form\Type\User\UserPasswordType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

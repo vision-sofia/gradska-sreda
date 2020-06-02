@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="geo_object", schema="x_geospatial")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class GeoObject implements UuidInterface, GeoObjectInterface
 {
@@ -23,12 +23,12 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     private $id;
 
     /**
-     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
     private $properties;
 
     /**
-     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
     private $localProperties;
 

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\ApiFrontend;
 
 use App\AppMain\DTO\GeoObjectRatingDTO;
@@ -46,8 +45,8 @@ class GeoObjectRating
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $rating = new GeoObjectRatingDTO();
-            $rating->max = (float)$row['max'];
-            $rating->rating = (float)$row['rating'];
+            $rating->max = (float) $row['max'];
+            $rating->rating = (float) $row['rating'];
             $rating->criterion = $row['criterion'];
             $rating->percentage = round(($rating->rating / $rating->max) * 100, 1);
 
@@ -84,8 +83,8 @@ class GeoObjectRating
 
         /** @var GeoObjectRatingDTO $row */
         while ($row = $stmt->fetch()) {
-            $row->max = (float)$row->max;
-            $row->rating = (float)$row->rating;
+            $row->max = (float) $row->max;
+            $row->rating = (float) $row->rating;
             $row->percentage = round(($row->rating / $row->max) * 100, 1);
 
             $result[] = $row;

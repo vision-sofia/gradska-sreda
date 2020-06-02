@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Achievment;
 
 use Doctrine\DBAL\DBALException;
@@ -18,7 +17,7 @@ class SurveyCategoryCompletion
         $this->logger = $logger;
     }
 
-    public function updateUserById(int $userId):void
+    public function updateUserById(int $userId): void
     {
         $conn = $this->em->getConnection();
 

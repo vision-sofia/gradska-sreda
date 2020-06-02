@@ -44,7 +44,7 @@ class MapController extends AbstractController
             $ex = [42.697664, 23.3166103];
         }
 
-        $zoom = $session->get('zoom') ?? 17 ;
+        $zoom = $session->get('zoom') ?? 17;
 
         return new JsonResponse([
             'zoom' => $zoom,

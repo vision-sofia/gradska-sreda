@@ -49,14 +49,14 @@ class QuestionV2
 
         // Check 4: Is single answer question have one input answer
 
-
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
             ->findOneBy([
                 'geoObject' => $geoObject,
                 'user' => $user,
                 'coordinates' => null,
-            ]);
+            ])
+        ;
 
         if (null === $location) {
             $location = new Survey\Response\Location();
@@ -69,7 +69,8 @@ class QuestionV2
                 'user' => $user,
                 'geoObject' => $geoObject,
                 'question' => $answer->getQuestion(),
-            ]);
+            ])
+        ;
 
         if (null === $responseQuestion) {
             // BEFORE INSERT trigger simulation
@@ -114,20 +115,18 @@ class QuestionV2
             $responseQuestion->addAnswer($responseAnswer);
 
             $this->entityManager->persist($responseQuestion);
-
         } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
-
             $z = $this->entityManager->getRepository(Survey\Response\Answer::class)
                 ->findOneBy([
-                    'question' => $responseQuestion
-                ]);
+                    'question' => $responseQuestion,
+                ])
+            ;
 
             if ($z) {
                 $z->setAnswer($answer);
                 $z->setExplanation('');
                 $z->setPhoto(null);
             }
-
         } else {
             $responseAnswer = new Survey\Response\Answer();
             $responseAnswer->setAnswer($answer);

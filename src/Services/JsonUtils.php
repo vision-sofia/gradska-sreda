@@ -1,14 +1,12 @@
 <?php
 
-
 namespace App\Services;
-
 
 class JsonUtils
 {
     public function concatString(?array $data, string $key, string $value): string
     {
-        if($data === null) {
+        if ($data === null) {
             return '{' . '"' . $key . '":' . $value . '}';
         }
 

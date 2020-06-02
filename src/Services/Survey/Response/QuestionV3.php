@@ -115,7 +115,7 @@ class QuestionV3
                 AND raa.id = z.response_answer_id      
         ');
 
-        #$stmt->bindValue('answer_uuid', $answerUuid);
+        //$stmt->bindValue('answer_uuid', $answerUuid);
         $stmt->bindValue('user_id', $userId);
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
@@ -135,7 +135,7 @@ class QuestionV3
                 AND rq.geo_object_id = :geo_object_id
         ');
 
-        #   $stmt->bindValue('answer_uuid', $answerUuid);
+        //   $stmt->bindValue('answer_uuid', $answerUuid);
         $stmt->bindValue('user_id', $userId);
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
@@ -237,10 +237,7 @@ class QuestionV3
     }
 
     /**
-     * Remove answers with no parent
-     *
-     * @param int $userId
-     * @param int $geoObjectId
+     * Remove answers with no parent.
      */
     public function clearDetached(int $userId, int $geoObjectId): void
     {
@@ -308,14 +305,14 @@ class QuestionV3
 
         // Check 4: Is single answer question have one input answer
 
-
         $location = $this->entityManager
             ->getRepository(Survey\Response\Location::class)
             ->findOneBy([
                 'geoObject' => $geoObject,
                 'user' => $user,
                 'coordinates' => null,
-            ]);
+            ])
+        ;
 
         if (null === $location) {
             $location = new Survey\Response\Location();
@@ -328,7 +325,8 @@ class QuestionV3
                 'user' => $user,
                 'geoObject' => $geoObject,
                 'question' => $answer->getQuestion(),
-            ]);
+            ])
+        ;
 
         if (null === $responseQuestion) {
             // BEFORE INSERT trigger simulation
@@ -374,19 +372,18 @@ class QuestionV3
 
             $this->entityManager->persist($responseQuestion);
 
-     /*   } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
+        /*   } elseif ($question->getHasMultipleAnswers() === false && $answer->getParent() === null) {
 
-            $z = $this->entityManager->getRepository(Survey\Response\Answer::class)
-                ->findOneBy([
-                    'question' => $responseQuestion
-                ]);
+               $z = $this->entityManager->getRepository(Survey\Response\Answer::class)
+                   ->findOneBy([
+                       'question' => $responseQuestion
+                   ]);
 
-            if ($z) {
-                $z->setAnswer($answer);
-                $z->setExplanation('');
-                $z->setPhoto(null);
-            }*/
-
+               if ($z) {
+                   $z->setAnswer($answer);
+                   $z->setExplanation('');
+                   $z->setPhoto(null);
+               }*/
         } else {
             $responseAnswer = new Survey\Response\Answer();
             $responseAnswer->setAnswer($answer);

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     schema="x_geometry",
  *     indexes={@ORM\Index(columns={"coordinates"}, flags={"spatial"})}
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class GeometryBase extends AbstractGeometry
 {

@@ -24,7 +24,6 @@ class SurveyFixtures extends Fixture
         $manager->flush();
     }
 
-
     private function data(): array
     {
         return [
@@ -38,7 +37,7 @@ class SurveyFixtures extends Fixture
                 'is_active' => false,
                 'start_date' => '2019-06-02',
                 'end_date' => '2019-09-01',
-            ]
+            ],
         ];
     }
 }

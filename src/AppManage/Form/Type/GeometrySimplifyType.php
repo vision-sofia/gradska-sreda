@@ -26,14 +26,13 @@ class GeometrySimplifyType extends AbstractType
                 'mapped' => false,
                 'constraints' => [
                     new NotBlank(),
-
-                ]
+                ],
             ])
             ->add('maxZoom', NumberType::class, [
                 'mapped' => false,
                 'constraints' => [
                     new NotBlank(),
-                ]
+                ],
             ])
             ->add('tolerance', NumberType::class, [
                 'scale' => 6,
@@ -71,7 +70,7 @@ class GeometrySimplifyType extends AbstractType
                 new Callback([
                     'callback' => [$this, 'checkZoomRange'],
                 ]),
-            ]
+            ],
         ]);
     }
 
@@ -86,7 +85,8 @@ class GeometrySimplifyType extends AbstractType
         if ($max >= $min) {
             $context
                 ->buildViolation('zoom.invalid_range')
-                ->addViolation();
+                ->addViolation()
+            ;
         }
     }
 }

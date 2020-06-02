@@ -78,12 +78,12 @@ class GeoCollectionController extends AbstractController
             return new JsonResponse([], 200);
         }
 
-        if($collection->getEntries()->isEmpty()
+        if ($collection->getEntries()->isEmpty()
             || $this->geoCollection->isTouchingGeoCollection(
-            $collection->getUuid(),
-            $this->getUser()->getId(),
-            $geoObject->getUuid()
-        )) {
+                $collection->getUuid(),
+                $this->getUser()->getId(),
+                $geoObject->getUuid()
+            )) {
             $content = new Entry();
             $content->setGeoObject($geoObject);
             $content->setCollection($collection);
@@ -111,10 +111,11 @@ class GeoCollectionController extends AbstractController
         $survey = $em
             ->getRepository(Survey::class)
             ->findOneBy([
-                'isActive' => true
-            ]);
+                'isActive' => true,
+            ])
+        ;
 
-        $name = (string)$request->request->get('name');
+        $name = (string) $request->request->get('name');
 
         $collection = new Collection();
         $collection->setUser($this->getUser());
@@ -125,7 +126,7 @@ class GeoCollectionController extends AbstractController
         $em->flush();
 
         return new JsonResponse([
-            'id' => $collection->getUuid()
+            'id' => $collection->getUuid(),
         ]);
     }
 
@@ -148,18 +149,18 @@ class GeoCollectionController extends AbstractController
 
             $metadata = $item->getBboxMetadata();
 
-/*            if ($metadata) {
-                $bbox = [
-                    'center' => [
-                        'lat' => $metadata['y_center'] ?? null,
-                        'lng' => $metadata['x_center'] ?? null,
-                    ],
-                    'bounds' => [
-                        [$metadata['x_min'], $metadata['y_min']],
-                        [$metadata['x_max'], $metadata['y_max']]
-                    ],
-                ];
-            }*/
+            /*            if ($metadata) {
+                            $bbox = [
+                                'center' => [
+                                    'lat' => $metadata['y_center'] ?? null,
+                                    'lng' => $metadata['x_center'] ?? null,
+                                ],
+                                'bounds' => [
+                                    [$metadata['x_min'], $metadata['y_min']],
+                                    [$metadata['x_max'], $metadata['y_max']]
+                                ],
+                            ];
+                        }*/
 
             $result[] = [
                 'id' => $item->getUuid(),
@@ -167,7 +168,7 @@ class GeoCollectionController extends AbstractController
                 'length' => $length,
                 'completion' => $completion,
                 'name' => $item->getName(),
-               # 'bbox' => $bbox ?? null,
+                // 'bbox' => $bbox ?? null,
             ];
         }
 
@@ -179,10 +180,10 @@ class GeoCollectionController extends AbstractController
      *     name="edit",
      *     methods="POST",
      *     requirements={
-     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *         "id": "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
      *     }
      * )
-     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id": "uuid"}})
      */
     public function edit(Request $request, Collection $collection): JsonResponse
     {
@@ -204,10 +205,10 @@ class GeoCollectionController extends AbstractController
      *     name="delete",
      *     methods="DELETE",
      *     requirements={
-     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *         "id": "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
      *     }
      * )
-     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id": "uuid"}})
      */
     public function delete(Collection $collection): JsonResponse
     {

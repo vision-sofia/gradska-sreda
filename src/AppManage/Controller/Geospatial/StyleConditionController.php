@@ -7,9 +7,7 @@ use App\AppManage\Form\Type\StyleConditionType;
 use App\Event\Events;
 use App\Services\FlashMessage\FlashMessage;
 use App\Services\Geospatial\StyleConverter;
-use App\Services\Geospatial\StyleBuilder\StyleBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,8 +31,7 @@ class StyleConditionController extends AbstractController
         FlashMessage $flashMessage,
         TranslatorInterface $translator,
         EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
         $this->styleService = $styleService;
         $this->flashMessage = $flashMessage;
         $this->translator = $translator;
@@ -52,7 +49,8 @@ class StyleConditionController extends AbstractController
                 'isDynamic' => 'DESC',
                 'attribute' => 'DESC',
                 'value' => 'ASC',
-            ]);
+            ])
+        ;
 
         return $this->render('manage/geospatial/style/condition/list.html.twig', [
             'styleConditions' => $styleConditions,
@@ -117,7 +115,7 @@ class StyleConditionController extends AbstractController
             );
 
             return $this->redirectToRoute('manage.geospatial.style-condition.edit', [
-                'id' => $styleCondition->getId()
+                'id' => $styleCondition->getId(),
             ]);
         }
 

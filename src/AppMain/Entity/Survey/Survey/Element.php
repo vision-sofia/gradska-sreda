@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="survey_element", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Element implements UuidInterface
 {

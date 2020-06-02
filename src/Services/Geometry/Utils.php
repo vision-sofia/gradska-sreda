@@ -64,7 +64,7 @@ class Utils
     public function findTolerance(array $array, float $zoom): float
     {
         foreach ($array as $item) {
-            if ($zoom <= (float)$item['min_zoom']
+            if ($zoom <= (float) $item['min_zoom']
                 && $zoom >= $item['max_zoom']) {
                 return $item['tolerance'];
             }

@@ -23,7 +23,7 @@ class Finder
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
 
-        $sql = /** @lang PostgreSQL */
+        $sql = /* @lang PostgreSQL */
             '
             SELECT
                 g.uuid,

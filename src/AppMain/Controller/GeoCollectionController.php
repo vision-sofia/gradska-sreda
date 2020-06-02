@@ -3,15 +3,12 @@
 namespace App\AppMain\Controller;
 
 use App\AppMain\Entity\Survey\GeoCollection\Collection;
-use App\AppMain\Entity\Survey\Survey\Survey;
 use App\Services\GeoCollection\GeoCollection;
 use App\Services\Geometry\Utils;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,8 +27,7 @@ class GeoCollectionController extends AbstractController
         Utils $utils,
         LoggerInterface $logger,
         GeoCollection $geoCollection
-    )
-    {
+    ) {
         $this->utils = $utils;
         $this->logger = $logger;
         $this->geoCollection = $geoCollection;
@@ -56,10 +52,10 @@ class GeoCollectionController extends AbstractController
      *     name="view",
      *     methods="GET",
      *     requirements={
-     *         "id"="[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
+     *         "id": "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-(8|9|a|b)[a-f0-9]{3}-[a-f0-9]{12}"
      *     }
      * )
-     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("collection", class="App\AppMain\Entity\Survey\GeoCollection\Collection", options={"mapping": {"id": "uuid"}})
      */
     public function view(Collection $collection): Response
     {
@@ -70,6 +66,4 @@ class GeoCollectionController extends AbstractController
             //  'boundingBox' => Utils::buildBboxFromDTO($boundingBox),
         ]);
     }
-
-
 }

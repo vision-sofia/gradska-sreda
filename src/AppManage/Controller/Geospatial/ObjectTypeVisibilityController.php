@@ -36,8 +36,9 @@ class ObjectTypeVisibilityController extends AbstractController
         $visibilities = $this->getDoctrine()
             ->getRepository(ObjectTypeVisibility::class)
             ->findBy([], [
-                'zoom' => 'DESC'
-            ]);
+                'zoom' => 'DESC',
+            ])
+        ;
 
         return $this->render('manage/geospatial/visibility/list.html.twig', [
             'list' => $visibilities,

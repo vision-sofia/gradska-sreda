@@ -37,9 +37,7 @@ class ItemController extends AbstractController
         UploaderHelper $uploaderHelper,
         QuestionResponseService $questionResponseService,
         Question $question
-
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->uploaderHelper = $uploaderHelper;
@@ -51,7 +49,8 @@ class ItemController extends AbstractController
     {
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)
-            ->findQuestions($this->getUser(), $geoObject);
+            ->findQuestions($this->getUser(), $geoObject)
+        ;
 
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
@@ -96,7 +95,7 @@ class ItemController extends AbstractController
                     'uuid' => $answer->getUuid(),
                     'isSelected' => $answer->getIsSelected(),
                     'isFreeAnswer' => $answer->getIsFreeAnswer(),
-                    'explanation' => $answer->getExplanation()
+                    'explanation' => $answer->getExplanation(),
                 ];
             }
 
@@ -107,7 +106,7 @@ class ItemController extends AbstractController
                 'isAnswered' => $question->isAnswered(),
                 'isCompleted' => $question->isCompleted(),
                 'hasMultipleAnswers' => $question->getHasMultipleAnswers(),
-                'answers' => $answers
+                'answers' => $answers,
             ];
         }
 
@@ -148,13 +147,13 @@ class ItemController extends AbstractController
 
         return [
             'questions' => $survey,
-            'progress' => $progress
+            'progress' => $progress,
         ];
     }
 
     /**
      * @Route("geo/{id}/q", name="app.geo-object.details.q", methods={"GET"})
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function qq(GeoObject $geoObject): JsonResponse
@@ -165,13 +164,13 @@ class ItemController extends AbstractController
                 'name' => $geoObject->getName(),
                 'type' => $geoObject->getType()->getName(),
             ],
-            'survey' => $this->surveyResult($geoObject)
+            'survey' => $this->surveyResult($geoObject),
         ]);
     }
 
     /**
      * @Route("geo/{id}/q", name="app.geo-object.details.qz", methods={"POST"})
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function q2(Request $request, GeoObject $geoObject, QuestionV3 $questionV3): JsonResponse
@@ -194,7 +193,7 @@ class ItemController extends AbstractController
                     'name' => $geoObject->getName(),
                     'type' => $geoObject->getType()->getName(),
                 ],
-                'survey' => $this->surveyResult($geoObject)
+                'survey' => $this->surveyResult($geoObject),
             ]);
         }
 
@@ -219,7 +218,7 @@ class ItemController extends AbstractController
                     'name' => $geoObject->getName(),
                     'type' => $geoObject->getType()->getName(),
                 ],
-                'survey' => $this->surveyResult($geoObject)
+                'survey' => $this->surveyResult($geoObject),
             ]);
         }
 
@@ -230,7 +229,7 @@ class ItemController extends AbstractController
                     'name' => $geoObject->getName(),
                     'type' => $geoObject->getType()->getName(),
                 ],
-                'survey' => $this->surveyResult($geoObject)
+                'survey' => $this->surveyResult($geoObject),
             ]);
         }
 
@@ -249,18 +248,18 @@ class ItemController extends AbstractController
                 'name' => $geoObject->getName(),
                 'type' => $geoObject->getType()->getName(),
             ],
-            'survey' => $this->surveyResult($geoObject)
+            'survey' => $this->surveyResult($geoObject),
         ]);
     }
 
     /**
-     * @Route("geo/{id}/clear/{question}", name="app.geo-object.details.clear",methods={"POST"})
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @Route("geo/{id}/clear/{question}", name="app.geo-object.details.clear", methods={"POST"})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function clearQuestion(Request $request, GeoObject $geoObject, string $question): JsonResponse
     {
-        # TODO: csrf check
+        // TODO: csrf check
 
         $this->questionResponseService->clear(
             $question,
@@ -275,12 +274,12 @@ class ItemController extends AbstractController
 
     /**
      * @Route("geo/{id}/result", name="app.geo-object.result")
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function result(GeoObject $geoObject, SessionInterface $session): Response
     {
-        # TODO: cache
+        // TODO: cache
 
         /** @var Connection $conn */
         $conn = $this->getDoctrine()->getConnection();
@@ -366,21 +365,22 @@ class ItemController extends AbstractController
 
     /**
      * @Route("geo/{id}", name="app.geo-object.details")
-     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id" = "uuid"}})
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function details(GeoObject $geoObject): Response
     {
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(Survey\Spatial\SurveyGeoObject::class)
-            ->isInScope($geoObject);
+            ->isInScope($geoObject)
+        ;
 
         if (!$isAvailableForSurvey) {
             return $this->redirectToRoute('app.map');
         }
 
         return $this->render('front/geo-object/details.html.twig', [
-            'geoObject' => $geoObject
+            'geoObject' => $geoObject,
         ]);
     }
 }

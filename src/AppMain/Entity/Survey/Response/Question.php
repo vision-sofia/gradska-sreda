@@ -1,29 +1,25 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Response;
 
-use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
+use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
-
-use App\AppMain\Entity\Survey;
 
 /**
  * @ORM\Table(
  *     name="response_question",
  *     schema="x_survey",
  *     uniqueConstraints={@ORM\UniqueConstraint(
- *          columns={"user_id", "question_id", "geo_object_id"},
- *          options={"where": "(is_latest IS TRUE)"})})
+ *         columns={"user_id", "question_id", "geo_object_id"},
+ *     options={"where": "(is_latest IS TRUE)"})})
  *     }
  * )
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
+ *     @ORM\Entity
+ *     @ORM\HasLifecycleCallbacks
  */
 class Question implements UuidInterface
 {
@@ -81,7 +77,7 @@ class Question implements UuidInterface
     private $isLatest = false;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" = false})
+     * @ORM\Column(type="boolean", options={"default": false})
      */
     private $isCompleted = false;
 
@@ -162,7 +158,6 @@ class Question implements UuidInterface
         $this->location = $location;
     }
 
-
     public function getIsCompleted(): ?bool
     {
         return $this->isCompleted;
@@ -174,7 +169,7 @@ class Question implements UuidInterface
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function onPrePersist(): void
     {
@@ -182,7 +177,7 @@ class Question implements UuidInterface
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function onPreUpdate(): void
     {

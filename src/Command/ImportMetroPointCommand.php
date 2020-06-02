@@ -94,7 +94,7 @@ class ImportMetroPointCommand extends Command
                     $properties = $s['properties'] ?? [];
 
                     $localProperties = [
-                        'has_vhc_metro' => 1
+                        'has_vhc_metro' => 1,
                     ];
 
                     $stmtGeo->bindValue('properties', json_encode($properties));

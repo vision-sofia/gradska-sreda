@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="q_answer", schema="x_survey")
  * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\Question\AnswerRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\HasLifecycleCallbacks
  */
 class Answer implements UuidInterface
 {
@@ -58,17 +58,17 @@ class Answer implements UuidInterface
     private $isPhotoEnabled;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" = false})
+     * @ORM\Column(type="boolean", options={"default": false})
      */
     private $isChildAnswerRequired = false;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" = false})
+     * @ORM\Column(type="boolean", options={"default": false})
      */
     private $isExplanationRequired = false;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" = false})
+     * @ORM\Column(type="boolean", options={"default": false})
      */
     private $isPhotoRequired = false;
 

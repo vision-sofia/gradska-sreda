@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Form;
 
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -18,7 +17,7 @@ class CsrfTokenValidator
         $this->csrfTokenManager = $csrfTokenManager;
     }
 
-    public function isCsrfTokenValid(string $id):bool
+    public function isCsrfTokenValid(string $id): bool
     {
         if (!$this->requestStack->getCurrentRequest()) {
             return false;

@@ -19,7 +19,8 @@ class ObjectTypeController extends AbstractController
     {
         $geoObjectTypes = $this->getDoctrine()
             ->getRepository(ObjectType::class)
-            ->findAll();
+            ->findAll()
+        ;
 
         return $this->render('manage/geospatial/object-type/list.html.twig', [
             'list' => $geoObjectTypes,

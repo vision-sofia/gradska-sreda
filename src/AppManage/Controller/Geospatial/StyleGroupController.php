@@ -5,8 +5,8 @@ namespace App\AppManage\Controller\Geospatial;
 use App\AppMain\Entity\Geospatial\StyleGroup;
 use App\AppManage\Form\Type\StyleGroupType;
 use App\Services\FlashMessage\FlashMessage;
-use App\Services\Geospatial\StyleConverter;
 use App\Services\Geospatial\StyleBuilder\StyleBuilder;
+use App\Services\Geospatial\StyleConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,10 +43,11 @@ class StyleGroupController extends AbstractController
         $styleGroups = $this->getDoctrine()
             ->getRepository(StyleGroup::class)
             ->findBy([
-                'isForInternalSystem' => true
+                'isForInternalSystem' => true,
             ], [
                 'code' => 'DESC',
-            ]);
+            ])
+        ;
 
         return $this->render('manage/geospatial/style/group/list.html.twig', [
             'styleGroups' => $styleGroups,
@@ -79,7 +80,7 @@ class StyleGroupController extends AbstractController
         return $this->render('manage/geospatial/style/group/edit.html.twig', [
             'form' => $form->createView(),
             'style' => $this->styleService->styleToText($styleGroup->getStyle()),
-            'styleGroup' => $styleGroup
+            'styleGroup' => $styleGroup,
         ]);
     }
 }

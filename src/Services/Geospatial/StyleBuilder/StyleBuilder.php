@@ -1,9 +1,7 @@
 <?php
 
-
 namespace App\Services\Geospatial\StyleBuilder;
 
-use App\AppMain\DTO\SurveyGeoObjectDTO;
 use App\AppMain\Entity\Geospatial\StyleCondition;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\AppMain\Repository\Survey\Spatial\SurveyGeoObjectRepository;
@@ -18,8 +16,7 @@ class StyleBuilder
     public function __construct(
         EntityManagerInterface $em,
         SurveyGeoObjectRepository $surveyGeoObjectRepository
-    )
-    {
+    ) {
         $this->em = $em;
         $this->surveyGeoObjectRepository = $surveyGeoObjectRepository;
     }
@@ -30,10 +27,11 @@ class StyleBuilder
 
         $stylesConditions = $this->em->getRepository(StyleCondition::class)
             ->findBy([
-                'isDynamic' => false
+                'isDynamic' => false,
             ], [
-                'priority' => 'ASC'
-            ]);
+                'priority' => 'ASC',
+            ])
+        ;
 
         $styles = [];
 
@@ -72,7 +70,7 @@ class StyleBuilder
         $insertStmt = $conn->prepare($this->buildInsertSQL($chunkSize));
 
         $survey = $this->em->getRepository(Survey::class)->findOneBy([
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         $batch = [];
@@ -189,7 +187,7 @@ class StyleBuilder
 
             foreach ($styles[$propertyKey] as $style) {
                 if ('*' === $style['value']
-                    || (string)$properties[$propertyKey] === (string)$style['value']) {
+                    || (string) $properties[$propertyKey] === (string) $style['value']) {
                     $sk = $this->comp($style, $sk, $geometryType);
                 }
             }

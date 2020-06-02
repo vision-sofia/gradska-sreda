@@ -11,6 +11,7 @@ class AchievementIdGenerator extends AbstractIdGenerator
     {
         $conn = $em->getConnection();
         $query = $conn->query('SELECT nextval(\'x_main.a_achievement_id_seq\')');
+
         return $query->fetchColumn();
     }
 }

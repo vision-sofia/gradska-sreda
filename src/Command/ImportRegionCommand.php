@@ -83,7 +83,6 @@ class ImportRegionCommand extends Command
                         continue;
                     }
 
-
                     ++$j;
 
                     $p = [];

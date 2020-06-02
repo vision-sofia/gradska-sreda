@@ -43,8 +43,7 @@ class MapController extends AbstractController
         AdapterInterface $cache,
         Style $styleService,
         JsonUtils $jsonUtils
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->utils = $utils;
         $this->logger = $logger;
@@ -71,7 +70,7 @@ class MapController extends AbstractController
         }
 
         $survey = $this->getDoctrine()->getRepository(Survey::class)->findOneBy([
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         if (!$survey) {
@@ -81,7 +80,7 @@ class MapController extends AbstractController
         $mapCenter = $request->query->get('c');
         $selectedObject = $request->query->get('select');
 
-        $simplifyTolerance = $this->simplifyTolerance((int)$zoom);
+        $simplifyTolerance = $this->simplifyTolerance((int) $zoom);
 
         $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $survey->getId());
 
@@ -148,8 +147,8 @@ class MapController extends AbstractController
             ],
         ];
 
-        $content = $this->jsonUtils->concatString($settings,'objects', $this->jsonUtils->joinArray($objects));
-        $content = $this->jsonUtils->concatString(json_decode($content, true),'surveyResponses', $this->jsonUtils->joinArray($userSubmittedObjects));
+        $content = $this->jsonUtils->concatString($settings, 'objects', $this->jsonUtils->joinArray($objects));
+        $content = $this->jsonUtils->concatString(json_decode($content, true), 'surveyResponses', $this->jsonUtils->joinArray($userSubmittedObjects));
 
         $response = new Response($content);
         $response->headers->set('Content-Type', 'application/json');
@@ -184,10 +183,11 @@ class MapController extends AbstractController
             $styles[$s['hover_style_code']] = $s['hover_style_content'];
         }
 
-        return $this->jsonUtils->concatString([
-            'type' => 'Feature',
-            'properties' => $properties,
-        ],
+        return $this->jsonUtils->concatString(
+            [
+                'type' => 'Feature',
+                'properties' => $properties,
+            ],
             'geometry',
             $row->geometry
         );
@@ -203,7 +203,8 @@ class MapController extends AbstractController
                 /** @var Simplify[] $simplify */
                 $simplifySet = $this->getDoctrine()
                     ->getRepository(Simplify::class)
-                    ->findAll();
+                    ->findAll()
+                ;
 
                 $ranges = [];
 
@@ -216,7 +217,8 @@ class MapController extends AbstractController
                 }
 
                 return $this->utils->findTolerance($ranges, $zoom);
-            });
+            }
+        );
 
         return $simplifyTolerance;
     }

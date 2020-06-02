@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Response;
 
 use App\AppMain\Entity\Survey;
@@ -16,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     schema="x_survey",
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"question_id", "answer_id"})}
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Answer implements UuidInterface
 {
@@ -53,7 +52,7 @@ class Answer implements UuidInterface
     private $photo;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" = false})
+     * @ORM\Column(type="boolean", options={"default": false})
      */
     private $isCompleted = false;
 

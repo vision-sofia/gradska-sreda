@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="a_survey_completion_achievement", schema="x_main")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class CategoryCompletionAchievement extends AbstractAchievement
 {

@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="style_condition", schema="x_geospatial")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class StyleCondition
 {

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services\FlashMessage;
-
 
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
@@ -40,7 +38,7 @@ class FlashMessage
         $this->add(self::FLASH_TYPE_ERROR, $title, $message);
     }
 
-    private function add(string $flashType, ?string $title, ?string $message):void
+    private function add(string $flashType, ?string $title, ?string $message): void
     {
         $this->flashBag->add($flashType, $this->concatMessage($title, $message));
     }
@@ -49,5 +47,4 @@ class FlashMessage
     {
         return sprintf('%s|%s', $message, $title);
     }
-
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Properties naming convention: underscore
+ * Properties naming convention: underscore.
  */
 
 namespace App\AppMain\DTO;
@@ -14,6 +14,7 @@ class GeoJsonDTO
 
     /**
      * GeoJsonDTO constructor.
+     *
      * @param $geometry
      * @param $properties
      */

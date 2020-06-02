@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\AppMain\Entity\Survey\Evaluation\Subject;
 
 use App\AppMain\Entity\Traits\UUIDableTrait;
@@ -9,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="ev_indicator_subject", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Indicator implements UuidInterface
 {
@@ -48,7 +47,7 @@ class Indicator implements UuidInterface
         return $this->name;
     }
 
-    public function getCriterion():? Criterion
+    public function getCriterion(): ?Criterion
     {
         return $this->criterion;
     }
@@ -57,6 +56,4 @@ class Indicator implements UuidInterface
     {
         $this->criterion = $criterion;
     }
-
-
 }

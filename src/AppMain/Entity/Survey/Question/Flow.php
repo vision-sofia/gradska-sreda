@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="q_flow", schema="x_survey")
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Flow implements UuidInterface
 {

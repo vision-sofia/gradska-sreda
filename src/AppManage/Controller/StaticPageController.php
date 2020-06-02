@@ -40,8 +40,8 @@ class StaticPageController extends AbstractController
         $pages = $this->getDoctrine()
             ->getRepository(StaticPage::class)
             ->findBy([], [
-
-            ]);
+            ])
+        ;
 
         return $this->render('manage/static-page/list.html.twig', [
             'pages' => $pages,

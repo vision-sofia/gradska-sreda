@@ -2,8 +2,6 @@
 
 namespace App\DataFixtures\Survey;
 
-
-use App\AppMain\Entity\Survey\Evaluation;
 use App\AppMain\Entity\Survey\Question\Answer;
 use App\AppMain\Entity\Survey\Question\Flow;
 use App\AppMain\Entity\Survey\Question\Question;
@@ -23,8 +21,6 @@ class FlowFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         foreach ($this->data() as $value) {
-
-
             $question = $manager->getRepository(Question::class)
                                 ->findOneBy([
                                     'title' => $value['question'],
@@ -54,7 +50,7 @@ class FlowFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-                'answers'  => [
+                'answers' => [
                     'Спокоен',
                 ],
                 'question' => 'Какъв вид е пресичането?',

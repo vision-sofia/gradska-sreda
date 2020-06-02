@@ -32,7 +32,8 @@ class AchievementController extends AbstractController
     {
         $achievements = $this->getDoctrine()
             ->getRepository(AchievementBase::class)
-            ->findAll();
+            ->findAll()
+        ;
 
         return $this->render('front/achievement/index.html.twig', [
             'achievements' => $achievements,

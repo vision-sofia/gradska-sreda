@@ -2,7 +2,6 @@
 
 namespace App\AppMain\Entity\Survey\Survey;
 
-
 interface SurveyInterface
 {
     public function getId();

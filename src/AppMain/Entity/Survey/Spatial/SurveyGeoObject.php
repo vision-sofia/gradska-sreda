@@ -3,7 +3,6 @@
 namespace App\AppMain\Entity\Survey\Spatial;
 
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
-use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,21 +20,21 @@ use Doctrine\ORM\Mapping as ORM;
 class SurveyGeoObject implements UuidInterface, GeoObjectInterface
 {
     /**
-     * @ORM\Id()
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
     private $id;
 
     /**
-     * @ORM\Id()
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Survey\Survey\Survey")
      * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
      */
     private $survey;
 
     /**
-     * @ORM\Column(type="json", options={"jsonb": true, "default" = "{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
     private $properties;
 
@@ -60,7 +59,7 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
     private $objectTypeName;
 
     /**
-     * @ORM\Column(type="json", options={"jsonb": true, "default"="{}"})
+     * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
     private $metadata;
 

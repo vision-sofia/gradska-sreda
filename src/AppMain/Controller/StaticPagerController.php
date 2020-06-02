@@ -36,14 +36,15 @@ class StaticPagerController extends AbstractController
             $page = $this->getDoctrine()
                 ->getRepository(StaticPage::class)
                 ->findOneBy([
-                    'slug' => $slug
-                ]);
+                    'slug' => $slug,
+                ])
+            ;
 
             return $page === null ? '' : $this->markdown->text($page->getContent());
         });
 
         return $this->render('front/static-page/index.html.twig', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 }

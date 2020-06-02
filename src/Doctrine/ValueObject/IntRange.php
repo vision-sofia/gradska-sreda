@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Doctrine\ValueObject;
-
 
 class IntRange
 {
@@ -25,12 +23,12 @@ class IntRange
         return $this->end;
     }
 
-    public static function toString(IntRange $intRange): string
+    public static function toString(self $intRange): string
     {
         return sprintf('[%s,%s)', $intRange->getStart(), $intRange->getEnd());
     }
 
-    public static function fromString($string): IntRange
+    public static function fromString($string): self
     {
         $clean = strtr($string, ['[' => '', ']' => '', '(' => '', ')' => '']);
         [$start, $end] = explode(',', $clean);

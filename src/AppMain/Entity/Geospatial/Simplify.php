@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *         @ORM\Index(columns={"zoom"}, flags={"spatial"})
  *     }
  * )
- * @ORM\Entity()
+ * @ORM\Entity
  */
 class Simplify implements UuidInterface
 {

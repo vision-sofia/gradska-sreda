@@ -8,7 +8,6 @@ use App\Doctrine\ValueObject\IntRange;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
@@ -25,14 +24,14 @@ class ObjectTypeVisibilityType extends AbstractType
             ->add('minZoom', NumberType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new NotBlank()
-                ]
+                    new NotBlank(),
+                ],
             ])
             ->add('maxZoom', NumberType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new NotBlank()
-                ]
+                    new NotBlank(),
+                ],
             ])
             ->addEventListener(FormEvents::POST_SET_DATA, static function (FormEvent $event) {
                 /** @var Simplify $data */
@@ -67,7 +66,7 @@ class ObjectTypeVisibilityType extends AbstractType
                 new Callback([
                     'callback' => [$this, 'checkZoomRange'],
                 ]),
-            ]
+            ],
         ]);
     }
 
@@ -82,7 +81,8 @@ class ObjectTypeVisibilityType extends AbstractType
         if ($max >= $min) {
             $context
                 ->buildViolation('zoom.invalid_range')
-                ->addViolation();
+                ->addViolation()
+            ;
         }
     }
 }

@@ -29,9 +29,9 @@ class UserRegisterType extends AbstractType
                 'constraints' => [
                     new IsTrue([
                         'message' => 'За да се регистрирате е необходимо да приемете условията за ползване',
-                        'groups' => 'register'
+                        'groups' => 'register',
                     ]),
-                ]
+                ],
             ])
         ;
     }
@@ -40,7 +40,7 @@ class UserRegisterType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'validation_groups' => ['register']
+            'validation_groups' => ['register'],
         ]);
     }
 }

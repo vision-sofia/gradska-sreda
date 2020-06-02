@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Markdown;
 
 class MarkdownService
