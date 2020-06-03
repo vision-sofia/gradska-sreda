@@ -13,9 +13,9 @@ trait TraceTrait
     private $addedBy;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
-    private $addedAt;
+    private \DateTimeInterface $addedAt;
 
     public function getAddedBy(): UserInterface
     {

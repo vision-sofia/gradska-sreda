@@ -66,14 +66,14 @@ class Question implements UuidInterface
     private ?GeoObjectInterface $geoObject = null;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
-    private $answeredAt;
+    private ?\DateTimeInterface $answeredAt = null;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $updatedAt;
+    private ?\DateTimeInterface $updatedAt = null;
 
     /**
      * @ORM\Column(type="boolean")

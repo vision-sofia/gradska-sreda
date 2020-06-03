@@ -49,9 +49,9 @@ class Location implements UuidInterface
     private $coordinates;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $updatedAt;
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function getId(): int
     {
