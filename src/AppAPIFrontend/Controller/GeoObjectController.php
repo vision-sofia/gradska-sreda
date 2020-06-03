@@ -6,6 +6,7 @@ use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\User\UserInterface;
 use App\Services\ApiFrontend\GeoObjectRating;
 use App\Services\Survey\Question;
 use App\Services\UploaderHelper;
@@ -25,11 +26,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class GeoObjectController extends AbstractController
 {
-    protected $entityManager;
-    protected $eventDispatcher;
-    protected $uploaderHelper;
-    protected $question;
-    protected $geoObjectRating;
+    protected EntityManagerInterface $entityManager;
+    protected EventDispatcherInterface $eventDispatcher;
+    protected UploaderHelper $uploaderHelper;
+    protected Question $question;
+    protected GeoObjectRating $geoObjectRating;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -72,9 +73,12 @@ class GeoObjectController extends AbstractController
 
     private function surveyResult(GeoObject $geoObject): array
     {
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)
-            ->findQuestions($this->getUser(), $geoObject)
+            ->findQuestions($user, $geoObject)
         ;
 
         /** @var Connection $conn */
@@ -84,7 +88,7 @@ class GeoObjectController extends AbstractController
                     ra.answer_id as id,
                     ra.explanation,
                     ra.photo,
-                    rq.question_id 
+                    rq.question_id
                 FROM
                     x_survey.response_answer ra
                         INNER JOIN
@@ -94,14 +98,15 @@ class GeoObjectController extends AbstractController
                     AND rq.user_id = :user_id
             ');
 
-        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
 
         $responseAnswers = [];
-        /** @var ResponseAnswerDTO $answer [] */
+
         while ($answer = $stmt->fetch()) {
+            /* @var ResponseAnswerDTO $answer */
             $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
         }
 
@@ -154,10 +159,10 @@ class GeoObjectController extends AbstractController
                   AND q.user_id = :user_id
                   AND q.is_completed = TRUE
             )
-            SELECT total, complete FROM z, d        
+            SELECT total, complete FROM z, d
         ');
 
-        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->bindValue('geo_object_type_id', $geoObject->getType()->getId());
         $stmt->execute();

@@ -54,7 +54,7 @@ class UserCompletion
                 geo_object_id = :geo_object_id
         ');
 
-        while($row = $stmt->fetch(\PDO::FETCH_OBJ)) {
+        while ($row = $stmt->fetch(\PDO::FETCH_OBJ)) {
             $properties = json_decode($row->properties, true);
 
             if ($row->has_completion === true) {

@@ -6,8 +6,8 @@ use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Evaluation\Subject;
 use App\AppMain\Entity\Survey\Evaluation\Subject\Criterion;
+use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Table(

@@ -3,15 +3,15 @@
 namespace App\Event;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\AppMain\Entity\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class GeoObjectSurveyTouch extends Event
 {
     public const NAME = 'geo_object.survey.touch';
 
-    protected $user;
-    protected $geoObject;
+    protected UserInterface $user;
+    protected GeoObject $geoObject;
 
     public function __construct(GeoObject $geoObject, UserInterface $user)
     {

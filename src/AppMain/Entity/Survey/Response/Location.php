@@ -5,6 +5,7 @@ namespace App\AppMain\Entity\Survey\Response;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
+use App\AppMain\Entity\User\UserInterface;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
 

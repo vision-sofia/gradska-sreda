@@ -69,6 +69,7 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
+        /** @var Survey $survey */
         $survey = $this->getDoctrine()->getRepository(Survey::class)->findOneBy([
             'isActive' => true,
         ]);
@@ -209,11 +210,13 @@ class MapController extends AbstractController
                 $ranges = [];
 
                 foreach ($simplifySet as $simplify) {
-                    $ranges[] = [
-                        'min_zoom' => $simplify->getZoom()->getEnd(),
-                        'max_zoom' => $simplify->getZoom()->getStart(),
-                        'tolerance' => $simplify->getTolerance(),
-                    ];
+                    if ($simplify->getZoom()) {
+                        $ranges[] = [
+                            'min_zoom' => $simplify->getZoom()->getEnd(),
+                            'max_zoom' => $simplify->getZoom()->getStart(),
+                            'tolerance' => $simplify->getTolerance(),
+                        ];
+                    }
                 }
 
                 return $this->utils->findTolerance($ranges, $zoom);

@@ -2,7 +2,7 @@
 
 namespace App\AppMain\Entity\Traits;
 
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\AppMain\Entity\User\UserInterface;
 
 trait TraceTrait
 {
@@ -10,7 +10,7 @@ trait TraceTrait
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false, name="added_by")
      */
-    private $addedBy;
+    private UserInterface $addedBy;
 
     /**
      * @ORM\Column(type="datetime")
@@ -27,12 +27,12 @@ trait TraceTrait
         $this->addedBy = $addedBy;
     }
 
-    public function setAddedAt(\DateTimeImmutable $dateTimeImmutable): void
+    public function setAddedAt(\DateTimeInterface $dateTimeImmutable): void
     {
         $this->addedAt = $dateTimeImmutable;
     }
 
-    public function getAddedAt(): \DateTimeImmutable
+    public function getAddedAt(): \DateTimeInterface
     {
         return $this->addedAt;
     }
