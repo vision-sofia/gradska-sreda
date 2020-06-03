@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="spatial_scope", schema="x_survey")
- * @ORM\Entity(repositoryClass="App\AppMain\Repository\Survey\ScopeRepository")
+ * @ORM\Entity
  */
 class Scope
 {

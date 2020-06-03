@@ -3,7 +3,7 @@
 namespace App\Event;
 
 use App\AppMain\Entity\Geospatial\GeoObject;
-use App\AppMain\Entity\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class GeoObjectSurveyTouch extends Event

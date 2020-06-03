@@ -2,11 +2,12 @@
 
 namespace App\AppMain\Entity\Survey\Result;
 
+use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Survey\SurveyInterface;
-use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Table(

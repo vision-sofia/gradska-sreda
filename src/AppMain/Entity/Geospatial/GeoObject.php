@@ -2,9 +2,9 @@
 
 namespace App\AppMain\Entity\Geospatial;
 
-use App\AppMain\Entity\Geometry\GeometryBase;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -66,16 +66,6 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function getGeography(): ?GeometryBase
-    {
-        return $this->geography;
-    }
-
-    public function setGeography(GeometryBase $geography): void
-    {
-        $this->geography = $geography;
     }
 
     public function getType(): ?ObjectType

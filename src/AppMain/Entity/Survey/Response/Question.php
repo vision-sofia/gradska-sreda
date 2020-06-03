@@ -2,12 +2,16 @@
 
 namespace App\AppMain\Entity\Survey\Response;
 
+use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
 use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\Survey\Question\Question as SurveyQuestion;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Table(
@@ -79,7 +83,12 @@ class Question implements UuidInterface
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isCompleted = false;
+    private bool $isCompleted = false;
+
+    public function __construct()
+    {
+        $this->answers = new ArrayCollection();
+    }
 
     public function getId(): int
     {

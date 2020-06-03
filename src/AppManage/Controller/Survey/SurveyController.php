@@ -2,6 +2,7 @@
 
 namespace App\AppManage\Controller\Survey;
 
+use App\AppMain\Entity\Survey\Evaluation\Subject\Criterion;
 use App\AppMain\Entity\Survey\Survey\Survey;
 use App\AppManage\Form\Survey\SurveyType;
 use App\Services\FlashMessage\FlashMessage;
