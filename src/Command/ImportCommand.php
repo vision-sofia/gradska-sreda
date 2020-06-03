@@ -15,14 +15,11 @@ class ImportCommand extends Command
     protected static $defaultName = 'app:import';
 
     protected EntityManagerInterface $entityManager;
-    protected ContainerInterface $container;
+    protected string $projectDir;
 
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container
-    ) {
+    public function __construct(EntityManagerInterface $entityManager, string $projectDir) {
         $this->entityManager = $entityManager;
-        $this->container = $container;
+        $this->projectDir = $projectDir;
         parent::__construct();
     }
 
@@ -30,7 +27,7 @@ class ImportCommand extends Command
     {
         ini_set('memory_limit', '-1');
 
-        $dataFile = $this->container->getParameter('kernel.project_dir')
+        $dataFile = $this->projectDir
             . \DIRECTORY_SEPARATOR
             . 'src/DataFixtures/Raw/network.json'
         ;

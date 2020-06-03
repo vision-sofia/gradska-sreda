@@ -16,20 +16,17 @@ class ImportRegionCommand extends Command
     protected static $defaultName = 'app:import-r';
 
     protected EntityManagerInterface $entityManager;
-    protected ContainerInterface $container;
+    protected string $projectDir;
 
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container
-    ) {
+    public function __construct(EntityManagerInterface $entityManager, string $projectDir) {
         $this->entityManager = $entityManager;
-        $this->container = $container;
+        $this->projectDir = $projectDir;
         parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $string = file_get_contents($this->container->getParameter('kernel.project_dir') . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/regions.json');
+        $string = file_get_contents($this->projectDir . \DIRECTORY_SEPARATOR . 'src/DataFixtures/Raw/regions.json');
         $content = json_decode($string, true);
 
         $objectType = $this->entityManager
@@ -45,14 +42,14 @@ class ImportRegionCommand extends Command
         $stmtSpatial = $conn->prepare('
             INSERT INTO x_geometry.geometry_base (
                 geo_object_id,
-                coordinates, 
-                metadata, 
+                coordinates,
+                metadata,
                 uuid
             ) VALUES (
                 :spatial_object_id,
-                :geography, 
-                \'{}\', 
-                :uuid                      
+                :geography,
+                \'{}\',
+                :uuid
             )
         ');
 
@@ -63,10 +60,10 @@ class ImportRegionCommand extends Command
                 object_type_id,
                 name
             ) VALUES (
-                :properties,           
+                :properties,
                 :uuid,
                 :object_type_id,
-                :name                 
+                :name
             )
         ');
 

@@ -14,14 +14,11 @@ class ExportCommand extends Command
     protected static $defaultName = 'export';
 
     protected EntityManagerInterface $em;
-    protected ContainerInterface $container;
+    protected string $projectDir;
 
-    public function __construct(
-        EntityManagerInterface $em,
-        ContainerInterface $container
-    ) {
+    public function __construct(EntityManagerInterface $em, string $projectDir) {
         $this->em = $em;
-        $this->container = $container;
+        $this->projectDir = $projectDir;
         parent::__construct();
     }
 
@@ -33,11 +30,11 @@ class ExportCommand extends Command
         $conn = $this->em->getConnection();
 
         $stmt = $conn->prepare('
-            SELECT 
+            SELECT
                 g.uuid,
                 g.properties,
                 st_asgeojson(gb.coordinates) as geometry
-            FROM 
+            FROM
                 x_geospatial.geo_object g
                     INNER JOIN
                 x_geometry.geometry_base gb ON g.id = gb.geo_object_id
@@ -61,7 +58,7 @@ class ExportCommand extends Command
         }
 
         $path =
-            $this->container->getParameter('kernel.project_dir') .
+            $this->projectDir .
             \DIRECTORY_SEPARATOR .
             'src/DataFixtures/Raw/_export.json';
 
