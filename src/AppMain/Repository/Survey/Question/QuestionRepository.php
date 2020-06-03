@@ -43,10 +43,10 @@ class QuestionRepository extends EntityRepository
                     FROM
                         x_survey.response_question rq
                     WHERE
-                        user_id = :user_id 
+                        user_id = :user_id
                         AND rq.question_id = q.id
                         AND rq.geo_object_id = :geo_object_id
-                ) 
+                )
                 AND NOT EXISTS(
                     SELECT
                         *
@@ -57,13 +57,13 @@ class QuestionRepository extends EntityRepository
                             INNER JOIN
                         x_survey.response_question rq ON a.question_id = rq.id
                     WHERE
-                        rq.user_id = :user_id 
+                        rq.user_id = :user_id
                         AND rq.geo_object_id = :geo_object_id
                         AND f.question_id = q.id
                 )
-            ORDER BY 
-                survey_id, 
-                q.id                               
+            ORDER BY
+                survey_id,
+                q.id
             LIMIT 1
         ', $rsm);
 
@@ -75,7 +75,7 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @return \Generator|QuestionDTO
+     * @return \Generator|QuestionDTO[]
      */
     public function findQuestions(UserInterface $user, GeoObject $geoObject): \Generator
     {
@@ -90,16 +90,16 @@ class QuestionRepository extends EntityRepository
                     gq.question_answers as answers,
                     COALESCE(rq.is_completed, FALSE) as is_completed
                 FROM
-                    x_survey.geo_object_question gq   
-                        LEFT JOIN 
-                    x_survey.response_question rq 
+                    x_survey.geo_object_question gq
+                        LEFT JOIN
+                    x_survey.response_question rq
                         ON rq.question_id = gq.question_id
-                        AND rq.geo_object_id = :geo_object_id 
-                        AND rq.user_id = :user_id 
+                        AND rq.geo_object_id = :geo_object_id
+                        AND rq.user_id = :user_id
                 WHERE
                     gq.geo_object_type_id = :object_type_id
                     AND gq.survey_is_active = TRUE
-                    AND NOT EXISTS( 
+                    AND NOT EXISTS(
                         SELECT
                             *
                         FROM
@@ -109,12 +109,12 @@ class QuestionRepository extends EntityRepository
                                 INNER JOIN
                             x_survey.response_question rq ON a.question_id = rq.id
                         WHERE
-                            rq.user_id = :user_id 
+                            rq.user_id = :user_id
                             AND rq.geo_object_id = :geo_object_id
                             AND f.question_id = gq.question_id
                     )
-                ORDER BY 
-                    survey_id, 
+                ORDER BY
+                    survey_id,
                     gq.question_id');
 
         $stmt->bindValue('user_id', $user->getId());

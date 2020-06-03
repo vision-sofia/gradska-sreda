@@ -21,40 +21,40 @@ class AnswerRepository extends EntityRepository
 
         $query = $this->_em->createNativeQuery('
             WITH RECURSIVE tree as (
-                SELECT 
-                    id, 
-                    uuid, 
-                    question_id, 
+                SELECT
+                    id,
+                    uuid,
+                    question_id,
                     parent,
-                    title, 
-                    id AS parent_order, 
+                    title,
+                    id AS parent_order,
                     null::int as child_order
-                FROM 
+                FROM
                     x_survey.q_answer
-                WHERE 
-                    parent IS NULL 
-                    AND question_id = :question_id      
-            
+                WHERE
+                    parent IS NULL
+                    AND question_id = :question_id
+
                UNION ALL
-               
-               SELECT 
-                    c.id, 
-                    c.uuid, 
+
+               SELECT
+                    c.id,
+                    c.uuid,
                     c.question_id,
                     c.parent,
-                    c.title, 
-                    p.parent_order, 
+                    c.title,
+                    p.parent_order,
                     c.id AS child_order
-               FROM 
+               FROM
                     x_survey.q_answer c
-                        INNER JOIN 
+                        INNER JOIN
                     tree p ON p.id = c.parent
-               WHERE 
-                    c.question_id = :question_id                 
+               WHERE
+                    c.question_id = :question_id
             )
-            SELECT 
-                * 
-            FROM 
+            SELECT
+                *
+            FROM
                 tree
             ORDER BY
                 parent_order, child_order NULLS FIRST

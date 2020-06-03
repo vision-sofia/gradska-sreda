@@ -73,7 +73,7 @@ class GeoObjectRating
             WHERE
                 gr.geo_object_id = ?
             GROUP BY
-                cr.id               
+                cr.id
         ');
 
         $stmt->execute([$geoObjectId]);

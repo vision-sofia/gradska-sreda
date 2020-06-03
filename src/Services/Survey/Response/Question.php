@@ -25,9 +25,9 @@ class Question
         $conn = $this->entityManager->getConnection();
 
         $stmt = $conn->prepare('
-            DELETE FROM 
+            DELETE FROM
                 x_survey.response_question r
-                    USING 
+                    USING
                 x_survey.q_question q
             WHERE
                 r.question_id = q.id
@@ -146,7 +146,7 @@ class Question
                 WHERE
                     id = :answer_id
                     AND  question_id = :question_id
-            )                          
+            )
         ');
 
         $stmt->bindValue('answer_id', $answer->getId());

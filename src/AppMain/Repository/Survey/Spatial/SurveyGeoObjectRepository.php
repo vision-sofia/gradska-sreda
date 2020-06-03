@@ -27,14 +27,14 @@ class SurveyGeoObjectRepository extends ServiceEntityRepository
             SELECT EXISTS(
                 SELECT
                     *
-                FROM 
+                FROM
                     x_survey.spatial_scope sc
                         INNER JOIN
                     x_survey.survey s ON sc.survey_id = s.id
                 WHERE
                     s.is_active = TRUE
                     AND sc.geo_object_id = ?
-            )                
+            )
         ');
 
         $stmt->execute([$geoObject->getId()]);
