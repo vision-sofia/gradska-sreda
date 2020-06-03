@@ -19,22 +19,22 @@ class Flow implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Question")
      */
-    private $question;
+    private ?Question $question = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Answer")
      */
-    private $answer;
+    private ?Answer $answer = null;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $action;
+    private ?string $action = null;
 
     public function getId(): int
     {

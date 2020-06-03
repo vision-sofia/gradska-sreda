@@ -15,42 +15,42 @@ class StyleCondition
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $attribute;
+    private ?string $attribute = null;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $value;
+    private ?string $value = null;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
-    private $baseStyle;
+    private ?array $baseStyle = null;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
-    private $hoverStyle;
+    private ?array $hoverStyle = null;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $priority;
+    private ?int $priority = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isDynamic;
+    private bool $isDynamic = false;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $description;
+    private ?string $description = null;
 
     public function getId(): ?int
     {

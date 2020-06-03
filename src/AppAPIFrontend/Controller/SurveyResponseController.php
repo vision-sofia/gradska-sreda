@@ -22,9 +22,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SurveyResponseController extends AbstractController
 {
-    protected $entityManager;
-    protected $eventDispatcher;
-    protected $responseQuestionService;
+    protected EntityManagerInterface $entityManager;
+    protected EventDispatcherInterface $eventDispatcher;
+    protected SurveyResponseQuestionService $responseQuestionService;
 
     public function __construct(
         EntityManagerInterface $entityManager,

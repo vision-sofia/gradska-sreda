@@ -28,11 +28,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ItemController extends AbstractController
 {
-    protected $entityManager;
-    protected $eventDispatcher;
-    protected $uploaderHelper;
-    protected $question;
-    protected $questionResponseService;
+    protected EntityManagerInterface $entityManager;
+    protected EventDispatcherInterface $eventDispatcher;
+    protected UploaderHelper $uploaderHelper;
+    protected Question $question;
+    protected QuestionResponseService $questionResponseService;
     protected MessageBusInterface $messageBus;
 
     public function __construct(

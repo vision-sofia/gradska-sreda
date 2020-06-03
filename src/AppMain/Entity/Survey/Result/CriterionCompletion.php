@@ -22,26 +22,26 @@ class CriterionCompletion
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
      * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
      */
-    private $user;
+    private ?UserInterface $user = null;
 
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $geoObject;
+    private ?GeoObject $geoObject = null;
 
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Evaluation\Subject\Criterion")
      * @ORM\JoinColumn(referencedColumnName="id", name="subject_id", nullable=false)
      */
-    private $subject;
+    private ?Subject\Criterion $subject;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isComplete;
+    private bool $isComplete = false;
 
     public function getUser(): ?UserInterface
     {

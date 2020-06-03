@@ -8,10 +8,10 @@ namespace App\AppMain\DTO;
 
 class GeoObjectRatingDTO
 {
-    public $rating;
-    public $max;
-    public $criterion;
-    public $percentage;
+    public ?float $rating = null;
+    public ?float $max = null;
+    public ?string $criterion = null;
+    public ?float $percentage = null;
 
     public function getRating(): ?float
     {

@@ -8,12 +8,12 @@ namespace App\AppMain\DTO;
 
 class BoundingBoxDTO
 {
-    private $x_min;
-    private $x_max;
-    private $y_min;
-    private $y_max;
-    private $envelope;
-    private $properties;
+    private ?float $x_min = null;
+    private ?float $x_max = null;
+    private ?float $y_min = null;
+    private ?float $y_max = null;
+    private ?string $envelope = null;
+    private ?string $properties = null;
 
     public function getXMin(): ?float
     {

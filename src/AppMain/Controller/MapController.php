@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MapController extends AbstractController
 {
-    protected $session;
+    protected SessionInterface $session;
 
     public function __construct(SessionInterface $session)
     {

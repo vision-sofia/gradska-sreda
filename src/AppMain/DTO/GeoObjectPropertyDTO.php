@@ -10,7 +10,7 @@ class GeoObjectPropertyDTO
 {
     public $_s1;
     public $_s2;
-    public $name;
+    public ?string $name = null;
     public $type;
-    public $id;
+    public ?int $id = null;
 }

@@ -17,8 +17,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class SettingsController extends AbstractController
 {
-    protected $flashMessage;
-    protected $translator;
+    protected FlashMessage $flashMessage;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         FlashMessage $flashMessage,

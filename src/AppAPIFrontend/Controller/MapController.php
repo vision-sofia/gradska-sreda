@@ -23,15 +23,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MapController extends AbstractController
 {
-    protected $entityManager;
-    protected $utils;
-    protected $logger;
-    protected $finder;
-    protected $session;
-    protected $styleUtils;
-    protected $cache;
-    protected $styleService;
-    protected $jsonUtils;
+    protected EntityManagerInterface $entityManager;
+    protected Utils $utils;
+    protected LoggerInterface $logger;
+    protected Finder $finder;
+    protected SessionInterface $session;
+    protected StyleUtils $styleUtils;
+    protected AdapterInterface $cache;
+    protected Style $styleService;
+    protected JsonUtils $jsonUtils;
 
     public function __construct(
         EntityManagerInterface $entityManager,

@@ -20,22 +20,22 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
-    private $properties;
+    private ?array $properties = null;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
-    private $localProperties;
+    private ?array $localProperties = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Geometry\GeometryBase", mappedBy="geoObject")
      */
-    private $geography;
+    private ?Collection $geography = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType")
@@ -46,12 +46,12 @@ class GeoObject implements UuidInterface, GeoObjectInterface
     /**
      * @ORM\Column(type="string")
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true}, nullable=true)
      */
-    private $metadata;
+    private ?array $metadata = null;
 
     public function getId(): ?int
     {

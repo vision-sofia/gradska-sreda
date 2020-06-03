@@ -29,19 +29,19 @@ class Location implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
      * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
      */
-    private $user;
+    private ?UserInterface $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $geoObject;
+    private ?GeoObjectInterface $geoObject = null;
 
     /**
      * @ORM\Column(name="coordinates", type="geography", options={"geometry_type": "POINT"}, nullable=true)

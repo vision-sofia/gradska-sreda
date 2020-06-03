@@ -18,9 +18,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class StaticPageController extends AbstractController
 {
-    protected $flashMessage;
-    protected $translator;
-    protected $markdown;
+    protected FlashMessage $flashMessage;
+    protected TranslatorInterface $translator;
+    protected MarkdownInterface $markdown;
 
     public function __construct(
         FlashMessage $flashMessage,

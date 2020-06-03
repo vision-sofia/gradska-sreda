@@ -19,9 +19,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class AnswerController extends AbstractController
 {
-    protected $flashMessage;
-    protected $csrfTokenValidator;
-    protected $translator;
+    protected FlashMessage $flashMessage;
+    protected CsrfTokenValidator $csrfTokenValidator;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         FlashMessage $flashMessage,

@@ -30,36 +30,36 @@ class Question implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\User\User")
      * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
      */
-    private $user;
+    private ?UserInterface $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Response\Location", cascade={"persist"})
      * @ORM\JoinColumn(referencedColumnName="id", name="location_id", nullable=true)
      */
-    private $location;
+    private ?Location $location;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Question")
      * @ORM\JoinColumn(referencedColumnName="id", name="question_id", nullable=false)
      */
-    private $question;
+    private ?SurveyQuestion $question = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Response\Answer", mappedBy="question", cascade={"persist"})
      */
-    private $answers;
+    private Collection $answers;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $geoObject;
+    private ?GeoObjectInterface $geoObject = null;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -74,7 +74,7 @@ class Question implements UuidInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isLatest = false;
+    private bool $isLatest = false;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})

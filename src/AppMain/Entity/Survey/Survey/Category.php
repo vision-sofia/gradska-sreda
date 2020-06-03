@@ -21,7 +21,7 @@ class Category implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Survey\Category", mappedBy="parent")
@@ -37,7 +37,7 @@ class Category implements UuidInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Survey")

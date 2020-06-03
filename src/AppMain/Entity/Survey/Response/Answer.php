@@ -26,7 +26,7 @@ class Answer implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Response\Question", inversedBy="answers")
@@ -43,7 +43,7 @@ class Answer implements UuidInterface
     /**
      * @ORM\Column(type="text")
      */
-    private $explanation = '';
+    private string $explanation = '';
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -54,7 +54,7 @@ class Answer implements UuidInterface
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isCompleted = false;
+    private bool $isCompleted = false;
 
     public function getId(): int
     {

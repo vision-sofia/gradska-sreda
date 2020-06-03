@@ -24,12 +24,12 @@ class Answer implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Question", inversedBy="answers")
@@ -50,27 +50,27 @@ class Answer implements UuidInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isFreeAnswer;
+    private bool $isFreeAnswer = false;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isPhotoEnabled;
+    private bool $isPhotoEnabled = false;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isChildAnswerRequired = false;
+    private bool $isChildAnswerRequired = false;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isExplanationRequired = false;
+    private bool $isExplanationRequired = false;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
      */
-    private $isPhotoRequired = false;
+    private bool $isPhotoRequired = false;
 
     public function __construct()
     {

@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RatingController extends AbstractController
 {
-    private $surveyCompletionRating;
+    private SurveyCompletionRating $surveyCompletionRating;
 
     public function __construct(SurveyCompletionRating $surveyCompletionRating)
     {

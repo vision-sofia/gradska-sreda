@@ -24,7 +24,7 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Id
@@ -36,12 +36,12 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
     /**
      * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
-    private $properties;
+    private ?array $properties = null;
 
     /**
      * @ORM\Column(type="string", name="geo_object_name")
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="guid")
@@ -61,17 +61,17 @@ class SurveyGeoObject implements UuidInterface, GeoObjectInterface
     /**
      * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
      */
-    private $metadata;
+    private ?array $metadata = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $baseStyle;
+    private ?string $baseStyle = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $hoverStyle;
+    private ?string $hoverStyle = null;
 
     /**
      * @ORM\Column(type="integer[]", nullable=true)

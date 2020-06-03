@@ -8,10 +8,10 @@ namespace App\AppMain\DTO;
 
 class ResponseAnswerDTO
 {
-    protected $id;
-    protected $explanation;
+    protected ?int $id = null;
+    protected ?string $explanation = null;
     protected $photo;
-    protected $question_id;
+    protected ?int $question_id = null;
 
     public function getId(): ?int
     {

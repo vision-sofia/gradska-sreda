@@ -17,14 +17,14 @@ class Scope
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Survey\Survey\Survey")
      * @ORM\JoinColumn(referencedColumnName="id", name="survey_id", nullable=false)
      */
-    private $survey;
+    private ?Survey $survey = null;
 
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $geoObjectId;
+    private ?GeoObject $geoObjectId = null;
 
     public function getSurvey(): ?Survey
     {

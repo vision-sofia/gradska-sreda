@@ -8,7 +8,7 @@ namespace App\AppMain\DTO;
 
 class SurveyGeoObjectDTO
 {
-    public $id;
+    public ?int $id = null;
     public $geometry;
     public $geometry_type;
     public $base_style;

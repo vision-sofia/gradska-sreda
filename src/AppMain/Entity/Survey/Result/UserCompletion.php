@@ -22,14 +22,14 @@ class UserCompletion
      * @ORM\Id
      * @ORM\JoinColumn(referencedColumnName="id", name="user_id", nullable=false)
      */
-    private $user;
+    private ?UserInterface $user = null;
 
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\GeoObject")
      * @ORM\JoinColumn(referencedColumnName="id", name="geo_object_id", nullable=false)
      */
-    private $geoObject;
+    private ?GeoObject $geoObject = null;
 
     /**
      * @ORM\Id
@@ -41,7 +41,7 @@ class UserCompletion
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isCompleted;
+    private bool $isCompleted = false;
 
     public function getUser(): ?UserInterface
     {

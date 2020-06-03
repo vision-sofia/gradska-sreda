@@ -8,15 +8,15 @@ namespace App\AppMain\DTO;
 
 class QuestionAnswerDTO
 {
-    protected $id;
-    protected $uuid;
-    protected $title;
+    protected ?int $id = null;
+    protected ?string $uuid = null;
+    protected ?string $title = null;
     protected $parent;
-    protected $is_free_answer;
-    protected $is_photo_enabled;
-    protected $explanation;
+    protected ?bool $is_free_answer = null;
+    protected ?bool $is_photo_enabled = null;
+    protected ?string $explanation = null;
     protected $photo;
-    protected $is_selected = false;
+    protected bool $is_selected = false;
 
     public function getId(): ?int
     {

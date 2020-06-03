@@ -26,17 +26,17 @@ class Simplify implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=8)
      */
-    private $tolerance;
+    private ?float $tolerance = null;
 
     /**
      * @ORM\Column(type="int4range")
      */
-    private $zoom;
+    private ?IntRange $zoom = null;
 
     public function getId()
     {

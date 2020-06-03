@@ -25,13 +25,13 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    protected $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(length=255, unique=true)
      * @Assert\NotBlank(groups={"profile", "register"})
      */
-    protected $username;
+    protected ?string $username = null;
 
     /**
      * @ORM\Column(type="string", length=250, nullable=false)
@@ -59,17 +59,17 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
     /**
      * @ORM\Column(type="string", length=255)
      */
-    protected $password;
+    protected ?string $password = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    protected $name = '';
+    protected ?string $name = '';
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
      * @SecurityAssert\UserPassword(groups={"current_password"})

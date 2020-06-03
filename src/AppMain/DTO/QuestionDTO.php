@@ -8,13 +8,13 @@ namespace App\AppMain\DTO;
 
 class QuestionDTO
 {
-    protected $id;
-    protected $uuid;
-    protected $title;
-    protected $has_multiple_answers;
+    protected ?int $id = null;
+    protected ?string $uuid = null;
+    protected ?string $title = null;
+    protected ?bool $has_multiple_answers = null;
     protected $answers;
-    protected $is_answered = false;
-    protected $is_completed = false;
+    protected bool $is_answered = false;
+    protected bool $is_completed = false;
 
     /**
      * @return QuestionAnswerDTO[]

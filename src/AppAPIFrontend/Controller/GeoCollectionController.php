@@ -23,10 +23,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class GeoCollectionController extends AbstractController
 {
-    protected $entityManager;
-    protected $geoCollection;
-    protected $utils;
-    protected $logger;
+    protected GeoCollection $geoCollection;
+    protected Utils $utils;
+    protected LoggerInterface $logger;
 
     public function __construct(
         GeoCollection $geoCollection,

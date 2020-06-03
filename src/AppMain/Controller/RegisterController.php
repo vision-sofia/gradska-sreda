@@ -13,9 +13,9 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class RegisterController extends AbstractController
 {
-    protected $passwordEncoder;
-    protected $guardHandler;
-    protected $authenticator;
+    protected UserPasswordEncoderInterface $passwordEncoder;
+    protected GuardAuthenticatorHandler $guardHandler;
+    protected LoginFormAuthenticator $authenticator;
 
     public function __construct(
         UserPasswordEncoderInterface $passwordEncoder,

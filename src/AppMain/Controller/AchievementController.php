@@ -15,9 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class AchievementController extends AbstractController
 {
-    protected $entityManager;
-    protected $utils;
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(
         LoggerInterface $logger

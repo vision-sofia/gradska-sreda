@@ -20,19 +20,19 @@ class Element implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $category;
+    private ?Category $category = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Geospatial\ObjectType")
      * @ORM\JoinColumn(referencedColumnName="id", name="object_type_id", nullable=false)
      */
-    private $objectType;
+    private ?ObjectType $objectType = null;
 
     public function getId(): int
     {

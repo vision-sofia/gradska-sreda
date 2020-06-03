@@ -19,27 +19,27 @@ class StyleGroup
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(name="code", type="string")
      */
-    private $code;
+    private ?string $code = null;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true})
      */
-    private $style;
+    private ?array $style = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isForInternalSystem;
+    private bool $isForInternalSystem = false;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $description = '';
+    private string $description = '';
 
     public function getId(): int
     {

@@ -22,12 +22,12 @@ class Question implements UuidInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title = '';
+    private string $title = '';
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Category")
@@ -43,7 +43,7 @@ class Question implements UuidInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $hasMultipleAnswers;
+    private bool $hasMultipleAnswers = false;
 
     public function __construct()
     {

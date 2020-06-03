@@ -8,16 +8,10 @@ namespace App\AppMain\DTO;
 
 class GeoJsonDTO
 {
-    public $type = 'Feature';
-    public $geometry;
-    public $properties;
+    public string $type = 'Feature';
+    public object $geometry;
+    public object $properties;
 
-    /**
-     * GeoJsonDTO constructor.
-     *
-     * @param $geometry
-     * @param $properties
-     */
     public function __construct(object $geometry, object $properties)
     {
         $this->geometry = $geometry;
