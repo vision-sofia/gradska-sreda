@@ -8,8 +8,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class CsrfTokenValidator
 {
-    protected $requestStack;
-    protected $csrfTokenManager;
+    protected RequestStack $requestStack;
+    protected CsrfTokenManagerInterface $csrfTokenManager;
 
     public function __construct(RequestStack $requestStack, CsrfTokenManagerInterface $csrfTokenManager)
     {

@@ -11,7 +11,7 @@ class FlashMessage
     public const FLASH_TYPE_WARNING = 'warning';
     public const FLASH_TYPE_ERROR = 'error';
 
-    protected $flashBag;
+    protected FlashBagInterface $flashBag;
 
     public function __construct(FlashBagInterface $flashBag)
     {

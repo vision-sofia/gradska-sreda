@@ -10,7 +10,7 @@ use PDO;
 
 class GeoCollection
 {
-    protected $em;
+    protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -240,7 +240,7 @@ class GeoCollection
         $stmt = $conn->prepare('
             SELECT
                 array_length(ST_ClusterIntersecting(gb.coordinates::geometry), 1)
-            FROM  
+            FROM
                 x_survey.gc_collection c
                     INNER JOIN
                 x_survey.gc_collection_content cc ON c.id = cc.geo_collection_id
@@ -248,7 +248,7 @@ class GeoCollection
                 x_geospatial.geo_object go ON cc.geo_object_id = go.id
                     INNER JOIN
                 x_geometry.geometry_base gb ON go.id = gb.geo_object_id
-            WHERE 
+            WHERE
                 c.uuid = ?
         ');
 
@@ -360,7 +360,7 @@ class GeoCollection
                     WHERE
                         c.id = c0.id
                     ) z
-                ) 
+                )
             WHERE
                 c0.id = ?
         ');

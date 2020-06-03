@@ -8,8 +8,8 @@ use Psr\Log\LoggerInterface;
 
 class SurveyCategoryCompletion
 {
-    protected $em;
-    protected $logger;
+    protected EntityManagerInterface $em;
+    protected LoggerInterface $logger;
 
     public function __construct(EntityManagerInterface $em, LoggerInterface $logger)
     {
@@ -41,7 +41,7 @@ class SurveyCategoryCompletion
                     uc.is_completed = TRUE
                     AND uc.user_id = :user_id
                 GROUP BY
-                    a.id, uc.user_id        
+                    a.id, uc.user_id
             ');
 
             $stmt->bindValue('user_id', $userId);
