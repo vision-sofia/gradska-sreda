@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Style
 {
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

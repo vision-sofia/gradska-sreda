@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Simplify
 {
-    protected $em;
+    protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

@@ -4,7 +4,7 @@ namespace App\Services\Markdown;
 
 class Parsedown implements MarkdownInterface
 {
-    protected $parsedown;
+    protected \Parsedown $parsedown;
 
     public function __construct(\Parsedown $markdown)
     {

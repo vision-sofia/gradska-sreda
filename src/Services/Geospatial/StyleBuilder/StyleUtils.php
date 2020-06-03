@@ -4,8 +4,8 @@ namespace App\Services\Geospatial\StyleBuilder;
 
 class StyleUtils
 {
-    private $staticStyles;
-    private $dynamicStyles;
+    private array $staticStyles;
+    private array $dynamicStyles;
 
     public function getStaticStyles()
     {

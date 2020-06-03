@@ -8,7 +8,7 @@ use Generator;
 
 class SurveyCompletionRating
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -62,14 +62,14 @@ class SurveyCompletionRating
                 GROUP BY
                     u.id
             )
-            SELECT 
-                total, 
-                completed, 
-                ((total/2)+(completed+(completed*0.5)))/2 as score, 
+            SELECT
+                total,
+                completed,
+                ((total/2)+(completed+(completed*0.5)))/2 as score,
                 username
-            FROM 
-                z 
-            ORDER BY 
+            FROM
+                z
+            ORDER BY
                 score DESC
         ');
 

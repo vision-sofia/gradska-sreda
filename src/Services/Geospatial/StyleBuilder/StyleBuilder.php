@@ -10,8 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class StyleBuilder
 {
-    protected $em;
-    protected $surveyGeoObjectRepository;
+    protected EntityManagerInterface $em;
+    protected SurveyGeoObjectRepository $surveyGeoObjectRepository;
 
     public function __construct(
         EntityManagerInterface $em,

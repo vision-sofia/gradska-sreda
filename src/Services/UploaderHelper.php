@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class UploaderHelper
 {
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
     public function __construct(FilesystemInterface $publicUploadsFilesystem)
     {

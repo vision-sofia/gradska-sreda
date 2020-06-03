@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class QuestionV2
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -162,7 +162,7 @@ class QuestionV2
                 WHERE
                     id = :answer_id
                     AND question_id = :question_id
-            )                          
+            )
         ');
 
         $stmt->bindValue('answer_id', $answer->getId());
