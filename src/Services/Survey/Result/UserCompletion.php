@@ -30,31 +30,22 @@ class UserCompletion
                         x_survey.result_user_completion c
                     WHERE
                         c.is_completed = true
-                        AND c.geo_object_id = s.geo_object_id
+                        AND c.geo_object_id = g.geo_object_id
+                        AND c.survey_id = g.survey_id
                 ) as has_completion
             FROM
-                x_survey.spatial_geo_object s
+                x_survey.spatial_geo_object g
+                    INNER JOIN
+                x_survey.survey s ON g.survey_id = s.id
             WHERE
-                s.geo_object_id = :geo_object_id
+                s.is_active = true
+                AND g.geo_object_id = :geo_object_id
         ');
 
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
 
-        $data = $stmt->fetch();
-        $properties = json_decode($data['properties'], true);
-
-        $styleValue = '';
-
-        if ($properties['_sca'] === 'Пешеходни отсечки' && $data['has_completion'] === true) {
-            $styleValue = 't';
-        } elseif ($properties['_sca'] === 'Алеи' && $data['has_completion'] === true) {
-            $styleValue = 'a';
-        } elseif ($properties['_sca'] === 'Пресичания' && $data['has_completion'] === true) {
-            $styleValue = 'p';
-        }
-
-        $stmt = $conn->prepare('
+        $updatePropertiesStmt = $conn->prepare('
             UPDATE
                 x_survey.spatial_geo_object
             SET
@@ -63,9 +54,23 @@ class UserCompletion
                 geo_object_id = :geo_object_id
         ');
 
-        $stmt->bindValue('hc', json_encode(['_hc' => $styleValue]));
-        $stmt->bindValue('geo_object_id', $geoObjectId);
-        $stmt->execute();
+        while($row = $stmt->fetch(\PDO::FETCH_OBJ)) {
+            $properties = json_decode($row->properties, true);
+
+            if ($row->has_completion === true) {
+                if ($properties['_sca'] === 'Пешеходни отсечки') {
+                    $styleValue = 't';
+                } elseif ($properties['_sca'] === 'Алеи') {
+                    $styleValue = 'a';
+                } elseif ($properties['_sca'] === 'Пресичания') {
+                    $styleValue = 'p';
+                }
+            }
+
+            $updatePropertiesStmt->bindValue('hc', json_encode(['_hc' => $styleValue ?? '']));
+            $updatePropertiesStmt->bindValue('geo_object_id', $geoObjectId);
+            $updatePropertiesStmt->execute();
+        }
     }
 
     public function update(int $geoObjectId, int $userId): void
