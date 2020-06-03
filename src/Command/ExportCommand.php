@@ -7,7 +7,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ExportCommand extends Command
 {
@@ -16,7 +15,8 @@ class ExportCommand extends Command
     protected EntityManagerInterface $em;
     protected string $projectDir;
 
-    public function __construct(EntityManagerInterface $em, string $projectDir) {
+    public function __construct(EntityManagerInterface $em, string $projectDir)
+    {
         $this->em = $em;
         $this->projectDir = $projectDir;
         parent::__construct();

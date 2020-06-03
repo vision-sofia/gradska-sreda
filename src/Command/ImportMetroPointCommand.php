@@ -9,7 +9,6 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ImportMetroPointCommand extends Command
 {
@@ -18,7 +17,8 @@ class ImportMetroPointCommand extends Command
     protected EntityManagerInterface $entityManager;
     protected string $projectDir;
 
-    public function __construct(EntityManagerInterface $entityManager, string $projectDir) {
+    public function __construct(EntityManagerInterface $entityManager, string $projectDir)
+    {
         $this->entityManager = $entityManager;
         $this->projectDir = $projectDir;
         parent::__construct();
