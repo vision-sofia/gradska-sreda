@@ -203,8 +203,7 @@ export class Survey {
 
             html += `
                 <div class="survey-question-title mb-1">
-                    <i class="survey-question-title-check mr-1 fas fa-check"></i>
-                    <h5 class="survey-question-title-text d-inline">${this.question.title}</h5>
+                    <h6 class="survey-question-title-text d-inline">${this.question.title}</h6>
                     <div class="d-flex flex-grow-1 align-items-start justify-content-end">
                         <button type="button" class="remove btn btn-sm btn-danger" name="answers[option][${this.question.uuid}][]" data-uuid="${this.question.uuid}">
                             <i class="fa fa-trash"></i>
@@ -214,7 +213,7 @@ export class Survey {
             `;
 
             html += `
-                <div class="survey-question pl-4">
+                <div class="survey-question pl-1">
             `;
 
             Object.keys(answers).forEach((answer) => {

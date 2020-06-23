@@ -5,8 +5,8 @@ export class Collection {
     constructor(mapInstance, settings) {
         this.mapInstance = mapInstance;
         this.settings = settings;
-        
-        this.layer = L.geoJSON([], { 
+
+        this.layer = L.geoJSON([], {
             style: (feature) => {
                 let styles = settings.styles[feature.properties._s1] ? {...settings.styles[feature.properties._s1]} : {...defaultObjectStyle};
                 return styles;
@@ -19,7 +19,7 @@ export class Collection {
                 });
                 layer.on('mouseover', () => {
                     if (layer.feature.properties.activePopup) {
-                        return; 
+                        return;
                     }
                     if (settings.styles[feature.properties._s2]) {
                         this.setLayerHoverStyle(layer);
@@ -39,7 +39,7 @@ export class Collection {
             }
         });
     }
-    
+
     setLayerDefaultStyle(layer) {
         layer.setStyle(this.settings.styles[layer.feature.properties._s1] || defaultObjectStyle)
     }
@@ -55,9 +55,9 @@ export class Collection {
     //     this.mapInstance.setLayerActiveStyle(layer);
     //     this.mapInstance.removeAllPopups();
     //     console.log('s------');
-        
+
     //    console.log(layer.feature.properties._behavior);
-       
+
     //     if (layer.feature.properties._behavior === 'survey') {
     //         if (this.isCollectionsActive) {
     //             this.add(layer, ev);
@@ -91,7 +91,7 @@ export class Collections {
 
     events() {
         // document.getElementById('collections-toggle').checked = this.isCollectionsActive;
-        
+
         $(document).on('click', '#collections-toggle', () => {
             this.toggleCollectionLayer();
         });
@@ -107,7 +107,7 @@ export class Collections {
         $(document).on('click', '[data-toggle-for="collections"][data-toggle-open]', () => {
             this.open();
         });
-        
+
         $(document).on('click', '[data-toggle-for="collections"][data-toggle-close]', () => {
             this.close();
         });
@@ -156,7 +156,7 @@ export class Collections {
 
     delete(layerUUID) {
         const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(layerUUID);
-        
+
         $.ajax({
             type: 'DELETE',
             url: `/front-end/geo-collection/${layerUUID}`,
@@ -182,12 +182,12 @@ export class Collections {
         this.activeCollectionId = activeCollectionId;
         const activeCollection = this.collectionsResponse.find(geoLocation => geoLocation.id === this.activeCollectionId);
         const layer = this.mapInstance.mapResponse.CollectionsLayerControl.getLayer(activeCollectionId);
-      
+
         if (layer) {
             if (!this.mapInstance.map.getBounds().contains(layer.getBounds())) {
                 this.mapInstance.map.fitBounds(layer.getBounds());
             }
-    
+
             this.mapInstance.zoomToLayer(null, null, layer.getBounds().getCenter());
         }
     }
@@ -198,45 +198,45 @@ export class Collections {
     }
 
     getGeoCollectionsList() {
-        $.ajax({
-            url: '/front-end/geo-collection/info',
-            success: result => {
-                this.collectionsResponse = result;
-                let html = `<ul class="collections-list mt-4 pl-4">`;
-
-                this.collectionsResponse.forEach(geoLocation => {
-                    html += `<li class="collections-list-item mb-2">`;
-                    html += `
-                        <div class="d-flex">
-                            <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.id ? 'active' : null}" data-collection-id="${geoLocation.id}" href="#${geoLocation.id}">
-                                ${geoLocation.name ? geoLocation.name : 'Маршрут ' +  geoLocation.identify} <span class="is-active">[<span class="text-success">активен</span>]</span>
-                            </a>
-                            <span class="d-flex justify-content-end flex-grow-1">
-                                <button data-uuid="${geoLocation.id}" class="remove btn btn-sm btn-danger">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </span>
-                        </div>
-                    `;
-
-                    html += `
-                        <div>
-							дължина: ${geoLocation.length} м<br />
-							оценен: ${geoLocation.completion.percentage} %<br />
-								<div class="progress" style="height: 3px;">
-									<div class="progress-bar" role="progressbar" style="width: ${geoLocation.completion.percentage}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                        </div>
-                    `;
-
-                    html +=	`</li>`;
-                });
-
-                html += `</ul>`;
-
-                this.elCollectionsList.innerHTML = html;
-            }
-        });
+        // $.ajax({
+        //     url: '/front-end/geo-collection/info',
+        //     success: result => {
+        //         this.collectionsResponse = result;
+        //         let html = `<ul class="collections-list mt-4 pl-4">`;
+        //
+        //         this.collectionsResponse.forEach(geoLocation => {
+        //             html += `<li class="collections-list-item mb-2">`;
+        //             html += `
+        //                 <div class="d-flex">
+        //                     <a class="collections-list-item-link font-weight-bold ${this.activeCollectionId === geoLocation.id ? 'active' : null}" data-collection-id="${geoLocation.id}" href="#${geoLocation.id}">
+        //                         ${geoLocation.name ? geoLocation.name : 'Маршрут ' +  geoLocation.identify} <span class="is-active">[<span class="text-success">активен</span>]</span>
+        //                     </a>
+        //                     <span class="d-flex justify-content-end flex-grow-1">
+        //                         <button data-uuid="${geoLocation.id}" class="remove btn btn-sm btn-danger">
+        //                             <i class="fa fa-trash"></i>
+        //                         </button>
+        //                     </span>
+        //                 </div>
+        //             `;
+        //
+        //             html += `
+        //                 <div>
+		// 					дължина: ${geoLocation.length} м<br />
+		// 					оценен: ${geoLocation.completion.percentage} %<br />
+		// 						<div class="progress" style="height: 3px;">
+		// 							<div class="progress-bar" role="progressbar" style="width: ${geoLocation.completion.percentage}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        //                         </div>
+        //                 </div>
+        //             `;
+        //
+        //             html +=	`</li>`;
+        //         });
+        //
+        //         html += `</ul>`;
+        //
+        //         this.elCollectionsList.innerHTML = html;
+        //     }
+        // });
     }
 
     open() {
