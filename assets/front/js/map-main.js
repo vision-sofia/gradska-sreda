@@ -355,6 +355,10 @@ export class Map {
     onLayerClick(layer, ev) {
         console.log('CLICK');
 
+        if ($('#path-vote-survey').hasClass('active')) {
+            $('#path-vote-survey').removeClass('active');
+        }
+
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
         this.removeAllPopups();
