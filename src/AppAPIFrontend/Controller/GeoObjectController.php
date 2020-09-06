@@ -71,6 +71,9 @@ class GeoObjectController extends AbstractController
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function surveyResult(GeoObject $geoObject): array
     {
         /** @var UserInterface $user */
@@ -175,9 +178,24 @@ class GeoObjectController extends AbstractController
             'percentage' => round(($result['complete'] / $result['total']) * 100),
         ];
 
+        $stmt = $conn->prepare('
+            SELECT
+                is_confirmed
+            FROM
+                x_survey.response_location
+            WHERE
+                geo_object_id = :geo_object_id
+                AND user_id = :user_id
+        ');
+
+        $stmt->bindValue('user_id', $user->getId());
+        $stmt->bindValue('geo_object_id', $geoObject->getId());
+        $stmt->execute();
+
         return [
             'questions' => $survey,
             'progress' => $progress,
+            'is_confirmed' => $stmt->fetchColumn()
         ];
     }
 

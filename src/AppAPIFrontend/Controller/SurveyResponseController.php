@@ -142,4 +142,46 @@ class SurveyResponseController extends AbstractController
 
         return new JsonResponse([]);
     }
+
+    /**
+     * @Route("/{id}/confirm", name="confirm", methods="POST")
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
+     */
+    public function confirm(GeoObject $geoObject): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof UserInterface || !$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        /** @var Connection $conn */
+        $conn = $this->getDoctrine()->getConnection();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_location rl
+            SET
+                is_confirmed = true,
+                confirmed_at = NOW()
+            WHERE
+                rl.user_id = :user_id
+                AND rl.geo_object_id = (
+                    SELECT
+                        id
+                    FROM
+                        x_geospatial.geo_object g
+                    WHERE
+                        g.uuid = :geo_object_uuid
+                )
+        ');
+
+        $stmt->bindValue('user_id', $user->getId());
+        $stmt->bindValue('geo_object_uuid', $geoObject->getUuid());
+        $stmt->execute();
+
+        return new JsonResponse([
+            'confirmed' => true,
+        ]);
+    }
 }

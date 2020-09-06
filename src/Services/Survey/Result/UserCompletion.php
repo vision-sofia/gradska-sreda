@@ -138,6 +138,20 @@ class UserCompletion
         $stmt->bindValue('geo_object_id', $geoObjectId);
         $stmt->execute();
 
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_location rl
+            SET
+                is_confirmed = false
+            WHERE
+                rl.user_id = :user_id
+                AND rl.geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+
         $conn->commit();
 
         $this->updateHybrid($geoObjectId);

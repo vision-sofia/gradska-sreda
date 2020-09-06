@@ -353,11 +353,11 @@ export class Map {
     }
 
     onLayerClick(layer, ev) {
-        console.log('CLICK');
-
         if ($('#path-vote-survey').hasClass('active')) {
             $('#path-vote-survey').removeClass('active');
         }
+
+        $('#confirm-button').data('geo-object', layer.feature.properties.id)
 
         layer.feature.properties.activePopup = true;
         this.setLayerActiveStyle(layer);
@@ -591,5 +591,4 @@ export class Map {
             this.setActiveArea();
         }
     }
-};
-
+}

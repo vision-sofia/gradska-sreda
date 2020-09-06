@@ -54,6 +54,20 @@ export class Survey {
     }
 
     events() {
+        $(document).on('click', '#confirm-button', () => {
+            let id = $('#confirm-button').data('geo-object');
+
+            $.ajax({
+                type: 'POST',
+                url: `/front-end/geo-object/${id}/confirm`,
+                success: (result) => {
+                    if (result.confirmed) {
+                        this.styleConfirmButtonDone($('#confirm-button'));
+                    }
+                }
+            });
+        });
+
         $(this.elSurveyCarouselNav).on('click', (e) => {
             if (e.currentTarget.classList.contains('active')) {
                 return false;
@@ -106,11 +120,36 @@ export class Survey {
         });
     }
 
+    styleConfirmButtonDone(button) {
+        button.removeClass("btn-secondary").removeClass('btn-primary');
+        button.attr("disabled", true);
+        button.html('Анкетата е изпратена');
+    }
+
+    styleConfirmButton(result) {
+        let button = $('#confirm-button');
+
+        if(result.survey.is_confirmed) {
+            this.styleConfirmButtonDone(button);
+        } else {
+            if (result.survey.progress.percentage === 100) {
+                button.removeClass("btn-secondary").addClass('btn-primary');
+                button.attr("disabled", false);
+                button.html('Изпрати');
+            } else {
+                button.removeClass("btn-primary").addClass('btn-secondary');
+                button.attr("disabled", true);
+                button.html('Изпрати');
+            }
+        }
+    }
+
     getQuestions() {
         $.ajax({
             url: 'front-end/geo/' + this.geoObjectUUID,
             success: (result) => {
                this.buildSurvey(result);
+               this.styleConfirmButton(result);
             }
         });
     }
@@ -137,6 +176,7 @@ export class Survey {
             success: (result) => {
                 this.buildSurvey(result);
                 this.getResults();
+                this.styleConfirmButton(result);
             }
         });
     };
@@ -323,4 +363,4 @@ export class Survey {
             }
         });
     }
-};
+}
