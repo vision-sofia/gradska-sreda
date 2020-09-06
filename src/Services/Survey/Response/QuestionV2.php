@@ -9,6 +9,7 @@ use App\AppMain\Entity\User\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/* @deprecated */
 class QuestionV2
 {
     private EntityManagerInterface $entityManager;

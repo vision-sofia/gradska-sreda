@@ -10,6 +10,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/** @deprecated  */
 class Question
 {
     private EntityManagerInterface $entityManager;
