@@ -100,7 +100,7 @@ export class Survey {
                     }
                 };
 
-                debounceTime = 400;
+                debounceTime = 1000;
             } else {
                 data = {
                     'answer': target.value,
@@ -110,7 +110,11 @@ export class Survey {
             clearTimeout(this.timeoutId);
 
             this.timeoutId = setTimeout(() => {
-                this.submitSurvey(data, target.value)
+                if (target.tagName === 'TEXTAREA') {
+                    this.submitSurveyCustomText(data, target.value);
+                } else {
+                    this.submitSurvey(data, target.value);
+                }
             }, debounceTime);
         });
 
@@ -177,6 +181,19 @@ export class Survey {
                 this.buildSurvey(result);
                 this.getResults();
                 this.styleConfirmButton(result);
+            }
+        });
+    };
+
+    submitSurveyCustomText(data, value) {
+        $.ajax({
+            type: 'POST',
+            url: '/geo/' + this.geoObjectUUID + '/q',
+            data: data,
+            beforeSend: () => {
+                if (document.getElementById(value)) {
+                    document.getElementById(value).classList.add('active');
+                }
             }
         });
     };
