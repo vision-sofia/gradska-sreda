@@ -9,7 +9,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "doctrine/doctrine-migrations-bundle": "^2.1",
+        "doctrine/doctrine-migrations-bundle": "^3.0",
         "erusev/parsedown": "^1.7",
         "jsor/doctrine-postgis": "^1.7",
         "lexik/jwt-authentication-bundle": "^2.6",
