@@ -22,7 +22,7 @@ class UserProvider implements UserProviderInterface
     {
         $repository = $this->entityManager->getRepository(User::class);
 
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $repository->findOneBy(['username' => $username]);
 
         if (null !== $user) {

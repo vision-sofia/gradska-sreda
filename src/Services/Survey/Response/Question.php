@@ -40,7 +40,7 @@ class Question
         $stmt->execute();
     }
 
-    public function response(array $answers, array $toImport, GeoObjectInterface $geoObject, UserInterface $user)
+    public function response(array $answers, GeoObjectInterface $geoObject, UserInterface $user)
     {
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => key($answers),

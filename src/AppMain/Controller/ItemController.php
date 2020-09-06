@@ -81,8 +81,9 @@ class ItemController extends AbstractController
         $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
 
         $responseAnswers = [];
-        /** @var ResponseAnswerDTO $answer [] */
+
         while ($answer = $stmt->fetch()) {
+            /** @var ResponseAnswerDTO $answer */
             $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
         }
 

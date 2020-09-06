@@ -5,7 +5,6 @@ namespace App\AppMain\Entity\User;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Serializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface as UserSecurityInterface;
 use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
@@ -16,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="user_base", schema="x_main")
  * @UniqueEntity("username", groups={"register", "default"})
  */
-class User implements UserSecurityInterface, Serializable, UuidInterface, UserInterface
+class User implements UserSecurityInterface, UuidInterface, UserInterface
 {
     use UUIDableTrait;
 
@@ -91,8 +90,9 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
         $this->password = $password;
     }
 
-    public function getSalt(): void
+    public function getSalt():?string
     {
+        return null;
     }
 
     public function getPassword()
@@ -178,12 +178,12 @@ class User implements UserSecurityInterface, Serializable, UuidInterface, UserIn
         $this->isActive = $isActive;
     }
 
-    public function getLastLogin(): ?\DateTimeImmutable
+    public function getLastLogin(): ?\DateTimeInterface
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(\DateTimeImmutable $lastLogin): void
+    public function setLastLogin(\DateTimeInterface $lastLogin): void
     {
         $this->lastLogin = $lastLogin;
     }

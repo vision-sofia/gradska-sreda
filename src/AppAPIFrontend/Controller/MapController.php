@@ -69,7 +69,7 @@ class MapController extends AbstractController
             return new JsonResponse(['Missing parameters'], 400);
         }
 
-        /** @var Survey $survey */
+        /** @var Survey|null $survey */
         $survey = $this->getDoctrine()->getRepository(Survey::class)->findOneBy([
             'isActive' => true,
         ]);
@@ -83,7 +83,7 @@ class MapController extends AbstractController
 
         $simplifyTolerance = $this->simplifyTolerance((int) $zoom);
 
-        $geoObjects = $this->finder->find($zoom, $simplifyTolerance, $in, $survey->getId());
+        $geoObjects = $this->finder->find((int) $zoom, $simplifyTolerance, $in, $survey->getId());
 
         $userSubmitted = $objects = [];
 
@@ -159,6 +159,7 @@ class MapController extends AbstractController
 
     private function process(SurveyGeoObjectDTO $row, &$styles, StyleUtils $styleUtils): string
     {
+        /** @var \StdClass $properties */
         $properties = json_decode($row->properties, false);
         $properties->_s1 = $row->base_style ?? null;
         $properties->_s2 = $row->hover_style ?? null;
@@ -201,7 +202,7 @@ class MapController extends AbstractController
             CacheKeys::VALUE_SEPARATOR .
             $zoom,
             function () use ($zoom) {
-                /** @var Simplify[] $simplify */
+                /** @var Simplify[] $simplifySet */
                 $simplifySet = $this->getDoctrine()
                     ->getRepository(Simplify::class)
                     ->findAll()

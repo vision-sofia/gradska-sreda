@@ -4,10 +4,10 @@ namespace App\Doctrine\ValueObject;
 
 class IntRange
 {
-    private $start;
-    private $end;
+    private ?int $start;
+    private ?int $end;
 
-    public function __construct(int $start, int $end)
+    public function __construct(?int $start, ?int $end)
     {
         $this->start = $start;
         $this->end = $end;
@@ -28,12 +28,19 @@ class IntRange
         return sprintf('[%s,%s)', $intRange->getStart(), $intRange->getEnd());
     }
 
-    public static function fromString($string): self
+    public static function fromString(string $string): self
     {
+        if ($string === 'empty') {
+            return new self(null, null);
+        }
+
         $clean = strtr($string, ['[' => '', ']' => '', '(' => '', ')' => '']);
         [$start, $end] = explode(',', $clean);
 
-        return new self($start, $end);
+        return new self(
+            empty($start) ? null : (int) $start,
+            empty($end) ? null : (int) $end,
+        );
     }
 
     public function __toString(): string

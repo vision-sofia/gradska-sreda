@@ -81,8 +81,8 @@ class GeoObjectRating
 
         $result = [];
 
-        /** @var GeoObjectRatingDTO $row */
         while ($row = $stmt->fetch()) {
+            /** @var GeoObjectRatingDTO $row */
             $row->max = (float) $row->max;
             $row->rating = (float) $row->rating;
             $row->percentage = round(($row->rating / $row->max) * 100, 1);
