@@ -42,21 +42,21 @@
     "gulp-svgstore": "~6.1.1",
     "gulp-uglify": "~3.0.2",
     "js-yaml": "^3.14.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "lodash.merge": ">=4.6.2",
     "lodash.mergewith": ">=4.6.2",
     "lodash.template": ">=4.5.0",
-    "mem": "^6.1.0",
+    "mem": "^6.1.1",
     "run-sequence": "^2.2.1",
     "source-map-loader": "^0.2.3",
     "tar": "^4.4.13",
-    "webpack": "^4.43.0",
+    "webpack": "^4.44.1",
     "webpack-stream": "^5.2.1"
   },
   "dependencies": {
-    "bootstrap": "^4.5.0",
+    "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
-    "leaflet": "^1.6.0",
+    "leaflet": "^1.7.1",
     "leaflet-active-area": "^1.1.1"
   }
 }
