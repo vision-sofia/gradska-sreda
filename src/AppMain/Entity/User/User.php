@@ -90,7 +90,7 @@ class User implements UserSecurityInterface, UuidInterface, UserInterface
         $this->password = $password;
     }
 
-    public function getSalt():?string
+    public function getSalt(): ?string
     {
         return null;
     }

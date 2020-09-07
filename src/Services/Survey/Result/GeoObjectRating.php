@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class GeoObjectRating
 {
-    protected $em;
+    protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -22,7 +22,7 @@ class GeoObjectRating
         $conn->beginTransaction();
 
         $stmt = $conn->prepare('
-            DELETE FROM 
+            DELETE FROM
                 x_survey.result_geo_object_rating
             WHERE
                 user_id = :user_id
@@ -40,12 +40,12 @@ class GeoObjectRating
                 geo_object_id,
                 user_id,
                 rating
-            ) 
+            )
             SELECT
                 c.subject_id as criterion_subject_id,
                 q.geo_object_id,
                 q.user_id,
-                SUM(c.value) as rating 
+                SUM(c.value) as rating
             FROM
                 x_survey.response_question q
                     INNER JOIN
@@ -60,15 +60,15 @@ class GeoObjectRating
             WHERE
                 q.is_latest = TRUE
                 AND r.is_complete = TRUE
-                AND q.geo_object_id = :geo_object_id                    
+                AND q.geo_object_id = :geo_object_id
             GROUP BY
                 c.subject_id,
                 q.geo_object_id,
                 q.user_id
             ORDER BY
-                geo_object_id            
+                geo_object_id
             ON CONFLICT (criterion_subject_id, geo_object_id, user_id) DO UPDATE SET
-                rating = excluded.rating  
+                rating = excluded.rating
         ');
 
         $stmt->bindValue('geo_object_id', $geoObjectId);

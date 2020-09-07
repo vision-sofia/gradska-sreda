@@ -60,7 +60,7 @@ class MapController extends AbstractController
     /**
      * @Route("/map", name="api.map", methods="GET")
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $in = $request->query->get('in');
         $zoom = $request->query->get('zoom');
@@ -195,7 +195,7 @@ class MapController extends AbstractController
         );
     }
 
-    private function simplifyTolerance(int $zoom)
+    private function simplifyTolerance(int $zoom): float
     {
         $simplifyTolerance = $this->cache->get(
             CacheKeys::SIMPLIFY_TOLERANCE .

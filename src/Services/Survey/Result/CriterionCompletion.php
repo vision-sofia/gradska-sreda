@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class CriterionCompletion
 {
-    protected $em;
+    protected EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -22,7 +22,7 @@ class CriterionCompletion
         $conn->beginTransaction();
 
         $stmt = $conn->prepare('
-            DELETE FROM 
+            DELETE FROM
                 x_survey.result_criterion_completion
             WHERE
                 user_id = :user_id
@@ -62,7 +62,7 @@ class CriterionCompletion
                                 x_survey.response_question rq ON ra.question_id = rq.id
                             WHERE
                                 rq.user_id = :user_id
-                                AND rq.geo_object_id = :geo_object_id                                
+                                AND rq.geo_object_id = :geo_object_id
                         )
                         SELECT
                             COUNT(*) AS a,
@@ -89,7 +89,7 @@ class CriterionCompletion
                                 x_survey.ev_criterion_definition cd ON a.id = cd.answer_id
                             WHERE
                                 rq.user_id = :user_id
-                                AND rq.geo_object_id = :geo_object_id                                
+                                AND rq.geo_object_id = :geo_object_id
                             GROUP BY
                                 cd.subject_id, rq.id
                         )
@@ -117,7 +117,7 @@ class CriterionCompletion
                 re.geo_object_id,
                 m.count
             ON CONFLICT (subject_id, user_id,  geo_object_id) DO UPDATE SET
-                is_complete = excluded.is_complete         
+                is_complete = excluded.is_complete
         ');
 
         $stmt->bindValue('user_id', $userId);
@@ -150,7 +150,7 @@ class CriterionCompletion
                         rq.user_id = cc.user_id
                         AND rq.geo_object_id = cc.geo_object_id
                         AND cq.subject_id = cc.subject_id
-                )        
+                )
         ');
 
         $stmt->bindValue('user_id', $userId);

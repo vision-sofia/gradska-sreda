@@ -6,6 +6,7 @@ use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\User\User;
 use App\AppMain\Entity\User\UserInterface;
 use App\Services\ApiFrontend\GeoObjectRating;
 use App\Services\Survey\Question;
@@ -52,6 +53,12 @@ class GeoObjectController extends AbstractController
      */
     public function details(GeoObject $geoObject): Response
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         $isAvailableForSurvey = $this->getDoctrine()
             ->getRepository(Survey\Spatial\SurveyGeoObject::class)
             ->isInScope($geoObject)
@@ -195,7 +202,7 @@ class GeoObjectController extends AbstractController
         return [
             'questions' => $survey,
             'progress' => $progress,
-            'is_confirmed' => $stmt->fetchColumn()
+            'is_confirmed' => $stmt->fetchColumn(),
         ];
     }
 

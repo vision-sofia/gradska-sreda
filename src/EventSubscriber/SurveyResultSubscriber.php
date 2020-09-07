@@ -24,6 +24,9 @@ class SurveyResultSubscriber implements EventSubscriberInterface
         $this->geoObjectRating = $geoObjectRating;
     }
 
+    /**
+     * @return array<string, array>
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -40,7 +43,9 @@ class SurveyResultSubscriber implements EventSubscriberInterface
         $userId = $event->getUser()->getId();
         $geoObjectId = $event->getGeoObject()->getId();
 
-        $this->criterionCompletion->update($geoObjectId, $userId);
+        if ($geoObjectId && $userId) {
+            $this->criterionCompletion->update($geoObjectId, $userId);
+        }
     }
 
     public function userCompletionUpdate(GeoObjectSurveyTouch $event): void
@@ -48,7 +53,10 @@ class SurveyResultSubscriber implements EventSubscriberInterface
         $userId = $event->getUser()->getId();
         $geoObjectId = $event->getGeoObject()->getId();
 
-        $this->userCompletion->update($geoObjectId, $userId);
+        if ($geoObjectId && $userId) {
+            $this->userCompletion->update($geoObjectId, $userId);
+            $this->userCompletion->updateLocationResponseTimestamp($geoObjectId, $userId);
+        }
     }
 
     public function geoObjectRatingUpdate(GeoObjectSurveyTouch $event): void
@@ -56,6 +64,8 @@ class SurveyResultSubscriber implements EventSubscriberInterface
         $userId = $event->getUser()->getId();
         $geoObjectId = $event->getGeoObject()->getId();
 
-        $this->geoObjectRating->update($geoObjectId, $userId);
+        if ($geoObjectId && $userId) {
+            $this->geoObjectRating->update($geoObjectId, $userId);
+        }
     }
 }

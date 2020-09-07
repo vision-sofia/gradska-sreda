@@ -34,12 +34,12 @@ class Answer implements UuidInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Question", inversedBy="answers")
      */
-    private $question;
+    private ?Question $question;
 
     /**
      * @ORM\OneToMany(targetEntity="App\AppMain\Entity\Survey\Question\Answer", mappedBy="parent")
      */
-    private $children;
+    private ?Collection $children;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Question\Answer", inversedBy="children")
