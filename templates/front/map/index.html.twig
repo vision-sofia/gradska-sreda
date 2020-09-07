@@ -1,7 +1,42 @@
 {% extends 'front/map/layout.html.twig' %}
 {% block title %}Карта{% endblock %}
 {% block content %}
-    <div id="mapMain" data-locate-on-load="true" data-geo-collection="123" style=""></div>
+    <div id="mapMain" data-locate-on-load="true" data-geo-collection="">
+        <div class="legend-wrapper">
+            <div class="d-flex">
+                <div>
+                    <div class="legend-line legend-line-t" style="padding-top: 2px">
+                        <div class="legend-line-s1"></div>
+                    </div>
+                </div>
+                <div>частично оценена отсечка</div>
+            </div>
+            <div class="d-flex">
+                <div>
+                    <div class="legend-line legend-line-t" style="padding-top: 2px">
+                        <div class="legend-line-s2"></div>
+                    </div>
+                </div>
+                <div>изцяло оценена отсечка</div>
+            </div>
+            <div class="d-flex">
+                <div><div class="legend-line legend-line-t"></div></div>
+                <div>тротоар</div>
+            </div>
+            <div class="d-flex">
+                <div><div class="legend-line legend-line-a"></div></div>
+                <div>алея</div>
+            </div>
+            <div class="d-flex">
+                <div><div class="legend-line legend-line-p"></div></div>
+                <div>пресичане</div>
+            </div>
+            <div class="d-flex">
+                <div><div class="legend-line legend-line-road"></div></div>
+                <div>пътно платно без тротоар</div>
+            </div>
+        </div>
+    </div>
 
     {% include 'front/geo-object/details.html.twig' %}
 
