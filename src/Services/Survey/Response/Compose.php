@@ -5,6 +5,7 @@ namespace App\Services\Survey\Response;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
+/** @deprecated */
 class Compose
 {
     public function build(array $answers, ?array $files, array $currentAnswers): array

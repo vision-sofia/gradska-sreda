@@ -69,9 +69,14 @@ class StyleBuilder
 
         $insertStmt = $conn->prepare($this->buildInsertSQL($chunkSize));
 
+        /** @var Survey|null $survey */
         $survey = $this->em->getRepository(Survey::class)->findOneBy([
             'isActive' => true,
         ]);
+
+        if (!$survey) {
+            return;
+        }
 
         $batch = [];
         $styleGroups = [];

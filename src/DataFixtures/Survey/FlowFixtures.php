@@ -28,12 +28,13 @@ class FlowFixtures extends Fixture implements DependentFixtureInterface
             ;
 
             foreach ($value['answers'] as $answer) {
+                /** @var Answer|null $answer */
                 $answer = $manager->getRepository(Answer::class)->findOneBy([
                     'title' => $answer,
                 ])
                 ;
 
-                if ($question) {
+                if ($question && $answer) {
                     $flow = new Flow();
                     $flow->setQuestion($question);
                     $flow->setAnswer($answer);

@@ -19,7 +19,7 @@ class CsrfTokenValidator
 
     public function isCsrfTokenValid(string $id): bool
     {
-        if (!$this->requestStack->getCurrentRequest()) {
+        if ($this->requestStack->getCurrentRequest() === null) {
             return false;
         }
 

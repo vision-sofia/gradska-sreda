@@ -7,7 +7,7 @@ class StyleUtils
     private array $staticStyles;
     private array $dynamicStyles;
 
-    public function getStaticStyles()
+    public function getStaticStyles(): array
     {
         return $this->staticStyles;
     }
@@ -17,7 +17,7 @@ class StyleUtils
         $this->staticStyles = $staticStyles;
     }
 
-    public function getDynamicStyles()
+    public function getDynamicStyles(): array
     {
         return $this->dynamicStyles;
     }

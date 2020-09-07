@@ -12,9 +12,9 @@ class Question
     /**
      * @param Iterator|QuestionDTO[] $questions
      *
-     * @return array
+     * @return array<QuestionDTO>
      */
-    public function build(Iterator $questions, array $responseAnswers)
+    public function build(Iterator $questions, array $responseAnswers): array
     {
         $re = [];
 

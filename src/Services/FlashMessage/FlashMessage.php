@@ -40,7 +40,7 @@ class FlashMessage
 
     private function add(string $flashType, ?string $title, ?string $message): void
     {
-        $this->flashBag->add($flashType, $this->concatMessage($title, $message));
+        $this->flashBag->add($flashType, $this->concatMessage($title ?? '', $message ?? ''));
     }
 
     private function concatMessage(string $title, string $message): string

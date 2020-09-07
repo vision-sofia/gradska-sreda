@@ -14,14 +14,17 @@ class UploaderHelper
         $this->filesystem = $publicUploadsFilesystem;
     }
 
-    public function uploadAnswerImage(File $file): string
+    public function uploadAnswerImage(File $file): ?string
     {
         $newFilename = bin2hex(random_bytes(12)) . '.' . $file->guessExtension();
 
-        $this->filesystem->write(
-            $newFilename,
-            file_get_contents($file->getPathname())
-        );
+        $contents = file_get_contents($file->getPathname());
+
+        if (!$contents) {
+            return null;
+        }
+
+        $this->filesystem->write($newFilename, $contents);
 
         return $newFilename;
     }

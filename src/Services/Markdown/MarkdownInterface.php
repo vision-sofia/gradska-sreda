@@ -4,5 +4,5 @@ namespace App\Services\Markdown;
 
 interface MarkdownInterface
 {
-    public function text(string $text);
+    public function text(string $text): string;
 }

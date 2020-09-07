@@ -291,7 +291,7 @@ class GeoCollection
         return $stmt->fetchColumn();
     }
 
-    public function updateBBoxGeometry(int $geoCollectionId)
+    public function updateBBoxGeometry(int $geoCollectionId): void
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();
@@ -331,7 +331,7 @@ class GeoCollection
         $stmt->execute([$geoCollectionId]);
     }
 
-    public function updateBBoxMetadata(int $geoCollectionId)
+    public function updateBBoxMetadata(int $geoCollectionId): void
     {
         /** @var Connection $conn */
         $conn = $this->em->getConnection();

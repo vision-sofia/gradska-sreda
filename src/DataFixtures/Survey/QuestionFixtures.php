@@ -23,11 +23,16 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         foreach ($this->data() as $question) {
+            /** @var Category|null $category */
             $category = $manager->getRepository(Category::class)
                 ->findOneBy([
                     'name' => $question['category'],
                 ])
             ;
+
+            if (!$category) {
+                continue;
+            }
 
             $questionObject = new Question();
             $questionObject->setCategory($category);
