@@ -412,4 +412,33 @@ class ItemController extends AbstractController
             'geoObject' => $geoObject,
         ]);
     }
+
+    /**
+     * @Route("geo/{id}/copy", name="copy", methods="POST")
+     * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
+     */
+    public function copy(GeoObject $geoObject, Copy $copy): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($geoObject->getId() !== null) {
+            $copy->proceed($geoObject->getId(), $user->getId());
+
+            $event = new GeoObjectSurveyTouch($geoObject, $user);
+            $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
+        }
+
+        return new JsonResponse([
+            'geoObject' => [
+                'id' => $geoObject->getUuid(),
+                'name' => $geoObject->getName(),
+                'type' => $geoObject->getType() !== null ? $geoObject->getType()->getName() : 'unknown',
+            ],
+            'survey' => $this->surveyResult($geoObject),
+        ]);
+    }
 }

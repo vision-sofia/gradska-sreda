@@ -54,6 +54,21 @@ export class Survey {
     }
 
     events() {
+        $(document).on('click', '#copy', () => {
+            let id = $('#confirm-button').data('geo-object');
+
+            $.ajax({
+                type: 'POST',
+                url: `/geo/${id}/copy`,
+                success: (result) => {
+                    console.log(result);
+                    this.buildSurvey(result);
+                    this.getResults();
+                    this.styleConfirmButton(result);
+                }
+            });
+        });
+
         $(document).on('click', '#confirm-button', () => {
             let id = $('#confirm-button').data('geo-object');
 
@@ -152,6 +167,12 @@ export class Survey {
         $.ajax({
             url: 'front-end/geo/' + this.geoObjectUUID,
             success: (result) => {
+               if(result.survey.found_copy_source === true) {
+                    $('#copy-button-wrapper').show();
+               } else {
+                   $('#copy-button-wrapper').hide();
+               }
+
                this.buildSurvey(result);
                this.styleConfirmButton(result);
             }

@@ -10,6 +10,7 @@ use App\AppMain\Entity\User\User;
 use App\AppMain\Entity\User\UserInterface;
 use App\Services\ApiFrontend\GeoObjectRating;
 use App\Services\Survey\Question;
+use App\Services\Survey\Response\Copy;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,7 +52,7 @@ class GeoObjectController extends AbstractController
      * @Route("{id}", name="details", methods={"GET"})
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
-    public function details(GeoObject $geoObject): Response
+    public function details(GeoObject $geoObject, Copy $copy): Response
     {
         $user = $this->getUser();
 
@@ -74,7 +75,7 @@ class GeoObjectController extends AbstractController
                 'name' => $geoObject->getName(),
                 'type' => $geoObject->getType()->getName(),
             ],
-            'survey' => $this->surveyResult($geoObject),
+            'survey' => $this->surveyResult($geoObject, $copy),
         ]);
     }
 
@@ -199,10 +200,13 @@ class GeoObjectController extends AbstractController
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
 
+        $copySourceId = $copy->findSourceGeoObjectId($geoObject->getId(), $user->getId());
+
         return [
             'questions' => $survey,
             'progress' => $progress,
             'is_confirmed' => $stmt->fetchColumn(),
+            'found_copy_source' => $copySourceId !== null,
         ];
     }
 
