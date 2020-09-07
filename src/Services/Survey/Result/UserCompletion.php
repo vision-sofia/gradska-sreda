@@ -157,6 +157,38 @@ class UserCompletion
         $this->updateHybrid($geoObjectId);
     }
 
+    public function updateLocationResponseTimestamp(int $geoObjectId, int $userId): void
+    {
+        /** @var Connection $conn */
+        $conn = $this->em->getConnection();
+
+        $stmt = $conn->prepare('
+            UPDATE
+                x_survey.response_location l
+            SET
+                updated_at = (
+                    SELECT
+                        a.answered_at
+                    FROM
+                        x_survey.response_question q
+                            INNER JOIN
+                        x_survey.response_answer a ON q.id = a.question_id
+                    WHERE
+                        q.location_id = l.id
+                    ORDER BY
+                        a.answered_at DESC
+                    LIMIT 1
+                )
+            WHERE
+                l.user_id = :user_id
+                AND l.geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+    }
+
     // @deprecated
     /*
     public function update(int $geoObjectId, int $userId):void

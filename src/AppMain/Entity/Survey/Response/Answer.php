@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     uniqueConstraints={@ORM\UniqueConstraint(columns={"question_id", "answer_id"})}
  * )
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Answer implements UuidInterface
 {
@@ -55,6 +56,11 @@ class Answer implements UuidInterface
      * @ORM\Column(type="boolean", options={"default": false})
      */
     private bool $isCompleted = false;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private \DateTimeInterface $answeredAt;
 
     public function getId(): int
     {
@@ -99,5 +105,23 @@ class Answer implements UuidInterface
     public function setPhoto($photo): void
     {
         $this->photo = $photo;
+    }
+
+    public function getAnsweredAt(): \DateTimeInterface
+    {
+        return $this->answeredAt;
+    }
+
+    public function setAnsweredAt(\DateTimeInterface $answeredAt): void
+    {
+        $this->answeredAt = $answeredAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onPreUpdate(): void
+    {
+        $this->answeredAt = new \DateTimeImmutable();
     }
 }
