@@ -18,7 +18,7 @@ class UserProvider implements UserProviderInterface
         $this->entityManager = $entityManager;
     }
 
-    public function loadUserByUsername($username)
+    public function loadUserByUsername(string $username)
     {
         $repository = $this->entityManager->getRepository(User::class);
 
@@ -34,14 +34,14 @@ class UserProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user)
     {
-        if (!$user instanceof User) {
+        if (!$user instanceof User || $user->getUsername() === null) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
         }
 
         return $this->loadUserByUsername($user->getUsername());
     }
 
-    public function supportsClass($class): bool
+    public function supportsClass(string $class): bool
     {
         return User::class === $class;
     }

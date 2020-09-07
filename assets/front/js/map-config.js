@@ -2,8 +2,8 @@ export const mapBoxUrl = 'https://gradska-sreda.dreamradio.org/map/styles/vs/{z}
 export const mapBoxAttribution = `&copy <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`;
 
 export const defaultMapSize = {
-    areaHeight: 100, // Precents  // TODO take form MapInstance 
-    areaWidth: 100, // Precents  // TODO take form MapInstance 
+    areaHeight: 100, // Precents  // TODO take form MapInstance
+    areaWidth: 100, // Precents  // TODO take form MapInstance
 };
 
 export const defaultElConfig = {
@@ -27,5 +27,3 @@ export const defaultObjectStyle = {
 export const apiEndpoints = {
     geo: '/geo/'
 };
-
-

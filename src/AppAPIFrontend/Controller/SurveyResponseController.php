@@ -5,9 +5,10 @@ namespace App\AppAPIFrontend\Controller;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
 use App\AppMain\Entity\Survey\Question\Answer;
+use App\AppMain\Entity\User\UserInterface;
 use App\Event\GeoObjectSurveyTouch;
 use App\Services\Survey\Response\Question;
-use App\Services\Survey\Response\Question as SurveyResponseQuestionService;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,16 +25,13 @@ class SurveyResponseController extends AbstractController
 {
     protected EntityManagerInterface $entityManager;
     protected EventDispatcherInterface $eventDispatcher;
-    protected SurveyResponseQuestionService $responseQuestionService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher,
-        SurveyResponseQuestionService $responseQuestionService
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->responseQuestionService = $responseQuestionService;
     }
 
     // TODO: refactor in to services
@@ -101,10 +99,12 @@ class SurveyResponseController extends AbstractController
      * @Route("/{id}/survey", name="question.response", methods="POST")
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      */
-    public function result(Request $request, GeoObject $geoObject, Question $question)
+    public function result(Request $request, GeoObject $geoObject, Question $question): JsonResponse
     {
-        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            return $this->redirectToRoute('app.login');
+        $user = $this->getUser();
+
+        if (!$user instanceof UserInterface || !$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
         }
 
         $answers = $request->get('answers');
@@ -135,9 +135,9 @@ class SurveyResponseController extends AbstractController
             }
         }
 
-        $question->response($r, $geoObject, $this->getUser());
+        $question->response($r, $geoObject, $user);
 
-        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+        $event = new GeoObjectSurveyTouch($geoObject, $user);
         $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
         return new JsonResponse([]);

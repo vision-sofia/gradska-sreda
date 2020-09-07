@@ -48,6 +48,29 @@ class QuestionV3
         $stmt->execute();
     }
 
+    public function clear(string $questionUuid, int $userId, int $geoObjectId): void
+    {
+        /** @var Connection $conn */
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('
+            DELETE FROM
+                x_survey.response_question r
+                    USING
+                x_survey.q_question q
+            WHERE
+                r.question_id = q.id
+                AND q.uuid = :question_uuid
+                AND user_id = :user_id
+                AND r.geo_object_id = :geo_object_id
+        ');
+
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('question_uuid', $questionUuid);
+        $stmt->bindValue('geo_object_id', $geoObjectId);
+        $stmt->execute();
+    }
+
     public function clearEmptyQuestions(int $userId, int $geoObjectId): void
     {
         /** @var Connection $conn */
@@ -140,7 +163,7 @@ class QuestionV3
         $stmt->execute();
     }
 
-    public function isAnsweredAndMultipleAnswers(string $answerUuid, int $userId, int $geoObjectId)
+    public function isAnsweredAndMultipleAnswers(string $answerUuid, int $userId, int $geoObjectId): bool
     {
         /** @var Connection $conn */
         $conn = $this->entityManager->getConnection();
@@ -273,17 +296,20 @@ class QuestionV3
         $stmt->execute();
     }
 
+    /**
+     * @param array<string, mixed> $extra
+     */
     public function response(string $answerUuid, array $extra, GeoObjectInterface $geoObject, UserInterface $user): void
     {
+        /** @var Answer|null $answer */
         $answer = $this->entityManager->getRepository(Answer::class)->findOneBy([
             'uuid' => $answerUuid,
         ]);
-        /*
-                if($answer) {
-                    $conn = $this->entityManager->getConnection();
-                    $conn
-                }
-        */
+
+        if ($answer === null || $answer->getQuestion() === null) {
+            return;
+        }
+
         /** @var Survey\Question\Question $question */
         $question = $answer->getQuestion();
 
@@ -314,9 +340,26 @@ class QuestionV3
         ;
 
         if (null === $location) {
+            $conn = $this->entityManager->getConnection();
+            $stmt = $conn->prepare('
+                SELECT
+                    survey_id
+                FROM
+                    x_survey.geo_object_question
+                WHERE
+                    question_id = ?
+            ');
+
+            $stmt->execute([$question->getId()]);
+
+            $surveyId = $stmt->fetchColumn();
+
+            $survey = $this->entityManager->find(Survey\Survey\Survey::class, $surveyId);
+
             $location = new Survey\Response\Location();
             $location->setGeoObject($geoObject);
             $location->setUser($user);
+            $location->setSurvey($survey);
         }
 
         $responseQuestion = $this->entityManager->getRepository(Survey\Response\Question::class)

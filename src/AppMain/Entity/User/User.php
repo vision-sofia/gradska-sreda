@@ -24,7 +24,7 @@ class User implements UserSecurityInterface, UuidInterface, UserInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    protected ?int $id = null;
+    protected int $id;
 
     /**
      * @ORM\Column(length=255, unique=true)
@@ -118,29 +118,6 @@ class User implements UserSecurityInterface, UuidInterface, UserInterface
 
     public function eraseCredentials(): void
     {
-    }
-
-    public function serialize()
-    {
-        return serialize([
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt,
-        ]);
-    }
-
-    public function unserialize($serialized): void
-    {
-        [
-            $this->id,
-            $this->username,
-            $this->password,
-            // see section on salt below
-            // $this->salt
-        ]
-            = unserialize($serialized);
     }
 
     public function getId(): int

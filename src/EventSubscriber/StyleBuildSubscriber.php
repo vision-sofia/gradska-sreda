@@ -26,6 +26,9 @@ class StyleBuildSubscriber implements EventSubscriberInterface
         $this->styleService = $styleService;
     }
 
+    /**
+     * @return array<string, array>
+     */
     public static function getSubscribedEvents(): array
     {
         return [

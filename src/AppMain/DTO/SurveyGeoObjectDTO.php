@@ -16,7 +16,7 @@ class SurveyGeoObjectDTO
     public $active_style;
     public $type_name;
     public $geo_name;
-    public $uuid;
+    public string $uuid;
     public $properties;
     public $bounding_box;
 }

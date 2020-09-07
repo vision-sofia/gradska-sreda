@@ -21,7 +21,7 @@ class RebuildStyleHandler implements MessageHandlerInterface
         $this->styleBuilder = $styleBuilder;
     }
 
-    public function __invoke(RebuildStyle $rebuildStyle)
+    public function __invoke(RebuildStyle $rebuildStyle): void
     {
         if ($rebuildStyle instanceof RebuildStyleByAnswer) {
             $surveyId = $this->entityManager

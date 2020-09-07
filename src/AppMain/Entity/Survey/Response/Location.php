@@ -3,7 +3,7 @@
 namespace App\AppMain\Entity\Survey\Response;
 
 use App\AppMain\Entity\Geospatial\GeoObjectInterface;
-use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\Survey\Survey\Survey;
 use App\AppMain\Entity\Traits\UUIDableTrait;
 use App\AppMain\Entity\User\UserInterface;
 use App\AppMain\Entity\UuidInterface;
@@ -50,6 +50,22 @@ class Location implements UuidInterface
     private $coordinates;
 
     /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private bool $isConfirmed = false;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\AppMain\Entity\Survey\Survey\Survey")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private ?Survey $survey;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private ?\DateTimeInterface $confirmedAt = null;
+
+    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $updatedAt = null;
@@ -92,6 +108,36 @@ class Location implements UuidInterface
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    public function isConfirmed(): bool
+    {
+        return $this->isConfirmed;
+    }
+
+    public function setIsConfirmed(bool $isConfirmed): void
+    {
+        $this->isConfirmed = $isConfirmed;
+    }
+
+    public function getConfirmedAt(): ?\DateTimeInterface
+    {
+        return $this->confirmedAt;
+    }
+
+    public function setConfirmedAt(?\DateTimeInterface $confirmedAt): void
+    {
+        $this->confirmedAt = $confirmedAt;
+    }
+
+    public function getSurvey(): ?Survey
+    {
+        return $this->survey;
+    }
+
+    public function setSurvey(?Survey $survey): void
+    {
+        $this->survey = $survey;
     }
 
     /**

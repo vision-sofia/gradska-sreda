@@ -20,7 +20,7 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private ?int $id = null;
+    private int $id;
 
     /**
      * @ORM\Column(type="json", options={"jsonb": true, "default": "{}"})
@@ -53,7 +53,7 @@ class GeoObject implements UuidInterface, GeoObjectInterface
      */
     private ?array $metadata = null;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }

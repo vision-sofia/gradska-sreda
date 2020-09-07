@@ -63,6 +63,9 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user): bool
     {
+        if ($user->getPassword() === null) {
+            return false;
+        }
         $password = isset($credentials['_password']) ? $credentials['_password'] : null;
 
         $encoder = $this->encoder->getEncoder($user);
@@ -80,7 +83,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         return false;
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey): RedirectResponse
     {
         return new RedirectResponse($this->router->generate('app.map'));
     }

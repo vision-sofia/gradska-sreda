@@ -211,7 +211,7 @@ class MapController extends AbstractController
                 $ranges = [];
 
                 foreach ($simplifySet as $simplify) {
-                    if ($simplify->getZoom()) {
+                    if ($simplify->getZoom() !== null) {
                         $ranges[] = [
                             'min_zoom' => $simplify->getZoom()->getEnd(),
                             'max_zoom' => $simplify->getZoom()->getStart(),

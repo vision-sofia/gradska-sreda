@@ -82,10 +82,14 @@ class GeoObjectController extends AbstractController
     /**
      * @return array<string, mixed>
      */
-    private function surveyResult(GeoObject $geoObject): array
+    private function surveyResult(GeoObject $geoObject, Copy $copy): array
     {
         /** @var UserInterface $user */
         $user = $this->getUser();
+
+        if ($geoObject->getType() === null) {
+            return [];
+        }
 
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)

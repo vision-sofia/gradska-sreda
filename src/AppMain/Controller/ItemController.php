@@ -6,12 +6,15 @@ use App\AppMain\DTO\QuestionDTO;
 use App\AppMain\DTO\ResponseAnswerDTO;
 use App\AppMain\Entity\Geospatial\GeoObject;
 use App\AppMain\Entity\Survey;
+use App\AppMain\Entity\User\User;
+use App\AppMain\Entity\User\UserInterface;
 use App\Event\GeoObjectSurveyTouch;
 use App\Message\RebuildStyleByAnswer;
 use App\Message\RebuildStyleByQuestion;
 use App\Services\Survey\Question;
-use App\Services\Survey\Response\Question as QuestionResponseService;
+use App\Services\Survey\Response\Copy;
 use App\Services\Survey\Response\QuestionV3;
+use App\Services\Survey\Response\QuestionV3 as QuestionResponseService;
 use App\Services\UploaderHelper;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,11 +54,24 @@ class ItemController extends AbstractController
         $this->messageBus = $messageBus;
     }
 
-    private function surveyResult($geoObject)
+    /**
+     * @return array<string, array>
+     */
+    private function surveyResult(GeoObject $geoObject): array
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof UserInterface) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($geoObject->getType() === null) {
+            return [];
+        }
+
         $questions = $this->getDoctrine()
             ->getRepository(Survey\Question\Question::class)
-            ->findQuestions($this->getUser(), $geoObject)
+            ->findQuestions($user, $geoObject)
         ;
 
         /** @var Connection $conn */
@@ -75,7 +91,7 @@ class ItemController extends AbstractController
                     AND rq.user_id = :user_id
             ');
 
-        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->execute();
         $stmt->setFetchMode(\PDO::FETCH_CLASS, ResponseAnswerDTO::class);
@@ -83,7 +99,7 @@ class ItemController extends AbstractController
         $responseAnswers = [];
 
         while ($answer = $stmt->fetch()) {
-            /** @var ResponseAnswerDTO $answer */
+            /* @var ResponseAnswerDTO $answer */
             $responseAnswers[$answer->getQuestionId()][$answer->getId()] = $answer;
         }
 
@@ -139,7 +155,7 @@ class ItemController extends AbstractController
             SELECT total, complete FROM z, d
         ');
 
-        $stmt->bindValue('user_id', $this->getUser()->getId());
+        $stmt->bindValue('user_id', $user->getId());
         $stmt->bindValue('geo_object_id', $geoObject->getId());
         $stmt->bindValue('geo_object_type_id', $geoObject->getType()->getId());
         $stmt->execute();
@@ -170,7 +186,7 @@ class ItemController extends AbstractController
         return [
             'questions' => $survey,
             'progress' => $progress,
-            'is_confirmed' => $stmt->fetchColumn()
+            'is_confirmed' => $stmt->fetchColumn(),
         ];
     }
 
@@ -182,12 +198,12 @@ class ItemController extends AbstractController
     public function qq(GeoObject $geoObject): JsonResponse
     {
         return new JsonResponse([
-            'geoObject' => [
-                'id' => $geoObject->getUuid(),
-                'name' => $geoObject->getName(),
-                'type' => $geoObject->getType()->getName(),
-            ],
-            'survey' => $this->surveyResult($geoObject),
+            //            'geoObject' => [
+            //                'id' => $geoObject->getUuid(),
+            //                'name' => $geoObject->getName(),
+            //                'type' => $geoObject->getType()->getName(),
+            //            ],
+            //            'survey' => $this->surveyResult($geoObject),
         ]);
     }
 
@@ -198,6 +214,16 @@ class ItemController extends AbstractController
      */
     public function q2(Request $request, GeoObject $geoObject, QuestionV3 $questionV3): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($geoObject->getType() === null) {
+            return $this->json([]);
+        }
+
         $text = $request->request->get('explanation');
 
         if (isset($text)) {
@@ -222,7 +248,7 @@ class ItemController extends AbstractController
 
         $answerUuid = $request->request->get('answer');
 
-        $userId = $this->getUser()->getId();
+        $userId = $user->getId();
         $geoObjectId = $geoObject->getId();
 
         if ($questionV3->isAnsweredAndMultipleAnswers($answerUuid, $userId, $geoObjectId)) {
@@ -232,7 +258,7 @@ class ItemController extends AbstractController
 
             $questionV3->mark($userId, $geoObjectId);
 
-            $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+            $event = new GeoObjectSurveyTouch($geoObject, $user);
             $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
             $this->messageBus->dispatch(new RebuildStyleByAnswer($geoObjectId, $answerUuid));
@@ -259,12 +285,12 @@ class ItemController extends AbstractController
         }
 
         $questionV3->clearOut($answerUuid, $userId, $geoObjectId);
-        $questionV3->response($request->request->get('answer'), [], $geoObject, $this->getUser());
+        $questionV3->response($request->request->get('answer'), [], $geoObject, $user);
 
         $questionV3->clearDetached($userId, $geoObjectId);
         $questionV3->mark($userId, $geoObjectId);
 
-        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+        $event = new GeoObjectSurveyTouch($geoObject, $user);
         $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
         $this->messageBus->dispatch(new RebuildStyleByAnswer($geoObjectId, $answerUuid));
@@ -284,16 +310,18 @@ class ItemController extends AbstractController
      * @ParamConverter("geoObject", class="App\AppMain\Entity\Geospatial\GeoObject", options={"mapping": {"id": "uuid"}})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function clearQuestion(Request $request, GeoObject $geoObject, string $question): JsonResponse
+    public function clearQuestion(GeoObject $geoObject, string $question): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         // TODO: csrf check
+        $this->questionResponseService->clear($question, $user->getId(), $geoObject->getId());
 
-        $this->questionResponseService->clear(
-            $question,
-            $this->getUser()->getId()
-        );
-
-        $event = new GeoObjectSurveyTouch($geoObject, $this->getUser());
+        $event = new GeoObjectSurveyTouch($geoObject, $user);
         $this->eventDispatcher->dispatch($event, GeoObjectSurveyTouch::NAME);
 
         $this->messageBus->dispatch(new RebuildStyleByQuestion($geoObject->getId(), $question));

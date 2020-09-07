@@ -23,7 +23,7 @@ class GeoObjectRatingDTO
         return $this->max;
     }
 
-    public function getCriterion(): string
+    public function getCriterion(): ?string
     {
         return $this->criterion;
     }
